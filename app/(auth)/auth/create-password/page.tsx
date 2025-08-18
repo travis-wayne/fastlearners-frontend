@@ -23,7 +23,7 @@ export default function CreatePasswordPage() {
     <Suspense fallback={
       <AuthLayout subtitle="Set up your secure password">
         <div className="flex items-center justify-center p-6">
-          <Loader2 className="h-6 w-6 animate-spin" />
+          <Loader2 className="size-6 animate-spin" />
         </div>
       </AuthLayout>
     }>

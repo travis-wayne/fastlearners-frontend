@@ -100,7 +100,7 @@ function GoogleCallbackContent() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+        <Loader2 className="mx-auto size-8 animate-spin text-primary" />
         <h2 className="mt-4 text-lg font-semibold">Completing Google Authentication...</h2>
         <p className="mt-2 text-sm text-muted-foreground">
           Please wait while we authenticate your account and complete the process.
@@ -115,7 +115,7 @@ export default function GoogleCallbackPage() {
     <Suspense fallback={
       <div className="flex min-h-screen items-center justify-center">
         <div className="text-center">
-          <Loader2 className="mx-auto h-8 w-8 animate-spin text-primary" />
+          <Loader2 className="mx-auto size-8 animate-spin text-primary" />
           <h2 className="mt-4 text-lg font-semibold">Loading...</h2>
         </div>
       </div>

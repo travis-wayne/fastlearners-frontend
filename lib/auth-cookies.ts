@@ -1,5 +1,5 @@
 import Cookies from 'js-cookie';
-import { User, UserRole } from '@/types/auth';
+import { User, UserRole } from '@/lib/types/auth';
 
 // Cookie names
 const AUTH_TOKEN_COOKIE = 'auth_token';

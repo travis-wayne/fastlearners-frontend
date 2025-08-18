@@ -160,7 +160,7 @@ export function VerifyResetCodeForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-blue-100 mx-auto mb-4">
+          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-blue-100">
             <Shield className="size-6 text-blue-600" />
           </div>
           <CardTitle>Enter reset code</CardTitle>
@@ -173,7 +173,7 @@ export function VerifyResetCodeForm({
         <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="size-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -182,15 +182,15 @@ export function VerifyResetCodeForm({
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="code" className="text-center">Reset code</Label>
-                <div className="flex gap-2 justify-center">
+                <div className="flex justify-center gap-2">
                   {[...Array(6)].map((_, index) => (
                     <Input
                       key={index}
-                      ref={(el) => (inputRefs.current[index] = el)}
+                      ref={(el) => { inputRefs.current[index] = el; }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
-                      className="w-12 h-12 text-center text-lg font-semibold"
+                      className="size-12 text-center text-lg font-semibold"
                       value={codeValue[index] || ''}
                       onChange={(e) => handleInputChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
@@ -203,7 +203,7 @@ export function VerifyResetCodeForm({
                   {...register('code')}
                 />
                 {errors.code && (
-                  <p className="text-sm text-destructive text-center">{errors.code.message}</p>
+                  <p className="text-center text-sm text-destructive">{errors.code.message}</p>
                 )}
               </div>
 
@@ -214,7 +214,7 @@ export function VerifyResetCodeForm({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     Verifying...
                   </>
                 ) : (
@@ -226,7 +226,7 @@ export function VerifyResetCodeForm({
             <div className="mt-6 space-y-4">
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
-                  Didn't receive the code?{' '}
+                  Didn&apos;t receive the code?{' '}
                   {countdown > 0 ? (
                     <span className="text-muted-foreground">
                       Resend in {countdown}s

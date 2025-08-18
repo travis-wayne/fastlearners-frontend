@@ -91,7 +91,7 @@ export function ForgotPasswordForm({
       <div className={cn("flex flex-col gap-6", className)} {...props}>
         <Card>
           <CardHeader className="text-center">
-            <div className="flex size-12 items-center justify-center rounded-full bg-green-100 mx-auto mb-4">
+            <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-green-100">
               <Mail className="size-6 text-green-600" />
             </div>
             <CardTitle>Check your email</CardTitle>
@@ -103,14 +103,14 @@ export function ForgotPasswordForm({
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="text-center text-sm text-muted-foreground">
-              <p>Didn't receive the code?</p>
+              <p>Didn&apos;t receive the code?</p>
               <Button
                 variant="link"
                 onClick={() => {
                   setSuccess(false);
                   setError(null);
                 }}
-                className="p-0 h-auto font-normal"
+                className="h-auto p-0 font-normal"
               >
                 Try a different email address
               </Button>
@@ -136,13 +136,13 @@ export function ForgotPasswordForm({
         <CardHeader>
           <CardTitle>Reset your password</CardTitle>
           <CardDescription>
-            Enter your email address and we'll send you a code to reset your password
+            Enter your email address and we&apos;ll send you a code to reset your password
           </CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="size-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -172,7 +172,7 @@ export function ForgotPasswordForm({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     Sending code...
                   </>
                 ) : (

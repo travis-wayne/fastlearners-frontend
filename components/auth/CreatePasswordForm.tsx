@@ -107,14 +107,14 @@ export function CreatePasswordForm({
     <form className={cn('flex flex-col gap-6', className)} {...props} onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Create your password</h1>
-        <p className="text-muted-foreground text-sm text-balance">
+        <p className="text-balance text-sm text-muted-foreground">
           Choose a strong password to secure your account
         </p>
       </div>
       
       {error && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+          <AlertCircle className="size-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -141,9 +141,9 @@ export function CreatePasswordForm({
               disabled={isLoading}
             >
               {showPassword ? (
-                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                <EyeOff className="size-4 text-muted-foreground" />
               ) : (
-                <Eye className="h-4 w-4 text-muted-foreground" />
+                <Eye className="size-4 text-muted-foreground" />
               )}
             </Button>
           </div>
@@ -154,9 +154,9 @@ export function CreatePasswordForm({
               {passwordRequirements.map((req, index) => (
                 <div key={index} className="flex items-center gap-2">
                   {req.met ? (
-                    <CheckCircle2 className="h-4 w-4 text-green-500" />
+                    <CheckCircle2 className="size-4 text-green-500" />
                   ) : (
-                    <X className="h-4 w-4 text-muted-foreground" />
+                    <X className="size-4 text-muted-foreground" />
                   )}
                   <span className={req.met ? 'text-green-700' : 'text-muted-foreground'}>
                     {req.text}
@@ -192,9 +192,9 @@ export function CreatePasswordForm({
               disabled={isLoading}
             >
               {showConfirmPassword ? (
-                <EyeOff className="h-4 w-4 text-muted-foreground" />
+                <EyeOff className="size-4 text-muted-foreground" />
               ) : (
-                <Eye className="h-4 w-4 text-muted-foreground" />
+                <Eye className="size-4 text-muted-foreground" />
               )}
             </Button>
           </div>
@@ -210,7 +210,7 @@ export function CreatePasswordForm({
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Creating password...
             </>
           ) : (

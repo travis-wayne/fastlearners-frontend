@@ -164,7 +164,7 @@ export function VerifyOtpForm({
           <Mail className="size-6 text-primary" />
         </div>
         <h1 className="text-2xl font-bold">Check your email</h1>
-        <p className="text-muted-foreground text-sm text-balance">
+        <p className="text-balance text-sm text-muted-foreground">
           We sent a verification code to
           <br />
           <span className="font-medium text-foreground">{email}</span>
@@ -173,7 +173,7 @@ export function VerifyOtpForm({
       
       {error && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+          <AlertCircle className="size-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
@@ -181,15 +181,15 @@ export function VerifyOtpForm({
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="code" className="text-center">Verification code</Label>
-          <div className="flex gap-2 justify-center">
+          <div className="flex justify-center gap-2">
             {[...Array(6)].map((_, index) => (
               <Input
                 key={index}
-                ref={(el) => (inputRefs.current[index] = el)}
+                      ref={(el) => { inputRefs.current[index] = el; }}
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
-                className="w-12 h-12 text-center text-lg font-semibold"
+                className="size-12 text-center text-lg font-semibold"
                 value={codeValue[index] || ''}
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
@@ -202,7 +202,7 @@ export function VerifyOtpForm({
             {...register('code')}
           />
           {errors.code && (
-            <p className="text-sm text-destructive text-center">{errors.code.message}</p>
+            <p className="text-center text-sm text-destructive">{errors.code.message}</p>
           )}
         </div>
         
@@ -213,7 +213,7 @@ export function VerifyOtpForm({
         >
           {isLoading ? (
             <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Verifying...
             </>
           ) : (

@@ -129,7 +129,7 @@ export function ResetPasswordForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader className="text-center">
-          <div className="flex size-12 items-center justify-center rounded-full bg-green-100 mx-auto mb-4">
+          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-green-100">
             <KeyRound className="size-6 text-green-600" />
           </div>
           <CardTitle>Set new password</CardTitle>
@@ -140,7 +140,7 @@ export function ResetPasswordForm({
         <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="size-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -168,9 +168,9 @@ export function ResetPasswordForm({
                     disabled={isLoading}
                   >
                     {showPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      <EyeOff className="size-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground" />
+                      <Eye className="size-4 text-muted-foreground" />
                     )}
                   </Button>
                 </div>
@@ -181,9 +181,9 @@ export function ResetPasswordForm({
                     {passwordRequirements.map((req, index) => (
                       <div key={index} className="flex items-center gap-2">
                         {req.met ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-500" />
+                          <CheckCircle2 className="size-4 text-green-500" />
                         ) : (
-                          <X className="h-4 w-4 text-muted-foreground" />
+                          <X className="size-4 text-muted-foreground" />
                         )}
                         <span className={req.met ? 'text-green-700' : 'text-muted-foreground'}>
                           {req.text}
@@ -219,9 +219,9 @@ export function ResetPasswordForm({
                     disabled={isLoading}
                   >
                     {showConfirmPassword ? (
-                      <EyeOff className="h-4 w-4 text-muted-foreground" />
+                      <EyeOff className="size-4 text-muted-foreground" />
                     ) : (
-                      <Eye className="h-4 w-4 text-muted-foreground" />
+                      <Eye className="size-4 text-muted-foreground" />
                     )}
                   </Button>
                 </div>
@@ -237,7 +237,7 @@ export function ResetPasswordForm({
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     Resetting password...
                   </>
                 ) : (

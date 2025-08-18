@@ -6,6 +6,7 @@ import { useAuthStore } from '@/store/authStore';
 import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
+import { UserSubscriptionPlan } from "types";
 
 export function ClientPricingPage() {
   const { user } = useAuthStore();
@@ -36,17 +37,31 @@ export function ClientPricingPage() {
   }
 
   // Mock subscription plan for now
-  const subscriptionPlan = {
+  const subscriptionPlan: UserSubscriptionPlan = {
+    title: "Free",
+    description: "Perfect for trying out our service",
+    benefits: ["Basic features", "Community support"],
+    limitations: ["Limited usage", "No premium features"],
+    prices: {
+      monthly: 0,
+      yearly: 0,
+    },
+    stripeIds: {
+      monthly: null,
+      yearly: null,
+    },
     isPaid: false,
     stripePriceId: null,
     stripeCustomerId: null,
     stripeSubscriptionId: null,
-    stripeCurrentPeriodEnd: null,
+    stripeCurrentPeriodEnd: 0,
+    interval: null,
+    isCanceled: false,
   };
 
   return (
     <div className="flex w-full flex-col gap-16 py-8 md:py-8">
-      <PricingCards userId={user?.id} subscriptionPlan={subscriptionPlan} />
+      <PricingCards userId={user?.id?.toString()} subscriptionPlan={subscriptionPlan} />
       <hr className="container" />
       <ComparePlans />
       <PricingFaq />
