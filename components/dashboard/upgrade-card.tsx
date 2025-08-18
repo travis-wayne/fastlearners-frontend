@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,15 +12,17 @@ export function UpgradeCard() {
   return (
     <Card className="md:max-xl:rounded-none md:max-xl:border-none md:max-xl:shadow-none">
       <CardHeader className="md:max-xl:px-4">
-        <CardTitle>Upgrade to Pro</CardTitle>
+        <CardTitle>Complete Your Profile</CardTitle>
         <CardDescription>
-          Unlock all features and get unlimited access to our support team.
+          Finish setting up your profile to unlock all features and personalize your learning experience.
         </CardDescription>
       </CardHeader>
       <CardContent className="md:max-xl:px-4">
-        <Button size="sm" className="w-full">
-          Upgrade
-        </Button>
+        <Link href="/onboarding/complete-profile">
+          <Button size="sm" className="w-full">
+            Complete Profile
+          </Button>
+        </Link>
       </CardContent>
     </Card>
   );

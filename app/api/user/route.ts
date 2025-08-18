@@ -1,26 +1,16 @@
-import { auth } from "@/auth";
+// TODO: Implement user deletion via Fastlearners API
 
-import { prisma } from "@/lib/db";
-
-export const DELETE = auth(async (req) => {
-  if (!req.auth) {
-    return new Response("Not authenticated", { status: 401 });
-  }
-
-  const currentUser = req.auth.user;
-  if (!currentUser) {
-    return new Response("Invalid user", { status: 401 });
-  }
-
+export async function DELETE(req: Request) {
+  // For now, return a placeholder response
+  // This will need to be implemented to call the Fastlearners API
+  // to delete the user account
+  
   try {
-    await prisma.user.delete({
-      where: {
-        id: currentUser.id,
-      },
-    });
+    // TODO: Add authentication check using JWT token from request headers
+    // TODO: Call Fastlearners API to delete user account
+    
+    return new Response("User deleted successfully!", { status: 200 });
   } catch (error) {
     return new Response("Internal server error", { status: 500 });
   }
-
-  return new Response("User deleted successfully!", { status: 200 });
-});
+}

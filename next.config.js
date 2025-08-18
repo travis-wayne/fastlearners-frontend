@@ -22,9 +22,6 @@ const nextConfig = {
       },
     ],
   },
-  experimental: {
-    serverComponentsExternalPackages: ["@prisma/client"],
-  },
 };
 
 module.exports = withContentlayer(nextConfig);

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { Menu, X } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { useAuthStore } from '@/store/authStore';
 
 import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
@@ -16,7 +16,7 @@ import { Icons } from "@/components/shared/icons";
 import { ModeToggle } from "./mode-toggle";
 
 export function NavMobile() {
-  const { data: session } = useSession();
+  const { user, isAuthenticated } = useAuthStore();
   const [open, setOpen] = useState(false);
   const selectedLayout = useSelectedLayoutSegment();
   const documentation = selectedLayout === "docs";
@@ -72,9 +72,9 @@ export function NavMobile() {
             </li>
           ))}
 
-          {session ? (
+          {isAuthenticated && user ? (
             <>
-              {session.user.role === "ADMIN" ? (
+              {user.role.includes('admin') ? (
                 <li className="py-3">
                   <Link
                     href="/admin"
@@ -100,7 +100,7 @@ export function NavMobile() {
             <>
               <li className="py-3">
                 <Link
-                  href="/login"
+                  href="/auth/login"
                   onClick={() => setOpen(false)}
                   className="flex w-full font-medium capitalize"
                 >
@@ -110,7 +110,7 @@ export function NavMobile() {
 
               <li className="py-3">
                 <Link
-                  href="/register"
+                  href="/auth/register"
                   onClick={() => setOpen(false)}
                   className="flex w-full font-medium capitalize"
                 >

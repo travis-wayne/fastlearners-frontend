@@ -1,4 +1,4 @@
-import { signIn } from "next-auth/react";
+import { useRouter } from 'next/navigation';
 import {
   Dispatch,
   SetStateAction,
@@ -19,6 +19,7 @@ function SignInModal({
   showSignInModal: boolean;
   setShowSignInModal: Dispatch<SetStateAction<boolean>>;
 }) {
+  const router = useRouter();
   const [signInClicked, setSignInClicked] = useState(false);
 
   return (
@@ -38,22 +39,22 @@ function SignInModal({
         <div className="flex flex-col space-y-4 bg-secondary/50 px-4 py-8 md:px-16">
           <Button
             variant="default"
-            disabled={signInClicked}
             onClick={() => {
-              setSignInClicked(true);
-              signIn("google", { redirect: false }).then(() =>
-                setTimeout(() => {
-                  setShowSignInModal(false);
-                }, 400),
-              );
+              setShowSignInModal(false);
+              router.push('/auth/login');
             }}
           >
-            {signInClicked ? (
-              <Icons.spinner className="mr-2 size-4 animate-spin" />
-            ) : (
-              <Icons.google className="mr-2 size-4" />
-            )}{" "}
+            <Icons.google className="mr-2 size-4" />
             Sign In with Google
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => {
+              setShowSignInModal(false);
+              router.push('/auth/login');
+            }}
+          >
+            Sign In with Email
           </Button>
         </div>
       </div>

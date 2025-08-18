@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateUserName, type FormData } from "@/actions/update-user-name";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { profileApi } from '@/lib/api/auth';
+import { useAuthStore } from '@/store/authStore';
+import { User } from '@/lib/types/auth';
 
 import { userNameSchema } from "@/lib/validations/user";
 import { Button } from "@/components/ui/button";
@@ -19,11 +19,14 @@ interface UserNameFormProps {
   user: Pick<User, "id" | "name">;
 }
 
+type FormData = {
+  name: string;
+};
+
 export function UserNameForm({ user }: UserNameFormProps) {
-  const { update } = useSession();
+  const { updateUserProfile } = useAuthStore();
   const [updated, setUpdated] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const updateUserNameWithId = updateUserName.bind(null, user.id);
+  const [isPending, setIsPending] = useState(false);
 
   const checkUpdate = (value) => {
     setUpdated(user.name !== value);
@@ -40,20 +43,28 @@ export function UserNameForm({ user }: UserNameFormProps) {
     },
   });
 
-  const onSubmit = handleSubmit((data) => {
-    startTransition(async () => {
-      const { status } = await updateUserNameWithId(data);
-
-      if (status !== "success") {
-        toast.error("Something went wrong.", {
-          description: "Your name was not updated. Please try again.",
-        });
-      } else {
-        await update();
+  const onSubmit = handleSubmit(async (data) => {
+    try {
+      setIsPending(true);
+      
+      const response = await profileApi.updateProfile({ name: data.name });
+      
+      if (response.success && response.content) {
+        updateUserProfile({ name: data.name });
         setUpdated(false);
         toast.success("Your name has been updated.");
+      } else {
+        toast.error("Something went wrong.", {
+          description: response.message || "Your name was not updated. Please try again.",
+        });
       }
-    });
+    } catch (error: any) {
+      toast.error("Something went wrong.", {
+        description: error.message || "Your name was not updated. Please try again.",
+      });
+    } finally {
+      setIsPending(false);
+    }
   });
 
   return (

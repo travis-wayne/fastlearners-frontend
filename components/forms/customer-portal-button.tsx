@@ -1,7 +1,7 @@
 "use client";
 
-import { useTransition } from "react";
-import { openCustomerPortal } from "@/actions/open-customer-portal";
+import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
@@ -13,14 +13,17 @@ interface CustomerPortalButtonProps {
 export function CustomerPortalButton({
   userStripeId,
 }: CustomerPortalButtonProps) {
-  let [isPending, startTransition] = useTransition();
-  const generateUserStripeSession = openCustomerPortal.bind(null, userStripeId);
+  const [isPending, setIsPending] = useState(false);
 
-  const stripeSessionAction = () =>
-    startTransition(async () => await generateUserStripeSession());
+  const handleOpenPortal = async () => {
+    setIsPending(true);
+    // TODO: Implement customer portal with Fastlearners API
+    toast.info("Customer portal coming soon!");
+    setIsPending(false);
+  };
 
   return (
-    <Button disabled={isPending} onClick={stripeSessionAction}>
+    <Button disabled={isPending} onClick={handleOpenPortal}>
       {isPending ? (
         <Icons.spinner className="mr-2 size-4 animate-spin" />
       ) : null}

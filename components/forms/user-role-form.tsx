@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
-import { updateUserRole, type FormData } from "@/actions/update-user-role";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { User, UserRole } from "@prisma/client";
-import { useSession } from "next-auth/react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
+import { profileApi } from '@/lib/api/auth';
+import { useAuthStore } from '@/store/authStore';
+import { User, UserRole } from '@/lib/types/auth';
 
 import { userRoleSchema } from "@/lib/validations/user";
 import { Button } from "@/components/ui/button";
@@ -29,18 +29,21 @@ import {
 import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
 
-interface UserNameFormProps {
+interface UserRoleFormProps {
   user: Pick<User, "id" | "role">;
 }
 
-export function UserRoleForm({ user }: UserNameFormProps) {
-  const { update } = useSession();
-  const [updated, setUpdated] = useState(false);
-  const [isPending, startTransition] = useTransition();
-  const updateUserRoleWithId = updateUserRole.bind(null, user.id);
+type FormData = {
+  role: UserRole;
+};
 
-  const roles = Object.values(UserRole);
-  const [role, setRole] = useState(user.role);
+export function UserRoleForm({ user }: UserRoleFormProps) {
+  const { updateUserProfile } = useAuthStore();
+  const [updated, setUpdated] = useState(false);
+  const [isPending, setIsPending] = useState(false);
+
+  const roles: UserRole[] = ['guest', 'student', 'parent', 'admin'];
+  const [role, setRole] = useState(user.role[0]); // Use first role as primary
 
   const form = useForm<FormData>({
     resolver: zodResolver(userRoleSchema),
@@ -49,20 +52,28 @@ export function UserRoleForm({ user }: UserNameFormProps) {
     },
   });
 
-  const onSubmit = (data: z.infer<typeof userRoleSchema>) => {
-    startTransition(async () => {
-      const { status } = await updateUserRoleWithId(data);
-
-      if (status !== "success") {
-        toast.error("Something went wrong.", {
-          description: "Your role was not updated. Please try again.",
-        });
-      } else {
-        await update();
+  const onSubmit = async (data: z.infer<typeof userRoleSchema>) => {
+    try {
+      setIsPending(true);
+      
+      const response = await profileApi.updateProfile({ role: data.role });
+      
+      if (response.success && response.content) {
+        updateUserProfile({ role: [data.role] });
         setUpdated(false);
         toast.success("Your role has been updated.");
+      } else {
+        toast.error("Something went wrong.", {
+          description: response.message || "Your role was not updated. Please try again.",
+        });
       }
-    });
+    } catch (error: any) {
+      toast.error("Something went wrong.", {
+        description: error.message || "Your role was not updated. Please try again.",
+      });
+    } finally {
+      setIsPending(false);
+    }
   };
 
   return (
@@ -82,12 +93,12 @@ export function UserRoleForm({ user }: UserNameFormProps) {
                   <Select
                     // TODO:(FIX) Option value not update. Use useState for the moment
                     onValueChange={(value: UserRole) => {
-                      setUpdated(user.role !== value);
+                      setUpdated(user.role[0] !== value);
                       setRole(value);
-                      // field.onChange;
+                      field.onChange(value);
                     }}
                     name={field.name}
-                    defaultValue={user.role}
+                    defaultValue={user.role[0]}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">

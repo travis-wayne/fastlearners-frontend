@@ -8,6 +8,7 @@ import {
   ChevronRight,
   Copy,
   CreditCard,
+  Eye,
   File,
   FileText,
   HelpCircle,
@@ -30,6 +31,7 @@ import {
   SunMedium,
   Trash,
   User,
+  Users,
   X,
 } from "lucide-react";
 
@@ -133,5 +135,7 @@ export const Icons = {
     </svg>
   ),
   user: User,
+  users: Users,
+  eye: Eye,
   warning: AlertTriangle,
 };

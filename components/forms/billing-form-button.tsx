@@ -1,8 +1,8 @@
 "use client";
 
-import { useTransition } from "react";
-import { generateUserStripe } from "@/actions/generate-user-stripe";
+import { useState } from "react";
 import { SubscriptionPlan, UserSubscriptionPlan } from "@/types";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
@@ -18,14 +18,14 @@ export function BillingFormButton({
   offer,
   subscriptionPlan,
 }: BillingFormButtonProps) {
-  let [isPending, startTransition] = useTransition();
-  const generateUserStripeSession = generateUserStripe.bind(
-    null,
-    offer.stripeIds[year ? "yearly" : "monthly"],
-  );
+  const [isPending, setIsPending] = useState(false);
 
-  const stripeSessionAction = () =>
-    startTransition(async () => await generateUserStripeSession());
+  const handleUpgrade = async () => {
+    setIsPending(true);
+    // TODO: Implement Stripe integration with Fastlearners API
+    toast.info("Stripe integration coming soon!");
+    setIsPending(false);
+  };
 
   const userOffer =
     subscriptionPlan.stripePriceId ===
@@ -37,7 +37,7 @@ export function BillingFormButton({
       rounded="full"
       className="w-full"
       disabled={isPending}
-      onClick={stripeSessionAction}
+      onClick={handleUpgrade}
     >
       {isPending ? (
         <>

@@ -1,6 +1,4 @@
-import { UserRole } from "@prisma/client";
-
-import { SidebarNavItem } from "types";
+import { UserRole, SidebarNavItem } from "@/types";
 
 export const sidebarLinks: SidebarNavItem[] = [
   {
@@ -12,12 +10,29 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Admin Panel",
         authorizeOnly: UserRole.ADMIN,
       },
-      { href: "/dashboard", icon: "dashboard", title: "Dashboard" },
+      {
+        href: "/parent",
+        icon: "users",
+        title: "Parent Dashboard",
+        authorizeOnly: UserRole.PARENT,
+      },
+      {
+        href: "/dashboard",
+        icon: "dashboard",
+        title: "Student Dashboard",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/guest",
+        icon: "eye",
+        title: "Guest Dashboard",
+        authorizeOnly: UserRole.GUEST,
+      },
       {
         href: "/dashboard/billing",
         icon: "billing",
         title: "Billing",
-        authorizeOnly: UserRole.USER,
+        authorizeOnly: UserRole.STUDENT,
       },
       { href: "/dashboard/charts", icon: "lineChart", title: "Charts" },
       {
@@ -28,11 +43,10 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.ADMIN,
       },
       {
-        href: "#/dashboard/posts",
-        icon: "post",
-        title: "User Posts",
-        authorizeOnly: UserRole.USER,
-        disabled: true,
+        href: "/parent/orders",
+        icon: "package",
+        title: "Parent Orders",
+        authorizeOnly: UserRole.PARENT,
       },
     ],
   },
@@ -40,13 +54,13 @@ export const sidebarLinks: SidebarNavItem[] = [
     title: "OPTIONS",
     items: [
       { href: "/dashboard/settings", icon: "settings", title: "Settings" },
+      { href: "/guest/settings", icon: "settings", title: "Guest Settings", authorizeOnly: UserRole.GUEST },
       { href: "/", icon: "home", title: "Homepage" },
       { href: "/docs", icon: "bookOpen", title: "Documentation" },
       {
         href: "#",
         icon: "messages",
         title: "Support",
-        authorizeOnly: UserRole.USER,
         disabled: true,
       },
     ],
