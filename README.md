@@ -1,128 +1,279 @@
-<a href="https://next-saas-stripe-starter.vercel.app">
-  <img alt="SaaS Starter" src="public/_static/og.jpg">
-  <h1 align="center">Next SaaS Stripe Starter</h1>
-</a>
+# Modular File Upload System
 
-<p align="center">
-  Start at full speed with SaaS Starter !
-</p>
+This directory contains a modular file upload system for the Fast Learners platform. The system is designed to easily add/remove file upload APIs without breaking existing functionality.
 
-<p align="center">
-  <a href="https://twitter.com/miickasmt">
-    <img src="https://img.shields.io/twitter/follow/miickasmt?style=flat&label=miickasmt&logo=twitter&color=0bf&logoColor=fff" alt="Mickasmt Twitter follower count" />
-  </a>
-</p>
+## 🏗️ Architecture
 
-<p align="center">
-  <a href="#introduction"><strong>Introduction</strong></a> ·
-  <a href="#installation"><strong>Installation</strong></a> ·
-  <a href="#tech-stack--features"><strong>Tech Stack + Features</strong></a> ·
-  <a href="#author"><strong>Author</strong></a> ·
-  <a href="#credits"><strong>Credits</strong></a>
-</p>
-<br/>
+### Configuration-Driven System
+The file upload system uses a central configuration object to manage available endpoints:
 
-## Introduction
-
-Empower your next project with the stack of Next.js 14, Prisma, Neon, Auth.js v5, Resend, React Email, Shadcn/ui, and Stripe.
-<br/>
-All seamlessly integrated with the SaaS Starter to accelerate your development and saas journey.
-
-## Installation
-
-Clone & create this repo locally with the following command:
-
-```bash
-npx create-next-app my-saas-project --example "https://github.com/mickasmt/next-saas-stripe-starter"
+```typescript
+// src/lib/api/files.ts
+export const FILE_UPLOAD_ENDPOINTS = {
+  avatar: {
+    upload: '/api/v1/profile/avatar',
+    get: '/api/v1/profile/avatar', 
+    delete: '/api/v1/profile/avatar',
+    enabled: false, // ← Set to true when backend implements
+  },
+  documents: {
+    upload: '/api/v1/documents',
+    list: '/api/v1/documents',
+    delete: '/api/v1/documents/:id',
+    enabled: false, // ← Set to true when backend implements
+  }
+}
 ```
 
-Or, deploy with Vercel:
+## 📁 File Structure
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmickasmt%2Fnext-saas-stripe-starter)
+```
+src/lib/api/
+├── files.ts           # Modular file upload API client
+├── client.ts          # Enhanced axios client with FormData support
+└── auth.ts            # Existing auth API client
 
-### Steps
+src/lib/hooks/
+└── useFileUpload.ts   # React hook for file uploads
 
-1. Install dependencies using pnpm:
-
-```sh
-pnpm install
+src/components/shared/
+├── AvatarUpload.tsx   # Profile picture upload component
+└── ApiTester.tsx      # Enhanced with file upload testing
 ```
 
-2. Copy `.env.example` to `.env.local` and update the variables.
+## 🚀 Quick Start
 
-```sh
-cp .env.example .env.local
+### 1. Enable File Upload APIs
+
+When the backend implements file upload endpoints:
+
+```typescript
+// src/lib/api/files.ts
+export const FILE_UPLOAD_ENDPOINTS = {
+  avatar: {
+    upload: '/api/v1/profile/avatar',
+    get: '/api/v1/profile/avatar',
+    delete: '/api/v1/profile/avatar',
+    enabled: true, // ← Enable avatar endpoints
+  },
+  documents: {
+    upload: '/api/v1/documents',
+    list: '/api/v1/documents',
+    delete: '/api/v1/documents/:id',
+    enabled: true, // ← Enable document endpoints
+  }
+}
 ```
 
-3. Start the development server:
+### 2. Use Components
 
-```sh
-pnpm run dev
+```typescript
+// Profile page example
+import { AvatarUpload } from '@/components/shared/AvatarUpload';
+
+function ProfilePage() {
+  return (
+    <AvatarUpload 
+      currentAvatarUrl={user?.avatar}
+      onAvatarUploaded={(url) => updateUserAvatar(url)}
+      onAvatarRemoved={() => removeUserAvatar()}
+    />
+  );
+}
 ```
 
-> [!NOTE]  
-> I use [npm-check-updates](https://www.npmjs.com/package/npm-check-updates) package for update this project.
->
-> Use this command for update your project: `ncu -i --format group`
+### 3. Use Hooks
 
-## Roadmap
-- [ ] Upgrade eslint to v9
-- [ ] Add resend for success subscriptions
+```typescript
+import { useFileUpload } from '@/lib/hooks/useFileUpload';
 
-## Tech Stack + Features
+function CustomUploadComponent() {
+  const { uploadAvatar, isUploading } = useFileUpload({
+    onSuccess: (response) => console.log('Upload successful!'),
+    onError: (error) => console.error('Upload failed:', error)
+  });
 
-https://github.com/mickasmt/next-saas-stripe-starter/assets/62285783/828a4e0f-30e3-4cfe-96ff-4dfd9cd55124
+  return (
+    <input 
+      type="file" 
+      onChange={(e) => {
+        const file = e.target.files?.[0];
+        if (file) uploadAvatar(file);
+      }}
+      disabled={isUploading}
+    />
+  );
+}
+```
 
-### Frameworks
+## 🔧 Adding New File Upload Types
 
-- [Next.js](https://nextjs.org/) – React framework for building performant apps with the best developer experience
-- [Auth.js](https://authjs.dev/) – Handle user authentication with ease with providers like Google, Twitter, GitHub, etc.
-- [Prisma](https://www.prisma.io/) – Typescript-first ORM for Node.js
-- [React Email](https://react.email/) – Versatile email framework for efficient and flexible email development
+To add a new file upload feature:
 
-### Platforms
+### 1. Add to Configuration
 
-- [Vercel](https://vercel.com/) – Easily preview & deploy changes with git
-- [Resend](https://resend.com/) – A powerful email framework for streamlined email development
-- [Neon](https://neon.tech/) – Serverless Postgres with autoscaling, branching, bottomless storage and generous free tier.
+```typescript
+export const FILE_UPLOAD_ENDPOINTS = {
+  // Existing endpoints...
+  
+  certificates: {
+    upload: '/api/v1/certificates',
+    list: '/api/v1/certificates',
+    delete: '/api/v1/certificates/:id',
+    enabled: false, // Enable when backend is ready
+  }
+}
+```
 
-### UI
+### 2. Extend API Client
 
-- [Tailwind CSS](https://tailwindcss.com/) – Utility-first CSS framework for rapid UI development
-- [Shadcn/ui](https://ui.shadcn.com/) – Re-usable components built using Radix UI and Tailwind CSS
-- [Framer Motion](https://framer.com/motion) – Motion library for React to animate components with ease
-- [Lucide](https://lucide.dev/) – Beautifully simple, pixel-perfect icons
-- [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) – Optimize custom fonts and remove external network requests for improved performance
-- [`ImageResponse`](https://nextjs.org/docs/app/api-reference/functions/image-response) – Generate dynamic Open Graph images at the edge
+```typescript
+// In createFileApi() function
+if (FILE_UPLOAD_ENDPOINTS.certificates.enabled) {
+  fileApi.certificates = {
+    upload: async (file: File, data?: any) => {
+      const formData = new FormData();
+      formData.append('certificate', file);
+      // Add additional data...
+      
+      const response = await api.post(
+        FILE_UPLOAD_ENDPOINTS.certificates.upload, 
+        formData
+      );
+      return response.data;
+    },
+    // Add other methods...
+  };
+}
+```
 
-### Hooks and Utilities
+### 3. Update Hook (if needed)
 
-- `useIntersectionObserver` – React hook to observe when an element enters or leaves the viewport
-- `useLocalStorage` – Persist data in the browser's local storage
-- `useScroll` – React hook to observe scroll position ([example](https://github.com/mickasmt/precedent/blob/main/components/layout/navbar.tsx#L12))
-- `nFormatter` – Format numbers with suffixes like `1.2k` or `1.2M`
-- `capitalize` – Capitalize the first letter of a string
-- `truncate` – Truncate a string to a specified length
-- [`use-debounce`](https://www.npmjs.com/package/use-debounce) – Debounce a function call / state update
+```typescript
+// Add to useFileUpload hook
+const uploadCertificate = useCallback(async (file: File) => {
+  if (!isFileUploadEnabled('certificates')) {
+    options.onError?.(new Error('Certificate upload not available'));
+    return;
+  }
+  
+  // Implementation...
+}, []);
+```
 
-### Code Quality
+## 🎨 Available Components
 
-- [TypeScript](https://www.typescriptlang.org/) – Static type checker for end-to-end typesafety
-- [Prettier](https://prettier.io/) – Opinionated code formatter for consistent code style
-- [ESLint](https://eslint.org/) – Pluggable linter for Next.js and TypeScript
+### AvatarUpload
+- Drag & drop file upload
+- Image validation (JPEG, PNG, WebP, max 5MB)
+- Progress tracking
+- Preview functionality
+- Error handling
 
-### Miscellaneous
+**Props:**
+- `currentAvatarUrl?: string`
+- `onAvatarUploaded?: (url: string) => void`
+- `onAvatarRemoved?: () => void`
+- `className?: string`
+- `size?: 'sm' | 'md' | 'lg'`
 
-- [Vercel Analytics](https://vercel.com/analytics) – Track unique visitors, pageviews, and more in a privacy-friendly way
+### useFileUpload Hook
 
-## Author
+**Options:**
+- `onSuccess?: (response) => void`
+- `onError?: (error) => void`
+- `validateFile?: (file: File) => validation`
+- `maxFiles?: number`
 
-Created by [@miickasmt](https://twitter.com/miickasmt) in 2023, released under the [MIT license](https://github.com/shadcn/taxonomy/blob/main/LICENSE.md).
+**Returns:**
+- `uploads: FileUploadProgress[]`
+- `isUploading: boolean`
+- `uploadFile(file, endpoint, data?)`
+- `uploadAvatar(file)`
+- `uploadDocument(file, category?, description?)`
+- `removeFile(fileName, fileSize)`
+- `clearUploads()`
+- `retryUpload(...)`
 
-## Credits
+## 🧪 Testing
 
-This project was inspired by shadcn's [Taxonomy](https://github.com/shadcn-ui/taxonomy), Steven Tey’s [Precedent](https://github.com/steven-tey/precedent), and Antonio Erdeljac's [Next 13 AI SaaS](https://github.com/AntonioErdeljac/next13-ai-saas).
+The API Tester includes a "File Upload" tab that shows:
+- Current status of file upload endpoints
+- Instructions for enabling APIs
+- Ready-to-use component previews
+- Usage examples
 
-- Shadcn ([@shadcn](https://twitter.com/shadcn))
-- Steven Tey ([@steventey](https://twitter.com/steventey))
-- Antonio Erdeljac ([@YTCodeAntonio](https://twitter.com/AntonioErdeljac))
+Access at: `http://localhost:3000` → File Upload tab
+
+## 🔒 Security & Validation
+
+### Built-in Validations
+- **Images**: JPEG, PNG, WebP only, max 5MB
+- **Documents**: PDF, DOC, DOCX, images, max 10MB
+- **Custom**: Define your own validation rules
+
+### Security Features
+- File type validation
+- File size limits
+- Progress tracking
+- Error handling
+- Automatic FormData content-type handling
+
+## 📋 Backend Implementation Requirements
+
+For the system to work, the backend needs to implement these endpoints:
+
+### Avatar Endpoints
+- `POST /api/v1/profile/avatar` - Upload profile picture
+- `GET /api/v1/profile/avatar` - Get current avatar URL
+- `DELETE /api/v1/profile/avatar` - Remove avatar
+
+### Document Endpoints  
+- `POST /api/v1/documents` - Upload document
+- `GET /api/v1/documents` - List user documents
+- `GET /api/v1/documents/:id` - Get specific document
+- `DELETE /api/v1/documents/:id` - Delete document
+- `PATCH /api/v1/documents/:id` - Update document metadata
+
+### Expected Response Format
+All endpoints should return the standard API response format:
+
+```typescript
+{
+  success: boolean;
+  message: string;
+  content: {
+    // File data (for uploads)
+    id: string;
+    filename: string;
+    original_name: string;
+    mime_type: string;
+    size: number;
+    url: string;
+    created_at: string;
+  } | null;
+  code: number;
+  errors?: Record<string, string[]>;
+}
+```
+
+## ✨ Benefits of This System
+
+1. **Modular**: Easy to add/remove file upload features
+2. **Future-proof**: Components automatically adapt to available APIs
+3. **Error-resilient**: Clear error messages when APIs are unavailable
+4. **Reusable**: Generic components and hooks for any file upload need
+5. **Type-safe**: Full TypeScript support with proper types
+6. **Testing-ready**: Built-in testing interface in API Tester
+
+## 🚧 Current Status
+
+**Ready for Backend Implementation:**
+- ✅ Frontend components and hooks built
+- ✅ API client structure ready  
+- ✅ Validation and error handling
+- ✅ Testing interface available
+- ❌ Backend endpoints not implemented yet
+- ❌ File upload APIs disabled (waiting for backend)
+
+**To Enable:** Contact backend team → Implement endpoints → Set `enabled: true`
