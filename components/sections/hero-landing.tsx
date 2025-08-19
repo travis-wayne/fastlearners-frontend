@@ -31,6 +31,7 @@ const InfiniteLogoSlider = () => {
         {/* Duplicate logos for seamless infinite scroll */}
         {[...logos, ...logos, ...logos].map((logo, index) => (
           <div key={index} className="shrink-0">
+            {/* eslint-disable-next-line tailwindcss/classnames-order */}
             <Image
               src={logo}
               alt={`Logo ${index + 1}`}
