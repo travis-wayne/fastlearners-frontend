@@ -49,7 +49,7 @@ export function AuthLayout({
                     alt={title} 
                     width={100} 
                     height={100} 
-                    className="h-auto w-auto max-h-[25vh] max-w-[25vh] object-contain" 
+                    className="size-auto max-h-[25vh] max-w-[25vh] object-contain" 
                   />
                 </a>
               </div>
