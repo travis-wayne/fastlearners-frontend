@@ -30,10 +30,12 @@ const InfiniteLogoSlider = () => {
       <div className="flex animate-scroll space-x-12">
         {/* Duplicate logos for seamless infinite scroll */}
         {[...logos, ...logos, ...logos].map((logo, index) => (
-          <div key={index} className="flex-shrink-0">
-            <img
+          <div key={index} className="shrink-0">
+            <Image
               src={logo}
               alt={`Logo ${index + 1}`}
+              width={80}
+              height={32}
               className="h-8 w-auto object-contain opacity-60 transition-opacity hover:opacity-100 dark:invert"
             />
           </div>
@@ -118,7 +120,7 @@ export default function HeroLanding() {
             </div>
 
             {/* Placeholder for main hero image if needed */}
-            <div className="aspect-square lg:aspect-[4/3] opacity-20" />
+            <div className="aspect-square opacity-20 lg:aspect-[4/3]" />
           </div>
         </div>
       </div>
