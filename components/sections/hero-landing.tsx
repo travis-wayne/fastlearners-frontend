@@ -8,12 +8,12 @@ import { Button } from "@/components/ui/button";
 import BlurImage from "@/components/shared/blur-image";
 
 const logos = [
-  "https://github.com/user-attachments/assets/a1f8b08e-26d4-4ad1-b43b-80f3e4fe3de7",
-  "https://github.com/user-attachments/assets/4b7a2230-5e62-4012-b55d-9b59fa31fe7e",
-  "https://github.com/user-attachments/assets/ffa88af3-71ca-4fe7-a4c8-fb4d6e938df8",
-  "https://github.com/user-attachments/assets/7b96c3bb-37d5-498e-add9-de88ab0c7d2c",
-  "https://github.com/user-attachments/assets/e7a2b85b-b8a0-4e8b-a58b-f6e9c96b7fef",
-  "https://github.com/user-attachments/assets/3b7c1cb3-a9e9-4e43-9c1b-d7f5b24c8e5f",
+  "/fastlearners-logo.png",
+  "/fastlearners-logo.png",
+  "/fastlearners-logo.png",
+  "/fastlearners-logo.png",
+  "/fastlearners-logo.png",
+  "/fastlearners-logo.png",
 ];
 
 const InfiniteLogoSlider = () => {
@@ -82,7 +82,7 @@ export default function HeroLanding() {
           <div className="relative">
             <div className="absolute inset-0 -z-10">
               <BlurImage
-                src="https://github.com/user-attachments/assets/b1e32b97-6b5e-4e4b-8b5e-3e8b3b5b5b5b"
+                src="/OBJECTS.jpg"
                 alt="Abstract background"
                 fill
                 className="object-cover object-center"
