@@ -54,7 +54,7 @@ export const sidebarLinks: SidebarNavItem[] = [
     title: "OPTIONS",
     items: [
       { href: "/dashboard/settings", icon: "settings", title: "Settings" },
-      { href: "/guest/settings", icon: "settings", title: "Guest Settings", authorizeOnly: UserRole.GUEST },
+      // { href: "/guest/settings", icon: "settings", title: "Guest Settings", authorizeOnly: UserRole.GUEST },
       { href: "/", icon: "home", title: "Homepage" },
       { href: "/docs", icon: "bookOpen", title: "Documentation" },
       {

@@ -41,11 +41,10 @@ function SignInModal({
             variant="default"
             onClick={() => {
               setShowSignInModal(false);
-              router.push('/auth/login');
+              router.push('/auth/register');
             }}
           >
-            <Icons.google className="mr-2 size-4" />
-            Sign In with Google
+            Create a new account
           </Button>
           <Button
             variant="outline"
@@ -54,7 +53,7 @@ function SignInModal({
               router.push('/auth/login');
             }}
           >
-            Sign In with Email
+            Sign in with email
           </Button>
         </div>
       </div>

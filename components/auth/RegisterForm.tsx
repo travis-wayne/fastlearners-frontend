@@ -56,6 +56,7 @@ export function RegisterForm({
       }
       
     } catch (err: any) {
+      console.log('Registration error:', err); // Debug logging
       let errorMessage = 'Registration failed. Please try again.';
       
       if (err && typeof err === 'object') {
@@ -67,6 +68,9 @@ export function RegisterForm({
           if (emailErrors && Array.isArray(emailErrors)) {
             errorMessage = emailErrors[0];
           }
+        } else if (err.code === 422 || err.code === 400) {
+          // Handle validation errors
+          errorMessage = 'This email is already registered. Please try logging in instead.';
         }
       }
       

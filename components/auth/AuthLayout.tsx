@@ -42,9 +42,15 @@ export function AuthLayout({
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-xs">
             {showLogo && (
-              <div className="mb-6 flex justify-center">
+              <div className="mb-12 flex justify-center">
                 <a href="/" aria-label={title} className="inline-flex items-center">
-                  <Image src="/fastlearners-logo.svg" alt={title} width={24} height={24} className="w-auto" />
+                  <Image 
+                    src="/fastlearners-logo.svg" 
+                    alt={title} 
+                    width={100} 
+                    height={100} 
+                    className="h-auto w-auto max-h-[25vh] max-w-[25vh] object-contain" 
+                  />
                 </a>
               </div>
             )}
