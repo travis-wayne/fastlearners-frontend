@@ -27,7 +27,7 @@ const InfiniteLogoSlider = () => {
       <div className="absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-background to-transparent" />
 
       {/* Scrolling container */}
-      <div className="flex animate-scroll space-x-12">
+      <div className="flex space-x-12 animate-scroll">
         {/* Duplicate logos for seamless infinite scroll */}
         {[...logos, ...logos, ...logos].map((logo, index) => (
           <div key={index} className="shrink-0">
