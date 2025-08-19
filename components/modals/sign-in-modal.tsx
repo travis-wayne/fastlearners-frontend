@@ -1,4 +1,3 @@
-import { useRouter } from 'next/navigation';
 import {
   Dispatch,
   SetStateAction,
@@ -6,11 +5,12 @@ import {
   useMemo,
   useState,
 } from "react";
+import { useRouter } from "next/navigation";
 
-import { Icons } from "@/components/shared/icons";
+import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
-import { siteConfig } from "@/config/site";
+import { Icons } from "@/components/shared/icons";
 
 function SignInModal({
   showSignInModal,
@@ -41,7 +41,7 @@ function SignInModal({
             variant="default"
             onClick={() => {
               setShowSignInModal(false);
-              router.push('/auth/register');
+              router.push("/auth/register");
             }}
           >
             Create a new account
@@ -50,7 +50,7 @@ function SignInModal({
             variant="outline"
             onClick={() => {
               setShowSignInModal(false);
-              router.push('/auth/login');
+              router.push("/auth/login");
             }}
           >
             Sign in with email

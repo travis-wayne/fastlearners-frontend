@@ -1,14 +1,14 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useAuthStore } from "@/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
-import { profileApi } from '@/lib/api/auth';
-import { useAuthStore } from '@/store/authStore';
-import { User, UserRole } from '@/lib/types/auth';
 
+import { profileApi } from "@/lib/api/auth";
+import { User, UserRole } from "@/lib/types/auth";
 import { userRoleSchema } from "@/lib/validations/user";
 import { Button } from "@/components/ui/button";
 import {
@@ -42,7 +42,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
   const [updated, setUpdated] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  const roles: UserRole[] = ['guest', 'student', 'parent', 'admin'];
+  const roles: UserRole[] = ["guest", "student", "parent", "admin"];
   const [role, setRole] = useState(user.role[0]); // Use first role as primary
 
   const form = useForm<FormData>({
@@ -55,21 +55,23 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
   const onSubmit = async (data: z.infer<typeof userRoleSchema>) => {
     try {
       setIsPending(true);
-      
+
       const response = await profileApi.updateProfile({ role: data.role });
-      
+
       if (response.success && response.content) {
         updateUserProfile({ role: [data.role] });
         setUpdated(false);
         toast.success("Your role has been updated.");
       } else {
         toast.error("Something went wrong.", {
-          description: response.message || "Your role was not updated. Please try again.",
+          description:
+            response.message || "Your role was not updated. Please try again.",
         });
       }
     } catch (error: any) {
       toast.error("Something went wrong.", {
-        description: error.message || "Your role was not updated. Please try again.",
+        description:
+          error.message || "Your role was not updated. Please try again.",
       });
     } finally {
       setIsPending(false);

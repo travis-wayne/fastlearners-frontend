@@ -1,7 +1,8 @@
-'use client';
+"use client";
+
+import { useAuthStore } from "@/store/authStore";
 
 import { sidebarLinks } from "@/config/dashboard";
-import { useAuthStore } from '@/store/authStore';
 import { SearchCommand } from "@/components/dashboard/search-command";
 import {
   DashboardSidebar,
@@ -15,21 +16,21 @@ interface DashboardLayoutContentProps {
   children: React.ReactNode;
 }
 
-export function DashboardLayoutContent({ children }: DashboardLayoutContentProps) {
+export function DashboardLayoutContent({
+  children,
+}: DashboardLayoutContentProps) {
   const { user } = useAuthStore();
 
   const filteredLinks = sidebarLinks.map((section) => ({
     ...section,
-    items: section.items.filter(
-      ({ authorizeOnly }) => {
-        if (!authorizeOnly) return true; // Show items with no authorization requirement
-        if (!user) return false; // Hide items requiring authorization if no user
+    items: section.items.filter(({ authorizeOnly }) => {
+      if (!authorizeOnly) return true; // Show items with no authorization requirement
+      if (!user) return false; // Hide items requiring authorization if no user
 
-        // Convert enum value to string and check if user has this role
-        const requiredRole = authorizeOnly.valueOf();
-        return user.role.includes(requiredRole as any);
-      }
-    ),
+      // Convert enum value to string and check if user has this role
+      const requiredRole = authorizeOnly.valueOf();
+      return user.role.includes(requiredRole as any);
+    }),
   }));
 
   return (

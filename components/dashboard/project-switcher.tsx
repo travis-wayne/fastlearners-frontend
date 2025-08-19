@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 import { Check, ChevronsUpDown, Plus } from "lucide-react";
-import { useAuthStore } from '@/store/authStore';
 
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
@@ -56,10 +56,7 @@ export default function ProjectSwitcher({
           >
             <div className="flex items-center space-x-3 pr-2">
               <div
-                className={cn(
-                  "size-3 shrink-0 rounded-full",
-                  selected.color,
-                )}
+                className={cn("size-3 shrink-0 rounded-full", selected.color)}
               />
               <div className="flex items-center space-x-3">
                 <span

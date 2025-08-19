@@ -1,6 +1,6 @@
-'use client';
+"use client";
 
-import Image from 'next/image';
+import Image from "next/image";
 
 interface AuthLayoutProps {
   children: React.ReactNode;
@@ -13,7 +13,7 @@ export function AuthLayout({
   children,
   title = "Fast Learners",
   subtitle = "Accelerate your learning journey",
-  showLogo = true
+  showLogo = true,
 }: AuthLayoutProps) {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
@@ -43,13 +43,17 @@ export function AuthLayout({
           <div className="w-full max-w-xs">
             {showLogo && (
               <div className="mb-12 flex justify-center">
-                <a href="/" aria-label={title} className="inline-flex items-center">
-                  <Image 
-                    src="/fastlearners-logo.svg" 
-                    alt={title} 
-                    width={100} 
-                    height={100} 
-                    className="size-auto max-h-[25vh] max-w-[25vh] object-contain" 
+                <a
+                  href="/"
+                  aria-label={title}
+                  className="inline-flex items-center"
+                >
+                  <Image
+                    src="/fastlearners-logo.svg"
+                    alt={title}
+                    width={100}
+                    height={100}
+                    className="size-auto max-h-[25vh] max-w-[25vh] object-contain"
                   />
                 </a>
               </div>

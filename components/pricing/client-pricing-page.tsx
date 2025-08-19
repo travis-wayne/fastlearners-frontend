@@ -1,17 +1,18 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import Link from "next/link";
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from "@/store/authStore";
+
+import { UserSubscriptionPlan } from "types";
 import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
 import { PricingFaq } from "@/components/pricing/pricing-faq";
-import { UserSubscriptionPlan } from "types";
 
 export function ClientPricingPage() {
   const { user } = useAuthStore();
 
-  if (user?.role.includes('admin')) {
+  if (user?.role.includes("admin")) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
         <h1 className="text-5xl font-bold">Seriously?</h1>
@@ -61,7 +62,10 @@ export function ClientPricingPage() {
 
   return (
     <div className="flex w-full flex-col gap-16 py-8 md:py-8">
-      <PricingCards userId={user?.id?.toString()} subscriptionPlan={subscriptionPlan} />
+      <PricingCards
+        userId={user?.id?.toString()}
+        subscriptionPlan={subscriptionPlan}
+      />
       <hr className="container" />
       <ComparePlans />
       <PricingFaq />

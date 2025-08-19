@@ -1,30 +1,28 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Link from 'next/link';
-import { Loader2, AlertCircle } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
 
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { cn } from '@/lib/utils';
-
-import { authApi } from '@/lib/api/auth';
-import { registerSchema } from '@/lib/validations/auth';
-
+import { authApi } from "@/lib/api/auth";
+import { cn } from "@/lib/utils";
+import { registerSchema } from "@/lib/validations/auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type RegisterFormData = z.infer<typeof registerSchema>;
 
 export function RegisterForm({
   className,
   ...props
-}: React.ComponentProps<'form'>) {
+}: React.ComponentProps<"form">) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -41,28 +39,29 @@ export function RegisterForm({
     try {
       setIsLoading(true);
       setError(null);
-      
+
       const response = await authApi.register(data);
-      
+
       if (response.success) {
-        toast.success('Registration successful!', {
-          description: 'Please check your email for verification.',
+        toast.success("Registration successful!", {
+          description: "Please check your email for verification.",
         });
-        
+
         // Navigate to verify email page with email in URL params
-        router.push(`/auth/verify-email?email=${encodeURIComponent(data.email)}`);
+        router.push(
+          `/auth/verify-email?email=${encodeURIComponent(data.email)}`,
+        );
       } else {
-        setError(response.message || 'Registration failed. Please try again.');
+        setError(response.message || "Registration failed. Please try again.");
       }
-      
     } catch (err: any) {
-      console.log('Registration error:', err); // Debug logging
-      let errorMessage = 'Registration failed. Please try again.';
-      
-      if (err && typeof err === 'object') {
+      console.log("Registration error:", err); // Debug logging
+      let errorMessage = "Registration failed. Please try again.";
+
+      if (err && typeof err === "object") {
         if (err.message) {
           errorMessage = err.message;
-        } else if (err.errors && typeof err.errors === 'object') {
+        } else if (err.errors && typeof err.errors === "object") {
           // Handle field-specific validation errors
           const emailErrors = err.errors.email;
           if (emailErrors && Array.isArray(emailErrors)) {
@@ -70,10 +69,11 @@ export function RegisterForm({
           }
         } else if (err.code === 422 || err.code === 400) {
           // Handle validation errors
-          errorMessage = 'This email is already registered. Please try logging in instead.';
+          errorMessage =
+            "This email is already registered. Please try logging in instead.";
         }
       }
-      
+
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -83,65 +83,74 @@ export function RegisterForm({
   const handleGoogleSignUp = () => {
     try {
       setIsLoading(true);
-      
-      toast.info('Redirecting to Google...', {
-        description: 'You will be redirected back to complete your registration.',
+
+      toast.info("Redirecting to Google...", {
+        description:
+          "You will be redirected back to complete your registration.",
       });
-      
+
       // Construct Google OAuth URL with our frontend callback
-      const googleOAuthUrl = 'https://accounts.google.com/o/oauth2/auth?' + new URLSearchParams({
-        client_id: '721571159309-mta5k0ge8ghrl4u5oenvuc54p6u77e67.apps.googleusercontent.com',
-        redirect_uri: `${window.location.origin}/auth/google/callback`,
-        scope: 'openid profile email',
-        response_type: 'code'
-      }).toString();
-      
+      const googleOAuthUrl =
+        "https://accounts.google.com/o/oauth2/auth?" +
+        new URLSearchParams({
+          client_id:
+            "721571159309-mta5k0ge8ghrl4u5oenvuc54p6u77e67.apps.googleusercontent.com",
+          redirect_uri: `${window.location.origin}/auth/google/callback`,
+          scope: "openid profile email",
+          response_type: "code",
+        }).toString();
+
       setTimeout(() => {
         window.location.href = googleOAuthUrl;
       }, 500);
-      
     } catch (err: any) {
-      console.error('Google sign-up error:', err);
-      toast.error('Unable to redirect to Google sign-up. Please try again later.');
+      console.error("Google sign-up error:", err);
+      toast.error(
+        "Unable to redirect to Google sign-up. Please try again later.",
+      );
       setIsLoading(false);
     }
   };
 
   return (
-    <form className={cn('flex flex-col gap-6', className)} {...props} onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Create your account</h1>
         <p className="text-balance text-sm text-muted-foreground">
           Enter your email to get started with Fast Learners
         </p>
       </div>
-      
+
       {error && (
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      
+
       <div className="grid gap-6">
         <div className="grid gap-3">
           <Label htmlFor="email">Email</Label>
-          <Input 
-            id="email" 
-            type="email" 
-            placeholder="m@example.com" 
-            {...register('email')}
-            className={errors.email ? 'border-destructive' : ''}
+          <Input
+            id="email"
+            type="email"
+            placeholder="m@example.com"
+            {...register("email")}
+            className={errors.email ? "border-destructive" : ""}
             disabled={isLoading}
-            required 
+            required
           />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
-        
-        <Button 
-          type="submit" 
+
+        <Button
+          type="submit"
           className="w-full"
           disabled={isLoading || isSubmitting}
         >
@@ -151,19 +160,19 @@ export function RegisterForm({
               Creating account...
             </>
           ) : (
-            'Create account'
+            "Create account"
           )}
         </Button>
-        
+
         <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
         </div>
-        
-        <Button 
+
+        <Button
           type="button"
-          variant="outline" 
+          variant="outline"
           className="w-full"
           onClick={handleGoogleSignUp}
           disabled={isLoading}
@@ -189,9 +198,9 @@ export function RegisterForm({
           Sign up with Google
         </Button>
       </div>
-      
+
       <div className="text-center text-sm">
-        Already have an account?{' '}
+        Already have an account?{" "}
         <Link href="/auth/login" className="underline underline-offset-4">
           Sign in
         </Link>

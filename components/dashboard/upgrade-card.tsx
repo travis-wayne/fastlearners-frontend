@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,7 +15,8 @@ export function UpgradeCard() {
       <CardHeader className="md:max-xl:px-4">
         <CardTitle>Complete Your Profile</CardTitle>
         <CardDescription>
-          Finish setting up your profile to unlock all features and personalize your learning experience.
+          Finish setting up your profile to unlock all features and personalize
+          your learning experience.
         </CardDescription>
       </CardHeader>
       <CardContent className="md:max-xl:px-4">

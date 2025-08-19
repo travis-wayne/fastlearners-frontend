@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, ArrowLeft, Loader2, Mail } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { authApi } from "@/lib/api/auth";
+import { cn } from "@/lib/utils";
+import { forgotPasswordSchema } from "@/lib/validations/auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, AlertCircle, Mail, ArrowLeft } from 'lucide-react';
-import { authApi } from '@/lib/api/auth';
-import { forgotPasswordSchema } from '@/lib/validations/auth';
-import { toast } from 'sonner';
-
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 
 export function ForgotPasswordForm({
   className,
   ...props
-}: React.ComponentProps<'div'>) {
+}: React.ComponentProps<"div">) {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -44,7 +44,7 @@ export function ForgotPasswordForm({
     resolver: zodResolver(forgotPasswordSchema),
   });
 
-  const email = watch('email');
+  const email = watch("email");
 
   const onSubmit = async (data: ForgotPasswordFormData) => {
     try {
@@ -52,33 +52,37 @@ export function ForgotPasswordForm({
       setError(null);
 
       const response = await authApi.forgotPassword({ email: data.email });
-      
+
       if (!response.success) {
-        throw new Error(response.message || 'Failed to send reset code.');
+        throw new Error(response.message || "Failed to send reset code.");
       }
-      
+
       setSuccess(true);
-      toast.success('Reset code sent!', {
-        description: 'Please check your email for the password reset code.',
+      toast.success("Reset code sent!", {
+        description: "Please check your email for the password reset code.",
       });
 
       // Redirect to reset code verification page after a brief delay
       setTimeout(() => {
-        router.push(`/auth/verify-reset-code?email=${encodeURIComponent(data.email)}`);
+        router.push(
+          `/auth/verify-reset-code?email=${encodeURIComponent(data.email)}`,
+        );
       }, 2000);
-      
     } catch (err: any) {
-      let errorMessage = 'Failed to send reset code. Please try again.';
-      
-      if (err && typeof err === 'object') {
+      let errorMessage = "Failed to send reset code. Please try again.";
+
+      if (err && typeof err === "object") {
         if (err.message) {
           errorMessage = err.message;
         }
       }
-      
+
       setError(errorMessage);
       // Don't show toast for network errors as they're already shown in the form
-      if (!errorMessage.includes('Network error') && !errorMessage.includes('Backend API')) {
+      if (
+        !errorMessage.includes("Network error") &&
+        !errorMessage.includes("Backend API")
+      ) {
         toast.error(errorMessage);
       }
     } finally {
@@ -136,7 +140,8 @@ export function ForgotPasswordForm({
         <CardHeader>
           <CardTitle>Reset your password</CardTitle>
           <CardDescription>
-            Enter your email address and we&apos;ll send you a code to reset your password
+            Enter your email address and we&apos;ll send you a code to reset
+            your password
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -146,7 +151,7 @@ export function ForgotPasswordForm({
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
@@ -155,18 +160,20 @@ export function ForgotPasswordForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
-                  {...register('email')}
-                  className={errors.email ? 'border-destructive' : ''}
+                  {...register("email")}
+                  className={errors.email ? "border-destructive" : ""}
                   disabled={isLoading}
                   required
                 />
                 {errors.email && (
-                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.email.message}
+                  </p>
                 )}
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 className="w-full"
                 disabled={isLoading || isSubmitting}
               >
@@ -176,11 +183,11 @@ export function ForgotPasswordForm({
                     Sending code...
                   </>
                 ) : (
-                  'Send reset code'
+                  "Send reset code"
                 )}
               </Button>
             </div>
-            
+
             <div className="mt-4 text-center text-sm">
               Remember your password?{" "}
               <Link href="/auth/login" className="underline underline-offset-4">

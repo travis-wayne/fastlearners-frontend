@@ -1,13 +1,13 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useAuthStore } from "@/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { profileApi } from '@/lib/api/auth';
-import { useAuthStore } from '@/store/authStore';
-import { User } from '@/lib/types/auth';
 
+import { profileApi } from "@/lib/api/auth";
+import { User } from "@/lib/types/auth";
 import { userNameSchema } from "@/lib/validations/user";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,21 +46,23 @@ export function UserNameForm({ user }: UserNameFormProps) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       setIsPending(true);
-      
+
       const response = await profileApi.updateProfile({ name: data.name });
-      
+
       if (response.success && response.content) {
         updateUserProfile({ name: data.name });
         setUpdated(false);
         toast.success("Your name has been updated.");
       } else {
         toast.error("Something went wrong.", {
-          description: response.message || "Your name was not updated. Please try again.",
+          description:
+            response.message || "Your name was not updated. Please try again.",
         });
       }
     } catch (error: any) {
       toast.error("Something went wrong.", {
-        description: error.message || "Your name was not updated. Please try again.",
+        description:
+          error.message || "Your name was not updated. Please try again.",
       });
     } finally {
       setIsPending(false);

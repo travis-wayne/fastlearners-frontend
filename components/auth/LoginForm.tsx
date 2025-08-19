@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Eye, EyeOff, Loader2, AlertCircle } from 'lucide-react';
-import { useAuthStore, getRoleBasedRoute } from '@/store/authStore';
-import { toast } from 'sonner';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { getRoleBasedRoute, useAuthStore } from "@/store/authStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, Eye, EyeOff, Loader2 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { cn } from "@/lib/utils";
+import { loginSchema } from "@/lib/validations/auth";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
-  CardDescription,
-} from '@/components/ui/card';
-
-import { loginSchema } from '@/lib/validations/auth';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 type LoginFormData = z.infer<typeof loginSchema>;
 
 export function LoginForm({
   className,
   ...props
-}: React.ComponentProps<'form'>) {
+}: React.ComponentProps<"form">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const { login, isLoading, error, clearError } = useAuthStore();
@@ -46,17 +46,17 @@ export function LoginForm({
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data);
-      
+
       // Show success message
-      toast.success('Welcome back!', {
-        description: 'You have successfully logged in.',
+      toast.success("Welcome back!", {
+        description: "You have successfully logged in.",
       });
 
       // Get user and redirect based on role using the helper function
       const user = useAuthStore.getState().user;
       const redirectPath = getRoleBasedRoute(user);
-      
-      console.log('Login successful! Redirecting user:', {
+
+      console.log("Login successful! Redirecting user:", {
         user: user,
         primaryRole: user?.role[0],
         allRoles: user?.role,
@@ -67,20 +67,22 @@ export function LoginForm({
           user: useAuthStore.getState().user,
           isAuthenticated: useAuthStore.getState().isAuthenticated,
           isLoading: useAuthStore.getState().isLoading,
-          error: useAuthStore.getState().error
-        }
+          error: useAuthStore.getState().error,
+        },
       });
-      
+
       // Check if the auth data is in localStorage
-      const storedAuth = localStorage.getItem('auth-storage');
-      console.log('Stored auth data:', storedAuth ? JSON.parse(storedAuth) : 'No stored auth data');
-      
+      const storedAuth = localStorage.getItem("auth-storage");
+      console.log(
+        "Stored auth data:",
+        storedAuth ? JSON.parse(storedAuth) : "No stored auth data",
+      );
+
       // Add a small delay to ensure the success message is visible before redirect
       setTimeout(() => {
-        console.log('About to redirect to:', redirectPath);
+        console.log("About to redirect to:", redirectPath);
         router.push(redirectPath);
       }, 1000);
-      
     } catch (err: any) {
       // Error handling is done in the auth store
       // Just show the error message if available
@@ -95,33 +97,41 @@ export function LoginForm({
     try {
       // Show loading state briefly using the auth store
       useAuthStore.getState().setLoading(true);
-      
-      toast.info('Redirecting to Google...', {
-        description: 'You will be redirected back after authentication.',
+
+      toast.info("Redirecting to Google...", {
+        description: "You will be redirected back after authentication.",
       });
-      
+
       // Construct Google OAuth URL with our frontend callback
-      const googleOAuthUrl = 'https://accounts.google.com/o/oauth2/auth?' + new URLSearchParams({
-        client_id: '721571159309-mta5k0ge8ghrl4u5oenvuc54p6u77e67.apps.googleusercontent.com',
-        redirect_uri: `${window.location.origin}/auth/google/callback`,
-        scope: 'openid profile email',
-        response_type: 'code'
-      }).toString();
-      
+      const googleOAuthUrl =
+        "https://accounts.google.com/o/oauth2/auth?" +
+        new URLSearchParams({
+          client_id:
+            "721571159309-mta5k0ge8ghrl4u5oenvuc54p6u77e67.apps.googleusercontent.com",
+          redirect_uri: `${window.location.origin}/auth/google/callback`,
+          scope: "openid profile email",
+          response_type: "code",
+        }).toString();
+
       // Small delay to show the loading state, then redirect
       setTimeout(() => {
         window.location.href = googleOAuthUrl;
       }, 500);
-      
     } catch (err: any) {
-      console.error('Google login error:', err);
-      toast.error('Unable to redirect to Google login. Please try again later.');
+      console.error("Google login error:", err);
+      toast.error(
+        "Unable to redirect to Google login. Please try again later.",
+      );
       useAuthStore.getState().setLoading(false);
     }
   };
 
   return (
-    <form className={cn('flex flex-col gap-6', className)} {...props} onSubmit={handleSubmit(onSubmit)}>
+    <form
+      className={cn("flex flex-col gap-6", className)}
+      {...props}
+      onSubmit={handleSubmit(onSubmit)}
+    >
       <Card>
         <CardHeader className="text-center">
           <CardTitle className="text-xl">Welcome back</CardTitle>
@@ -142,13 +152,15 @@ export function LoginForm({
                 id="email"
                 type="email"
                 placeholder="m@example.com"
-                {...register('email_phone')}
-                className={errors.email_phone ? 'border-destructive' : ''}
+                {...register("email_phone")}
+                className={errors.email_phone ? "border-destructive" : ""}
                 disabled={isLoading}
                 required
               />
               {errors.email_phone && (
-                <p className="text-sm text-destructive">{errors.email_phone.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.email_phone.message}
+                </p>
               )}
             </div>
 
@@ -165,9 +177,11 @@ export function LoginForm({
               <div className="relative">
                 <Input
                   id="password"
-                  type={showPassword ? 'text' : 'password'}
-                  {...register('password')}
-                  className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
+                  type={showPassword ? "text" : "password"}
+                  {...register("password")}
+                  className={
+                    errors.password ? "border-destructive pr-10" : "pr-10"
+                  }
                   disabled={isLoading}
                   required
                 />
@@ -187,7 +201,9 @@ export function LoginForm({
                 </Button>
               </div>
               {errors.password && (
-                <p className="text-sm text-destructive">{errors.password.message}</p>
+                <p className="text-sm text-destructive">
+                  {errors.password.message}
+                </p>
               )}
             </div>
 
@@ -202,7 +218,7 @@ export function LoginForm({
                   Signing in...
                 </>
               ) : (
-                'Login'
+                "Login"
               )}
             </Button>
 
@@ -246,9 +262,9 @@ export function LoginForm({
       {/* <div className="text-muted-foreground *:[a]:hover:text-primary text-center text-xs text-balance *:[a]:underline *:[a]:underline-offset-4">
         By clicking continue, you agree to our <Link href="#">Terms of Service</Link> and <Link href="#">Privacy Policy</Link>.
       </div> */}
-      
+
       <div className="text-center text-sm">
-        Don&apos;t have an account?{' '}
+        Don&apos;t have an account?{" "}
         <Link href="/auth/register" className="underline underline-offset-4">
           Sign up
         </Link>

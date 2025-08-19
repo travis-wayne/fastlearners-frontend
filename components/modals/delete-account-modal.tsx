@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";

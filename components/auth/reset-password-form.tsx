@@ -1,44 +1,58 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertCircle,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  KeyRound,
+  Loader2,
+  X,
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { authApi } from "@/lib/api/auth";
+import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, AlertCircle, Eye, EyeOff, CheckCircle2, X, KeyRound } from 'lucide-react';
-import { authApi } from '@/lib/api/auth';
-import { toast } from 'sonner';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
-const resetPasswordSchema = z.object({
-  password: z
-    .string()
-    .min(8, 'Password must be at least 8 characters')
-    .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-    .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-    .regex(/\d/, 'Password must contain at least one number')
-    .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ["confirmPassword"],
-});
+const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(8, "Password must be at least 8 characters")
+      .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+      .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+      .regex(/\d/, "Password must contain at least one number")
+      .regex(
+        /[^A-Za-z0-9]/,
+        "Password must contain at least one special character",
+      ),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
-interface ResetPasswordFormProps extends React.ComponentProps<'div'> {
+interface ResetPasswordFormProps extends React.ComponentProps<"div"> {
   email?: string;
   token?: string;
 }
@@ -64,19 +78,19 @@ export function ResetPasswordForm({
     resolver: zodResolver(resetPasswordSchema),
   });
 
-  const password = watch('password') || '';
+  const password = watch("password") || "";
 
   const passwordRequirements = [
-    { text: 'At least 8 characters', met: password.length >= 8 },
-    { text: 'One uppercase letter', met: /[A-Z]/.test(password) },
-    { text: 'One lowercase letter', met: /[a-z]/.test(password) },
-    { text: 'One number', met: /\d/.test(password) },
-    { text: 'One special character', met: /[^A-Za-z0-9]/.test(password) },
+    { text: "At least 8 characters", met: password.length >= 8 },
+    { text: "One uppercase letter", met: /[A-Z]/.test(password) },
+    { text: "One lowercase letter", met: /[a-z]/.test(password) },
+    { text: "One number", met: /\d/.test(password) },
+    { text: "One special character", met: /[^A-Za-z0-9]/.test(password) },
   ];
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!email) {
-      setError('Email is required. Please go back and try again.');
+      setError("Email is required. Please go back and try again.");
       return;
     }
 
@@ -85,11 +99,23 @@ export function ResetPasswordForm({
       setError(null);
 
       // Get email and token from props or session storage
-      const emailToUse = email || (typeof window !== 'undefined' ? sessionStorage.getItem('reset_email') : '') || '';
-      const tokenToUse = token || (typeof window !== 'undefined' ? sessionStorage.getItem('reset_token') : '') || '';
+      const emailToUse =
+        email ||
+        (typeof window !== "undefined"
+          ? sessionStorage.getItem("reset_email")
+          : "") ||
+        "";
+      const tokenToUse =
+        token ||
+        (typeof window !== "undefined"
+          ? sessionStorage.getItem("reset_token")
+          : "") ||
+        "";
 
       if (!emailToUse) {
-        throw new Error('Email is missing. Please start the reset process again.');
+        throw new Error(
+          "Email is missing. Please start the reset process again.",
+        );
       }
 
       const response = await authApi.resetPassword({
@@ -100,24 +126,28 @@ export function ResetPasswordForm({
 
       if (response.success) {
         // Clear session storage
-        if (typeof window !== 'undefined') {
-          sessionStorage.removeItem('reset_email');
-          sessionStorage.removeItem('reset_token');
+        if (typeof window !== "undefined") {
+          sessionStorage.removeItem("reset_email");
+          sessionStorage.removeItem("reset_token");
         }
 
-        toast.success('Password reset successful!', {
-          description: 'You can now sign in with your new password.',
+        toast.success("Password reset successful!", {
+          description: "You can now sign in with your new password.",
         });
 
         // Redirect to login page
-        router.push('/auth/login?reset=success');
+        router.push("/auth/login?reset=success");
       } else {
-        throw new Error(response.message || 'Failed to reset password.');
+        throw new Error(response.message || "Failed to reset password.");
       }
     } catch (err: any) {
-      const errorMessage = err?.message || 'Failed to reset password. Please try again.';
+      const errorMessage =
+        err?.message || "Failed to reset password. Please try again.";
       setError(errorMessage);
-      if (!errorMessage.includes('Network error') && !errorMessage.includes('Backend API')) {
+      if (
+        !errorMessage.includes("Network error") &&
+        !errorMessage.includes("Backend API")
+      ) {
         toast.error(errorMessage);
       }
     } finally {
@@ -152,10 +182,12 @@ export function ResetPasswordForm({
                 <div className="relative">
                   <Input
                     id="password"
-                    type={showPassword ? 'text' : 'password'}
+                    type={showPassword ? "text" : "password"}
                     placeholder="Create a strong password"
-                    {...register('password')}
-                    className={errors.password ? 'border-destructive pr-10' : 'pr-10'}
+                    {...register("password")}
+                    className={
+                      errors.password ? "border-destructive pr-10" : "pr-10"
+                    }
                     disabled={isLoading}
                     required
                   />
@@ -185,7 +217,11 @@ export function ResetPasswordForm({
                         ) : (
                           <X className="size-4 text-muted-foreground" />
                         )}
-                        <span className={req.met ? 'text-green-700' : 'text-muted-foreground'}>
+                        <span
+                          className={
+                            req.met ? "text-green-700" : "text-muted-foreground"
+                          }
+                        >
                           {req.text}
                         </span>
                       </div>
@@ -194,7 +230,9 @@ export function ResetPasswordForm({
                 )}
 
                 {errors.password && (
-                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.password.message}
+                  </p>
                 )}
               </div>
 
@@ -203,10 +241,14 @@ export function ResetPasswordForm({
                 <div className="relative">
                   <Input
                     id="confirmPassword"
-                    type={showConfirmPassword ? 'text' : 'password'}
+                    type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
-                    {...register('confirmPassword')}
-                    className={errors.confirmPassword ? 'border-destructive pr-10' : 'pr-10'}
+                    {...register("confirmPassword")}
+                    className={
+                      errors.confirmPassword
+                        ? "border-destructive pr-10"
+                        : "pr-10"
+                    }
                     disabled={isLoading}
                     required
                   />
@@ -226,14 +268,20 @@ export function ResetPasswordForm({
                   </Button>
                 </div>
                 {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                  <p className="text-sm text-destructive">
+                    {errors.confirmPassword.message}
+                  </p>
                 )}
               </div>
 
               <Button
                 type="submit"
                 className="w-full"
-                disabled={isLoading || isSubmitting || passwordRequirements.some(req => !req.met)}
+                disabled={
+                  isLoading ||
+                  isSubmitting ||
+                  passwordRequirements.some((req) => !req.met)
+                }
               >
                 {isLoading ? (
                   <>
@@ -241,13 +289,16 @@ export function ResetPasswordForm({
                     Resetting password...
                   </>
                 ) : (
-                  'Reset password'
+                  "Reset password"
                 )}
               </Button>
             </div>
 
             <div className="mt-4 text-center text-sm">
-              <Link href="/auth/login" className="text-muted-foreground hover:text-foreground">
+              <Link
+                href="/auth/login"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 Back to sign in
               </Link>
             </div>

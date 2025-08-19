@@ -3,7 +3,7 @@
 import { useContext } from "react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
-import { useAuthStore } from '@/store/authStore';
+import { useAuthStore } from "@/store/authStore";
 
 import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
@@ -102,7 +102,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
 
           {isAuthenticated && user ? (
             <Link
-              href={user.role.includes('admin') ? "/admin" : "/dashboard"}
+              href={user.role.includes("admin") ? "/admin" : "/dashboard"}
               className="hidden md:block"
             >
               <Button

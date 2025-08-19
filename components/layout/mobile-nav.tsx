@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import { Menu, X } from "lucide-react";
-import { useAuthStore } from '@/store/authStore';
 
 import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
@@ -60,21 +60,23 @@ export function NavMobile() {
         )}
       >
         <ul className="grid divide-y divide-muted">
-          {links && links.length > 0 && links.map(({ title, href }) => (
-            <li key={href} className="py-3">
-              <Link
-                href={href}
-                onClick={() => setOpen(false)}
-                className="flex w-full font-medium capitalize"
-              >
-                {title}
-              </Link>
-            </li>
-          ))}
+          {links &&
+            links.length > 0 &&
+            links.map(({ title, href }) => (
+              <li key={href} className="py-3">
+                <Link
+                  href={href}
+                  onClick={() => setOpen(false)}
+                  className="flex w-full font-medium capitalize"
+                >
+                  {title}
+                </Link>
+              </li>
+            ))}
 
           {isAuthenticated && user ? (
             <>
-              {user.role.includes('admin') ? (
+              {user.role.includes("admin") ? (
                 <li className="py-3">
                   <Link
                     href="/admin"

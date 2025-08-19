@@ -1,34 +1,38 @@
-'use client';
+"use client";
 
-import { useState, useRef, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import Link from 'next/link';
-import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { AlertCircle, ArrowLeft, Loader2, Shield } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import { z } from "zod";
+
+import { authApi } from "@/lib/api/auth";
+import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Loader2, AlertCircle, Shield, ArrowLeft } from 'lucide-react';
-import { authApi } from '@/lib/api/auth';
-import { toast } from 'sonner';
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const resetCodeSchema = z.object({
-  code: z.string().min(6, 'Please enter the 6-digit code').max(6, 'Code must be exactly 6 digits'),
+  code: z
+    .string()
+    .min(6, "Please enter the 6-digit code")
+    .max(6, "Code must be exactly 6 digits"),
 });
 
 type ResetCodeFormData = z.infer<typeof resetCodeSchema>;
 
-interface VerifyResetCodeFormProps extends React.ComponentProps<'div'> {
+interface VerifyResetCodeFormProps extends React.ComponentProps<"div"> {
   email?: string;
 }
 
@@ -64,7 +68,7 @@ export function VerifyResetCodeForm({
 
   const onSubmit = async (data: ResetCodeFormData) => {
     if (!email) {
-      setError('Email is required. Please go back and try again.');
+      setError("Email is required. Please go back and try again.");
       return;
     }
 
@@ -78,24 +82,30 @@ export function VerifyResetCodeForm({
       });
 
       if (response.success) {
-        toast.success('Code verified!', {
-          description: 'You can now set a new password.',
+        toast.success("Code verified!", {
+          description: "You can now set a new password.",
         });
 
         // Store the verification token temporarily and redirect to reset password
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('reset_token', data.code); // Use the code as token for now
-          sessionStorage.setItem('reset_email', email);
+        if (typeof window !== "undefined") {
+          sessionStorage.setItem("reset_token", data.code); // Use the code as token for now
+          sessionStorage.setItem("reset_email", email);
         }
 
-        router.push(`/auth/reset-password?email=${encodeURIComponent(email)}&token=${data.code}`);
+        router.push(
+          `/auth/reset-password?email=${encodeURIComponent(email)}&token=${data.code}`,
+        );
       } else {
-        throw new Error(response.message || 'Invalid verification code.');
+        throw new Error(response.message || "Invalid verification code.");
       }
     } catch (err: any) {
-      const errorMessage = err?.message || 'Invalid verification code. Please try again.';
+      const errorMessage =
+        err?.message || "Invalid verification code. Please try again.";
       setError(errorMessage);
-      if (!errorMessage.includes('Network error') && !errorMessage.includes('Backend API')) {
+      if (
+        !errorMessage.includes("Network error") &&
+        !errorMessage.includes("Backend API")
+      ) {
         toast.error(errorMessage);
       }
     } finally {
@@ -113,18 +123,22 @@ export function VerifyResetCodeForm({
       const response = await authApi.resendResetCode(email);
 
       if (response.success) {
-        toast.success('Code sent!', {
-          description: 'A new reset code has been sent to your email.',
+        toast.success("Code sent!", {
+          description: "A new reset code has been sent to your email.",
         });
 
         setCountdown(60); // Start 60-second countdown
       } else {
-        throw new Error(response.message || 'Failed to resend code.');
+        throw new Error(response.message || "Failed to resend code.");
       }
     } catch (err: any) {
-      const errorMessage = err?.message || 'Failed to resend code. Please try again.';
+      const errorMessage =
+        err?.message || "Failed to resend code. Please try again.";
       setError(errorMessage);
-      if (!errorMessage.includes('Network error') && !errorMessage.includes('Backend API')) {
+      if (
+        !errorMessage.includes("Network error") &&
+        !errorMessage.includes("Backend API")
+      ) {
         toast.error(errorMessage);
       }
     } finally {
@@ -134,12 +148,12 @@ export function VerifyResetCodeForm({
 
   const handleInputChange = (index: number, value: string) => {
     if (value.length <= 1 && /^\d*$/.test(value)) {
-      const currentCode = watch('code') || '';
-      const newCode = currentCode.split('');
+      const currentCode = watch("code") || "";
+      const newCode = currentCode.split("");
       newCode[index] = value;
 
-      const finalCode = newCode.join('').slice(0, 6);
-      setValue('code', finalCode);
+      const finalCode = newCode.join("").slice(0, 6);
+      setValue("code", finalCode);
 
       // Auto-focus next input
       if (value && index < 5) {
@@ -149,12 +163,12 @@ export function VerifyResetCodeForm({
   };
 
   const handleKeyDown = (index: number, e: React.KeyboardEvent) => {
-    if (e.key === 'Backspace' && !watch('code')?.[index] && index > 0) {
+    if (e.key === "Backspace" && !watch("code")?.[index] && index > 0) {
       inputRefs.current[index - 1]?.focus();
     }
   };
 
-  const codeValue = watch('code') || '';
+  const codeValue = watch("code") || "";
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -181,29 +195,32 @@ export function VerifyResetCodeForm({
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="code" className="text-center">Reset code</Label>
+                <Label htmlFor="code" className="text-center">
+                  Reset code
+                </Label>
                 <div className="flex justify-center gap-2">
                   {[...Array(6)].map((_, index) => (
                     <Input
                       key={index}
-                      ref={(el) => { inputRefs.current[index] = el; }}
+                      ref={(el) => {
+                        inputRefs.current[index] = el;
+                      }}
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
                       className="size-12 text-center text-lg font-semibold"
-                      value={codeValue[index] || ''}
+                      value={codeValue[index] || ""}
                       onChange={(e) => handleInputChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
                       disabled={isLoading}
                     />
                   ))}
                 </div>
-                <input
-                  type="hidden"
-                  {...register('code')}
-                />
+                <input type="hidden" {...register("code")} />
                 {errors.code && (
-                  <p className="text-center text-sm text-destructive">{errors.code.message}</p>
+                  <p className="text-center text-sm text-destructive">
+                    {errors.code.message}
+                  </p>
                 )}
               </div>
 
@@ -218,7 +235,7 @@ export function VerifyResetCodeForm({
                     Verifying...
                   </>
                 ) : (
-                  'Verify code'
+                  "Verify code"
                 )}
               </Button>
             </div>
@@ -226,7 +243,7 @@ export function VerifyResetCodeForm({
             <div className="mt-6 space-y-4">
               <div className="text-center text-sm">
                 <p className="text-muted-foreground">
-                  Didn&apos;t receive the code?{' '}
+                  Didn&apos;t receive the code?{" "}
                   {countdown > 0 ? (
                     <span className="text-muted-foreground">
                       Resend in {countdown}s
@@ -238,17 +255,17 @@ export function VerifyResetCodeForm({
                       disabled={isResending || !email}
                       className="text-primary underline-offset-4 hover:underline disabled:opacity-50"
                     >
-                      {isResending ? 'Sending...' : 'Click to resend'}
+                      {isResending ? "Sending..." : "Click to resend"}
                     </button>
                   )}
                 </p>
               </div>
-              
+
               <div className="text-center">
-              <Link
-                href="/auth/login"
-                className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
-              >
+                <Link
+                  href="/auth/login"
+                  className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
+                >
                   <ArrowLeft className="size-4" />
                   Back to login
                 </Link>
