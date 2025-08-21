@@ -31,8 +31,13 @@ export const authApi = {
     return response.data;
   },
 
-  createPassword: async (data: CreatePasswordData): Promise<ApiResponse> => {
-    const response = await api.post('/create-password', data);
+  createPassword: async (data: CreatePasswordData): Promise<ApiResponse<AuthTokens>> => {
+    const response = await api.post<AuthTokens>('/create-password', data);
+    
+    if (response.data.success && response.data.content?.access_token) {
+      tokenManager.setToken(response.data.content.access_token);
+    }
+    
     return response.data;
   },
 

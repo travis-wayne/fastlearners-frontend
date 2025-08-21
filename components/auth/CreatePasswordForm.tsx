@@ -18,6 +18,8 @@ import { z } from "zod";
 import { authApi } from "@/lib/api/auth";
 import { cn } from "@/lib/utils";
 import { createPasswordSchema } from "@/lib/validations/auth";
+import { setAuthCookies } from "@/lib/auth-cookies";
+import { useAuthStore } from "@/store/authStore";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -41,6 +43,7 @@ export function CreatePasswordForm({
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const { setUser } = useAuthStore();
 
   const {
     register,
@@ -80,19 +83,65 @@ export function CreatePasswordForm({
         token: token,
       });
 
+      // Debug logging to understand response structure
+      console.log("Create password response:", response);
+      console.log("Response success:", response.success);
+      console.log("Response content:", response.content);
+
       if (response.success) {
         toast.success("Password created!", {
           description: "Your account has been successfully set up.",
         });
 
-        // Navigate to login page
-        router.push("/auth/login");
+        // Check if response contains auth tokens
+        if (response.content && response.content.access_token && response.content.user) {
+          console.log("Setting auth state from API response");
+          
+          // Set authentication state with tokens and user data
+          const { access_token, user } = response.content;
+          
+          // Set cookies with token and user data
+          const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
+          setAuthCookies({
+            token: access_token,
+            user,
+            expiresAt
+          });
+          
+          // Update auth store
+          setUser(user);
+        } else {
+          console.log("No auth tokens in response, relying on existing auth state");
+        }
+
+        // Navigate to guest page - user should be authenticated by now
+        console.log("Redirecting to /guest page");
+        
+        // Use a small delay to ensure auth state is set, then redirect
+        setTimeout(() => {
+          console.log("Executing delayed redirect to /guest");
+          router.push("/guest");
+          
+          // Fallback: if router.push doesn't work, use window.location
+          setTimeout(() => {
+            if (window.location.pathname !== "/guest") {
+              console.log("Router redirect failed, using window.location.href");
+              window.location.href = "/guest";
+            }
+          }, 500);
+        }, 100);
       } else {
         setError(
           response.message || "Failed to create password. Please try again.",
         );
       }
     } catch (err: any) {
+      // Debug logging for create password errors
+      console.log("Create password error (full object):", err);
+      console.log("Error response:", err?.response);
+      console.log("Error response data:", err?.response?.data);
+      console.log("Error status:", err?.response?.status);
+      
       let errorMessage = "Failed to create password. Please try again.";
 
       if (err && typeof err === "object") {
@@ -105,6 +154,7 @@ export function CreatePasswordForm({
         }
       }
 
+      console.log("Create password final error message:", errorMessage);
       setError(errorMessage);
     } finally {
       setIsLoading(false);
