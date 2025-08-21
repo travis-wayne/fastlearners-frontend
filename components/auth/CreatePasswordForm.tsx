@@ -2,22 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  AlertCircle,
-  CheckCircle2,
-  Eye,
-  EyeOff,
-  Loader2,
-  X,
-} from "lucide-react";
-import { useForm } from "react-hook-form";
+import { Eye, EyeOff, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
-import { z } from "zod";
 
 import { authApi } from "@/lib/api/auth";
-import { cn } from "@/lib/utils";
-import { createPasswordSchema } from "@/lib/validations/auth";
 import { setAuthCookies } from "@/lib/auth-cookies";
 import { useAuthStore } from "@/store/authStore";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -25,37 +13,27 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-type PasswordFormData = z.infer<typeof createPasswordSchema>;
-
-interface CreatePasswordFormProps extends React.ComponentProps<"form"> {
+interface CreatePasswordFormProps {
   email?: string;
   token?: string;
 }
 
-export function CreatePasswordForm({
-  className,
-  email,
-  token,
-  ...props
-}: CreatePasswordFormProps) {
+export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const { setUser } = useAuthStore();
+  
+  // Form state
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const { setUser } = useAuthStore();
+  
+  // Loading and error states
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-    watch,
-  } = useForm<PasswordFormData>({
-    resolver: zodResolver(createPasswordSchema),
-  });
-
-  const password = watch("password") || "";
-
+  // Password validation
   const passwordRequirements = [
     { text: "At least 8 characters", met: password.length >= 8 },
     { text: "One uppercase letter", met: /[A-Z]/.test(password) },
@@ -64,109 +42,125 @@ export function CreatePasswordForm({
     { text: "One special character", met: /[^A-Za-z0-9]/.test(password) },
   ];
 
-  const onSubmit = async (data: PasswordFormData) => {
+  const isPasswordValid = passwordRequirements.every(req => req.met);
+  const doPasswordsMatch = password === confirmPassword && password.length > 0;
+  const canSubmit = isPasswordValid && doPasswordsMatch && !isLoading;
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    console.log("=== CREATE PASSWORD FORM SUBMISSION ===");
+    console.log("Form data:", { email, token, passwordLength: password.length });
+    console.log("Validation:", { isPasswordValid, doPasswordsMatch, canSubmit });
+    
+    if (!canSubmit) {
+      console.log("Form submission blocked - validation failed");
+      return;
+    }
+
+    if (!email || !token) {
+      setError("Missing email or token. Please try the registration process again.");
+      return;
+    }
+
     try {
       setIsLoading(true);
       setError(null);
-
-      // Get email and token from props or URL params
-      if (!email || !token) {
-        throw new Error(
-          "Missing email or token. Please try the registration process again.",
-        );
-      }
+      console.log("Making API call to create password...");
 
       const response = await authApi.createPassword({
-        email: email,
-        password: data.password,
-        password_confirmation: data.password_confirmation,
-        token: token,
+        email,
+        password,
+        password_confirmation: confirmPassword,
+        token,
       });
 
-      // Debug logging to understand response structure
-      console.log("Create password response:", response);
-      console.log("Response success:", response.success);
-      console.log("Response content:", response.content);
+      console.log("API Response:", response);
 
       if (response.success) {
+        console.log("Password created successfully!");
+        setSuccess(true);
+        
         toast.success("Password created!", {
-          description: "Your account has been successfully set up.",
+          description: "Redirecting to your dashboard...",
         });
 
-        // Check if response contains auth tokens
-        if (response.content && response.content.access_token && response.content.user) {
-          console.log("Setting auth state from API response");
-          
-          // Set authentication state with tokens and user data
+        // Handle auth tokens if present
+        if (response.content?.access_token && response.content?.user) {
+          console.log("Setting auth cookies and user data");
           const { access_token, user } = response.content;
           
-          // Set cookies with token and user data
-          const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
-          setAuthCookies({
-            token: access_token,
-            user,
-            expiresAt
-          });
-          
-          // Update auth store
+          const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000);
+          setAuthCookies({ token: access_token, user, expiresAt });
           setUser(user);
-        } else {
-          console.log("No auth tokens in response, relying on existing auth state");
         }
 
-        // Navigate to guest page - user should be authenticated by now
-        console.log("Redirecting to /guest page");
+        // Redirect to guest page
+        console.log("Redirecting to /guest...");
         
-        // Use a small delay to ensure auth state is set, then redirect
+        // Try multiple redirect methods
         setTimeout(() => {
-          console.log("Executing delayed redirect to /guest");
+          console.log("Attempting router.push to /guest");
           router.push("/guest");
           
-          // Fallback: if router.push doesn't work, use window.location
+          // Fallback after 1 second
           setTimeout(() => {
-            if (window.location.pathname !== "/guest") {
-              console.log("Router redirect failed, using window.location.href");
+            if (window.location.pathname.includes("create-password")) {
+              console.log("Router.push failed, using window.location.href");
               window.location.href = "/guest";
             }
-          }, 500);
-        }, 100);
+          }, 1000);
+        }, 200);
+        
       } else {
-        setError(
-          response.message || "Failed to create password. Please try again.",
-        );
+        console.log("API returned error:", response.message);
+        setError(response.message || "Failed to create password. Please try again.");
       }
     } catch (err: any) {
-      // Debug logging for create password errors
-      console.log("Create password error (full object):", err);
-      console.log("Error response:", err?.response);
-      console.log("Error response data:", err?.response?.data);
-      console.log("Error status:", err?.response?.status);
-      
-      let errorMessage = "Failed to create password. Please try again.";
-
-      if (err && typeof err === "object") {
-        if (err.message) {
-          errorMessage = err.message;
-        } else if (err.errors && typeof err.errors === "object") {
-          // Handle field-specific validation errors
-          const validationErrors = Object.values(err.errors).flat();
-          errorMessage = validationErrors.join(", ");
-        }
-      }
-
-      console.log("Create password final error message:", errorMessage);
-      setError(errorMessage);
+      console.error("Create password error:", err);
+      setError("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleManualRedirect = () => {
+    console.log("Manual redirect button clicked");
+    window.location.href = "/guest";
+  };
+
+  if (success) {
+    return (
+      <div className="flex flex-col gap-6">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <CheckCircle2 className="size-16 text-green-500" />
+          <div>
+            <h1 className="text-2xl font-bold text-green-800">Password Created!</h1>
+            <p className="text-sm text-green-600 mt-2">
+              Your account has been successfully set up.
+            </p>
+          </div>
+        </div>
+        
+        <div className="space-y-3">
+          <Button 
+            onClick={handleManualRedirect}
+            className="w-full"
+            size="lg"
+          >
+            Continue to Dashboard
+          </Button>
+          
+          <p className="text-center text-sm text-muted-foreground">
+            You will be automatically redirected in a few seconds...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <form
-      className={cn("flex flex-col gap-6", className)}
-      {...props}
-      onSubmit={handleSubmit(onSubmit)}
-    >
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-2xl font-bold">Create your password</h1>
         <p className="text-balance text-sm text-muted-foreground">
@@ -181,16 +175,17 @@ export function CreatePasswordForm({
         </Alert>
       )}
 
-      <div className="grid gap-6">
-        <div className="grid gap-3">
+      <div className="space-y-4">
+        {/* Password Input */}
+        <div className="space-y-2">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
             <Input
               id="password"
               type={showPassword ? "text" : "password"}
               placeholder="Create a strong password"
-              {...register("password")}
-              className={errors.password ? "border-destructive pr-10" : "pr-10"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               disabled={isLoading}
               required
             />
@@ -200,58 +195,41 @@ export function CreatePasswordForm({
               size="sm"
               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
               onClick={() => setShowPassword(!showPassword)}
-              disabled={isLoading}
             >
-              {showPassword ? (
-                <EyeOff className="size-4 text-muted-foreground" />
-              ) : (
-                <Eye className="size-4 text-muted-foreground" />
-              )}
+              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </Button>
           </div>
-
-          {/* Password Requirements */}
-          {password && (
-            <div className="space-y-2 text-sm">
-              {passwordRequirements.map((req, index) => (
-                <div key={index} className="flex items-center gap-2">
-                  {req.met ? (
-                    <CheckCircle2 className="size-4 text-green-500" />
-                  ) : (
-                    <X className="size-4 text-muted-foreground" />
-                  )}
-                  <span
-                    className={
-                      req.met ? "text-green-700" : "text-muted-foreground"
-                    }
-                  >
-                    {req.text}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {errors.password && (
-            <p className="text-sm text-destructive">
-              {errors.password.message}
-            </p>
-          )}
         </div>
 
-        <div className="grid gap-3">
+        {/* Password Requirements */}
+        {password && (
+          <div className="space-y-2 text-sm">
+            <p className="font-medium">Password requirements:</p>
+            {passwordRequirements.map((req, index) => (
+              <div key={index} className="flex items-center gap-2">
+                <CheckCircle2 
+                  className={`size-4 ${
+                    req.met ? "text-green-500" : "text-gray-300"
+                  }`} 
+                />
+                <span className={req.met ? "text-green-700" : "text-muted-foreground"}>
+                  {req.text}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Confirm Password Input */}
+        <div className="space-y-2">
           <Label htmlFor="confirmPassword">Confirm password</Label>
           <div className="relative">
             <Input
               id="confirmPassword"
               type={showConfirmPassword ? "text" : "password"}
               placeholder="Confirm your password"
-              {...register("password_confirmation")}
-              className={
-                errors.password_confirmation
-                  ? "border-destructive pr-10"
-                  : "pr-10"
-              }
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
               disabled={isLoading}
               required
             />
@@ -261,30 +239,26 @@ export function CreatePasswordForm({
               size="sm"
               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              disabled={isLoading}
             >
-              {showConfirmPassword ? (
-                <EyeOff className="size-4 text-muted-foreground" />
-              ) : (
-                <Eye className="size-4 text-muted-foreground" />
-              )}
+              {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
             </Button>
           </div>
-          {errors.password_confirmation && (
-            <p className="text-sm text-destructive">
-              {errors.password_confirmation.message}
-            </p>
+          
+          {confirmPassword && !doPasswordsMatch && (
+            <p className="text-sm text-red-500">Passwords do not match</p>
+          )}
+          
+          {confirmPassword && doPasswordsMatch && (
+            <p className="text-sm text-green-600">Passwords match ✓</p>
           )}
         </div>
 
+        {/* Submit Button */}
         <Button
           type="submit"
+          disabled={!canSubmit}
           className="w-full"
-          disabled={
-            isLoading ||
-            isSubmitting ||
-            passwordRequirements.some((req) => !req.met)
-          }
+          size="lg"
         >
           {isLoading ? (
             <>
@@ -300,17 +274,11 @@ export function CreatePasswordForm({
       <div className="text-center text-sm">
         <p className="text-muted-foreground">
           By creating a password, you agree to our{" "}
-          <a
-            href="/terms"
-            className="text-primary underline-offset-4 hover:underline"
-          >
+          <a href="/terms" className="text-primary hover:underline">
             Terms of Service
           </a>{" "}
           and{" "}
-          <a
-            href="/privacy"
-            className="text-primary underline-offset-4 hover:underline"
-          >
+          <a href="/privacy" className="text-primary hover:underline">
             Privacy Policy
           </a>
         </p>
