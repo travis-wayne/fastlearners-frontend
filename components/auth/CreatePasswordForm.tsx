@@ -136,7 +136,7 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
           <CheckCircle2 className="size-16 text-green-500" />
           <div>
             <h1 className="text-2xl font-bold text-green-800">Password Created!</h1>
-            <p className="text-sm text-green-600 mt-2">
+            <p className="mt-2 text-sm text-green-600">
               Your account has been successfully set up.
             </p>
           </div>
