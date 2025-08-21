@@ -208,9 +208,7 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
             {passwordRequirements.map((req, index) => (
               <div key={index} className="flex items-center gap-2">
                 <CheckCircle2 
-                  className={`size-4 ${
-                    req.met ? "text-green-500" : "text-gray-300"
-                  }`} 
+                  className={req.met ? "size-4 text-green-500" : "size-4 text-gray-300"}
                 />
                 <span className={req.met ? "text-green-700" : "text-muted-foreground"}>
                   {req.text}
