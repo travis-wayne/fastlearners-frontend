@@ -118,7 +118,15 @@ export function ProtectedRoute({
 
 // Specific role-based route components
 export function AdminRoute({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute requiredRoles={["admin"]}>{children}</ProtectedRoute>;
+  return <ProtectedRoute requiredRoles={["admin", "superadmin"]}>{children}</ProtectedRoute>;
+}
+
+export function SuperAdminRoute({ children }: { children: React.ReactNode }) {
+  return <ProtectedRoute requiredRoles={["superadmin"]}>{children}</ProtectedRoute>;
+}
+
+export function TeacherRoute({ children }: { children: React.ReactNode }) {
+  return <ProtectedRoute requiredRoles={["teacher", "admin", "superadmin"]}>{children}</ProtectedRoute>;
 }
 
 export function StudentRoute({ children }: { children: React.ReactNode }) {
@@ -129,9 +137,9 @@ export function StudentRoute({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function ParentRoute({ children }: { children: React.ReactNode }) {
+export function GuardianRoute({ children }: { children: React.ReactNode }) {
   return (
-    <ProtectedRoute requiredRoles={["parent"]} requireCompleteProfile={true}>
+    <ProtectedRoute requiredRoles={["guardian"]} requireCompleteProfile={true}>
       {children}
     </ProtectedRoute>
   );

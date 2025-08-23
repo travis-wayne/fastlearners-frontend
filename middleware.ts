@@ -1,66 +1,114 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { UserRole } from '@/lib/types/auth';
+import { RBACUtils, PUBLIC_ROUTES, AUTH_ROUTES } from '@/lib/rbac/role-config';
 
-// Helper function to check if user is authenticated from cookies
-function isAuthenticated(request: NextRequest): boolean {
+interface AuthData {
+  user: {
+    id: number;
+    role: UserRole[];
+    email: string;
+    name?: string;
+  };
+  token: string;
+  expiresAt: number;
+}
+
+// Helper function to get authenticated user data from cookies
+function getAuthData(request: NextRequest): AuthData | null {
   try {
     const authToken = request.cookies.get('auth_token')?.value;
     const authUser = request.cookies.get('auth_user')?.value;
     const authExpires = request.cookies.get('auth_expires')?.value;
     
     if (!authToken || !authUser || !authExpires) {
-      return false;
+      return null;
     }
     
     // Check if token is expired
     const expiresAt = parseInt(authExpires);
     if (Date.now() >= expiresAt) {
-      return false;
+      return null;
     }
     
-    // Validate user data
+    // Parse and validate user data
     const user = JSON.parse(authUser);
-    return !!(user && user.id && user.role);
+    if (!user || !user.id || !user.role || !Array.isArray(user.role)) {
+      return null;
+    }
+    
+    return {
+      user,
+      token: authToken,
+      expiresAt
+    };
   } catch (error) {
-    console.error('Error checking auth cookies in middleware:', error);
-    return false;
+    console.error('❌ Error parsing auth data in middleware:', error);
+    return null;
   }
 }
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const authenticated = isAuthenticated(request);
+  const authData = getAuthData(request);
+  const isAuthenticated = !!authData;
+  const userRole = authData?.user?.role?.[0] as UserRole;
   
-  console.log(`Middleware: ${pathname}, authenticated: ${authenticated}`);
+  console.log(`🛡️ RBAC Middleware: ${pathname}`, {
+    authenticated: isAuthenticated,
+    role: userRole,
+    userId: authData?.user?.id
+  });
 
-  // Protected routes that require authentication
-  const protectedRoutes = ['/dashboard', '/billing', '/settings', '/admin', '/guest', '/parent'];
-  const authRoutes = ['/auth/login', '/auth/register'];
-  const onboardingRoutes = ['/onboarding'];
-
-  const isProtectedRoute = protectedRoutes.some(route => pathname.startsWith(route));
-  const isAuthRoute = authRoutes.some(route => pathname.startsWith(route));
-  const isOnboardingRoute = onboardingRoutes.some(route => pathname.startsWith(route));
-
-  // Redirect to login if accessing protected route without authentication
-  if (isProtectedRoute && !authenticated) {
-    console.log(`Middleware: Redirecting ${pathname} to login (not authenticated)`);
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+  // 1. Allow public routes
+  if (PUBLIC_ROUTES.some(route => pathname === route || pathname.startsWith(route))) {
+    return NextResponse.next();
   }
 
-  // Redirect authenticated users away from auth pages (unless it's during registration flow)
-  if (isAuthRoute && authenticated && !pathname.includes('verify') && !pathname.includes('create-password')) {
-    console.log(`Middleware: Redirecting ${pathname} to guest (already authenticated)`);
-    return NextResponse.redirect(new URL('/guest', request.url));
+  // 2. Redirect unauthenticated users to login
+  if (!isAuthenticated) {
+    console.log(`🔒 Redirecting ${pathname} to login (not authenticated)`);
+    const loginUrl = new URL('/auth/login', request.url);
+    loginUrl.searchParams.set('callbackUrl', pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
-  // Allow onboarding routes for authenticated users only
-  if (isOnboardingRoute && !authenticated) {
-    console.log(`Middleware: Redirecting ${pathname} to login (onboarding requires auth)`);
-    return NextResponse.redirect(new URL('/auth/login', request.url));
+  // 3. Redirect authenticated users away from auth pages
+  if (AUTH_ROUTES.some(route => pathname.startsWith(route))) {
+    const homeRoute = RBACUtils.getHomeRoute(userRole);
+    console.log(`🏠 Redirecting authenticated user from ${pathname} to ${homeRoute}`);
+    return NextResponse.redirect(new URL(homeRoute, request.url));
   }
 
-  return NextResponse.next();
+  // 4. Handle guest users who need onboarding
+  if (userRole === 'guest') {
+    if (!pathname.startsWith('/onboarding') && !pathname.startsWith('/guest')) {
+      console.log(`📋 Redirecting guest from ${pathname} to onboarding`);
+      return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // 5. Check role-based route access
+  if (!RBACUtils.canAccessRoute(userRole, pathname)) {
+    const homeRoute = RBACUtils.getHomeRoute(userRole);
+    console.log(`❌ Access denied: ${userRole} cannot access ${pathname}, redirecting to ${homeRoute}`);
+    
+    // Create a 403 response with redirect
+    const response = NextResponse.redirect(new URL(homeRoute, request.url));
+    response.headers.set('X-Middleware-Error', 'RBAC_ACCESS_DENIED');
+    response.headers.set('X-User-Role', userRole);
+    response.headers.set('X-Attempted-Route', pathname);
+    
+    return response;
+  }
+
+  // 6. Allow access - user has proper role permissions
+  const response = NextResponse.next();
+  response.headers.set('X-User-Role', userRole);
+  response.headers.set('X-User-ID', authData.user.id.toString());
+  
+  return response;
 }
 
 export const config = {
@@ -70,7 +118,8 @@ export const config = {
     '/settings/:path*',
     '/admin/:path*',
     '/guest/:path*',
-    '/parent/:path*',
+    '/guardian/:path*',
+    '/teacher/:path*',
     '/auth/:path*',
     '/onboarding/:path*',
   ],

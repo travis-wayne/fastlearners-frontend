@@ -70,6 +70,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       if (response.success && response.content) {
         const { user, access_token } = response.content;
         
+        // DEBUG: Log user data from API response
+        console.log('🔍 [AUTH DEBUG] Login API Response:');
+        console.log('📧 User Email:', user.email);
+        console.log('👤 User Role:', user.role);
+        console.log('📋 Full User Object:', JSON.stringify(user, null, 2));
+        console.log('🔑 Access Token:', access_token ? 'Present' : 'Missing');
+        
         // Set cookies with token and user data
         const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
         setAuthCookies({
@@ -77,6 +84,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           user,
           expiresAt
         });
+        
+        // DEBUG: Log what we're storing in the auth state
+        console.log('💾 [AUTH DEBUG] Storing in Auth State:');
+        console.log('📧 Email:', user.email);
+        console.log('👤 Roles:', user.role);
+        console.log('🎯 Primary Role:', user.role[0]);
         
         set({
           user,
@@ -117,6 +130,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ isLoading: true, error: null });
       
+      // DEBUG: Log Google auth user data
+      console.log('🔍 [AUTH DEBUG] Google Login Data:');
+      console.log('📧 User Email:', data.user.email);
+      console.log('👤 User Role:', data.user.role);
+      console.log('📋 Full User Object:', JSON.stringify(data.user, null, 2));
+      console.log('🔑 Access Token:', data.access_token ? 'Present' : 'Missing');
+      
       // Set cookies with token and user data
       const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000); // 7 days
       setAuthCookies({
@@ -124,6 +144,12 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         user: data.user,
         expiresAt
       });
+      
+      // DEBUG: Log what we're storing in the auth state
+      console.log('💾 [AUTH DEBUG] Storing Google User in Auth State:');
+      console.log('📧 Email:', data.user.email);
+      console.log('👤 Roles:', data.user.role);
+      console.log('🎯 Primary Role:', data.user.role[0]);
       
       set({
         user: data.user,
@@ -259,25 +285,13 @@ export const checkGuestAccess = (action: string, user: User | null): boolean => 
   return !restrictedActions.includes(action);
 };
 
-// Role-based routing helper
+// Role-based routing helper (now uses RBAC utilities)
 export const getRoleBasedRoute = (user: User | null): string => {
   if (!user) return '/auth/login';
   
-  const primaryRole = user.role[0];
-  
-  const roleRoutes = {
-    guest: '/guest',
-    student: '/dashboard', 
-    parent: '/parent',
-    admin: '/admin',
-  };
-  
-  // Guest users go to guest dashboard (they can browse but with limited features)
-  if (primaryRole === 'guest') {
-    return '/guest';
-  }
-  
-  return roleRoutes[primaryRole] || '/dashboard';
+  // Import RBAC utilities dynamically to avoid circular dependency
+  const { RBACUtils } = require('@/lib/rbac/role-config');
+  return RBACUtils.getHomeRoute(user.role[0]);
 };
 
 // Cookie-based auth store doesn't need manual initialization

@@ -42,7 +42,21 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
   const [updated, setUpdated] = useState(false);
   const [isPending, setIsPending] = useState(false);
 
-  const roles: UserRole[] = ["guest", "student", "parent", "admin"];
+  // Get available roles based on current user's permissions and RBAC rules
+  const getAvailableRoles = (): UserRole[] => {
+    const currentRole = user.role[0];
+    
+    // Guest users can only choose student or guardian (onboarding choice)
+    if (currentRole === 'guest') {
+      return ['guest', 'student', 'guardian'];
+    }
+    
+    // For development/testing - show current role only for permanent roles
+    // In production, remove the role selector entirely for non-guest users
+    return [currentRole]; // Users cannot change roles after onboarding
+  };
+  
+  const roles = getAvailableRoles();
   const [role, setRole] = useState(user.role[0]); // Use first role as primary
 
   const form = useForm<FormData>({

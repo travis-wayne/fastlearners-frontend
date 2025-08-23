@@ -62,7 +62,7 @@ export function UserAccountNav() {
             </div>
 
             <ul role="list" className="mb-14 mt-1 w-full text-muted-foreground">
-              {user.role.includes("admin") ? (
+              {(user.role.includes("admin") || user.role.includes("superadmin")) ? (
                 <li className="rounded-lg text-foreground hover:bg-muted">
                   <Link
                     href="/admin"
@@ -70,7 +70,7 @@ export function UserAccountNav() {
                     className="flex w-full items-center gap-3 px-2.5 py-2"
                   >
                     <Lock className="size-4" />
-                    <p className="text-sm">Admin</p>
+                    <p className="text-sm">{user.role.includes("superadmin") ? "Super Admin" : "Admin"}</p>
                   </Link>
                 </li>
               ) : null}
@@ -138,11 +138,11 @@ export function UserAccountNav() {
         </div>
         <DropdownMenuSeparator />
 
-        {user.role.includes("admin") ? (
+        {(user.role.includes("admin") || user.role.includes("superadmin")) ? (
           <DropdownMenuItem asChild>
             <Link href="/admin" className="flex items-center space-x-2.5">
               <Lock className="size-4" />
-              <p className="text-sm">Admin</p>
+              <p className="text-sm">{user.role.includes("superadmin") ? "Super Admin" : "Admin"}</p>
             </Link>
           </DropdownMenuItem>
         ) : null}

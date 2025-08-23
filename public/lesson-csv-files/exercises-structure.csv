@@ -1,0 +1,5 @@
+﻿concept,title,problem,solution_steps,answers,correct_answer,order_index
+Conversion from Base 10 to Other Bases,Exercise 1,Convert 97₁₀ to base 2,"[""67 ÷ 2 = 33 R1"",""33 ÷ 2 = 16 R1"",""16 ÷ 2 = 8 R0"",""8 ÷ 2 = 4 R0"",""4 ÷ 2 = 2 R0"",""2 ÷ 2 = 1 R0"",""1 ÷ 2 = 0 R1""]","[""1110011₂"",""1001011₂"",""0101011₂"",""1000011₂""]",1000011₂,1
+Conversion from Base 10 to Other Bases,Exercise 2,Convert 152₁₀ to base 5,"[""67 ÷ 8 = 8 R3"",""8 ÷ 8 = 1 R0"",""1 ÷ 8 = 0 R1""]","[""103₈"",""123₈"",""116₈"",""100₈""]",103₈,2
+Conversion from Any Base to Base 10,Exercise 1,Convert 4156 to base 10,"[""67 ÷ 8 = 8 R3"",""8 ÷ 8 = 1 R0"",""1 ÷ 8 = 0 R1""]","[""86₁₀"",""72₁₀"",""84₁₀"",""68₁₀""]",86₁₀,1
+Conversion from Any Base to Base 10,Exercise 2,Convert 101101₂ to base 10,"[""101101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰"",""101101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1"",""101101₂ = 32 + 16 + 0 + 4 + 0 + 1""]","[""63₁₀"",""53₁₀"",""55₁₀"",""45₁₀""]",53₁₀,2

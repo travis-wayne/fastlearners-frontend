@@ -28,7 +28,7 @@ export interface User {
   role: UserRole[];
 }
 
-export type UserRole = 'guest' | 'student' | 'parent' | 'admin';
+export type UserRole = 'guest' | 'student' | 'guardian' | 'teacher' | 'admin' | 'superadmin';
 export type ProfileStatus = 'guest' | 'basic_complete' | 'role_selected' | 'role_details_complete' | 'complete';
 
 // Authentication Types

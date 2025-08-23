@@ -1,0 +1,132 @@
+"use client";
+
+import { useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { profileApi } from "@/lib/api/auth";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { RefreshCw, Eye, EyeOff } from "lucide-react";
+
+export function UserRoleDebug() {
+  const { user, isAuthenticated } = useAuthStore();
+  const [profileData, setProfileData] = useState<any>(null);
+  const [loading, setLoading] = useState(false);
+  const [showDebug, setShowDebug] = useState(false);
+
+  const fetchProfile = async () => {
+    setLoading(true);
+    try {
+      const response = await profileApi.getProfile();
+      setProfileData(response);
+      console.log("🔍 Profile API Response:", response);
+    } catch (error) {
+      console.error("❌ Profile fetch error:", error);
+      setProfileData({ error: error });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!showDebug) {
+    return (
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setShowDebug(true)}
+        className="fixed bottom-4 right-4 z-50"
+      >
+        <Eye className="h-4 w-4 mr-2" />
+        Show Debug
+      </Button>
+    );
+  }
+
+  return (
+    <Card className="fixed bottom-4 right-4 z-50 w-96 max-h-96 overflow-auto">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <CardTitle className="text-sm">User Role Debug</CardTitle>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowDebug(false)}
+          >
+            <EyeOff className="h-4 w-4" />
+          </Button>
+        </div>
+        <CardDescription>
+          Current user authentication state
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* Current Auth State */}
+        <div>
+          <h4 className="font-medium text-sm mb-2">Auth Store State:</h4>
+          <div className="text-xs space-y-1">
+            <div>Authenticated: <Badge variant={isAuthenticated ? "default" : "destructive"}>{isAuthenticated ? "Yes" : "No"}</Badge></div>
+            {user && (
+              <>
+                <div>ID: {user.id}</div>
+                <div>Name: {user.name || "No name"}</div>
+                <div>Email: {user.email}</div>
+                <div>Roles: {user.role.map(role => (
+                  <Badge key={role} variant="outline" className="ml-1">
+                    {role}
+                  </Badge>
+                ))}</div>
+                <div>Primary Role: <Badge variant="secondary">{user.role[0]}</Badge></div>
+              </>
+            )}
+          </div>
+        </div>
+
+        <Separator />
+
+        {/* Fetch Current Profile */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <h4 className="font-medium text-sm">API Profile Data:</h4>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={fetchProfile}
+              disabled={loading}
+            >
+              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              Fetch
+            </Button>
+          </div>
+          {profileData && (
+            <div className="bg-muted p-2 rounded text-xs">
+              <pre className="whitespace-pre-wrap">
+                {JSON.stringify(profileData, null, 2)}
+              </pre>
+            </div>
+          )}
+        </div>
+
+        <Separator />
+
+        {/* Cookie Information */}
+        <div>
+          <h4 className="font-medium text-sm mb-2">Cookie Data:</h4>
+          <div className="text-xs space-y-1">
+            <div>Token: {document.cookie.includes('auth_token') ? "Present" : "Missing"}</div>
+            <div>User: {document.cookie.includes('auth_user') ? "Present" : "Missing"}</div>
+            <div>Expires: {document.cookie.includes('auth_expires') ? "Present" : "Missing"}</div>
+          </div>
+        </div>
+
+        {/* Local Storage */}
+        <div>
+          <h4 className="font-medium text-sm mb-2">Local Storage:</h4>
+          <div className="text-xs">
+            <div>Access Token: {localStorage.getItem('access_token') ? "Present" : "Missing"}</div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}

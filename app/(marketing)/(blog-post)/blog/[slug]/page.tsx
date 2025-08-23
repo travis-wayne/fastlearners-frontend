@@ -67,9 +67,9 @@ export default async function PostPage({
 
   const relatedArticles =
     (post.related &&
-      post.related.map(
-        (slug) => allPosts.find((post) => post.slugAsParams === slug)!,
-      )) ||
+      post.related
+        .map((slug) => allPosts.find((post) => post.slugAsParams === slug))
+        .filter((post) => post !== undefined)) ||
     [];
 
   const toc = await getTableOfContents(post.body.raw);
