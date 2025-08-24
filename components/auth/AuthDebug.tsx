@@ -138,11 +138,11 @@ export function AuthDebug() {
           {user && (
             <>
               <div style={{ marginTop: "8px" }}><strong>Role Checks:</strong></div>
-              <div>🔹 hasRole('admin'): {hasRole('admin') ? '✅' : '❌'}</div>
-              <div>🔹 hasRole('superadmin'): {hasRole('superadmin') ? '✅' : '❌'}</div>
-              <div>🔹 hasRole('teacher'): {hasRole('teacher') ? '✅' : '❌'}</div>
-              <div>🔹 isPrimaryRole('admin'): {isPrimaryRole('admin') ? '✅' : '❌'}</div>
-              <div>🔹 isPrimaryRole('superadmin'): {isPrimaryRole('superadmin') ? '✅' : '❌'}</div>
+              <div>🔹 hasRole(&apos;admin&apos;): {hasRole('admin') ? '✅' : '❌'}</div>
+              <div>🔹 hasRole(&apos;superadmin&apos;): {hasRole('superadmin') ? '✅' : '❌'}</div>
+              <div>🔹 hasRole(&apos;teacher&apos;): {hasRole('teacher') ? '✅' : '❌'}</div>
+              <div>🔹 isPrimaryRole(&apos;admin&apos;): {isPrimaryRole('admin') ? '✅' : '❌'}</div>
+              <div>🔹 isPrimaryRole(&apos;superadmin&apos;): {isPrimaryRole('superadmin') ? '✅' : '❌'}</div>
             </>
           )}
           

@@ -273,7 +273,7 @@ export default function LessonTrashPage() {
                   <li>• Lessons moved to trash are not permanently deleted</li>
                   <li>• You can restore trashed lessons at any time</li>
                   <li>• Trashed lessons are not visible to students</li>
-                  <li>• Use "Restore" to move lessons back to active status</li>
+                  <li>• Use &quot;Restore&quot; to move lessons back to active status</li>
                 </ul>
               </div>
               

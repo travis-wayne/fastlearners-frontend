@@ -45,8 +45,8 @@ export function UnauthorizedPage() {
       <div className="min-h-screen flex items-center justify-center">
         <Card className="w-full max-w-md mx-4">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-destructive/10 flex items-center justify-center">
-              <Lock className="h-6 w-6 text-destructive" />
+            <div className="mx-auto mb-4 size-12 rounded-full bg-destructive/10 flex items-center justify-center">
+              <Lock className="size-6 text-destructive" />
             </div>
             <CardTitle>Authentication Required</CardTitle>
             <CardDescription>
@@ -66,15 +66,15 @@ export function UnauthorizedPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
+    <div className="min-h-screen bg-background flex items-center justify-center">
       <Card className="w-full max-w-2xl mx-4">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-destructive/10 flex items-center justify-center">
-            <ShieldX className="h-8 w-8 text-destructive" />
+          <div className="mx-auto mb-4 size-16 rounded-full bg-destructive/10 flex items-center justify-center">
+            <ShieldX className="size-8 text-destructive" />
           </div>
           <CardTitle className="text-2xl">Access Denied</CardTitle>
           <CardDescription className="text-base">
-            You don't have permission to access this resource
+            You don&apos;t have permission to access this resource
           </CardDescription>
         </CardHeader>
         
@@ -94,9 +94,9 @@ export function UnauthorizedPage() {
           {/* Attempted Route Info */}
           {attemptedRoute && (
             <Alert>
-              <AlertTriangle className="h-4 w-4" />
+              <AlertTriangle className="size-4" />
               <AlertDescription>
-                <strong>Attempted to access:</strong> <code className="bg-muted px-1 rounded">{attemptedRoute}</code>
+              <strong>Attempted to access:</strong> <code className="bg-muted rounded px-1">{attemptedRoute}</code>
               </AlertDescription>
             </Alert>
           )}
@@ -119,7 +119,7 @@ export function UnauthorizedPage() {
               )}
               {userRole === 'guardian' && (
                 <p>
-                  As a <Badge variant="outline">Guardian</Badge>, you can view children's 
+                  As a <Badge variant="outline">Guardian</Badge>, you can view children&apos;s 
                   progress and manage family settings, but cannot access teaching or admin tools.
                 </p>
               )}
@@ -139,24 +139,24 @@ export function UnauthorizedPage() {
           </div>
 
           {/* Actions */}
-          <div className="flex flex-col sm:flex-row gap-3 pt-4">
+          <div className="flex flex-col gap-3 pt-4 sm:flex-row">
             <Button onClick={handleGoHome} className="flex-1">
-              <Home className="h-4 w-4 mr-2" />
+              <Home className="mr-2 size-4" />
               Go to My Dashboard
             </Button>
             
             <Button variant="outline" onClick={handleGoBack} className="flex-1">
-              <ArrowLeft className="h-4 w-4 mr-2" />
+              <ArrowLeft className="mr-2 size-4" />
               Go Back
             </Button>
           </div>
 
           {/* Help Section */}
           <div className="border-t pt-4">
-            <h5 className="font-medium mb-2">Need help?</h5>
-            <div className="text-sm text-muted-foreground space-y-1">
+            <h5 className="mb-2 font-medium">Need help?</h5>
+            <div className="space-y-1 text-sm text-muted-foreground">
               <p>• Contact your administrator if you think you should have access</p>
-              <p>• Check if you're using the correct account</p>
+              <p>• Check if you&apos;re using the correct account</p>
               <p>• Guest users need to complete onboarding first</p>
             </div>
           </div>

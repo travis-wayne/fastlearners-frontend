@@ -8,7 +8,8 @@ import { toast } from "sonner";
 import { z } from "zod";
 
 import { profileApi } from "@/lib/api/auth";
-import { User, UserRole } from "@/lib/types/auth";
+import { User as AuthUser } from "@/lib/types/auth";
+import { UserRole } from "@/types";
 import { userRoleSchema } from "@/lib/validations/user";
 import { Button } from "@/components/ui/button";
 import {
@@ -30,7 +31,7 @@ import { SectionColumns } from "@/components/dashboard/section-columns";
 import { Icons } from "@/components/shared/icons";
 
 interface UserRoleFormProps {
-  user: Pick<User, "id" | "role">;
+  user: Pick<AuthUser, "id" | "role">;
 }
 
 type FormData = {
@@ -48,16 +49,37 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
     
     // Guest users can only choose student or guardian (onboarding choice)
     if (currentRole === 'guest') {
-      return ['guest', 'student', 'guardian'];
+      return [UserRole.GUEST, UserRole.STUDENT, UserRole.GUARDIAN];
     }
     
     // For development/testing - show current role only for permanent roles
     // In production, remove the role selector entirely for non-guest users
-    return [currentRole]; // Users cannot change roles after onboarding
+    // Map auth role to enum
+    switch (currentRole) {
+      case 'guest': return [UserRole.GUEST];
+      case 'student': return [UserRole.STUDENT];
+      case 'guardian': return [UserRole.GUARDIAN];
+      case 'teacher': return [UserRole.TEACHER];
+      case 'admin': return [UserRole.ADMIN];
+      case 'superadmin': return [UserRole.SUPERADMIN];
+      default: return [UserRole.GUEST];
+    }
   };
   
   const roles = getAvailableRoles();
-  const [role, setRole] = useState(user.role[0]); // Use first role as primary
+  // Map auth role to enum for initial state
+  const mapAuthRoleToEnum = (authRole: string): UserRole => {
+    switch (authRole) {
+      case 'guest': return UserRole.GUEST;
+      case 'student': return UserRole.STUDENT;
+      case 'guardian': return UserRole.GUARDIAN;
+      case 'teacher': return UserRole.TEACHER;
+      case 'admin': return UserRole.ADMIN;
+      case 'superadmin': return UserRole.SUPERADMIN;
+      default: return UserRole.GUEST;
+    }
+  };
+  const [role, setRole] = useState(mapAuthRoleToEnum(user.role[0])); // Use first role as primary
 
   const form = useForm<FormData>({
     resolver: zodResolver(userRoleSchema),
@@ -73,7 +95,9 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
       const response = await profileApi.updateProfile({ role: data.role });
 
       if (response.success && response.content) {
-        updateUserProfile({ role: [data.role] });
+        // Convert enum value to auth role string
+        const authRoleString = data.role.toLowerCase();
+        updateUserProfile({ role: [authRoleString as any] });
         setUpdated(false);
         toast.success("Your role has been updated.");
       } else {
@@ -108,13 +132,14 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                   <FormLabel className="sr-only">Role</FormLabel>
                   <Select
                     // TODO:(FIX) Option value not update. Use useState for the moment
-                    onValueChange={(value: UserRole) => {
-                      setUpdated(user.role[0] !== value);
-                      setRole(value);
-                      field.onChange(value);
+                    onValueChange={(value: string) => {
+                      const enumValue = value as UserRole;
+                      setUpdated(mapAuthRoleToEnum(user.role[0]) !== enumValue);
+                      setRole(enumValue);
+                      field.onChange(enumValue);
                     }}
                     name={field.name}
-                    defaultValue={user.role[0]}
+                    defaultValue={mapAuthRoleToEnum(user.role[0]).toString()}
                   >
                     <FormControl>
                       <SelectTrigger className="w-full">
@@ -124,7 +149,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                     <SelectContent>
                       {roles.map((role) => (
                         <SelectItem key={role} value={role.toString()}>
-                          {role}
+                          {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>

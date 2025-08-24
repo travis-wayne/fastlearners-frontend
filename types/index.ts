@@ -7,8 +7,10 @@ import { plansColumns } from "@/config/subscriptions";
 export enum UserRole {
   GUEST = "guest",
   STUDENT = "student", 
-  PARENT = "parent",
-  ADMIN = "admin"
+  GUARDIAN = "guardian",
+  TEACHER = "teacher",
+  ADMIN = "admin",
+  SUPERADMIN = "superadmin"
 }
 
 // Define our own user type (simplified version for UI components)
