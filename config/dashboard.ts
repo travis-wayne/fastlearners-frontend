@@ -14,7 +14,7 @@ export const sidebarLinks: SidebarNavItem[] = [
         href: "/parent",
         icon: "users",
         title: "Parent Dashboard",
-        authorizeOnly: UserRole.PARENT,
+        authorizeOnly: UserRole.GUARDIAN,
       },
       {
         href: "/dashboard",
@@ -46,7 +46,7 @@ export const sidebarLinks: SidebarNavItem[] = [
         href: "/parent/orders",
         icon: "package",
         title: "Parent Orders",
-        authorizeOnly: UserRole.PARENT,
+        authorizeOnly: UserRole.GUARDIAN,
       },
     ],
   },

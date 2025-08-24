@@ -218,7 +218,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         
         const hasRoleSpecificData = primaryRole === 'student' 
           ? user.school || user.class
-          : primaryRole === 'parent' 
+          : primaryRole === 'guardian' 
             ? user.phone
             : false;
         
