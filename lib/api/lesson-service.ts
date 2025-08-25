@@ -1,4 +1,19 @@
 import axios from 'axios';
+import { 
+  validateCSVFile, 
+  normalizeCSVContent, 
+  createNormalizedFile,
+  convertToAPIFormat,
+  createAPIFormattedFile,
+  LESSON_REQUIRED_COLUMNS,
+  CONCEPT_REQUIRED_COLUMNS,
+  EXAMPLE_REQUIRED_COLUMNS,
+  EXERCISE_REQUIRED_COLUMNS,
+  GENERAL_EXERCISE_REQUIRED_COLUMNS,
+  CHECK_MARKER_REQUIRED_COLUMNS,
+  SCHEME_OF_WORK_REQUIRED_COLUMNS,
+  type CSVValidationResult
+} from '@/lib/utils/csv-upload-helper';
 
 const BASE_URL = 'https://fastlearnersapp.com/api/v1';
 
@@ -404,4 +419,261 @@ export const CSV_COLUMNS = {
   general_exercises: ['lesson', 'problem', 'solution_steps', 'answers', 'correct_answer', 'order_index'],
   check_markers: ['lesson', 'overview', 'lesson_video', 'concept_one', 'concept_two', 'concept_three', 'concept_four', 'concept_five', 'concept_six', 'concept_seven', 'general_exercises'],
   scheme_of_work: ['subject', 'class', 'term', 'week', 'topic', 'breakdown']
+};
+
+// Enhanced upload results
+export interface UploadResult {
+  success: boolean;
+  validation?: CSVValidationResult;
+  apiResponse?: ApiResponse;
+  error?: string;
+  triedFormats?: string[];
+}
+
+// Smart upload function that tries both formats
+export const uploadLessonsFileWithValidation = async (file: File): Promise<UploadResult> => {
+  console.log('Starting upload validation for lessons file:', file.name);
+  
+  try {
+    // First, validate the file
+    const validation = await validateCSVFile({
+      file,
+      requiredColumns: LESSON_REQUIRED_COLUMNS
+    });
+    
+    console.log('Validation result:', validation);
+    
+    if (!validation.isValid) {
+      return {
+        success: false,
+        validation,
+        error: `File validation failed: ${validation.errors.join(', ')}`
+      };
+    }
+    
+    // Try uploading with detected format first
+    let uploadResult = await tryUploadLessonsFile(file);
+    let triedFormats = [validation.format];
+    
+    if (!uploadResult.success) {
+      console.log(`Upload failed with ${validation.format} format, trying alternative format`);
+      
+      // Try the alternative format
+      const alternativeFormat = validation.format === 'comma' ? 'pipe' : 'comma';
+      const content = await file.text();
+      const normalizedContent = normalizeCSVContent(content, alternativeFormat);
+      const normalizedFile = createNormalizedFile(file, normalizedContent, alternativeFormat);
+      
+      uploadResult = await tryUploadLessonsFile(normalizedFile);
+      triedFormats.push(alternativeFormat);
+    }
+    
+    return {
+      success: uploadResult.success,
+      validation,
+      apiResponse: uploadResult.apiResponse,
+      error: uploadResult.error,
+      triedFormats
+    };
+    
+  } catch (error) {
+    console.error('Upload error:', error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};
+
+// Helper function to try uploading a file
+const tryUploadLessonsFile = async (file: File): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
+  try {
+    const apiResponse = await uploadLessonsFile(file);
+    return { success: true, apiResponse };
+  } catch (error: any) {
+    console.error('Upload API error:', error);
+    
+    let errorMessage = 'Upload failed';
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    return { 
+      success: false, 
+      error: errorMessage,
+      apiResponse: error.response?.data 
+    };
+  }
+};
+
+// Smart upload functions for other file types
+export const uploadConceptsFileWithValidation = async (file: File): Promise<UploadResult> => {
+  return await smartUploadWithValidation(
+    file, 
+    CONCEPT_REQUIRED_COLUMNS, 
+    uploadConceptsFile,
+    'concepts'
+  );
+};
+
+export const uploadExamplesFileWithValidation = async (file: File): Promise<UploadResult> => {
+  return await smartUploadWithValidation(
+    file, 
+    EXAMPLE_REQUIRED_COLUMNS, 
+    uploadExamplesFile,
+    'examples'
+  );
+};
+
+export const uploadExercisesFileWithValidation = async (file: File): Promise<UploadResult> => {
+  return await smartUploadWithValidation(
+    file, 
+    EXERCISE_REQUIRED_COLUMNS, 
+    uploadExercisesFile,
+    'exercises'
+  );
+};
+
+export const uploadGeneralExercisesFileWithValidation = async (file: File): Promise<UploadResult> => {
+  return await smartUploadWithValidation(
+    file, 
+    GENERAL_EXERCISE_REQUIRED_COLUMNS, 
+    uploadGeneralExercisesFile,
+    'general_exercises'
+  );
+};
+
+export const uploadCheckMarkersFileWithValidation = async (file: File): Promise<UploadResult> => {
+  return await smartUploadWithValidation(
+    file, 
+    CHECK_MARKER_REQUIRED_COLUMNS, 
+    uploadCheckMarkersFile,
+    'check_markers'
+  );
+};
+
+export const uploadSchemeOfWorkFileWithValidation = async (file: File): Promise<UploadResult> => {
+  return await smartUploadWithValidation(
+    file, 
+    SCHEME_OF_WORK_REQUIRED_COLUMNS, 
+    uploadSchemeOfWorkFile,
+    'scheme_of_work'
+  );
+};
+
+// Generic smart upload function
+const smartUploadWithValidation = async (
+  file: File,
+  requiredColumns: string[],
+  uploadFunction: (file: File) => Promise<ApiResponse>,
+  fileType: string
+): Promise<UploadResult> => {
+  console.log(`Starting upload validation for ${fileType} file:`, file.name);
+  
+  try {
+    // Log file content for debugging
+    const fileContent = await file.text();
+    console.log(`${fileType} file content preview:`, fileContent.substring(0, 500));
+    console.log(`${fileType} file size:`, file.size, 'bytes');
+    
+    // Validate the file
+    const validation = await validateCSVFile({
+      file,
+      requiredColumns
+    });
+    
+    console.log('Validation result:', validation);
+    
+    if (!validation.isValid) {
+      return {
+        success: false,
+        validation,
+        error: `File validation failed: ${validation.errors.join(', ')}`
+      };
+    }
+    
+    // Convert file to API format before upload
+    console.log('Converting file to API format...');
+    const apiFormattedFile = createAPIFormattedFile(file, fileContent);
+    console.log('API formatted file created:', apiFormattedFile.name, apiFormattedFile.size, 'bytes');
+    
+    // Try uploading with API format
+    let uploadResult = await tryUpload(apiFormattedFile, uploadFunction);
+    let triedFormats = [`api_${validation.format}`];
+    
+    if (!uploadResult.success) {
+      console.log(`Upload failed with API format, trying original file`);
+      
+      // Fallback: try uploading the original file
+      uploadResult = await tryUpload(file, uploadFunction);
+      triedFormats.push(validation.format);
+      
+      if (!uploadResult.success) {
+        console.log(`Upload failed with original format, trying alternative format`);
+        
+        // Try the alternative format
+        const alternativeFormat = validation.format === 'comma' ? 'pipe' : 'comma';
+        const normalizedContent = normalizeCSVContent(fileContent, alternativeFormat);
+        const normalizedFile = createNormalizedFile(file, normalizedContent, alternativeFormat);
+        
+        uploadResult = await tryUpload(normalizedFile, uploadFunction);
+        triedFormats.push(alternativeFormat);
+      }
+    }
+    
+    return {
+      success: uploadResult.success,
+      validation,
+      apiResponse: uploadResult.apiResponse,
+      error: uploadResult.error,
+      triedFormats
+    };
+    
+  } catch (error) {
+    console.error(`${fileType} upload error:`, error);
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error occurred'
+    };
+  }
+};
+
+// Generic helper function to try uploading a file
+const tryUpload = async (
+  file: File, 
+  uploadFunction: (file: File) => Promise<ApiResponse>
+): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
+  try {
+    const apiResponse = await uploadFunction(file);
+    return { success: true, apiResponse };
+  } catch (error: any) {
+    console.error('Upload API error:', error);
+    console.error('Response status:', error.response?.status);
+    console.error('Response data:', error.response?.data);
+    console.error('Response headers:', error.response?.headers);
+    
+    let errorMessage = 'Upload failed';
+    
+    if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.response?.data?.error) {
+      errorMessage = error.response.data.error;
+    } else if (error.response?.data) {
+      // If response data is a string or has other format
+      errorMessage = typeof error.response.data === 'string' 
+        ? error.response.data 
+        : JSON.stringify(error.response.data);
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+    
+    return { 
+      success: false, 
+      error: errorMessage,
+      apiResponse: error.response?.data 
+    };
+  }
 };

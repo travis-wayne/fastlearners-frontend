@@ -100,7 +100,7 @@ export default function LessonTrashPage() {
         {/* Actions Bar */}
         <div className="flex flex-col sm:flex-row gap-4 justify-between">
           <div className="flex items-center gap-3">
-            <Link href="/admin/lessons">
+            <Link href="/superadmin/lessons">
               <Button variant="outline">
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Lessons

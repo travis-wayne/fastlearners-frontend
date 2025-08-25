@@ -184,13 +184,13 @@ export default function LessonsPage() {
 
           {/* Action Buttons */}
           <div className="flex gap-2">
-            <Link href="/admin/lessons/upload">
+            <Link href="/superadmin/lessons/upload">
               <Button>
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Lessons
               </Button>
             </Link>
-            <Link href="/admin/lessons/trash">
+            <Link href="/superadmin/lessons/trash">
               <Button variant="outline">
                 <Trash2 className="h-4 w-4 mr-2" />
                 Trash
@@ -244,7 +244,7 @@ export default function LessonsPage() {
             </CardHeader>
             <CardContent className="text-center">
               {lessons.length === 0 && (
-                <Link href="/admin/lessons/upload">
+                <Link href="/superadmin/lessons/upload">
                   <Button>
                     <Plus className="h-4 w-4 mr-2" />
                     Upload First Lesson
@@ -308,7 +308,7 @@ export default function LessonsPage() {
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">
-                            <Link href={`/admin/lessons/${lesson.id}`}>
+                            <Link href={`/superadmin/lessons/${lesson.id}`}>
                               <Button variant="outline" size="sm">
                                 <Eye className="h-3 w-3 mr-1" />
                                 View

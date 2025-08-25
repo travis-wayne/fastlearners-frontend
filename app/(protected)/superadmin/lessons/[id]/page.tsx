@@ -79,7 +79,7 @@ export default function LessonDetailPage() {
       
       if (response.success) {
         toast.success(response.message || "Lesson moved to trash successfully");
-        router.push('/admin/lessons');
+        router.push('/superadmin/lessons');
       } else {
         toast.error(response.message || "Failed to move lesson to trash");
       }
@@ -125,7 +125,7 @@ export default function LessonDetailPage() {
     return (
       <>
         <div className="flex items-center gap-4 mb-6">
-          <Link href="/admin/lessons">
+          <Link href="/superadmin/lessons">
             <Button variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Lessons
@@ -150,7 +150,7 @@ export default function LessonDetailPage() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
-          <Link href="/admin/lessons">
+          <Link href="/superadmin/lessons">
             <Button variant="outline">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back

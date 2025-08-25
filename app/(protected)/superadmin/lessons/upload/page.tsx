@@ -5,10 +5,53 @@ import { DashboardHeader } from "@/components/dashboard/header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileStack, FileText, Download, Info } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Upload, FileStack, FileText, Download, Info, ShieldX } from "lucide-react";
+import { usePermissionCheck, useRBACGuard } from "@/hooks/useRBACGuard";
 // Note: metadata cannot be exported from client components
 
 export default function UploadPage() {
+  const { hasPermission, userRole } = usePermissionCheck();
+  const { canAccess } = useRBACGuard();
+  
+  // Check if user has permission to manage lessons
+  const canManageLessons = hasPermission('manage_lessons');
+  
+  if (!canManageLessons) {
+    return (
+      <>
+        <DashboardHeader
+          heading="Upload Lesson Files"
+          text="Lesson upload and management tools"
+        />
+        
+        <Alert variant="destructive">
+          <ShieldX className="h-4 w-4" />
+          <AlertDescription>
+            <strong>Access Restricted:</strong> Only Teachers, Admins, and SuperAdmins can upload lesson content. 
+            Your current role ({userRole}) does not have permission to manage lessons.
+          </AlertDescription>
+        </Alert>
+        
+        <Card>
+          <CardHeader>
+            <CardTitle>Need Access?</CardTitle>
+            <CardDescription>
+              Contact your system administrator if you believe you should have access to lesson management features.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <p>• Teachers can create and upload lesson content</p>
+              <p>• Admins can manage all lessons and users</p>
+              <p>• SuperAdmins have full system access</p>
+            </div>
+          </CardContent>
+        </Card>
+      </>
+    );
+  }
+  
   const downloadTemplate = (filename: string) => {
     // Create download link for CSV templates from the lesson-csv-files directory
     const link = document.createElement('a');
@@ -39,28 +82,30 @@ export default function UploadPage() {
       <div className="space-y-8">
         {/* Upload Options */}
         <div className="grid gap-6 md:grid-cols-2">
-          {/* Individual Upload */}
+          {/* Smart CSV Upload */}
           <Card className="relative">
             <CardHeader>
               <div className="flex items-center gap-2">
-                <FileText className="h-6 w-6 text-primary" />
-                <CardTitle>Individual File Upload</CardTitle>
+                <Upload className="h-6 w-6 text-primary" />
+                <CardTitle>Smart CSV Upload</CardTitle>
               </div>
               <CardDescription>
-                Upload lesson components one at a time with detailed control and validation.
+                Upload individual lesson components or all files at once with intelligent parsing and validation.
               </CardDescription>
-              <Badge className="absolute top-4 right-4" variant="secondary">
+              <Badge className="absolute top-4 right-4" variant="default">
                 Recommended
               </Badge>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <h4 className="font-medium text-sm">Benefits:</h4>
+                <h4 className="font-medium text-sm">Features:</h4>
                 <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Step-by-step upload process</li>
-                  <li>• Individual file validation</li>
+                  <li>• Individual & bulk upload options</li>
+                  <li>• Papa Parse CSV processing</li>
+                  <li>• Real-time preview and validation</li>
+                  <li>• JSON field parsing</li>
                   <li>• Detailed error reporting</li>
-                  <li>• Continue from where you left off</li>
+                  <li>• Template downloads</li>
                 </ul>
               </div>
               
@@ -75,10 +120,10 @@ export default function UploadPage() {
                 </div>
               </div>
 
-              <Link href="/admin/lessons/upload/individual">
+              <Link href="/superadmin/lessons/upload/csv">
                 <Button className="w-full" size="lg">
-                  <FileText className="h-4 w-4 mr-2" />
-                  Start Individual Upload
+                  <Upload className="h-4 w-4 mr-2" />
+                  Start Smart Upload
                 </Button>
               </Link>
             </CardContent>
@@ -115,7 +160,7 @@ export default function UploadPage() {
                 </ul>
               </div>
 
-              <Link href="/admin/lessons/upload/bulk">
+              <Link href="/superadmin/lessons/upload/bulk">
                 <Button className="w-full" size="lg" variant="outline">
                   <FileStack className="h-4 w-4 mr-2" />
                   Start Bulk Upload

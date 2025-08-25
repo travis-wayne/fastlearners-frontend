@@ -36,13 +36,13 @@ export default function AdminPage() {
             </CardHeader>
             <CardContent className="space-y-3">
               <div className="grid gap-2">
-                <Link href="/admin/lessons">
+                <Link href="/superadmin/lessons">
                   <Button className="w-full justify-start">
                     <BookOpen className="h-4 w-4 mr-2" />
                     View All Lessons
                   </Button>
                 </Link>
-                <Link href="/admin/lessons/upload">
+                <Link href="/superadmin/lessons/upload">
                   <Button variant="outline" className="w-full justify-start">
                     <Upload className="h-4 w-4 mr-2" />
                     Upload Content

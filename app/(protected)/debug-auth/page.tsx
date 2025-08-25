@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { AuthDebug } from "@/components/auth/AuthDebug";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -229,7 +230,7 @@ export default function AuthDebugPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <Button onClick={testRolePermissions} variant="outline">
                 🧪 Test Role Permissions
               </Button>
@@ -237,6 +238,14 @@ export default function AuthDebugPage() {
               <Button onClick={testApiProfile} variant="outline">
                 🌐 Test API Profile
               </Button>
+              
+              {hasPermission('manage_lessons') && (
+                <Link href="/superadmin/lessons/upload/csv">
+                  <Button variant="outline">
+                    📤 Test CSV Upload
+                  </Button>
+                </Link>
+              )}
               
               <Button 
                 onClick={() => window.location.reload()} 

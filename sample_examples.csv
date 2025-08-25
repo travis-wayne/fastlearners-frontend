@@ -1,0 +1,7 @@
+concept|title|problem|solution_steps|answer|order_index
+Number Recognition|Identify the Number|What number is this: 5?|["Look at the shape of the number", "Compare with known number shapes", "Say the name of the number"]|Five|1
+Number Recognition|Count and Match|Count the dots: ••• and match with the number|["Count each dot: 1, 2, 3", "Look for the number 3", "Match the quantity with the numeral"]|3|2
+Counting Sequence|Count Forward|What comes after 7?|["Start from 7", "Think of the counting sequence", "The next number is 8"]|8|1
+Understanding Addition|Add the Toys|You have 2 cars and get 1 more. How many cars do you have?|["Start with 2 cars", "Add 1 more car", "Count all cars: 1, 2, 3"]|3|1
+Visual Addition|Fingers Addition|Show 2 + 1 using your fingers|["Hold up 2 fingers on one hand", "Hold up 1 finger on the other hand", "Count all fingers: 1, 2, 3"]|3|1
+Letter Recognition|Find the Letter|Circle all the letter 'A' in this row: A B C A D|["Look for the shape of 'A'", "Find each 'A' in the row", "Circle both 'A' letters"]|A and A (positions 1 and 4)|1
