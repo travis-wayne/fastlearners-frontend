@@ -57,8 +57,38 @@ export default function SmartCSVUploadPage() {
   };
 
   const handleUploadError = (error: string) => {
-    toast.error(`Upload failed: ${error}`);
-    console.error('Upload error:', error);
+    console.error('=== CSV UPLOAD ERROR HANDLER ===');
+    console.error('Error received:', error);
+    
+    // Extract more meaningful error messages
+    let displayError = error;
+    
+    // Common validation issues and user-friendly messages
+    if (error.includes('Invalid scheme of work CSV format')) {
+      displayError = 'CSV format validation failed. Please ensure your file matches the expected format with all required columns.';
+    } else if (error.includes('422') || error.includes('Unprocessable')) {
+      displayError = 'File content validation failed. Please check that your data matches the expected format and column requirements.';
+    } else if (error.includes('400') || error.includes('Bad Request')) {
+      displayError = 'Invalid file format or structure. Please verify your CSV file follows the correct template.';
+    } else if (error.includes('401') || error.includes('Unauthorized')) {
+      displayError = 'Authentication required. Please refresh the page and try again.';
+    } else if (error.includes('403') || error.includes('Forbidden')) {
+      displayError = 'Insufficient permissions to upload files.';
+    }
+    
+    toast.error(`Upload failed: ${displayError}`);
+    
+    // Also show a more technical toast for developers
+    if (error !== displayError) {
+      setTimeout(() => {
+        toast.error(`Technical details: ${error}`, {
+          duration: 10000 // Show longer for debugging
+        });
+      }, 500);
+    }
+    
+    console.error('Processed error for display:', displayError);
+    console.error('=== END ERROR HANDLER ===');
   };
 
   return (

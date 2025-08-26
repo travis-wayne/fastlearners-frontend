@@ -647,28 +647,68 @@ const tryUpload = async (
   uploadFunction: (file: File) => Promise<ApiResponse>
 ): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
   try {
+    console.log('Attempting upload with file:', {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+      lastModified: file.lastModified
+    });
+    
+    // Log a preview of the file content being sent
+    const fileContent = await file.text();
+    console.log('File content being uploaded (first 1000 chars):', fileContent.substring(0, 1000));
+    
     const apiResponse = await uploadFunction(file);
+    console.log('Upload successful! API Response:', apiResponse);
     return { success: true, apiResponse };
   } catch (error: any) {
-    console.error('Upload API error:', error);
+    console.error('=== UPLOAD API ERROR DETAILS ===');
+    console.error('Error object:', error);
     console.error('Response status:', error.response?.status);
-    console.error('Response data:', error.response?.data);
+    console.error('Response status text:', error.response?.statusText);
     console.error('Response headers:', error.response?.headers);
+    console.error('Full response data:', error.response?.data);
     
+    // Try to extract more detailed error information
     let errorMessage = 'Upload failed';
+    let validationDetails = null;
     
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error.response?.data?.error) {
-      errorMessage = error.response.data.error;
-    } else if (error.response?.data) {
-      // If response data is a string or has other format
-      errorMessage = typeof error.response.data === 'string' 
-        ? error.response.data 
-        : JSON.stringify(error.response.data);
+    if (error.response?.data) {
+      const responseData = error.response.data;
+      
+      // Handle different response formats
+      if (typeof responseData === 'string') {
+        errorMessage = responseData;
+      } else if (responseData.message) {
+        errorMessage = responseData.message;
+      } else if (responseData.error) {
+        errorMessage = responseData.error;
+      } else if (responseData.errors) {
+        // Handle validation errors array
+        if (Array.isArray(responseData.errors)) {
+          errorMessage = responseData.errors.join(', ');
+        } else if (typeof responseData.errors === 'object') {
+          // Handle field-specific validation errors
+          const fieldErrors = Object.entries(responseData.errors)
+            .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
+            .join('; ');
+          errorMessage = fieldErrors;
+          validationDetails = responseData.errors;
+        } else {
+          errorMessage = String(responseData.errors);
+        }
+      } else {
+        errorMessage = JSON.stringify(responseData);
+      }
     } else if (error.message) {
       errorMessage = error.message;
     }
+    
+    console.error('Processed error message:', errorMessage);
+    if (validationDetails) {
+      console.error('Validation details:', validationDetails);
+    }
+    console.error('=== END ERROR DETAILS ===');
     
     return { 
       success: false, 
