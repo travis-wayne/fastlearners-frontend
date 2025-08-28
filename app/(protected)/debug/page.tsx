@@ -240,9 +240,9 @@ export default function AuthDebugPage() {
               </Button>
               
               {hasPermission('manage_lessons') && (
-                <Link href="/superadmin/lessons/upload/csv">
+                <Link href="/debug/lesson-upload">
                   <Button variant="outline">
-                    📤 Test CSV Upload
+                    📤 Test Lesson Upload
                   </Button>
                 </Link>
               )}
