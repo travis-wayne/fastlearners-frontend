@@ -17,7 +17,7 @@ export default function LessonUploadPage() {
   const canManageLessons = hasPermission('manage_lessons');
 
   const handleUploadSuccess = (configKey: string) => {
-    setCompletedUploads(prev => new Set([...prev, configKey]));
+    setCompletedUploads(prev => new Set([...Array.from(prev), configKey]));
   };
 
   if (!canManageLessons) {

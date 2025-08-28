@@ -69,7 +69,7 @@ export function SharedSettingsPage({
     return roleMap[role as keyof typeof roleMap] || roleMap.guest;
   };
 
-  const roleDisplay = getRoleDisplay(user.role);
+  const roleDisplay = getRoleDisplay(user.role[0] || 'guest'); // Use primary role
   const RoleIcon = roleDisplay.icon;
 
   return (

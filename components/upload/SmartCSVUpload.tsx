@@ -21,7 +21,7 @@ interface SmartCSVUploadProps {
 }
 
 interface FileUploadSectionProps {
-  config: (typeof UPLOAD_CONFIGS)[0];
+  config: (typeof UPLOAD_CONFIGS)[number];
   onUpload: (file: File) => Promise<{ success: boolean; message: string; error?: string }>;
   disabled?: boolean;
   completed?: boolean;
@@ -389,14 +389,15 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
     addLog('success', `Successfully uploaded ${configKey}`, configKey);
   };
 
-  const isUploadEnabled = (config: typeof UPLOAD_CONFIGS[0]) => {
+  const isUploadEnabled = (config: typeof UPLOAD_CONFIGS[number]) => {
     if (!config.dependency) return true;
     return completedUploads.has(config.dependency);
   };
 
   const getUploadStatus = (configKey: string) => {
     if (completedUploads.has(configKey)) return 'completed';
-    if (isUploadEnabled(UPLOAD_CONFIGS.find(c => c.key === configKey)!)) return 'enabled';
+    const config = UPLOAD_CONFIGS.find(c => c.key === configKey);
+    if (config && isUploadEnabled(config)) return 'enabled';
     return 'disabled';
   };
 

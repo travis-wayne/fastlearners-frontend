@@ -57,7 +57,7 @@ interface ProfileFormProps {
 }
 
 export function ProfileForm({ onSuccess }: ProfileFormProps) {
-  const { user, updateUser } = useAuthStore();
+  const { user, updateUserProfile } = useAuthStore();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -120,11 +120,10 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
       const updatedProfile = await updateProfile(data as ProfileEditData);
       
       // Update auth store
-      updateUser({
-        ...user!,
+      updateUserProfile({
         name: updatedProfile.name,
         email: updatedProfile.email,
-        role: updatedProfile.role
+        role: [updatedProfile.role] // Wrap single role in array for auth store
       });
       
       setProfile(updatedProfile);

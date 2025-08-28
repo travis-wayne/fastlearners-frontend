@@ -195,7 +195,7 @@ export function EmailVerificationGate({
               <Alert>
                 <Mail className="h-4 w-4" />
                 <AlertDescription>
-                  We've sent a 6-digit verification code to <strong>{user?.email}</strong>. 
+                  We&apos;ve sent a 6-digit verification code to <strong>{user?.email}</strong>.
                   Please check your email and enter the code below.
                 </AlertDescription>
               </Alert>

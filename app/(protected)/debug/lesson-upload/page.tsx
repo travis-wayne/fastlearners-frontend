@@ -22,11 +22,11 @@ export default function DebugLessonUploadPage() {
   };
 
   const handleUploadSuccess = (configKey: string) => {
-    setCompletedUploads(prev => new Set([...prev, configKey]));
+    setCompletedUploads(prev => new Set([...Array.from(prev), configKey]));
     addLog('success', `Successfully uploaded ${configKey}`);
   };
 
-  const isUploadEnabled = (config: typeof UPLOAD_CONFIGS[0]) => {
+  const isUploadEnabled = (config: (typeof UPLOAD_CONFIGS)[number]) => {
     if (!config.dependency) return true;
     return completedUploads.has(config.dependency);
   };
@@ -72,7 +72,7 @@ export default function DebugLessonUploadPage() {
           <div className="space-y-2">
             <p className="text-sm font-medium">Upload Order:</p>
             <div className="flex flex-wrap gap-2">
-              {UPLOAD_CONFIGS.sort((a, b) => a.order - b.order).map((config) => (
+              {[...UPLOAD_CONFIGS].sort((a, b) => a.order - b.order).map((config) => (
                 <Badge 
                   key={config.key}
                   variant={completedUploads.has(config.key) ? "default" : "outline"}
@@ -87,7 +87,7 @@ export default function DebugLessonUploadPage() {
 
       {/* Upload Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {UPLOAD_CONFIGS.sort((a, b) => a.order - b.order).map((config) => {
+        {[...UPLOAD_CONFIGS].sort((a, b) => a.order - b.order).map((config) => {
           const isEnabled = isUploadEnabled(config);
           const isCompleted = completedUploads.has(config.key);
           

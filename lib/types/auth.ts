@@ -13,6 +13,7 @@ export interface User {
   name: string;
   username: string;
   email: string;
+  email_verified_at: string | null;
   phone: string;
   school: string | null;
   class: string | null;
