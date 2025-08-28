@@ -276,14 +276,14 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
               <Alert>
                 <AlertCircle className="h-4 w-4" />
                 <AlertDescription>
-                  As a guardian, you need to provide your child's contact information 
+                  As a guardian, you need to provide your child&apos;s contact information 
                   for account management and communication purposes.
                 </AlertDescription>
               </Alert>
 
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="child_email">Child's Email</Label>
+                  <Label htmlFor="child_email">Child&apos;s Email</Label>
                   <Input
                     id="child_email"
                     type="email"
@@ -296,7 +296,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="child_phone">Child's Phone</Label>
+                  <Label htmlFor="child_phone">Child&apos;s Phone</Label>
                   <Input
                     id="child_phone"
                     type="tel"

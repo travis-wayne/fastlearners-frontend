@@ -111,4 +111,6 @@ export const api = {
     apiClient.delete<ApiResponse<T>>(url, config),
 };
 
+// Export both named and default
+export { apiClient };
 export default apiClient;

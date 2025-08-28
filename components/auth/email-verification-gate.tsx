@@ -248,7 +248,7 @@ export function EmailVerificationGate({
                         Resend in {cooldownTime}s
                       </>
                     ) : (
-                      'Didn\'t receive the code? Resend'
+                      &quot;Didn&apos;t receive the code? Resend&quot;
                     )}
                   </Button>
                 </div>
