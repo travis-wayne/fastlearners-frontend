@@ -17,12 +17,11 @@ export interface UploadResult {
   error?: string;
 }
 
-// Get auth token from storage
+import { getTokenFromCookies } from '@/lib/auth-cookies';
+
+// Get auth token from cookies (matching your auth store)
 const getAuthToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('access_token');
-  }
-  return null;
+  return getTokenFromCookies();
 };
 
 // Create axios instance with auth headers
@@ -41,11 +40,14 @@ const uploadFile = async (
     const formData = new FormData();
     formData.append(fieldName, file);
     
+    console.log(`Generic upload - ${fieldName}:`, formData.get(fieldName));
+    console.log(`Generic upload - File details:`, { name: file.name, size: file.size, type: file.type });
+    
     const response = await axios.post(`${BASE_URL}${endpoint}`, formData, {
       headers: {
         ...createAuthHeaders(),
         'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        // Don't set Content-Type - let axios set it with boundary
       },
     });
     
@@ -98,7 +100,7 @@ export const uploadGeneralExercises = (file: File): Promise<UploadResult> =>
   uploadFile('/superadmin/lessons/uploads/general-exercises', file, 'general_exercises_file');
 
 export const uploadCheckMarkers = (file: File): Promise<UploadResult> =>
-  uploadFile('/superadmin/lessons/uploads/check-markers', file, 'check_marker_file');
+  uploadFile('/superadmin/lessons/uploads/check-markers', file, 'check_markers_file');
 
 export const uploadSchemeOfWork = (file: File): Promise<UploadResult> =>
   uploadFile('/superadmin/lessons/uploads/scheme-of-work', file, 'scheme_of_work_file');
@@ -110,7 +112,7 @@ export const uploadAllLessonFiles = async (files: {
   examples_file: File;
   exercises_file: File;
   general_exercises_file: File;
-  check_marker_file: File;
+  check_markers_file: File;
 }): Promise<UploadResult> => {
   try {
     const formData = new FormData();

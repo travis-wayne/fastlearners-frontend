@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { UPLOAD_CONFIGS, uploadAllLessonFiles } from "@/lib/api/lesson-upload";
+import { uploadAllLessonFilesBulk, validateBulkUploadFiles, type BulkUploadFiles } from "@/lib/api/bulk-lesson-upload";
 import { UploadLogs, UploadLog } from "@/components/upload/UploadLogs";
 import { toast } from "sonner";
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
@@ -38,7 +39,7 @@ export default function BulkUploadPage() {
   };
 
   const handleBulkUpload = async () => {
-    const requiredFiles = ['lessons_file', 'concepts_file', 'examples_file', 'exercises_file', 'general_exercises_file', 'check_marker_file'];
+    const requiredFiles = ['lessons_file', 'concepts_file', 'examples_file', 'exercises_file', 'general_exercises_file', 'check_markers_file'];
     
     // Check if all required files are selected
     const missingFiles = requiredFiles.filter(key => !bulkFiles[key]);
@@ -49,32 +50,63 @@ export default function BulkUploadPage() {
       return;
     }
 
+    // Validate files before upload
+    const files: BulkUploadFiles = {
+      lessons_file: bulkFiles.lessons_file,
+      concepts_file: bulkFiles.concepts_file,
+      examples_file: bulkFiles.examples_file,
+      exercises_file: bulkFiles.exercises_file,
+      general_exercises_file: bulkFiles.general_exercises_file,
+      check_markers_file: bulkFiles.check_markers_file,
+    };
+
+    const validation = validateBulkUploadFiles(files);
+    if (!validation.valid) {
+      const errorMessage = `File validation failed: ${validation.errors.join(', ')}`;
+      toast.error(errorMessage);
+      addLog('error', errorMessage);
+      return;
+    }
+
     setBulkUploading(true);
-    addLog('info', 'Starting bulk upload of all lesson files');
+    addLog('info', 'Starting enhanced bulk upload of all lesson files...');
+    addLog('info', 'Files validated successfully, proceeding with upload');
 
     try {
-      const files = {
-        lessons_file: bulkFiles.lessons_file,
-        concepts_file: bulkFiles.concepts_file,
-        examples_file: bulkFiles.examples_file,
-        exercises_file: bulkFiles.exercises_file,
-        general_exercises_file: bulkFiles.general_exercises_file,
-        check_marker_file: bulkFiles.check_marker_file,
-      };
-
-      const result = await uploadAllLessonFiles(files);
+      // Use the enhanced bulk upload service
+      const result = await uploadAllLessonFilesBulk(files);
       
       if (result.success) {
         toast.success(result.message);
-        addLog('success', `Bulk upload completed: ${result.message}`);
-        setBulkFiles({});
+        addLog('success', `✅ Bulk upload completed: ${result.message}`);
+        
+        // Log API response details
+        if (result.apiResponse) {
+          addLog('info', `API Response: ${JSON.stringify(result.apiResponse, null, 2)}`);
+        }
+        
+        setBulkFiles({}); // Clear selected files
       } else {
         toast.error(result.error || result.message);
-        addLog('error', `Bulk upload failed: ${result.error || result.message}`);
+        addLog('error', `❌ Bulk upload failed: ${result.error || result.message}`);
+        
+        // Log validation errors if available
+        if (result.validationErrors) {
+          Object.entries(result.validationErrors).forEach(([field, errors]) => {
+            addLog('error', `Validation error in ${field}: ${errors.join(', ')}`);
+          });
+        }
+        
+        // Log API response for debugging
+        if (result.apiResponse) {
+          addLog('error', `API Error Response: ${JSON.stringify(result.apiResponse, null, 2)}`);
+        }
       }
     } catch (error: any) {
-      toast.error(error.message || 'Bulk upload failed');
-      addLog('error', `Bulk upload error: ${error.message || 'Unexpected error'}`);
+      const errorMessage = error.message || 'Bulk upload failed';
+      toast.error(errorMessage);
+      addLog('error', `❌ Bulk upload error: ${errorMessage}`);
+      addLog('error', `Error details: ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`);
     } finally {
       setBulkUploading(false);
     }

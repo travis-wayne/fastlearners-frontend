@@ -127,12 +127,11 @@ export interface GetLessonsResponse {
   lessons?: Lesson[];
 }
 
-// Get auth token from storage (assuming it's stored in localStorage)
+import { getTokenFromCookies } from '@/lib/auth-cookies';
+
+// Get auth token from cookies (matching your auth store)
 const getAuthToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('access_token');
-  }
-  return null;
+  return getTokenFromCookies();
 };
 
 // Create axios instance with auth header
@@ -239,7 +238,10 @@ export const uploadGeneralExercisesFile = async (file: File): Promise<ApiRespons
 
 export const uploadCheckMarkersFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('check_marker_file', file);
+    formData.append('check_markers_file', file);
+  
+  console.log('FormData contents:', formData.get('check_markers_file'));
+  console.log('File details:', { name: file.name, size: file.size, type: file.type });
   
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/check-markers`,
@@ -248,7 +250,7 @@ export const uploadCheckMarkersFile = async (file: File): Promise<ApiResponse> =
       headers: {
         ...createAuthHeaders(),
         'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        // Don't set Content-Type - let axios set it with boundary
       },
     }
   );
@@ -281,7 +283,7 @@ export const uploadAllLessonFiles = async (files: {
   examples_file: File;
   exercises_file: File;
   general_exercises_file: File;
-  check_marker_file: File;
+  check_markers_file: File;
 }): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append('lessons_file', files.lessons_file);
@@ -289,7 +291,7 @@ export const uploadAllLessonFiles = async (files: {
   formData.append('examples_file', files.examples_file);
   formData.append('exercises_file', files.exercises_file);
   formData.append('general_exercises_file', files.general_exercises_file);
-  formData.append('check_marker_file', files.check_marker_file);
+  formData.append('check_markers_file', files.check_markers_file);
   
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/all-lesson-files`,

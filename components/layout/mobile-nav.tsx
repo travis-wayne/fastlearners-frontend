@@ -12,6 +12,7 @@ import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
 import { Icons } from "@/components/shared/icons";
+import { ClientOnly } from "@/components/shared/client-only";
 
 import { ModeToggle } from "./mode-toggle";
 
@@ -74,53 +75,55 @@ export function NavMobile() {
               </li>
             ))}
 
-          {isAuthenticated && user ? (
-            <>
-              {user.role.includes("admin") ? (
+          <ClientOnly>
+            {isAuthenticated && user ? (
+              <>
+                {user.role.includes("admin") ? (
+                  <li className="py-3">
+                    <Link
+                      href="/admin"
+                      onClick={() => setOpen(false)}
+                      className="flex w-full font-medium capitalize"
+                    >
+                      Admin
+                    </Link>
+                  </li>
+                ) : null}
+
                 <li className="py-3">
                   <Link
-                    href="/admin"
+                    href="/dashboard"
                     onClick={() => setOpen(false)}
                     className="flex w-full font-medium capitalize"
                   >
-                    Admin
+                    Dashboard
                   </Link>
                 </li>
-              ) : null}
+              </>
+            ) : (
+              <>
+                <li className="py-3">
+                  <Link
+                    href="/auth/login"
+                    onClick={() => setOpen(false)}
+                    className="flex w-full font-medium capitalize"
+                  >
+                    Login
+                  </Link>
+                </li>
 
-              <li className="py-3">
-                <Link
-                  href="/dashboard"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full font-medium capitalize"
-                >
-                  Dashboard
-                </Link>
-              </li>
-            </>
-          ) : (
-            <>
-              <li className="py-3">
-                <Link
-                  href="/auth/login"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full font-medium capitalize"
-                >
-                  Login
-                </Link>
-              </li>
-
-              <li className="py-3">
-                <Link
-                  href="/auth/register"
-                  onClick={() => setOpen(false)}
-                  className="flex w-full font-medium capitalize"
-                >
-                  Sign up
-                </Link>
-              </li>
-            </>
-          )}
+                <li className="py-3">
+                  <Link
+                    href="/auth/register"
+                    onClick={() => setOpen(false)}
+                    className="flex w-full font-medium capitalize"
+                  >
+                    Sign up
+                  </Link>
+                </li>
+              </>
+            )}
+          </ClientOnly>
         </ul>
 
         {documentation ? (

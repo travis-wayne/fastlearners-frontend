@@ -15,6 +15,7 @@ interface AuthState {
   setUser: (user: User) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
+  hydrate: () => void;
   login: (credentials: LoginCredentials) => Promise<void>;
   loginWithGoogle: (data: { user: User; access_token: string }) => Promise<void>;
   logout: () => Promise<void>;
@@ -33,12 +34,12 @@ interface AuthState {
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
-  // Initial state - try to load from cookies immediately
-  user: typeof window !== 'undefined' ? getUserFromCookies() : null,
-  isAuthenticated: typeof window !== 'undefined' ? isAuthenticatedFromCookies() : false,
-  isLoading: false,
+  // Initial state - start with null/false on both server and client
+  user: null,
+  isAuthenticated: false,
+  isLoading: true, // Start with loading true
   error: null,
-  isHydrated: true, // Always hydrated with cookie approach
+  isHydrated: false, // Set to false initially
 
   // Actions
   setUser: (user: User) => {
@@ -60,6 +61,20 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       setLoading: (loading: boolean) => set({ isLoading: loading }),
 
       setError: (error: string | null) => set({ error }),
+
+  hydrate: () => {
+    if (typeof window !== 'undefined') {
+      const user = getUserFromCookies();
+      const isAuthenticated = isAuthenticatedFromCookies();
+      
+      set({
+        user,
+        isAuthenticated,
+        isLoading: false,
+        isHydrated: true,
+      });
+    }
+  },
 
   login: async (credentials: LoginCredentials) => {
     try {

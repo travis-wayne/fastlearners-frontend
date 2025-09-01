@@ -2,12 +2,11 @@ import axios from 'axios';
 
 const BASE_URL = 'https://fastlearnersapp.com/api/v1';
 
-// Get auth token from storage
+import { getTokenFromCookies } from '@/lib/auth-cookies';
+
+// Get auth token from cookies (matching your auth store)
 const getAuthToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('access_token');
-  }
-  return null;
+  return getTokenFromCookies();
 };
 
 // Create axios instance with auth header
@@ -26,7 +25,10 @@ export interface SimpleUploadResult {
 export const uploadCheckMarkersSimple = async (file: File): Promise<SimpleUploadResult> => {
   try {
     const formData = new FormData();
-    formData.append('check_marker_file', file);
+  formData.append('check_markers_file', file);
+    
+    console.log('Simple upload - FormData contents:', formData.get('check_markers_file'));
+    console.log('Simple upload - File details:', { name: file.name, size: file.size, type: file.type });
     
     const response = await axios.post(
       `${BASE_URL}/superadmin/lessons/uploads/check-markers`,
@@ -35,7 +37,7 @@ export const uploadCheckMarkersSimple = async (file: File): Promise<SimpleUpload
         headers: {
           ...createAuthHeaders(),
           'Accept': 'application/json',
-          'Content-Type': 'multipart/form-data',
+          // Don't set Content-Type - let axios set it with boundary
         },
       }
     );

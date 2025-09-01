@@ -16,6 +16,7 @@ import { DocsSearch } from "@/components/docs/search";
 import { ModalContext } from "@/components/modals/providers";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { ClientOnly } from "@/components/shared/client-only";
 
 interface NavBarProps {
   scroll?: boolean;
@@ -100,34 +101,34 @@ export function NavBar({ scroll = false }: NavBarProps) {
             </div>
           ) : null}
 
-          {isAuthenticated && user ? (
-            <Link
-              href={user.role.includes("admin") ? "/admin" : "/dashboard"}
-              className="hidden md:block"
-            >
+          <ClientOnly fallback={<Skeleton className="hidden h-9 w-28 rounded-full lg:flex" />}>
+            {isAuthenticated && user ? (
+              <Link
+                href={user.role.includes("admin") ? "/admin" : "/dashboard"}
+                className="hidden md:block"
+              >
+                <Button
+                  className="gap-2 px-5"
+                  variant="default"
+                  size="sm"
+                  rounded="full"
+                >
+                  <span>Dashboard</span>
+                </Button>
+              </Link>
+            ) : (
               <Button
-                className="gap-2 px-5"
+                className="hidden gap-2 px-5 md:flex"
                 variant="default"
                 size="sm"
                 rounded="full"
+                onClick={() => setShowSignInModal(true)}
               >
-                <span>Dashboard</span>
+                <span>Sign In</span>
+                <Icons.arrowRight className="size-4" />
               </Button>
-            </Link>
-          ) : !isLoading ? (
-            <Button
-              className="hidden gap-2 px-5 md:flex"
-              variant="default"
-              size="sm"
-              rounded="full"
-              onClick={() => setShowSignInModal(true)}
-            >
-              <span>Sign In</span>
-              <Icons.arrowRight className="size-4" />
-            </Button>
-          ) : (
-            <Skeleton className="hidden h-9 w-28 rounded-full lg:flex" />
-          )}
+            )}
+          </ClientOnly>
         </div>
       </MaxWidthWrapper>
     </header>

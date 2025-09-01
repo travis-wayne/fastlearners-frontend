@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { ApiResponse } from '@/lib/types/auth';
+import { getTokenFromCookies } from '@/lib/auth-cookies';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -11,25 +12,20 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Token management
+// Token management - now uses cookies to match auth store
 export const tokenManager = {
   getToken: (): string | null => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('access_token');
-    }
-    return null;
+    return getTokenFromCookies();
   },
   
   setToken: (token: string): void => {
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('access_token', token);
-    }
+    // This should be handled by the auth store via setAuthCookies
+    console.warn('Use auth store setUser instead of tokenManager.setToken');
   },
   
   removeToken: (): void => {
-    if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
-    }
+    // This should be handled by the auth store via logout
+    console.warn('Use auth store logout instead of tokenManager.removeToken');
   },
 };
 
