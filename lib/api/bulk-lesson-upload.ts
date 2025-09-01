@@ -89,7 +89,8 @@ export const uploadAllLessonFilesBulk = async (files: BulkUploadFiles): Promise<
 
     // Log FormData contents
     console.log('📤 FormData entries:');
-    for (let [key, value] of formData.entries()) {
+    const entries = Array.from(formData.entries());
+    for (let [key, value] of entries) {
       if (value instanceof File) {
         console.log(`  ${key}: ${value.name} (${value.size} bytes)`);
       }
