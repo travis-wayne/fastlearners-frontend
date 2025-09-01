@@ -46,7 +46,7 @@ export default function BulkUploadPage() {
     examples_file: { ...initialFileState },
     exercises_file: { ...initialFileState },
     general_exercises_file: { ...initialFileState },
-    check_marker_file: { ...initialFileState }
+    check_markers_file: { ...initialFileState }
   });
 
   const [uploadState, setUploadState] = useState<BulkUploadState>(initialUploadState);
@@ -96,7 +96,7 @@ export default function BulkUploadPage() {
         examples_file: files.examples_file.file!,
         exercises_file: files.exercises_file.file!,
         general_exercises_file: files.general_exercises_file.file!,
-        check_marker_file: files.check_marker_file.file!
+        check_markers_file: files.check_markers_file.file!
       };
 
       const response = await uploadAllLessonFiles(uploadFiles);
@@ -133,7 +133,7 @@ export default function BulkUploadPage() {
       examples_file: { ...initialFileState },
       exercises_file: { ...initialFileState },
       general_exercises_file: { ...initialFileState },
-      check_marker_file: { ...initialFileState }
+      check_markers_file: { ...initialFileState }
     });
     setUploadState(initialUploadState);
   };
@@ -170,7 +170,7 @@ export default function BulkUploadPage() {
       fileType: 'general_exercises' as keyof typeof CSV_COLUMNS
     },
     {
-      key: 'check_marker_file',
+      key: 'check_markers_file',
       title: 'Check Markers File',
       description: 'Assessment checkpoints and scoring',
       fileType: 'check_markers' as keyof typeof CSV_COLUMNS
