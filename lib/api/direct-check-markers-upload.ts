@@ -35,7 +35,8 @@ export const uploadCheckMarkersDirectly = async (file: File): Promise<DirectUplo
 
     console.log('📤 FormData created with file:', formData.get('check_markers_file'));
     console.log('📤 FormData entries:');
-    for (let [key, value] of formData.entries()) {
+    const entries = Array.from(formData.entries());
+    for (let [key, value] of entries) {
       console.log(`  ${key}:`, value);
     }
 
