@@ -109,6 +109,11 @@ export const profileApi = {
     const response = await api.post('/profile/edit/password', data);
     return response.data;
   },
+
+  updateRole: async (role: string): Promise<ApiResponse<{ user: User }>> => {
+    const response = await api.post<{ user: User }>('/profile/update-role', { role });
+    return response.data;
+  },
 };
 
 // Helper functions

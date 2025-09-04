@@ -1,4 +1,0 @@
-lesson,title,description,order_index
-Number Bases System,Conversion from Base 10 to Other Bases,"[{""heading"":null,""description"":""The Modal Arithmetic that you will learn later in the session is useful in this problem. Its utility here will prepare you for the main topic. For conversion from base 10 to other bases;"",""image_path"":null,""points"":[""Divide the given number repeatedly by the required base"",""Write down the remainders by the right side."",""Divide till the quotient becomes 0."",""The answer is the remainder read from bottom to top.""]}]",1
-Number Bases System,Conversion from Any Base to Base 10,"[{""heading"":null,""description"":""One of the methods is by expansion in the power of base as shown below."",""image_path"":null,""points"":[]}]",2
-Number Bases System,Conversion of Decimal Fractions to Base 10,"[{""heading"":null,""description"":""Conversion of Decimal Fractions to Base 10."",""image_path"":null,""points"":[]}]",3

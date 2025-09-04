@@ -20,6 +20,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       '/onboarding',
       '/auth',
       '/guest', // Limited browsing
+      '/role', // Role selection during onboarding
     ],
     restrictedRoutes: [
       '/dashboard',
@@ -47,6 +48,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       '/teacher',
       '/guardian',
       '/onboarding', // Cannot go back to onboarding
+      '/role', // Cannot change role after selection
     ],
     requiresOnboarding: false,
     canSwitchRoles: false, // Permanent choice
@@ -65,6 +67,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       '/admin',
       '/teacher',
       '/onboarding', // Cannot go back to onboarding
+      '/role', // Cannot change role after selection
     ],
     requiresOnboarding: false,
     canSwitchRoles: false, // Permanent choice

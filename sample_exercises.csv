@@ -1,7 +1,0 @@
-concept|title|problem|solution_steps|answers|correct_answer|order_index
-Number Recognition|Number Quiz|Which number comes between 3 and 5?|["Think about counting: 3, ?, 5", "The missing number is 4"]|["2", "4", "6", "7"]|4|1
-Counting Sequence|Missing Number|Fill in the blank: 1, 2, _, 4, 5|["Count from 1 to 5", "Find the missing number", "The answer is 3"]|["1", "3", "5", "6"]|3|1
-Understanding Addition|Simple Addition|What is 1 + 2?|["Start with 1", "Add 2 more", "Count all: 1, 2, 3"]|["2", "3", "4", "5"]|3|1
-Visual Addition|Picture Addition|Count the apples: 🍎🍎 + 🍎 = ?|["Count the first group: 2 apples", "Count the second group: 1 apple", "Add them together: 2 + 1 = 3"]|["2", "3", "4", "5"]|3|1
-Letter Recognition|Uppercase Match|Match the uppercase letter with lowercase: A|["Look at the uppercase A", "Find the matching lowercase letter", "The answer is 'a'"]|["b", "a", "c", "d"]|a|1
-Letter Formation|Letter Writing|Which letter comes after B in the alphabet?|["Recite the alphabet: A, B, C", "The letter after B is C"]|["A", "C", "D", "E"]|C|1

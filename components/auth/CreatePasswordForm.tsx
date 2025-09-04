@@ -95,19 +95,19 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
           setUser(user);
         }
 
-        // Redirect to guest page
-        console.log("Redirecting to /guest...");
+        // Redirect to role selection page
+        console.log("Redirecting to /role...");
         
         // Try multiple redirect methods
         setTimeout(() => {
-          console.log("Attempting router.push to /guest");
-          router.push("/guest");
+          console.log("Attempting router.push to /role");
+          router.push("/role");
           
           // Fallback after 1 second
           setTimeout(() => {
             if (window.location.pathname.includes("create-password")) {
               console.log("Router.push failed, using window.location.href");
-              window.location.href = "/guest";
+              window.location.href = "/role";
             }
           }, 1000);
         }, 200);
@@ -126,7 +126,7 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
 
   const handleManualRedirect = () => {
     console.log("Manual redirect button clicked");
-    window.location.href = "/guest";
+    window.location.href = "/role";
   };
 
   if (success) {
@@ -148,7 +148,7 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
             className="w-full"
             size="lg"
           >
-            Continue to Dashboard
+            Continue to Role Selection
           </Button>
           
           <p className="text-center text-sm text-muted-foreground">

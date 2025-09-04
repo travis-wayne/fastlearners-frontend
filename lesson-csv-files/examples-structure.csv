@@ -1,7 +1,0 @@
-﻿concept,title,problem,solution_steps,answer,order_index
-Conversion from Base 10 to Other Bases,Example 1,Convert 67₁₀ to base 2,"[""67 ÷ 2 = 33 R1"",""33 ÷ 2 = 16 R1"",""16 ÷ 2 = 8 R0"",""8 ÷ 2 = 4 R0"",""4 ÷ 2 = 2 R0"",""2 ÷ 2 = 1 R0"",""1 ÷ 2 = 0 R1""]",1000011₂,1
-Conversion from Base 10 to Other Bases,Example 2,Convert 67₁₀ to base 8,"[""67 ÷ 8 = 8 R3"",""8 ÷ 8 = 1 R0"",""1 ÷ 8 = 0 R1""]",103₈,2
-Conversion from Any Base to Base 10,Example 1,Convert 321₅ to a number in base 10,"[""321₅ = 3 × 5² + 2 × 5¹ + 1 × 5⁰"",""321₅ = 3 × 25 + 10 + 1"",""321₅ = 75 + 10 + 1""]",86₁₀,1
-Conversion from Any Base to Base 10,Example 2,Convert 110101₂ to base 10,"[""110101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰"",""110101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1"",""110101₂ = 32 + 16 + 0 + 4 + 0 + 1""]",53₁₀,2
-Conversion of Decimal Fractions to Base 10,Example 1,Convert 11.011₂ to base 10,"[""11.011₂ = 1 × 2¹ + 1 × 20 + 0 × 2-1 + 1 × 2-2 + 1 × 2-3"",""11.011₂ = 2 + 1 + 0 + (1/22) + (1/23) "",""11.011₂ = 3 + (1/4) + (1/8) = 27/8""]",3(3/8₁₀),1
-Conversion of Decimal Fractions to Base 10,Example 2,Convert 241.238 to base 10,"[""241.238  = 2 × 82 + 4 × 81 + 1 × 80 + 2 × 8−1 + 3 × 8−2"",""241.238 = 2 × 64 + 4 × 8 + 1 × 1 + 2 × (1/8) + 3 × (1/64)"",""241.238 = 128 + 32 + 1 + (2/8) + (3/64)"",""241.238 = 161 + (19/64)""]",161.29710,2

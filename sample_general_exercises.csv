@@ -1,7 +1,0 @@
-lesson|problem|solution_steps|answers|correct_answer|order_index
-Numbers and Counting|Count all the objects in this picture and write the number|["Look at all objects in the picture", "Count them one by one", "Write the total number"]|["5", "6", "7", "8"]|6|1
-Numbers and Counting|Circle the largest number: 2, 7, 4, 9, 1|["Look at all the numbers", "Compare each number", "Find the biggest one", "Circle 9"]|["2", "7", "4", "9"]|9|2
-Addition Basics|Sarah has 3 stickers. Her friend gives her 2 more. How many stickers does Sarah have now?|["Start with 3 stickers", "Add 2 more stickers", "Count all: 3 + 2 = 5"]|["4", "5", "6", "7"]|5|1
-Addition Basics|There are 4 birds on a tree. 1 more bird joins them. How many birds are there in total?|["Count the birds already on the tree: 4", "Add 1 more bird", "Total: 4 + 1 = 5"]|["4", "5", "6", "3"]|5|2
-The Alphabet|Write the first 5 letters of the alphabet|["Start with the first letter: A", "Continue in order: B, C, D, E", "Write: A, B, C, D, E"]|["A,B,C,D,E", "A,C,E,G,I", "B,C,D,E,F", "A,B,D,E,F"]|A,B,C,D,E|1
-The Alphabet|Which letter comes before 'D' in the alphabet?|["Think of the alphabet order", "What comes before D?", "The answer is C"]|["B", "C", "E", "F"]|C|2

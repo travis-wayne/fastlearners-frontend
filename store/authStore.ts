@@ -31,6 +31,7 @@ interface AuthState {
   hasRole: (role: UserRole) => boolean;
   isPrimaryRole: (role: UserRole) => boolean;
   isGuest: () => boolean;
+  canChangeRole: () => boolean;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
@@ -284,6 +285,15 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   isGuest: (): boolean => {
     return get().isPrimaryRole('guest');
+  },
+
+  canChangeRole: (): boolean => {
+    const user = get().user;
+    if (!user) return false;
+    
+    // Only guests can change their role (during onboarding)
+    // Once a user has selected student or guardian, they cannot change
+    return user.role[0] === 'guest';
   },
 }));
 
