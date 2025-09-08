@@ -3,13 +3,13 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
-import { cn } from "@/lib/utils";
+import { UserRole } from "@/lib/types/auth";
 import { Plus, X } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
 import { Icons } from "@/components/shared/icons";
 import { getQuickActions } from "@/config/navigation";
-import { UserRole } from "@/types";
 
 interface MobileFabProps {
   className?: string;
@@ -20,11 +20,11 @@ export function MobileFab({ className }: MobileFabProps) {
   const [isOpen, setIsOpen] = useState(false);
   
   // Get user's primary role and quick actions
-  const primaryRole = user?.role[0] || UserRole.GUEST;
+  const primaryRole = user?.role[0] || 'guest';
   const quickActions = getQuickActions(primaryRole);
 
   // Don't show FAB for guests or if no quick actions
-  if (primaryRole === UserRole.GUEST || quickActions.length === 0) {
+  if (primaryRole === 'guest' || quickActions.length === 0) {
     return null;
   }
 
@@ -60,31 +60,26 @@ export function MobileFab({ className }: MobileFabProps) {
           {quickActions.map((action, index) => {
             const Icon = Icons[action.icon as keyof typeof Icons];
             return (
-              <Button
+              <Link 
                 key={index}
-                asChild
-                size="default"
+                href={action.href}
                 className={cn(
-                  "h-12 px-4 rounded-full shadow-lg",
+                  "flex items-center gap-2 h-12 px-4 rounded-full shadow-lg",
                   "bg-background border border-border hover:bg-muted",
                   "transition-all duration-200 ease-in-out",
+                  "text-sm font-medium",
                   isOpen 
-                    ? `transform translate-y-0 opacity-100` 
-                    : `transform translate-y-2 opacity-0`,
+                    ? `translate-y-0 opacity-100` 
+                    : `translate-y-2 opacity-0`,
                 )}
                 style={{
                   transitionDelay: isOpen ? `${index * 50}ms` : `${(quickActions.length - index) * 30}ms`
                 }}
                 onClick={closeFab}
               >
-                <Link 
-                  href={action.href}
-                  className="flex items-center gap-2"
-                >
-                  <Icon className="size-4" />
-                  <span className="text-sm font-medium">{action.title}</span>
-                </Link>
-              </Button>
+                <Icon className="size-4" />
+                <span>{action.title}</span>
+              </Link>
             );
           })}
         </div>
@@ -132,11 +127,11 @@ export function MobileFabCompact({ className }: MobileFabProps) {
   const { user } = useAuthStore();
   
   // Get user's primary role and quick actions
-  const primaryRole = user?.role[0] || UserRole.GUEST;
+  const primaryRole = user?.role[0] || 'guest';
   const quickActions = getQuickActions(primaryRole);
 
   // Don't show FAB for guests or if no quick actions
-  if (primaryRole === UserRole.GUEST || quickActions.length === 0) {
+  if (primaryRole === 'guest' || quickActions.length === 0) {
     return null;
   }
 
@@ -146,20 +141,14 @@ export function MobileFabCompact({ className }: MobileFabProps) {
 
   return (
     <div className={cn("fixed bottom-6 right-6 z-50 md:hidden", className)}>
-      <Button
-        asChild
-        size="default"
-        className="size-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90"
+      <Link 
+        href={primaryAction.href}
+        className="size-14 rounded-full shadow-lg bg-primary text-primary-foreground hover:bg-primary/90 inline-flex items-center justify-center transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        title={primaryAction.description}
       >
-        <Link 
-          href={primaryAction.href}
-          className="flex items-center justify-center"
-          title={primaryAction.description}
-        >
-          <Icon className="size-6" />
-          <span className="sr-only">{primaryAction.title}</span>
-        </Link>
-      </Button>
+        <Icon className="size-6" />
+        <span className="sr-only">{primaryAction.title}</span>
+      </Link>
     </div>
   );
 }

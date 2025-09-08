@@ -46,7 +46,7 @@ import { Icons } from "@/components/shared/icons";
 import { siteConfig } from "@/config/site";
 import { getTopbarActions, getNavigationForRole } from "@/config/navigation";
 import { useTheme } from "next-themes";
-import { UserRole } from "@/types";
+import { UserRole } from "@/lib/types/auth";
 import { EnhancedBreadcrumb, EnhancedBreadcrumbCompact } from "@/components/layout/enhanced-breadcrumb";
 
 interface DashboardTopbarProps {
@@ -132,7 +132,8 @@ const mockNotifications: Notification[] = [
 ];
 
 // Helper function to safely get icons
-const getIcon = (iconName: string) => {
+const getIcon = (iconName: string | undefined) => {
+  if (!iconName) return Icons.arrowRight;
   return Icons[iconName as keyof typeof Icons] || Icons.arrowRight;
 };
 
@@ -146,7 +147,7 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
   const [notifications, setNotifications] = useState<Notification[]>(mockNotifications);
 
   // Get user's primary role and topbar actions
-  const primaryRole = user?.role[0] || UserRole.GUEST;
+  const primaryRole = user?.role[0] || 'guest';
   const topbarActions = getTopbarActions(primaryRole);
   const navigationConfig = getNavigationForRole(primaryRole);
 
@@ -261,19 +262,18 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
           <div className="flex items-center gap-2">
             {/* Quick Actions */}
             {topbarActions?.primary && (
-              <Button 
-                asChild
-                size="sm"
-                className="hidden sm:flex"
-              >
-                <Link href={topbarActions.primary.href}>
-                  {(() => {
-                    const Icon = Icons[topbarActions.primary.icon as keyof typeof Icons] || Icons.plus;
-                    return <Icon className="mr-2 size-4" />;
-                  })()}
-                  {topbarActions.primary.title}
-                </Link>
-              </Button>
+              <Link href={topbarActions.primary.href} className={cn(
+                "items-center justify-center text-sm font-medium transition focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed ring-offset-background select-none active:scale-[0.98]",
+                "bg-primary text-primary-foreground hover:bg-primary/90",
+                "h-9 px-3 rounded-md",
+                "hidden sm:flex"
+              )}>
+                {(() => {
+                  const Icon = Icons[topbarActions.primary.icon as keyof typeof Icons] || Icons.plus;
+                  return <Icon className="mr-2 size-4" />;
+                })()}
+                {topbarActions.primary.title}
+              </Link>
             )}
 
             {/* Secondary Actions Dropdown */}
@@ -396,7 +396,7 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={user.avatar} alt={user.name} />
+                    <AvatarImage src={user.image || undefined} alt={user.name} />
                     <AvatarFallback>
                       {user.name?.charAt(0) || user.email.charAt(0)}
                     </AvatarFallback>
@@ -428,7 +428,7 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
                 
                 <DropdownMenuItem asChild>
                   <Link href={
-                    primaryRole === UserRole.STUDENT || primaryRole === UserRole.GUARDIAN 
+                    primaryRole === 'student' || primaryRole === 'guardian' 
                       ? "/dashboard/settings" 
                       : `/dashboard/${primaryRole}/settings`
                   }>
@@ -480,21 +480,24 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
           
           {/* Quick Actions */}
           <CommandGroup heading="Quick Actions">
-            {navigationConfig.quickActions.map((action, index) => (
-              <CommandItem
-                key={index}
-                onSelect={() => {
-                  setCommandOpen(false);
-                  router.push(action.href);
-                }}
-              >
-                <Icons[action.icon as keyof typeof Icons] className="mr-2 size-4" />
-                <div className="flex flex-col items-start">
-                  <span>{action.title}</span>
-                  <span className="text-xs text-muted-foreground">{action.description}</span>
-                </div>
-              </CommandItem>
-            ))}
+            {navigationConfig.quickActions.map((action, index) => {
+              const Icon = getIcon(action.icon);
+              return (
+                <CommandItem
+                  key={index}
+                  onSelect={() => {
+                    setCommandOpen(false);
+                    router.push(action.href);
+                  }}
+                >
+                  <Icon className="mr-2 size-4" />
+                  <div className="flex flex-col items-start">
+                    <span>{action.title}</span>
+                    <span className="text-xs text-muted-foreground">{action.description}</span>
+                  </div>
+                </CommandItem>
+              );
+            })}
           </CommandGroup>
 
           <CommandSeparator />
@@ -503,21 +506,24 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
           <CommandGroup heading="Lessons">
             {mockSearchData
               .filter(item => item.type === 'lesson')
-              .map((lesson) => (
-                <CommandItem
-                  key={lesson.id}
-                  onSelect={() => {
-                    setCommandOpen(false);
-                    router.push(lesson.href);
-                  }}
-                >
-                  <Icons[lesson.icon as keyof typeof Icons] className="mr-2 size-4" />
-                  <div className="flex flex-col items-start">
-                    <span>{lesson.title}</span>
-                    <span className="text-xs text-muted-foreground">{lesson.description}</span>
-                  </div>
-                </CommandItem>
-              ))
+              .map((lesson) => {
+                const Icon = getIcon(lesson.icon);
+                return (
+                  <CommandItem
+                    key={lesson.id}
+                    onSelect={() => {
+                      setCommandOpen(false);
+                      router.push(lesson.href);
+                    }}
+                  >
+                    <Icon className="mr-2 size-4" />
+                    <div className="flex flex-col items-start">
+                      <span>{lesson.title}</span>
+                      <span className="text-xs text-muted-foreground">{lesson.description}</span>
+                    </div>
+                  </CommandItem>
+                );
+              })
             }
           </CommandGroup>
 
@@ -527,21 +533,24 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
           <CommandGroup heading="Subjects">
             {mockSearchData
               .filter(item => item.type === 'subject')
-              .map((subject) => (
-                <CommandItem
-                  key={subject.id}
-                  onSelect={() => {
-                    setCommandOpen(false);
-                    router.push(subject.href);
-                  }}
-                >
-                  <Icons[subject.icon as keyof typeof Icons] className="mr-2 size-4" />
-                  <div className="flex flex-col items-start">
-                    <span>{subject.title}</span>
-                    <span className="text-xs text-muted-foreground">{subject.description}</span>
-                  </div>
-                </CommandItem>
-              ))
+              .map((subject) => {
+                const Icon = getIcon(subject.icon);
+                return (
+                  <CommandItem
+                    key={subject.id}
+                    onSelect={() => {
+                      setCommandOpen(false);
+                      router.push(subject.href);
+                    }}
+                  >
+                    <Icon className="mr-2 size-4" />
+                    <div className="flex flex-col items-start">
+                      <span>{subject.title}</span>
+                      <span className="text-xs text-muted-foreground">{subject.description}</span>
+                    </div>
+                  </CommandItem>
+                );
+              })
             }
           </CommandGroup>
 
@@ -551,46 +560,52 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
           <CommandGroup heading="Quizzes">
             {mockSearchData
               .filter(item => item.type === 'quiz')
-              .map((quiz) => (
-                <CommandItem
-                  key={quiz.id}
-                  onSelect={() => {
-                    setCommandOpen(false);
-                    router.push(quiz.href);
-                  }}
-                >
-                  <Icons[quiz.icon as keyof typeof Icons] className="mr-2 size-4" />
-                  <div className="flex flex-col items-start">
-                    <span>{quiz.title}</span>
-                    <span className="text-xs text-muted-foreground">{quiz.description}</span>
-                  </div>
-                </CommandItem>
-              ))
+              .map((quiz) => {
+                const Icon = getIcon(quiz.icon);
+                return (
+                  <CommandItem
+                    key={quiz.id}
+                    onSelect={() => {
+                      setCommandOpen(false);
+                      router.push(quiz.href);
+                    }}
+                  >
+                    <Icon className="mr-2 size-4" />
+                    <div className="flex flex-col items-start">
+                      <span>{quiz.title}</span>
+                      <span className="text-xs text-muted-foreground">{quiz.description}</span>
+                    </div>
+                  </CommandItem>
+                );
+              })
             }
           </CommandGroup>
 
           {/* Show Users only for Admin/Teacher roles */}
-          {(primaryRole === UserRole.ADMIN || primaryRole === UserRole.TEACHER || primaryRole === UserRole.SUPERADMIN) && (
+          {(primaryRole === 'admin' || primaryRole === 'teacher' || primaryRole === 'superadmin') && (
             <>
               <CommandSeparator />
               <CommandGroup heading="Users">
                 {mockSearchData
                   .filter(item => item.type === 'user')
-                  .map((user) => (
-                    <CommandItem
-                      key={user.id}
-                      onSelect={() => {
-                        setCommandOpen(false);
-                        router.push(user.href);
-                      }}
-                    >
-                      <Icons[user.icon as keyof typeof Icons] className="mr-2 size-4" />
-                      <div className="flex flex-col items-start">
-                        <span>{user.title}</span>
-                        <span className="text-xs text-muted-foreground">{user.description}</span>
-                      </div>
-                    </CommandItem>
-                  ))
+                  .map((user) => {
+                    const Icon = getIcon(user.icon);
+                    return (
+                      <CommandItem
+                        key={user.id}
+                        onSelect={() => {
+                          setCommandOpen(false);
+                          router.push(user.href);
+                        }}
+                      >
+                        <Icon className="mr-2 size-4" />
+                        <div className="flex flex-col items-start">
+                          <span>{user.title}</span>
+                          <span className="text-xs text-muted-foreground">{user.description}</span>
+                        </div>
+                      </CommandItem>
+                    );
+                  })
                 }
               </CommandGroup>
             </>
@@ -601,21 +616,24 @@ export function DashboardTopbar({ onMobileMenuToggle }: DashboardTopbarProps) {
           {/* Navigation Items */}
           <CommandGroup heading="Navigation">
             {navigationConfig.sidebarSections.map((section) =>
-              section.items.map((item) => (
-                <CommandItem
-                  key={item.href}
-                  onSelect={() => {
-                    setCommandOpen(false);
-                    router.push(item.href!);
-                  }}
-                >
-                  <Icons[item.icon as keyof typeof Icons] className="mr-2 size-4" />
-                  <div className="flex flex-col items-start">
-                    <span>{item.title}</span>
-                    <span className="text-xs text-muted-foreground">{section.title}</span>
-                  </div>
-                </CommandItem>
-              ))
+              section.items.map((item) => {
+                const Icon = getIcon(item.icon);
+                return (
+                  <CommandItem
+                    key={item.href}
+                    onSelect={() => {
+                      setCommandOpen(false);
+                      router.push(item.href!);
+                    }}
+                  >
+                    <Icon className="mr-2 size-4" />
+                    <div className="flex flex-col items-start">
+                      <span>{item.title}</span>
+                      <span className="text-xs text-muted-foreground">{section.title}</span>
+                    </div>
+                  </CommandItem>
+                );
+              })
             )}
           </CommandGroup>
 

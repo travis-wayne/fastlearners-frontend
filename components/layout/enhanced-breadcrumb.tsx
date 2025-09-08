@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 import { ChevronRight, Home } from "lucide-react";
 
 import { Icons } from "@/components/shared/icons";
-import { UserRole } from "@/types";
+import { UserRole } from "@/lib/types/auth";
 
 interface BreadcrumbItem {
   label: string;
@@ -108,7 +108,7 @@ export function EnhancedBreadcrumb({
   const pathname = usePathname();
   const { user } = useAuthStore();
   
-  const primaryRole = user?.role[0] || UserRole.GUEST;
+  const primaryRole = user?.role[0] || 'guest';
 
   const breadcrumbs = useMemo(() => {
     // Check for contextual breadcrumbs first

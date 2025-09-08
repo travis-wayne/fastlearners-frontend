@@ -24,7 +24,7 @@ import ProjectSwitcher from "@/components/dashboard/project-switcher";
 import { UpgradeCard } from "@/components/dashboard/upgrade-card";
 import { Icons } from "@/components/shared/icons";
 import { getSidebarConfig } from "@/config/navigation";
-import { UserRole } from "@/types";
+import { UserRole } from "@/lib/types/auth";
 
 // Helper function to safely get icons
 const getIcon = (iconName: string | undefined) => {
@@ -41,7 +41,7 @@ export function DashboardSidebar({}: DashboardSidebarProps) {
   const { user } = useAuthStore();
   
   // Get role-based navigation
-  const primaryRole = user?.role[0] || UserRole.GUEST;
+  const primaryRole: UserRole = user?.role[0] || 'guest';
   const links = getSidebarConfig(primaryRole);
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
@@ -199,7 +199,7 @@ export function MobileSheetSidebar({}: DashboardSidebarProps) {
   const { isSm, isMobile } = useMediaQuery();
   
   // Get role-based navigation for mobile
-  const primaryRole = user?.role[0] || UserRole.GUEST;
+  const primaryRole: UserRole = user?.role[0] || 'guest';
   const links = getSidebarConfig(primaryRole);
 
   if (isSm || isMobile) {

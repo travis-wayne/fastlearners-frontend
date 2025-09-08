@@ -1,6 +1,5 @@
-import { sidebarLinks } from "@/config/dashboard";
 import { AuthenticatedRoute } from '@/components/auth/ProtectedRoute';
-import { DashboardLayoutContent } from '@/components/layout/dashboard-layout-content';
+import { DashboardLayout } from '@/components/layout/dashboard-layout';
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -9,9 +8,9 @@ interface ProtectedLayoutProps {
 export default function Dashboard({ children }: ProtectedLayoutProps) {
   return (
     <AuthenticatedRoute>
-      <DashboardLayoutContent>
+      <DashboardLayout>
         {children}
-      </DashboardLayoutContent>
+      </DashboardLayout>
     </AuthenticatedRoute>
   );
 }

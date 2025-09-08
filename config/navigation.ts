@@ -1,4 +1,5 @@
-import { UserRole, SidebarNavItem } from "@/types";
+import { UserRole } from "@/lib/types/auth";
+import { SidebarNavItem } from "@/types";
 
 /**
  * Unified Navigation Configuration
@@ -27,7 +28,7 @@ export interface RoleNavigationConfig {
  */
 export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   guest: {
-    role: UserRole.GUEST,
+    role: 'guest',
     sidebarSections: [
       {
         title: "EXPLORE",
@@ -76,7 +77,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   student: {
-    role: UserRole.STUDENT,
+    role: 'student',
     sidebarSections: [
       {
         title: "LEARNING",
@@ -185,7 +186,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   guardian: {
-    role: UserRole.GUARDIAN,
+    role: 'guardian',
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -264,7 +265,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   teacher: {
-    role: UserRole.TEACHER,
+    role: 'teacher',
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -365,7 +366,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   admin: {
-    role: UserRole.ADMIN,
+    role: 'admin',
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -458,7 +459,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   superadmin: {
-    role: UserRole.SUPERADMIN,
+    role: 'superadmin',
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -596,7 +597,7 @@ export function getSidebarConfig(role: UserRole): SidebarNavItem[] {
   const roleConfig = getNavigationForRole(role);
   
   // For guests, don't add global items
-  if (role === UserRole.GUEST) {
+  if (role === 'guest') {
     return roleConfig.sidebarSections;
   }
   
