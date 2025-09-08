@@ -151,7 +151,7 @@ export function RoleSelectionForm() {
   }
 
   return (
-    <div className="flex flex-col gap-6 max-w-4xl mx-auto">
+    <div className="mx-auto flex max-w-4xl flex-col gap-6">
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-3xl font-bold">Choose Your Role</h1>
         <p className="text-balance text-muted-foreground">
@@ -176,13 +176,13 @@ export function RoleSelectionForm() {
               key={option.value}
               className={`cursor-pointer transition-all duration-200 hover:shadow-lg ${
                 isSelected 
-                  ? 'ring-2 ring-primary border-primary bg-primary/5' 
+                  ? 'border-primary bg-primary/5 ring-2 ring-primary' 
                   : 'hover:border-primary/50'
               }`}
               onClick={() => handleRoleSelect(option.value)}
             >
               <CardHeader className="text-center">
-                <div className="flex justify-center mb-4">
+                <div className="mb-4 flex justify-center">
                   <div className={`rounded-full p-4 ${
                     isSelected 
                       ? 'bg-primary text-primary-foreground' 
@@ -199,11 +199,11 @@ export function RoleSelectionForm() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  <p className="font-medium text-sm">What you can do:</p>
-                  <ul className="text-sm text-muted-foreground space-y-1">
+                  <p className="text-sm font-medium">What you can do:</p>
+                  <ul className="space-y-1 text-sm text-muted-foreground">
                     {option.benefits.map((benefit, index) => (
                       <li key={index} className="flex items-center gap-2">
-                        <CheckCircle2 className="size-3 text-green-500 flex-shrink-0" />
+                        <CheckCircle2 className="size-3 shrink-0 text-green-500" />
                         {benefit}
                       </li>
                     ))}

@@ -84,8 +84,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
     return (
       <Card className={cn("w-full", className)}>
         <CardContent className="flex items-center justify-center p-8">
-          <div className="text-center space-y-2">
-            <div className="animate-spin h-8 w-8 border-b-2 border-primary mx-auto"></div>
+          <div className="space-y-2 text-center">
+            <div className="mx-auto size-8 animate-spin border-b-2 border-primary"></div>
             <p className="text-muted-foreground">Loading lesson content...</p>
           </div>
         </CardContent>
@@ -118,13 +118,13 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
             <div className="flex items-center gap-4">
               <Link href="/superadmin/lessons">
                 <Button variant="ghost" size="sm">
-                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  <ArrowLeft className="mr-2 size-4" />
                   Back to Lessons
                 </Button>
               </Link>
               <div>
                 <CardTitle className="flex items-center gap-2 text-2xl">
-                  <BookOpen className="h-6 w-6" />
+                  <BookOpen className="size-6" />
                   {lesson.topic}
                 </CardTitle>
                 <CardDescription className="mt-1">
@@ -135,11 +135,11 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
             
             <div className="flex items-center gap-2">
               <Button onClick={handleExport} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="mr-2 size-4" />
                 Export
               </Button>
               <Button onClick={handleDelete} variant="destructive" size="sm">
-                <Trash2 className="h-4 w-4 mr-2" />
+                <Trash2 className="mr-2 size-4" />
                 Delete
               </Button>
             </div>
@@ -151,31 +151,31 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <FileText className="size-5" />
             Lesson Overview
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <h4 className="font-semibold mb-2">Overview</h4>
-            <p className="text-muted-foreground leading-relaxed">{lesson.overview}</p>
+            <h4 className="mb-2 font-semibold">Overview</h4>
+            <p className="leading-relaxed text-muted-foreground">{lesson.overview}</p>
           </div>
           
           <div>
-            <h4 className="font-semibold mb-2">Summary</h4>
-            <p className="text-muted-foreground leading-relaxed">{lesson.summary}</p>
+            <h4 className="mb-2 font-semibold">Summary</h4>
+            <p className="leading-relaxed text-muted-foreground">{lesson.summary}</p>
           </div>
 
           <div className="grid gap-4 md:grid-cols-2">
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Target className="h-4 w-4" />
+              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                <Target className="size-4" />
                 Learning Objectives
               </h4>
               <ul className="space-y-1">
                 {lesson.objectives.map((objective, index) => (
-                  <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                    <CheckCircle className="h-3 w-3 mt-1 text-green-600 shrink-0" />
+                  <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <CheckCircle className="mt-1 size-3 shrink-0 text-green-600" />
                     {objective}
                   </li>
                 ))}
@@ -183,8 +183,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
             </div>
 
             <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Lightbulb className="h-4 w-4" />
+              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                <Lightbulb className="size-4" />
                 Key Concepts
               </h4>
               <div className="flex flex-wrap gap-2">
@@ -198,10 +198,10 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
           </div>
 
           <div>
-            <h4 className="font-semibold mb-2">Applications</h4>
+            <h4 className="mb-2 font-semibold">Applications</h4>
             <ul className="space-y-1">
               {lesson.application.map((app, index) => (
-                <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
+                <li key={index} className="flex items-start gap-2 text-sm text-muted-foreground">
                   <span className="text-primary">•</span>
                   {app}
                 </li>
@@ -215,27 +215,27 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
       <Tabs defaultValue="concepts" className="w-full">
         <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="concepts" className="flex items-center gap-2">
-            <Lightbulb className="h-4 w-4" />
+            <Lightbulb className="size-4" />
             <span className="hidden sm:inline">Concepts ({concepts.length})</span>
             <span className="sm:hidden">Concepts</span>
           </TabsTrigger>
           <TabsTrigger value="examples" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
+            <FileText className="size-4" />
             <span className="hidden sm:inline">Examples ({examples.length})</span>
             <span className="sm:hidden">Examples</span>
           </TabsTrigger>
           <TabsTrigger value="exercises" className="flex items-center gap-2">
-            <HelpCircle className="h-4 w-4" />
+            <HelpCircle className="size-4" />
             <span className="hidden sm:inline">Exercises ({exercises.length})</span>
             <span className="sm:hidden">Exercises</span>
           </TabsTrigger>
           <TabsTrigger value="general" className="flex items-center gap-2">
-            <HelpCircle className="h-4 w-4" />
+            <HelpCircle className="size-4" />
             <span className="hidden sm:inline">General ({general_exercises.length})</span>
             <span className="sm:hidden">General</span>
           </TabsTrigger>
           <TabsTrigger value="markers" className="flex items-center gap-2">
-            <CheckCircle className="h-4 w-4" />
+            <CheckCircle className="size-4" />
             <span className="hidden sm:inline">Markers ({check_markers.length})</span>
             <span className="sm:hidden">Markers</span>
           </TabsTrigger>
@@ -245,8 +245,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
         <TabsContent value="concepts" className="space-y-4">
           {concepts.length === 0 ? (
             <Card>
-              <CardContent className="text-center py-8">
-                <Lightbulb className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <CardContent className="py-8 text-center">
+                <Lightbulb className="mx-auto mb-2 size-8 text-muted-foreground" />
                 <p className="text-muted-foreground">No concepts available for this lesson</p>
               </CardContent>
             </Card>
@@ -259,21 +259,21 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Description</h4>
-                      <p className="text-muted-foreground leading-relaxed">{concept.description}</p>
+                      <h4 className="mb-2 font-semibold">Description</h4>
+                      <p className="leading-relaxed text-muted-foreground">{concept.description}</p>
                     </div>
                     
                     {concept.examples && (
                       <div>
-                        <h4 className="font-semibold mb-2">Examples</h4>
-                        <p className="text-muted-foreground leading-relaxed">{concept.examples}</p>
+                        <h4 className="mb-2 font-semibold">Examples</h4>
+                        <p className="leading-relaxed text-muted-foreground">{concept.examples}</p>
                       </div>
                     )}
                     
                     {concept.exercises && (
                       <div>
-                        <h4 className="font-semibold mb-2">Exercises</h4>
-                        <p className="text-muted-foreground leading-relaxed">{concept.exercises}</p>
+                        <h4 className="mb-2 font-semibold">Exercises</h4>
+                        <p className="leading-relaxed text-muted-foreground">{concept.exercises}</p>
                       </div>
                     )}
                   </CardContent>
@@ -287,8 +287,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
         <TabsContent value="examples" className="space-y-4">
           {examples.length === 0 ? (
             <Card>
-              <CardContent className="text-center py-8">
-                <FileText className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <CardContent className="py-8 text-center">
+                <FileText className="mx-auto mb-2 size-8 text-muted-foreground" />
                 <p className="text-muted-foreground">No examples available for this lesson</p>
               </CardContent>
             </Card>
@@ -302,15 +302,15 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Content</h4>
-                      <div className="p-4 bg-muted/50 rounded-lg">
-                        <pre className="text-sm whitespace-pre-wrap font-mono">{example.example_content}</pre>
+                      <h4 className="mb-2 font-semibold">Content</h4>
+                      <div className="rounded-lg bg-muted/50 p-4">
+                        <pre className="whitespace-pre-wrap font-mono text-sm">{example.example_content}</pre>
                       </div>
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-2">Explanation</h4>
-                      <p className="text-muted-foreground leading-relaxed">{example.explanation}</p>
+                      <h4 className="mb-2 font-semibold">Explanation</h4>
+                      <p className="leading-relaxed text-muted-foreground">{example.explanation}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -323,8 +323,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
         <TabsContent value="exercises" className="space-y-4">
           {exercises.length === 0 ? (
             <Card>
-              <CardContent className="text-center py-8">
-                <HelpCircle className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <CardContent className="py-8 text-center">
+                <HelpCircle className="mx-auto mb-2 size-8 text-muted-foreground" />
                 <p className="text-muted-foreground">No exercises available for this lesson</p>
               </CardContent>
             </Card>
@@ -338,24 +338,24 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Question</h4>
-                      <p className="text-muted-foreground leading-relaxed">{exercise.question}</p>
+                      <h4 className="mb-2 font-semibold">Question</h4>
+                      <p className="leading-relaxed text-muted-foreground">{exercise.question}</p>
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-2">Options</h4>
+                      <h4 className="mb-2 font-semibold">Options</h4>
                       <div className="space-y-2">
                         {exercise.options.map((option, optIndex) => (
                           <div 
                             key={optIndex} 
                             className={cn(
-                              "p-2 rounded border",
+                              "rounded border p-2",
                               option === exercise.correct_answer 
                                 ? "border-green-500 bg-green-50 dark:bg-green-900/20" 
                                 : "border-border"
                             )}
                           >
-                            <span className="font-medium mr-2">{String.fromCharCode(65 + optIndex)}.</span>
+                            <span className="mr-2 font-medium">{String.fromCharCode(65 + optIndex)}.</span>
                             {option}
                             {option === exercise.correct_answer && (
                               <Badge className="ml-2" variant="default">Correct</Badge>
@@ -366,8 +366,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-2">Explanation</h4>
-                      <p className="text-muted-foreground leading-relaxed">{exercise.explanation}</p>
+                      <h4 className="mb-2 font-semibold">Explanation</h4>
+                      <p className="leading-relaxed text-muted-foreground">{exercise.explanation}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -380,8 +380,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
         <TabsContent value="general" className="space-y-4">
           {general_exercises.length === 0 ? (
             <Card>
-              <CardContent className="text-center py-8">
-                <HelpCircle className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <CardContent className="py-8 text-center">
+                <HelpCircle className="mx-auto mb-2 size-8 text-muted-foreground" />
                 <p className="text-muted-foreground">No general exercises available for this lesson</p>
               </CardContent>
             </Card>
@@ -390,31 +390,31 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
               {general_exercises.map((exercise, index) => (
                 <Card key={exercise.id}>
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       General Exercise {index + 1}
                       <Badge variant="outline">{exercise.difficulty_level}</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Question</h4>
-                      <p className="text-muted-foreground leading-relaxed">{exercise.question}</p>
+                      <h4 className="mb-2 font-semibold">Question</h4>
+                      <p className="leading-relaxed text-muted-foreground">{exercise.question}</p>
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-2">Options</h4>
+                      <h4 className="mb-2 font-semibold">Options</h4>
                       <div className="space-y-2">
                         {exercise.options.map((option, optIndex) => (
                           <div 
                             key={optIndex} 
                             className={cn(
-                              "p-2 rounded border",
+                              "rounded border p-2",
                               option === exercise.correct_answer 
                                 ? "border-green-500 bg-green-50 dark:bg-green-900/20" 
                                 : "border-border"
                             )}
                           >
-                            <span className="font-medium mr-2">{String.fromCharCode(65 + optIndex)}.</span>
+                            <span className="mr-2 font-medium">{String.fromCharCode(65 + optIndex)}.</span>
                             {option}
                             {option === exercise.correct_answer && (
                               <Badge className="ml-2" variant="default">Correct</Badge>
@@ -425,8 +425,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-2">Explanation</h4>
-                      <p className="text-muted-foreground leading-relaxed">{exercise.explanation}</p>
+                      <h4 className="mb-2 font-semibold">Explanation</h4>
+                      <p className="leading-relaxed text-muted-foreground">{exercise.explanation}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -439,8 +439,8 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
         <TabsContent value="markers" className="space-y-4">
           {check_markers.length === 0 ? (
             <Card>
-              <CardContent className="text-center py-8">
-                <CheckCircle className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+              <CardContent className="py-8 text-center">
+                <CheckCircle className="mx-auto mb-2 size-8 text-muted-foreground" />
                 <p className="text-muted-foreground">No check markers available for this lesson</p>
               </CardContent>
             </Card>
@@ -449,20 +449,20 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
               {check_markers.map((marker, index) => (
                 <Card key={marker.id}>
                   <CardHeader>
-                    <CardTitle className="text-lg flex items-center gap-2">
+                    <CardTitle className="flex items-center gap-2 text-lg">
                       {marker.marker_type}
                       <Badge variant="outline">{marker.points} points</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
                     <div>
-                      <h4 className="font-semibold mb-2">Criteria</h4>
-                      <p className="text-muted-foreground leading-relaxed">{marker.criteria}</p>
+                      <h4 className="mb-2 font-semibold">Criteria</h4>
+                      <p className="leading-relaxed text-muted-foreground">{marker.criteria}</p>
                     </div>
                     
                     <div>
-                      <h4 className="font-semibold mb-2">Description</h4>
-                      <p className="text-muted-foreground leading-relaxed">{marker.description}</p>
+                      <h4 className="mb-2 font-semibold">Description</h4>
+                      <p className="leading-relaxed text-muted-foreground">{marker.description}</p>
                     </div>
                   </CardContent>
                 </Card>
@@ -480,12 +480,12 @@ export function LessonDetailView({ lessonId, className, onDelete }: LessonDetail
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-center gap-2 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="size-4 text-muted-foreground" />
               <span className="text-muted-foreground">Created:</span>
               <span>{new Date(lesson.created_at).toLocaleDateString()}</span>
             </div>
             <div className="flex items-center gap-2 text-sm">
-              <Calendar className="h-4 w-4 text-muted-foreground" />
+              <Calendar className="size-4 text-muted-foreground" />
               <span className="text-muted-foreground">Updated:</span>
               <span>{new Date(lesson.updated_at).toLocaleDateString()}</span>
             </div>

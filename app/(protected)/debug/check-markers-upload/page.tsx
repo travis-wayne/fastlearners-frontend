@@ -255,13 +255,13 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto space-y-8 p-6">
       <div>
-        <h1 className="text-3xl font-bold flex items-center gap-2">
-          <Bug className="h-8 w-8" />
+        <h1 className="flex items-center gap-2 text-3xl font-bold">
+          <Bug className="size-8" />
           Debug: Check-Markers Upload
         </h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Comprehensive testing and debugging for check-markers upload functionality
         </p>
       </div>
@@ -270,7 +270,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Info className="h-5 w-5" />
+            <Info className="size-5" />
             Authentication Status
           </CardTitle>
         </CardHeader>
@@ -279,9 +279,9 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
             <div className="space-y-2">
               <div className="flex items-center gap-2">
                 {isAuthenticated ? (
-                  <CheckCircle className="h-4 w-4 text-green-500" />
+                  <CheckCircle className="size-4 text-green-500" />
                 ) : (
-                  <AlertCircle className="h-4 w-4 text-red-500" />
+                  <AlertCircle className="size-4 text-red-500" />
                 )}
                 <span>Authentication: {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</span>
               </div>
@@ -302,7 +302,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <FileText className="h-5 w-5" />
+            <FileText className="size-5" />
             File Selection & Preview
           </CardTitle>
         </CardHeader>
@@ -314,10 +314,10 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 accept=".csv,.txt"
                 onChange={handleFileSelect}
                 className="block w-full text-sm text-muted-foreground
-                file:mr-4 file:py-2 file:px-4
-                file:rounded-full file:border-0
-                file:text-sm file:font-semibold
-                file:bg-primary file:text-primary-foreground
+                file:mr-4 file:rounded-full file:border-0
+                file:bg-primary file:px-4
+                file:py-2 file:text-sm
+                file:font-semibold file:text-primary-foreground
                 hover:file:bg-primary/90"
               />
               {file && (
@@ -327,9 +327,9 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
               )}
             </div>
             
-            <div className="flex gap-2 flex-wrap">
+            <div className="flex flex-wrap gap-2">
               <Button onClick={downloadSampleFile} variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
+                <Download className="mr-2 size-4" />
                 Download Sample
               </Button>
               <Button 
@@ -345,7 +345,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 size="sm"
                 disabled={!file}
               >
-                <Eye className="h-4 w-4 mr-2" />
+                <Eye className="mr-2 size-4" />
                 Preview File
               </Button>
             </div>
@@ -357,7 +357,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Upload className="h-5 w-5" />
+            <Upload className="size-5" />
             Upload Testing
           </CardTitle>
           <CardDescription>
@@ -420,14 +420,14 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                   size="lg"
                 >
                   {isUploading ? (
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    <RefreshCw className="mr-2 size-4 animate-spin" />
                   ) : (
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="mr-2 size-4" />
                   )}
                   Test All Methods
                 </Button>
                 <Alert>
-                  <Info className="h-4 w-4" />
+                  <Info className="size-4" />
                   <AlertDescription>
                     This will test all upload methods sequentially. Check the logs below for detailed results.
                   </AlertDescription>
@@ -445,7 +445,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Bug className="h-5 w-5" />
+              <Bug className="size-5" />
               Debug Logs
             </CardTitle>
             <Button onClick={clearLogs} variant="outline" size="sm">
@@ -458,15 +458,15 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
         </CardHeader>
         <CardContent>
           {debugLogs.length === 0 ? (
-            <p className="text-muted-foreground text-center py-8">
+            <p className="py-8 text-center text-muted-foreground">
               No logs yet. Start testing to see debug information here.
             </p>
           ) : (
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="max-h-96 space-y-2 overflow-y-auto">
               {debugLogs.map((log, index) => (
                 <div
                   key={index}
-                  className={`p-3 rounded-lg border-l-4 text-sm ${
+                  className={`rounded-lg border-l-4 p-3 text-sm ${
                     log.type === "success"
                       ? "border-green-500 bg-green-50/50"
                       : log.type === "error"
@@ -476,7 +476,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                       : "border-blue-500 bg-blue-50/50"
                   }`}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
                         <Badge
@@ -494,7 +494,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                         <span className="font-medium">{log.message}</span>
                       </div>
                       {log.data && (
-                        <pre className="mt-2 text-xs bg-muted/50 p-2 rounded overflow-x-auto">
+                        <pre className="mt-2 overflow-x-auto rounded bg-muted/50 p-2 text-xs">
                           {typeof log.data === 'string' 
                             ? log.data 
                             : JSON.stringify(log.data, null, 2)
@@ -502,7 +502,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                         </pre>
                       )}
                     </div>
-                    <span className="text-xs text-muted-foreground ml-2">
+                    <span className="ml-2 text-xs text-muted-foreground">
                       {log.timestamp.toLocaleTimeString()}
                     </span>
                   </div>
@@ -521,23 +521,23 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
         <CardContent>
           <div className="space-y-6 text-sm">
             <div>
-              <h4 className="font-medium text-base mb-3">Check Markers Upload</h4>
+              <h4 className="mb-3 text-base font-medium">Check Markers Upload</h4>
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
-                  <code className="bg-muted px-2 py-1 rounded">
+                  <code className="rounded bg-muted px-2 py-1">
                     POST https://fastlearnersapp.com/api/v1/superadmin/lessons/uploads/check-markers
                   </code>
                 </div>
                 
                 <div>
                   <h5 className="font-medium">Expected Form Field:</h5>
-                  <code className="bg-muted px-2 py-1 rounded">check_markers_file</code>
+                  <code className="rounded bg-muted px-2 py-1">check_markers_file</code>
                 </div>
                 
                 <div>
                   <h5 className="font-medium">Expected CSV Format:</h5>
-                  <div className="bg-muted p-3 rounded text-xs font-mono">
+                  <div className="rounded bg-muted p-3 font-mono text-xs">
                     lesson,overview,lesson_video,concept_one,concept_two,concept_three,concept_four,concept_five,concept_six,concept_seven,general_exercises
                     <br />Number Bases System,5,5,20,25,25,0,0,0,0,20
                   </div>
@@ -548,24 +548,24 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
             <Separator />
             
             <div>
-              <h4 className="font-medium text-base mb-3">Bulk Upload (All Lesson Files)</h4>
+              <h4 className="mb-3 text-base font-medium">Bulk Upload (All Lesson Files)</h4>
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
-                  <code className="bg-muted px-2 py-1 rounded">
+                  <code className="rounded bg-muted px-2 py-1">
                     POST https://fastlearnersapp.com/api/v1/superadmin/lessons/uploads/all-lesson-files
                   </code>
                 </div>
                 
                 <div>
                   <h5 className="font-medium">Required Form Fields:</h5>
-                  <div className="grid grid-cols-2 gap-2 mt-2">
-                    <code className="bg-muted px-2 py-1 rounded text-xs">lessons_file</code>
-                    <code className="bg-muted px-2 py-1 rounded text-xs">concepts_file</code>
-                    <code className="bg-muted px-2 py-1 rounded text-xs">examples_file</code>
-                    <code className="bg-muted px-2 py-1 rounded text-xs">exercises_file</code>
-                    <code className="bg-muted px-2 py-1 rounded text-xs">general_exercises_file</code>
-                    <code className="bg-muted px-2 py-1 rounded text-xs">check_markers_file</code>
+                  <div className="mt-2 grid grid-cols-2 gap-2">
+                    <code className="rounded bg-muted px-2 py-1 text-xs">lessons_file</code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">concepts_file</code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">examples_file</code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">exercises_file</code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">general_exercises_file</code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">check_markers_file</code>
                   </div>
                 </div>
                 
@@ -579,7 +579,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
             <Separator />
             
             <div>
-              <h4 className="font-medium text-base mb-3">Common Headers</h4>
+              <h4 className="mb-3 text-base font-medium">Common Headers</h4>
               <ul className="space-y-1">
                 <li>• <code>Authorization: Bearer {'{token}'}</code></li>
                 <li>• <code>Accept: application/json</code></li>

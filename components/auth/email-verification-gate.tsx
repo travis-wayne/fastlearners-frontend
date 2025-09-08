@@ -126,8 +126,8 @@ export function EmailVerificationGate({
       <Card className="border-orange-200 bg-orange-50/50">
         <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-orange-100">
-              <Shield className="h-5 w-5 text-orange-600" />
+            <div className="flex size-10 items-center justify-center rounded-full bg-orange-100">
+              <Shield className="size-5 text-orange-600" />
             </div>
             <div>
               <CardTitle className="text-lg">{title}</CardTitle>
@@ -140,20 +140,20 @@ export function EmailVerificationGate({
 
         <CardContent className="space-y-4">
           {/* User email info */}
-          <div className="flex items-center justify-between p-3 bg-white rounded-lg border">
+          <div className="flex items-center justify-between rounded-lg border bg-white p-3">
             <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
+              <Mail className="size-4 text-muted-foreground" />
               <span className="font-medium">{user?.email}</span>
             </div>
             <Badge variant={user?.email_verified_at ? "default" : "secondary"}>
               {user?.email_verified_at ? (
                 <>
-                  <Check className="h-3 w-3 mr-1" />
+                  <Check className="mr-1 size-3" />
                   Verified
                 </>
               ) : (
                 <>
-                  <AlertCircle className="h-3 w-3 mr-1" />
+                  <AlertCircle className="mr-1 size-3" />
                   Unverified
                 </>
               )}
@@ -163,7 +163,7 @@ export function EmailVerificationGate({
           {step === 'send' && (
             <div className="space-y-4">
               <Alert>
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="size-4" />
                 <AlertDescription>
                   We need to verify your email address before you can change your password. 
                   Click the button below to receive a verification code.
@@ -177,12 +177,12 @@ export function EmailVerificationGate({
               >
                 {isSendingCode ? (
                   <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                    <RefreshCw className="mr-2 size-4 animate-spin" />
                     Sending Code...
                   </>
                 ) : (
                   <>
-                    <Mail className="h-4 w-4 mr-2" />
+                    <Mail className="mr-2 size-4" />
                     Send Verification Code
                   </>
                 )}
@@ -193,7 +193,7 @@ export function EmailVerificationGate({
           {step === 'verify' && (
             <div className="space-y-4">
               <Alert>
-                <Mail className="h-4 w-4" />
+                <Mail className="size-4" />
                 <AlertDescription>
                   We&apos;ve sent a 6-digit verification code to <strong>{user?.email}</strong>.
                   Please check your email and enter the code below.
@@ -211,7 +211,7 @@ export function EmailVerificationGate({
                     placeholder="Enter 6-digit code"
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                    className="text-center text-lg tracking-widest font-mono"
+                    className="text-center font-mono text-lg tracking-widest"
                     maxLength={6}
                   />
                 </div>
@@ -223,12 +223,12 @@ export function EmailVerificationGate({
                 >
                   {isLoading ? (
                     <>
-                      <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                      <RefreshCw className="mr-2 size-4 animate-spin" />
                       Verifying...
                     </>
                   ) : (
                     <>
-                      <Check className="h-4 w-4 mr-2" />
+                      <Check className="mr-2 size-4" />
                       Verify Email
                     </>
                   )}
@@ -244,7 +244,7 @@ export function EmailVerificationGate({
                   >
                     {cooldownTime > 0 ? (
                       <>
-                        <Clock className="h-3 w-3 mr-1" />
+                        <Clock className="mr-1 size-3" />
                         Resend in {cooldownTime}s
                       </>
                     ) : (
@@ -264,9 +264,9 @@ export function EmailVerificationGate({
           {children}
         </div>
         <div className="absolute inset-0 flex items-center justify-center">
-          <Card className="bg-white/95 border-2 border-dashed">
+          <Card className="border-2 border-dashed bg-white/95">
             <CardContent className="p-4 text-center">
-              <Shield className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+              <Shield className="mx-auto mb-2 size-8 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
                 Complete email verification to access
               </p>

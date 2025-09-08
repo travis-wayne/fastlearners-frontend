@@ -103,7 +103,7 @@ export function ErrorDiagnostics({ error, fileType, className }: ErrorDiagnostic
     <Card className={className}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-red-500" />
+          <AlertCircle className="size-5 text-red-500" />
           Upload Error Diagnostics
         </CardTitle>
         <CardDescription>
@@ -114,7 +114,7 @@ export function ErrorDiagnostics({ error, fileType, className }: ErrorDiagnostic
       <CardContent className="space-y-4">
         {/* Error Analysis */}
         <div className="space-y-3">
-          <h4 className="font-medium text-sm">Identified Issues:</h4>
+          <h4 className="text-sm font-medium">Identified Issues:</h4>
           {diagnostics.map((diagnostic, index) => (
             <Alert 
               key={index}
@@ -123,11 +123,11 @@ export function ErrorDiagnostics({ error, fileType, className }: ErrorDiagnostic
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
                   {diagnostic.type === 'error' ? (
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="size-4" />
                   ) : diagnostic.type === 'warning' ? (
-                    <AlertCircle className="h-4 w-4 text-yellow-600" />
+                    <AlertCircle className="size-4 text-yellow-600" />
                   ) : (
-                    <FileText className="h-4 w-4" />
+                    <FileText className="size-4" />
                   )}
                   <span className="font-medium">{diagnostic.message}</span>
                 </div>
@@ -144,7 +144,7 @@ export function ErrorDiagnostics({ error, fileType, className }: ErrorDiagnostic
         {/* Required Columns */}
         {requiredColumns.length > 0 && (
           <div className="space-y-2">
-            <h4 className="font-medium text-sm">Required Columns for {fileType}:</h4>
+            <h4 className="text-sm font-medium">Required Columns for {fileType}:</h4>
             <div className="flex flex-wrap gap-1">
               {requiredColumns.map((column) => (
                 <Badge key={column} variant="outline" className="text-xs">
@@ -157,16 +157,16 @@ export function ErrorDiagnostics({ error, fileType, className }: ErrorDiagnostic
 
         {/* Raw Error */}
         <div className="space-y-2">
-          <h4 className="font-medium text-sm">Raw Error Message:</h4>
-          <div className="bg-muted p-3 rounded-lg text-sm font-mono break-words">
+          <h4 className="text-sm font-medium">Raw Error Message:</h4>
+          <div className="break-words rounded-lg bg-muted p-3 font-mono text-sm">
             {error}
           </div>
         </div>
 
         {/* Common Solutions */}
         <div className="space-y-2">
-          <h4 className="font-medium text-sm">Common Solutions:</h4>
-          <ul className="text-sm text-muted-foreground space-y-1">
+          <h4 className="text-sm font-medium">Common Solutions:</h4>
+          <ul className="space-y-1 text-sm text-muted-foreground">
             <li>• Ensure all required columns are present and spelled correctly</li>
             <li>• Check that JSON fields (if any) contain valid JSON format</li>
             <li>• Verify that referenced entities (lessons, concepts, classes) exist</li>

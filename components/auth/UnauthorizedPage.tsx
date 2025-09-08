@@ -42,10 +42,10 @@ export function UnauthorizedPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
+      <div className="flex min-h-screen items-center justify-center">
+        <Card className="mx-4 w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="mx-auto mb-4 size-12 rounded-full bg-destructive/10 flex items-center justify-center">
+            <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-destructive/10">
               <Lock className="size-6 text-destructive" />
             </div>
             <CardTitle>Authentication Required</CardTitle>
@@ -53,7 +53,7 @@ export function UnauthorizedPage() {
               You need to be logged in to access this resource
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-center space-y-4">
+          <CardContent className="space-y-4 text-center">
             <Link href="/auth/login">
               <Button className="w-full">
                 Sign In
@@ -66,10 +66,10 @@ export function UnauthorizedPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <Card className="w-full max-w-2xl mx-4">
+    <div className="flex min-h-screen items-center justify-center bg-background">
+      <Card className="mx-4 w-full max-w-2xl">
         <CardHeader className="text-center">
-          <div className="mx-auto mb-4 size-16 rounded-full bg-destructive/10 flex items-center justify-center">
+          <div className="mx-auto mb-4 flex size-16 items-center justify-center rounded-full bg-destructive/10">
             <ShieldX className="size-8 text-destructive" />
           </div>
           <CardTitle className="text-2xl">Access Denied</CardTitle>
@@ -80,8 +80,8 @@ export function UnauthorizedPage() {
         
         <CardContent className="space-y-6">
           {/* User Info */}
-          <div className="bg-muted p-4 rounded-lg">
-            <h4 className="font-medium mb-2">Your Account Details:</h4>
+          <div className="rounded-lg bg-muted p-4">
+            <h4 className="mb-2 font-medium">Your Account Details:</h4>
             <div className="space-y-1 text-sm">
               <div>Name: {user.name || "No name set"}</div>
               <div>Email: {user.email}</div>
@@ -96,7 +96,7 @@ export function UnauthorizedPage() {
             <Alert>
               <AlertTriangle className="size-4" />
               <AlertDescription>
-              <strong>Attempted to access:</strong> <code className="bg-muted rounded px-1">{attemptedRoute}</code>
+              <strong>Attempted to access:</strong> <code className="rounded bg-muted px-1">{attemptedRoute}</code>
               </AlertDescription>
             </Alert>
           )}
@@ -104,7 +104,7 @@ export function UnauthorizedPage() {
           {/* Role-based Messaging */}
           <div className="space-y-3">
             <h4 className="font-medium">Why am I seeing this?</h4>
-            <div className="text-sm text-muted-foreground space-y-2">
+            <div className="space-y-2 text-sm text-muted-foreground">
               {userRole === 'guest' && (
                 <p>
                   As a <Badge variant="outline">Guest</Badge>, you need to complete onboarding 

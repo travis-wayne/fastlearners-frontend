@@ -141,7 +141,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
       <Card>
         <CardContent className="flex items-center justify-center py-12">
           <div className="flex items-center gap-2">
-            <RefreshCw className="h-4 w-4 animate-spin" />
+            <RefreshCw className="size-4 animate-spin" />
             <span>Loading profile...</span>
           </div>
         </CardContent>
@@ -153,7 +153,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <User className="h-5 w-5" />
+          <User className="size-5" />
           Profile Information
         </CardTitle>
         <CardDescription>
@@ -166,7 +166,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           {/* Basic Information */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-medium">
-              <UserCheck className="h-4 w-4" />
+              <UserCheck className="size-4" />
               Basic Information
             </div>
 
@@ -208,7 +208,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           {/* Contact Information */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-medium">
-              <Mail className="h-4 w-4" />
+              <Mail className="size-4" />
               Contact Information
             </div>
 
@@ -223,7 +223,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     placeholder="your.email@example.com"
                   />
                   {profile?.email_verified_at && (
-                    <CheckCircle className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-600" />
+                    <CheckCircle className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-green-600" />
                   )}
                 </div>
                 {errors.email && (
@@ -231,7 +231,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 )}
                 {!profile?.email_verified_at && (
                   <div className="flex items-center gap-1 text-xs text-amber-600">
-                    <AlertCircle className="h-3 w-3" />
+                    <AlertCircle className="size-3" />
                     Email not verified
                   </div>
                 )}
@@ -247,7 +247,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     placeholder="+1 (555) 123-4567"
                   />
                   {profile?.phone_verified_at && (
-                    <CheckCircle className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-green-600" />
+                    <CheckCircle className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-green-600" />
                   )}
                 </div>
                 {errors.phone && (
@@ -255,7 +255,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 )}
                 {!profile?.phone_verified_at && (
                   <div className="flex items-center gap-1 text-xs text-amber-600">
-                    <AlertCircle className="h-3 w-3" />
+                    <AlertCircle className="size-3" />
                     Phone not verified
                   </div>
                 )}
@@ -267,13 +267,13 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           {selectedRole === 'guardian' && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-sm font-medium">
-                <Shield className="h-4 w-4" />
+                <Shield className="size-4" />
                 Child Information
                 <Badge variant="secondary" className="ml-auto">Guardian Required</Badge>
               </div>
 
               <Alert>
-                <AlertCircle className="h-4 w-4" />
+                <AlertCircle className="size-4" />
                 <AlertDescription>
                   As a guardian, you need to provide your child&apos;s contact information 
                   for account management and communication purposes.
@@ -313,14 +313,14 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           {/* Account Status */}
           <div className="space-y-4">
             <div className="flex items-center gap-2 text-sm font-medium">
-              <Shield className="h-4 w-4" />
+              <Shield className="size-4" />
               Account Status
             </div>
 
             <div className="grid gap-3 md:grid-cols-2">
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
+                  <Mail className="size-4 text-muted-foreground" />
                   <span className="text-sm">Email Verification</span>
                 </div>
                 <Badge variant={profile?.email_verified_at ? "default" : "secondary"}>
@@ -328,9 +328,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 </Badge>
               </div>
 
-              <div className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center justify-between rounded-lg border p-3">
                 <div className="flex items-center gap-2">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
+                  <Phone className="size-4 text-muted-foreground" />
                   <span className="text-sm">Phone Verification</span>
                 </div>
                 <Badge variant={profile?.phone_verified_at ? "default" : "secondary"}>
@@ -345,12 +345,12 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
             <Button type="submit" disabled={isSaving}>
               {isSaving ? (
                 <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  <RefreshCw className="mr-2 size-4 animate-spin" />
                   Updating...
                 </>
               ) : (
                 <>
-                  <Save className="h-4 w-4 mr-2" />
+                  <Save className="mr-2 size-4" />
                   Update Profile
                 </>
               )}

@@ -38,10 +38,10 @@ export default function DebugLessonUploadPage() {
   };
 
   return (
-    <div className="container mx-auto p-6 space-y-8">
+    <div className="container mx-auto space-y-8 p-6">
       <div>
         <h1 className="text-3xl font-bold">Debug: Lesson Upload System</h1>
-        <p className="text-muted-foreground mt-2">
+        <p className="mt-2 text-muted-foreground">
           Test the lesson upload functionality with real API calls
         </p>
       </div>
@@ -55,7 +55,7 @@ export default function DebugLessonUploadPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between mb-4">
+          <div className="mb-4 flex items-center justify-between">
             <div className="space-x-2">
               <Badge variant="outline">
                 Completed: {completedUploads.size}/{UPLOAD_CONFIGS.length}
@@ -138,13 +138,13 @@ export default function DebugLessonUploadPage() {
         </CardHeader>
         <CardContent>
           {logs.length === 0 ? (
-            <p className="text-muted-foreground text-sm">No logs yet. Try uploading a file.</p>
+            <p className="text-sm text-muted-foreground">No logs yet. Try uploading a file.</p>
           ) : (
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <div className="max-h-96 space-y-2 overflow-y-auto">
               {logs.map((log, index) => (
                 <div 
                   key={index}
-                  className={`text-sm p-2 rounded border-l-4 ${
+                  className={`rounded border-l-4 p-2 text-sm ${
                     log.type === 'success' 
                       ? 'border-green-500 bg-green-50/50' 
                       : log.type === 'error'
@@ -152,7 +152,7 @@ export default function DebugLessonUploadPage() {
                       : 'border-blue-500 bg-blue-50/50'
                   }`}
                 >
-                  <div className="flex justify-between items-start">
+                  <div className="flex items-start justify-between">
                     <span className="flex-1">{log.message}</span>
                     <Badge 
                       variant={
@@ -167,7 +167,7 @@ export default function DebugLessonUploadPage() {
                       {log.type}
                     </Badge>
                   </div>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <p className="mt-1 text-xs text-muted-foreground">
                     {log.timestamp.toLocaleTimeString()}
                   </p>
                 </div>
@@ -188,18 +188,18 @@ export default function DebugLessonUploadPage() {
         <CardContent>
           <div className="space-y-4">
             <div>
-              <h4 className="font-medium mb-2">Base URL:</h4>
-              <code className="text-sm bg-muted px-2 py-1 rounded">
+              <h4 className="mb-2 font-medium">Base URL:</h4>
+              <code className="rounded bg-muted px-2 py-1 text-sm">
                 https://fastlearnersapp.com/api/v1
               </code>
             </div>
             
             <div>
-              <h4 className="font-medium mb-2">Upload Endpoints:</h4>
+              <h4 className="mb-2 font-medium">Upload Endpoints:</h4>
               <div className="space-y-1">
                 {UPLOAD_CONFIGS.map(config => (
                   <div key={config.key} className="text-sm">
-                    <code className="bg-muted px-2 py-1 rounded text-xs mr-2">
+                    <code className="mr-2 rounded bg-muted px-2 py-1 text-xs">
                       POST
                     </code>
                     <span className="text-muted-foreground">
@@ -211,8 +211,8 @@ export default function DebugLessonUploadPage() {
             </div>
 
             <div>
-              <h4 className="font-medium mb-2">Required Headers:</h4>
-              <ul className="text-sm text-muted-foreground space-y-1">
+              <h4 className="mb-2 font-medium">Required Headers:</h4>
+              <ul className="space-y-1 text-sm text-muted-foreground">
                 <li>• <code>Authorization: Bearer {'{'}token{'}'}</code></li>
                 <li>• <code>Accept: application/json</code></li>
                 <li>• <code>Content-Type: multipart/form-data</code></li>

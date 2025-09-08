@@ -41,11 +41,11 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
   const getLogIcon = (type: UploadLog['type']) => {
     switch (type) {
       case 'success':
-        return <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />;
+        return <CheckCircle className="size-4 text-green-600 dark:text-green-400" />;
       case 'error':
-        return <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />;
+        return <AlertCircle className="size-4 text-red-600 dark:text-red-400" />;
       default:
-        return <Clock className="h-4 w-4 text-blue-600 dark:text-blue-400" />;
+        return <Clock className="size-4 text-blue-600 dark:text-blue-400" />;
     }
   };
 
@@ -66,7 +66,7 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <Clock className="h-5 w-5" />
+              <Clock className="size-5" />
               Upload Logs
             </CardTitle>
             <CardDescription>
@@ -81,7 +81,7 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                 onClick={downloadLogs}
                 className="text-xs"
               >
-                <Download className="h-3 w-3 mr-1" />
+                <Download className="mr-1 size-3" />
                 Export
               </Button>
             )}
@@ -92,7 +92,7 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
               disabled={logs.length === 0}
               className="text-xs"
             >
-              <Trash2 className="h-3 w-3 mr-1" />
+              <Trash2 className="mr-1 size-3" />
               Clear
             </Button>
           </div>
@@ -101,8 +101,8 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
       
       <CardContent>
         {logs.length === 0 ? (
-          <div className="text-center py-8">
-            <Clock className="h-12 w-12 mx-auto text-muted-foreground/50 mb-4" />
+          <div className="py-8 text-center">
+            <Clock className="mx-auto mb-4 size-12 text-muted-foreground/50" />
             <p className="text-muted-foreground">No logs yet. Upload activity will appear here.</p>
           </div>
         ) : (
@@ -112,23 +112,23 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                 <div 
                   key={index}
                   className={cn(
-                    "p-3 rounded-lg border-l-4 transition-all duration-200",
+                    "rounded-lg border-l-4 p-3 transition-all duration-200",
                     getLogStyles(log.type)
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div className="flex items-start gap-3 flex-1">
+                    <div className="flex flex-1 items-start gap-3">
                       {getLogIcon(log.type)}
-                      <div className="flex-1 min-w-0">
+                      <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium leading-relaxed">
                           {log.message}
                         </p>
                         {log.fileName && (
-                          <p className="text-xs text-muted-foreground mt-1">
+                          <p className="mt-1 text-xs text-muted-foreground">
                             File: {log.fileName}
                           </p>
                         )}
-                        <p className="text-xs text-muted-foreground mt-1">
+                        <p className="mt-1 text-xs text-muted-foreground">
                           {log.timestamp.toLocaleString()}
                         </p>
                       </div>
@@ -142,12 +142,12 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                             ? 'destructive' 
                             : 'secondary'
                         }
-                        className="text-xs capitalize shrink-0"
+                        className="shrink-0 text-xs capitalize"
                       >
                         {log.type}
                       </Badge>
                       {log.configKey && (
-                        <Badge variant="outline" className="text-xs shrink-0">
+                        <Badge variant="outline" className="shrink-0 text-xs">
                           {log.configKey}
                         </Badge>
                       )}

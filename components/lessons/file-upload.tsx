@@ -155,14 +155,14 @@ export default function FileUpload({
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <FileText className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <FileText className="size-5" />
               {title}
             </CardTitle>
             <CardDescription>{description}</CardDescription>
           </div>
-          {success && <CheckCircle className="h-6 w-6 text-green-600" />}
-          {(error || validationErrors.length > 0) && <AlertCircle className="h-6 w-6 text-red-600" />}
+          {success && <CheckCircle className="size-6 text-green-600" />}
+          {(error || validationErrors.length > 0) && <AlertCircle className="size-6 text-red-600" />}
         </div>
       </CardHeader>
 
@@ -170,7 +170,7 @@ export default function FileUpload({
         {/* Upload Area */}
         {!selectedFile && (
           <div
-            className={`border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
+            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
               dragActive ? 'border-primary bg-primary/10' : 'border-muted-foreground/25 hover:border-primary/50'
             } ${isUploading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
             onDrop={handleDrop}
@@ -178,7 +178,7 @@ export default function FileUpload({
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
+            <Upload className="mx-auto mb-4 size-12 text-muted-foreground" />
             <div className="space-y-2">
               <p className="text-lg font-medium">
                 {dragActive ? 'Drop your file here' : 'Choose a file or drag it here'}
@@ -192,10 +192,10 @@ export default function FileUpload({
 
         {/* Selected File Info */}
         {selectedFile && (
-          <div className="border rounded-lg p-4 space-y-3">
+          <div className="space-y-3 rounded-lg border p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <FileText className="h-8 w-8 text-primary" />
+                <FileText className="size-8 text-primary" />
                 <div>
                   <p className="font-medium">{selectedFile.name}</p>
                   <p className="text-sm text-muted-foreground">
@@ -211,7 +211,7 @@ export default function FileUpload({
                   onClick={handleRemoveFile}
                   disabled={isUploading}
                 >
-                  <X className="h-4 w-4" />
+                  <X className="size-4" />
                 </Button>
               </div>
             </div>
@@ -232,9 +232,9 @@ export default function FileUpload({
         {/* Validation Errors */}
         {validationErrors.length > 0 && (
           <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
             <AlertDescription>
-              <ul className="list-disc list-inside space-y-1">
+              <ul className="list-inside list-disc space-y-1">
                 {validationErrors.map((error, index) => (
                   <li key={index}>{error}</li>
                 ))}
@@ -246,7 +246,7 @@ export default function FileUpload({
         {/* Error Message */}
         {error && (
           <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -254,7 +254,7 @@ export default function FileUpload({
         {/* Success Message */}
         {success && (
           <Alert className="border-green-200 bg-green-50">
-            <CheckCircle className="h-4 w-4 text-green-600" />
+            <CheckCircle className="size-4 text-green-600" />
             <AlertDescription className="text-green-800">
               File uploaded successfully!
             </AlertDescription>
@@ -262,8 +262,8 @@ export default function FileUpload({
         )}
 
         {/* Expected Columns Info */}
-        <div className="bg-muted/50 p-3 rounded-lg">
-          <h4 className="text-sm font-medium mb-2">Expected CSV Columns:</h4>
+        <div className="rounded-lg bg-muted/50 p-3">
+          <h4 className="mb-2 text-sm font-medium">Expected CSV Columns:</h4>
           <div className="flex flex-wrap gap-1">
             {getExpectedColumns().map((column, index) => (
               <Badge key={index} variant="outline" className="text-xs">
@@ -271,7 +271,7 @@ export default function FileUpload({
               </Badge>
             ))}
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
+          <p className="mt-2 text-xs text-muted-foreground">
             Use pipe (|) as column delimiter. Ensure all columns are present in your CSV file.
           </p>
         </div>

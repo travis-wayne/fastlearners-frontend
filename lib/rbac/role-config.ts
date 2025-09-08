@@ -17,17 +17,17 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
   guest: {
     homeRoute: '/onboarding',
     allowedRoutes: [
+      '/login',
+      '/register', 
       '/onboarding',
       '/auth',
-      '/guest', // Limited browsing
       '/role', // Role selection during onboarding
     ],
     restrictedRoutes: [
       '/dashboard',
+      '/superadmin',
       '/admin',
       '/teacher',
-      '/guardian',
-      '/billing',
     ],
     requiresOnboarding: true,
     canSwitchRoles: true, // Can choose student or guardian once
@@ -38,88 +38,91 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
     allowedRoutes: [
       '/dashboard',
       '/lessons',
-      '/progress',
       '/exercises',
-      '/billing',
-      '/settings',
+      '/profile',
     ],
     restrictedRoutes: [
+      '/superadmin',
       '/admin',
       '/teacher',
-      '/guardian',
       '/onboarding', // Cannot go back to onboarding
-      '/role', // Cannot change role after selection
     ],
     requiresOnboarding: false,
-    canSwitchRoles: false, // Permanent choice
+    canSwitchRoles: false, // Permanent choice - can only switch from Guest → Student once
   },
 
   guardian: {
-    homeRoute: '/guardian',
+    homeRoute: '/dashboard',
     allowedRoutes: [
-      '/guardian',
-      '/dashboard', // Can access student view to help children
+      '/dashboard',
       '/progress', // View children's progress
-      '/billing',
-      '/settings',
+      '/profile',
+      '/guardian-tools',
     ],
     restrictedRoutes: [
-      '/admin',
+      '/superadmin',
+      '/admin', 
       '/teacher',
       '/onboarding', // Cannot go back to onboarding
-      '/role', // Cannot change role after selection
     ],
     requiresOnboarding: false,
-    canSwitchRoles: false, // Permanent choice
+    canSwitchRoles: false, // Permanent choice - can only switch from Guest → Guardian once
   },
 
   teacher: {
-    homeRoute: '/teacher',
+    homeRoute: '/dashboard/teacher/lessons',
     allowedRoutes: [
+      '/dashboard/teacher',
+      '/dashboard',
       '/teacher',
-      '/admin/lessons', // Can manage lessons
-      '/dashboard', // Can view student perspective
       '/lessons',
-      '/exercises',
-      '/settings',
+      '/uploads',
+      '/profile',
     ],
     restrictedRoutes: [
-      '/admin/users', // Cannot manage users
-      '/admin/roles', // Cannot assign roles
+      '/superadmin',
+      '/admin',
       '/onboarding',
-      '/guardian',
-      '/billing', // Teachers don't handle billing
     ],
     requiresOnboarding: false,
     canSwitchRoles: false,
-    assignedBy: ['superadmin'],
+    assignedBy: ['superadmin'], // Must be assigned manually by superadmin
   },
 
   admin: {
-    homeRoute: '/admin',
+    homeRoute: '/dashboard/admin/charts',
     allowedRoutes: [
-      '/admin',
-      '/teacher', // Can access teacher features
+      '/dashboard/admin',
       '/dashboard',
-      '/guardian',
-      '/lessons',
-      '/exercises',
-      '/progress',
-      '/settings',
+      '/admin',
+      '/users',
+      '/reports',
+      '/profile',
     ],
     restrictedRoutes: [
+      '/superadmin',
+      '/teacher', // Admin cannot access teacher-specific routes
       '/onboarding',
-      '/admin/superadmin', // Cannot access superadmin features
     ],
     requiresOnboarding: false,
     canSwitchRoles: false,
-    assignedBy: ['superadmin'],
+    assignedBy: ['superadmin'], // Must be assigned manually by superadmin
   },
 
   superadmin: {
-    homeRoute: '/admin',
-    allowedRoutes: ['*'], // Access to everything
-    restrictedRoutes: [], // No restrictions
+    homeRoute: '/dashboard/superadmin/lessons',
+    allowedRoutes: [
+      '/dashboard/superadmin',
+      '/dashboard',
+      '/superadmin',
+      '/users',
+      '/lessons',
+      '/uploads',
+      '/reports',
+      '/settings',
+      '/profile',
+    ],
+    restrictedRoutes: [],
     requiresOnboarding: false,
     canSwitchRoles: false,
     assignedBy: ['superadmin'], // Only superadmin can create other superadmins

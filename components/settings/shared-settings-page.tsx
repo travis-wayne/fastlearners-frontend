@@ -84,15 +84,15 @@ export function SharedSettingsPage({
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <RoleIcon className="h-6 w-6 text-primary" />
+              <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+                <RoleIcon className="size-6 text-primary" />
               </div>
               <div>
                 <CardTitle className="text-lg">{user.name || 'User'}</CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   <span>{user.email}</span>
                   <Badge className={roleDisplay.color}>
-                    <RoleIcon className="h-3 w-3 mr-1" />
+                    <RoleIcon className="mr-1 size-3" />
                     {roleDisplay.label}
                   </Badge>
                 </CardDescription>
@@ -106,16 +106,16 @@ export function SharedSettingsPage({
         <Tabs defaultValue="profile" className="w-full">
           <TabsList className={`grid w-full ${hideAccountTab ? 'grid-cols-2' : 'grid-cols-3'}`}>
             <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="h-4 w-4" />
+              <User className="size-4" />
               Profile
             </TabsTrigger>
             <TabsTrigger value="security" className="flex items-center gap-2">
-              <Lock className="h-4 w-4" />
+              <Lock className="size-4" />
               Security
             </TabsTrigger>
             {!hideAccountTab && (
               <TabsTrigger value="account" className="flex items-center gap-2">
-                <Trash2 className="h-4 w-4" />
+                <Trash2 className="size-4" />
                 Account
               </TabsTrigger>
             )}
