@@ -9,7 +9,6 @@ import { Menu, PanelLeftClose, PanelRightClose } from "lucide-react";
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useAuthStore } from "@/store/authStore";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -23,26 +22,14 @@ import {
 import ProjectSwitcher from "@/components/dashboard/project-switcher";
 import { UpgradeCard } from "@/components/dashboard/upgrade-card";
 import { Icons } from "@/components/shared/icons";
-import { getSidebarConfig } from "@/config/navigation";
-import { UserRole } from "@/lib/types/auth";
 
-// Helper function to safely get icons
-const getIcon = (iconName: string | undefined) => {
-  if (!iconName) return Icons.arrowRight;
-  return Icons[iconName as keyof typeof Icons] || Icons.arrowRight;
-};
 
 interface DashboardSidebarProps {
-  // Remove the links prop since we'll get them from the navigation config
+  links: SidebarNavItem[];
 }
 
-export function DashboardSidebar({}: DashboardSidebarProps) {
+export function DashboardSidebar({ links }: DashboardSidebarProps) {
   const path = usePathname();
-  const { user } = useAuthStore();
-  
-  // Get role-based navigation
-  const primaryRole: UserRole = user?.role[0] || 'guest';
-  const links = getSidebarConfig(primaryRole);
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -123,7 +110,7 @@ export function DashboardSidebar({}: DashboardSidebarProps) {
                       <div className="h-4" />
                     )}
                     {section.items.map((item) => {
-                      const Icon = getIcon(item.icon);
+                      const Icon = Icons[item.icon || "arrowRight"];
                       return (
                         item.href && (
                           <Fragment key={`link-fragment-${item.title}`}>
@@ -192,15 +179,10 @@ export function DashboardSidebar({}: DashboardSidebarProps) {
   );
 }
 
-export function MobileSheetSidebar({}: DashboardSidebarProps) {
+export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
   const path = usePathname();
-  const { user } = useAuthStore();
   const [open, setOpen] = useState(false);
   const { isSm, isMobile } = useMediaQuery();
-  
-  // Get role-based navigation for mobile
-  const primaryRole: UserRole = user?.role[0] || 'guest';
-  const links = getSidebarConfig(primaryRole);
 
   if (isSm || isMobile) {
     return (
@@ -241,7 +223,7 @@ export function MobileSheetSidebar({}: DashboardSidebarProps) {
                     </p>
 
                     {section.items.map((item) => {
-                      const Icon = getIcon(item.icon);
+                      const Icon = Icons[item.icon || "arrowRight"];
                       return (
                         item.href && (
                           <Fragment key={`link-fragment-${item.title}`}>
