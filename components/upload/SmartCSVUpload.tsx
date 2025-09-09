@@ -141,28 +141,28 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
     <div className="space-y-6">
       {/* Upload Section */}
       <Card className={cn(
-        "transition-all duration-200 border-border dark:border-border",
+        "border-border transition-all duration-200 dark:border-border",
         disabled && "opacity-50",
-        success && "border-green-500 dark:border-green-400 bg-green-50/50 dark:bg-green-950/20",
-        error && "border-red-500 dark:border-red-400 bg-red-50/50 dark:bg-red-950/20"
+        success && "border-green-500 bg-green-50/50 dark:border-green-400 dark:bg-green-950/20",
+        error && "border-red-500 bg-red-50/50 dark:border-red-400 dark:bg-red-950/20"
       )}>
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
             <div className={cn(
-              "p-2 rounded-lg",
+              "rounded-lg p-2",
               disabled ? "bg-gray-100 dark:bg-gray-800" :
                 success ? "bg-green-100 dark:bg-green-900" :
                   "bg-blue-100 dark:bg-blue-900"
             )}>
               <FileText className={cn(
-                "h-5 w-5",
+                "size-5",
                 disabled ? "text-gray-500" :
                   success ? "text-green-600 dark:text-green-400" :
                     "text-blue-600 dark:text-blue-400"
               )} />
             </div>
             Upload {config.title}
-            {success && <Check className="h-4 w-4 text-green-600 dark:text-green-400" />}
+            {success && <Check className="size-4 text-green-600 dark:text-green-400" />}
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             {config.description}
@@ -174,12 +174,12 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
           {!file && !success && (
             <div
               className={cn(
-                "border-2 border-dashed rounded-lg p-8 text-center transition-all duration-200",
+                "rounded-lg border-2 border-dashed p-8 text-center transition-all duration-200",
                 disabled
-                  ? "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 cursor-not-allowed"
+                  ? "cursor-not-allowed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50"
                   : isDragOver
                     ? "border-primary bg-primary/5 dark:bg-primary/10"
-                    : "border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50 cursor-pointer"
+                    : "cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50"
               )}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
@@ -187,10 +187,10 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
               onClick={() => !disabled && fileInputRef.current?.click()}
             >
               <CloudUpload className={cn(
-                "h-12 w-12 mx-auto mb-4",
+                "mx-auto mb-4 size-12",
                 disabled ? "text-gray-400" : "text-muted-foreground"
               )} />
-              <p className="text-base font-medium mb-2">
+              <p className="mb-2 text-base font-medium">
                 {disabled ? "Upload disabled" : "Drop your CSV file here, or click to browse"}
               </p>
               <p className="text-sm text-muted-foreground">
@@ -227,9 +227,9 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
           {/* Selected File Display */}
           {file && !success && (
             <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-muted/50 dark:bg-muted/20 rounded-lg border">
+              <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4 dark:bg-muted/20">
                 <div className="flex items-center gap-3">
-                  <FileText className="h-8 w-8 text-primary" />
+                  <FileText className="size-8 text-primary" />
                   <div>
                     <p className="font-medium">{file.name}</p>
                     <p className="text-sm text-muted-foreground">
@@ -243,7 +243,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
                   </Badge>
                   {!isUploading && (
                     <Button variant="ghost" size="sm" onClick={() => setFile(null)}>
-                      <X className="h-4 w-4" />
+                      <X className="size-4" />
                     </Button>
                   )}
                 </div>
@@ -254,7 +254,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="flex items-center gap-2">
-                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <Loader2 className="size-4 animate-spin" />
                       Uploading...
                     </span>
                     <span>{progress}%</span>
@@ -272,12 +272,12 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
               >
                 {isUploading ? (
                   <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     Uploading...
                   </>
                 ) : (
                   <>
-                    <Upload className="h-4 w-4 mr-2" />
+                    <Upload className="mr-2 size-4" />
                     Upload File
                   </>
                 )}
@@ -288,8 +288,8 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
           {/* Success State */}
           {success && (
             <div className="space-y-4">
-              <Alert className="border-green-500 dark:border-green-600 bg-green-50 dark:bg-green-900/20">
-                <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
+              <Alert className="border-green-500 bg-green-50 dark:border-green-600 dark:bg-green-900/20">
+                <Check className="size-4 text-green-600 dark:text-green-400" />
                 <AlertDescription className="text-green-700 dark:text-green-300">
                   <strong>{config.title}</strong> uploaded successfully!
                 </AlertDescription>
@@ -311,7 +311,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
           {/* Error State */}
           {error && (
             <Alert variant="destructive">
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="size-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
@@ -319,7 +319,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
           {/* Disabled State Message */}
           {disabled && !success && (
             <Alert>
-              <AlertCircle className="h-4 w-4" />
+              <AlertCircle className="size-4" />
               <AlertDescription>
                 Complete the required dependencies first to enable this upload.
               </AlertDescription>
@@ -349,7 +349,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
               ))}
             </div>
             {config.key === "lessons" && (
-              <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border-l-4 border-blue-500">
+              <div className="mt-4 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 dark:bg-blue-900/20">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   <strong>Note:</strong> The objectives, key_concepts, and application columns should contain valid JSON arrays.
                 </p>
@@ -417,15 +417,15 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
       </Card>
 
       <Tabs defaultValue="lessons" className="w-full">
-        <TabsList className="grid w-full grid-cols-7 mb-8 h-12 bg-muted/40 dark:bg-muted/20">
+        <TabsList className="mb-8 grid h-12 w-full grid-cols-7 bg-muted/40 dark:bg-muted/20">
           {mainConfigs.map((config) => (
             <TabsTrigger
               key={config.key}
               value={config.key}
               className={cn(
-                "text-xs font-medium px-3 py-2 transition-all",
+                "px-3 py-2 text-xs font-medium transition-all",
                 "data-[state=active]:bg-background data-[state=active]:shadow-sm",
-                "disabled:opacity-50 disabled:cursor-not-allowed"
+                "disabled:cursor-not-allowed disabled:opacity-50"
               )}
               disabled={!isUploadEnabled(config)}
             >
@@ -434,7 +434,7 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
           ))}
           <TabsTrigger
             value="scheme_of_work"
-            className="text-xs font-medium px-3 py-2 transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm"
+            className="px-3 py-2 text-xs font-medium transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm"
           >
             Scheme of Work
           </TabsTrigger>

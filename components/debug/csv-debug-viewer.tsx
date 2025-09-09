@@ -126,7 +126,7 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
                 <Textarea
                   value={originalContent}
                   readOnly
-                  className="font-mono text-xs h-64"
+                  className="h-64 font-mono text-xs"
                   placeholder="Original CSV content will appear here..."
                 />
               </div>
@@ -144,7 +144,7 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
                         variant="outline"
                         onClick={downloadAPIFormat}
                       >
-                        <Download className="size-3 mr-1" />
+                        <Download className="mr-1 size-3" />
                         Download
                       </Button>
                     )}
@@ -153,7 +153,7 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
                 <Textarea
                   value={apiFormattedContent}
                   readOnly
-                  className="font-mono text-xs h-64"
+                  className="h-64 font-mono text-xs"
                   placeholder="API formatted content will appear here..."
                 />
               </div>
@@ -163,19 +163,19 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">Format Analysis</h4>
                 <div className="grid gap-2 md:grid-cols-3">
-                  <div className="p-3 border rounded">
+                  <div className="rounded border p-3">
                     <p className="text-xs text-muted-foreground">Row Numbers</p>
                     <p className="font-mono text-sm">
                       {apiFormattedContent.includes('1|') ? '✅ Added' : '❌ Missing'}
                     </p>
                   </div>
-                  <div className="p-3 border rounded">
+                  <div className="rounded border p-3">
                     <p className="text-xs text-muted-foreground">BOM Character</p>
                     <p className="font-mono text-sm">
                       {apiFormattedContent.includes('\ufeff') ? '✅ Present' : '⚠️ Missing'}
                     </p>
                   </div>
-                  <div className="p-3 border rounded">
+                  <div className="rounded border p-3">
                     <p className="text-xs text-muted-foreground">Line Endings</p>
                     <p className="font-mono text-sm">
                       {apiFormattedContent.includes('\r\n') ? 'CRLF' : 'LF'}

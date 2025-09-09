@@ -120,7 +120,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <Lock className="h-5 w-5" />
+          <Lock className="size-5" />
           Change Password
         </CardTitle>
         <CardDescription>
@@ -130,7 +130,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
 
       <CardContent className="space-y-6">
         <Alert className="border-green-200 bg-green-50">
-          <CheckCircle className="h-4 w-4 text-green-600" />
+          <CheckCircle className="size-4 text-green-600" />
           <AlertDescription className="text-green-800">
             Email verification complete. You can now change your password.
           </AlertDescription>
@@ -156,9 +156,9 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
               >
                 {showCurrentPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="size-4 text-muted-foreground" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="size-4 text-muted-foreground" />
                 )}
               </Button>
             </div>
@@ -186,9 +186,9 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
                 onClick={() => setShowNewPassword(!showNewPassword)}
               >
                 {showNewPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="size-4 text-muted-foreground" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="size-4 text-muted-foreground" />
                 )}
               </Button>
             </div>
@@ -197,7 +197,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
             {newPassword && (
               <div className="space-y-2">
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 bg-gray-200 rounded-full h-2">
+                  <div className="h-2 flex-1 rounded-full bg-gray-200">
                     <div 
                       className={`h-full rounded-full transition-all duration-300 ${passwordStrength.color}`}
                       style={{ width: `${(passwordStrength.strength / 5) * 100}%` }}
@@ -206,23 +206,23 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
                   <span className="text-xs font-medium">{passwordStrength.label}</span>
                 </div>
                 
-                <div className="text-xs text-muted-foreground space-y-1">
+                <div className="space-y-1 text-xs text-muted-foreground">
                   <p className="font-medium">Password requirements:</p>
                   <ul className="grid grid-cols-2 gap-1 text-xs">
                     <li className={`flex items-center gap-1 ${newPassword.length >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
-                      <CheckCircle className="h-3 w-3" />
+                      <CheckCircle className="size-3" />
                       8+ characters
                     </li>
                     <li className={`flex items-center gap-1 ${/[a-z]/.test(newPassword) ? 'text-green-600' : 'text-gray-500'}`}>
-                      <CheckCircle className="h-3 w-3" />
+                      <CheckCircle className="size-3" />
                       Lowercase letter
                     </li>
                     <li className={`flex items-center gap-1 ${/[A-Z]/.test(newPassword) ? 'text-green-600' : 'text-gray-500'}`}>
-                      <CheckCircle className="h-3 w-3" />
+                      <CheckCircle className="size-3" />
                       Uppercase letter
                     </li>
                     <li className={`flex items-center gap-1 ${/\d/.test(newPassword) ? 'text-green-600' : 'text-gray-500'}`}>
-                      <CheckCircle className="h-3 w-3" />
+                      <CheckCircle className="size-3" />
                       Number
                     </li>
                   </ul>
@@ -254,9 +254,9 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 {showConfirmPassword ? (
-                  <EyeOff className="h-4 w-4 text-muted-foreground" />
+                  <EyeOff className="size-4 text-muted-foreground" />
                 ) : (
-                  <Eye className="h-4 w-4 text-muted-foreground" />
+                  <Eye className="size-4 text-muted-foreground" />
                 )}
               </Button>
             </div>
@@ -267,7 +267,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
 
           {/* Security Notice */}
           <Alert>
-            <Shield className="h-4 w-4" />
+            <Shield className="size-4" />
             <AlertDescription>
               After changing your password, you may be signed out of other devices for security.
             </AlertDescription>
@@ -278,12 +278,12 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
             <Button type="submit" disabled={isChanging}>
               {isChanging ? (
                 <>
-                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  <RefreshCw className="mr-2 size-4 animate-spin" />
                   Changing Password...
                 </>
               ) : (
                 <>
-                  <Key className="h-4 w-4 mr-2" />
+                  <Key className="mr-2 size-4" />
                   Change Password
                 </>
               )}

@@ -108,8 +108,8 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
       header: "Topic",
       cell: ({ row }) => (
         <div className="max-w-[200px]">
-          <div className="font-medium truncate">{row.getValue("topic")}</div>
-          <div className="text-xs text-muted-foreground truncate">
+          <div className="truncate font-medium">{row.getValue("topic")}</div>
+          <div className="truncate text-xs text-muted-foreground">
             {row.original.overview.substring(0, 50)}...
           </div>
         </div>
@@ -169,9 +169,9 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
+              <Button variant="ghost" className="size-8 p-0">
                 <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
+                <MoreHorizontal className="size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -181,14 +181,14 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                 onClick={() => handleViewLesson(lesson.id)}
                 className="cursor-pointer"
               >
-                <Eye className="mr-2 h-4 w-4" />
+                <Eye className="mr-2 size-4" />
                 View Details
               </DropdownMenuItem>
               <DropdownMenuItem
                 onClick={() => handleExportLesson(lesson)}
                 className="cursor-pointer"
               >
-                <Download className="mr-2 h-4 w-4" />
+                <Download className="mr-2 size-4" />
                 Export
               </DropdownMenuItem>
               <DropdownMenuSeparator />
@@ -196,7 +196,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                 onClick={() => handleDeleteLesson(lesson.id)}
                 className="cursor-pointer text-red-600 focus:text-red-600"
               >
-                <Trash2 className="mr-2 h-4 w-4" />
+                <Trash2 className="mr-2 size-4" />
                 Delete
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -351,7 +351,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" />
+              <BookOpen className="size-5" />
               Browse Lessons
             </CardTitle>
             <CardDescription>
@@ -359,7 +359,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
             </CardDescription>
           </div>
           <Button onClick={handleRefresh} variant="outline" size="sm">
-            <RefreshCw className="h-4 w-4 mr-2" />
+            <RefreshCw className="mr-2 size-4" />
             Refresh
           </Button>
         </div>
@@ -369,7 +369,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
         {/* Search and Filters */}
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
           <div className="relative lg:col-span-2">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search lessons..."
               value={searchQuery}
@@ -445,7 +445,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                 onClick={handleClearFilters}
                 className="h-8"
               >
-                <Filter className="h-3 w-3 mr-1" />
+                <Filter className="mr-1 size-3" />
                 Clear Filters
               </Button>
             )}
@@ -457,7 +457,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="ml-auto">
-                Columns <ChevronDown className="ml-2 h-4 w-4" />
+                Columns <ChevronDown className="ml-2 size-4" />
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -508,7 +508,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
                     <div className="flex items-center justify-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
+                      <RefreshCw className="size-4 animate-spin" />
                       Loading lessons...
                     </div>
                   </TableCell>
@@ -518,7 +518,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                   <TableRow
                     key={row.id}
                     data-state={row.getIsSelected() && "selected"}
-                    className="hover:bg-muted/50 cursor-pointer"
+                    className="cursor-pointer hover:bg-muted/50"
                     onClick={() => handleViewLesson(row.original.id)}
                   >
                     {row.getVisibleCells().map((cell) => (
@@ -538,7 +538,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                 <TableRow>
                   <TableCell colSpan={columns.length} className="h-24 text-center">
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
-                      <BookOpen className="h-8 w-8" />
+                      <BookOpen className="size-8" />
                       <div>No lessons found</div>
                       <div className="text-sm">
                         {hasActiveFilters ? 'Try adjusting your filters' : 'No lessons have been uploaded yet'}

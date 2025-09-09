@@ -125,7 +125,7 @@ export default function AuthDebugPage() {
                     
                     <div>
                       <div className="text-sm font-medium text-muted-foreground">All Roles</div>
-                      <div className="flex gap-1 flex-wrap">
+                      <div className="flex flex-wrap gap-1">
                         {user.role.map((role, index) => (
                           <Badge key={index} variant={index === 0 ? "default" : "secondary"} className="text-xs">
                             {role}
@@ -153,7 +153,7 @@ export default function AuthDebugPage() {
               {user ? (
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Core Permissions</h4>
+                    <h4 className="text-sm font-medium">Core Permissions</h4>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span>Manage Lessons:</span>
@@ -183,7 +183,7 @@ export default function AuthDebugPage() {
                   </div>
                   
                   <div className="space-y-2">
-                    <h4 className="font-medium text-sm">Role Checks</h4>
+                    <h4 className="text-sm font-medium">Role Checks</h4>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span>Has Admin Role:</span>
@@ -230,7 +230,7 @@ export default function AuthDebugPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4 flex-wrap">
+            <div className="flex flex-wrap gap-4">
               <Button onClick={testRolePermissions} variant="outline">
                 🧪 Test Role Permissions
               </Button>
@@ -267,7 +267,7 @@ export default function AuthDebugPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <pre className="bg-muted p-4 rounded-md text-xs overflow-auto">
+              <pre className="overflow-auto rounded-md bg-muted p-4 text-xs">
                 {JSON.stringify(cookieData, null, 2)}
               </pre>
             </CardContent>

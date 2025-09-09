@@ -118,17 +118,17 @@ export function FileUploadCard({
   return (
     <Card className={cn(
       "w-full transition-all duration-200",
-      disabled && "opacity-50 cursor-not-allowed",
+      disabled && "cursor-not-allowed opacity-50",
       success && "border-green-200 bg-green-50/50",
       error && "border-red-200 bg-red-50/50",
       className
     )}>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          <FileText className="h-5 w-5" />
+          <FileText className="size-5" />
           {title}
-          {success && <Check className="h-4 w-4 text-green-600" />}
-          {disabled && <AlertCircle className="h-4 w-4 text-yellow-600" />}
+          {success && <Check className="size-4 text-green-600" />}
+          {disabled && <AlertCircle className="size-4 text-yellow-600" />}
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
@@ -138,15 +138,15 @@ export function FileUploadCard({
         {!file && !success && (
           <div
             className={cn(
-              "border-2 border-dashed rounded-lg p-6 text-center transition-colors cursor-pointer",
+              "cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors",
               disabled 
-                ? "border-gray-200 bg-gray-50 cursor-not-allowed" 
+                ? "cursor-not-allowed border-gray-200 bg-gray-50" 
                 : "border-muted-foreground/25 hover:border-muted-foreground/50"
             )}
             onClick={() => !disabled && fileInputRef.current?.click()}
           >
-            <Upload className="h-8 w-8 mx-auto mb-3 text-muted-foreground" />
-            <p className="text-sm font-medium mb-1">
+            <Upload className="mx-auto mb-3 size-8 text-muted-foreground" />
+            <p className="mb-1 text-sm font-medium">
               {disabled ? "Upload disabled" : "Click to select file"}
             </p>
             <p className="text-xs text-muted-foreground">
@@ -168,11 +168,11 @@ export function FileUploadCard({
         {/* Selected File Display */}
         {file && !success && (
           <div className="space-y-3">
-            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+            <div className="flex items-center justify-between rounded-lg bg-muted p-3">
               <div className="flex items-center gap-3">
-                <FileText className="h-6 w-6 text-primary" />
+                <FileText className="size-6 text-primary" />
                 <div>
-                  <p className="font-medium text-sm">{file.name}</p>
+                  <p className="text-sm font-medium">{file.name}</p>
                   <p className="text-xs text-muted-foreground">
                     {formatFileSize(file.size)}
                   </p>
@@ -184,7 +184,7 @@ export function FileUploadCard({
                 </Badge>
                 {!isUploading && (
                   <Button variant="ghost" size="sm" onClick={handleRemoveFile}>
-                    <X className="h-4 w-4" />
+                    <X className="size-4" />
                   </Button>
                 )}
               </div>
@@ -210,12 +210,12 @@ export function FileUploadCard({
             >
               {isUploading ? (
                 <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  <Loader2 className="mr-2 size-4 animate-spin" />
                   Uploading...
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4 mr-2" />
+                  <Upload className="mr-2 size-4" />
                   Upload File
                 </>
               )}
@@ -227,7 +227,7 @@ export function FileUploadCard({
         {success && (
           <div className="space-y-3">
             <Alert>
-              <Check className="h-4 w-4" />
+              <Check className="size-4" />
               <AlertDescription>
                 <strong>{title}</strong> uploaded successfully!
               </AlertDescription>
@@ -245,7 +245,7 @@ export function FileUploadCard({
         {/* Error State */}
         {error && (
           <Alert variant="destructive">
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
@@ -253,7 +253,7 @@ export function FileUploadCard({
         {/* Disabled State Message */}
         {disabled && !success && (
           <Alert>
-            <AlertCircle className="h-4 w-4" />
+            <AlertCircle className="size-4" />
             <AlertDescription>
               Complete the required dependencies first to enable this upload.
             </AlertDescription>

@@ -37,14 +37,14 @@ export function UserRoleDebug() {
         onClick={() => setShowDebug(true)}
         className="fixed bottom-4 right-4 z-50"
       >
-        <Eye className="h-4 w-4 mr-2" />
+        <Eye className="mr-2 size-4" />
         Show Debug
       </Button>
     );
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 z-50 w-96 max-h-96 overflow-auto">
+    <Card className="fixed bottom-4 right-4 z-50 max-h-96 w-96 overflow-auto">
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm">User Role Debug</CardTitle>
@@ -53,7 +53,7 @@ export function UserRoleDebug() {
             size="sm"
             onClick={() => setShowDebug(false)}
           >
-            <EyeOff className="h-4 w-4" />
+            <EyeOff className="size-4" />
           </Button>
         </div>
         <CardDescription>
@@ -63,8 +63,8 @@ export function UserRoleDebug() {
       <CardContent className="space-y-4">
         {/* Current Auth State */}
         <div>
-          <h4 className="font-medium text-sm mb-2">Auth Store State:</h4>
-          <div className="text-xs space-y-1">
+          <h4 className="mb-2 text-sm font-medium">Auth Store State:</h4>
+          <div className="space-y-1 text-xs">
             <div>Authenticated: <Badge variant={isAuthenticated ? "default" : "destructive"}>{isAuthenticated ? "Yes" : "No"}</Badge></div>
             {user && (
               <>
@@ -86,20 +86,20 @@ export function UserRoleDebug() {
 
         {/* Fetch Current Profile */}
         <div>
-          <div className="flex items-center justify-between mb-2">
-            <h4 className="font-medium text-sm">API Profile Data:</h4>
+          <div className="mb-2 flex items-center justify-between">
+            <h4 className="text-sm font-medium">API Profile Data:</h4>
             <Button
               variant="outline"
               size="sm"
               onClick={fetchProfile}
               disabled={loading}
             >
-              <RefreshCw className={`h-3 w-3 mr-1 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`mr-1 size-3 ${loading ? 'animate-spin' : ''}`} />
               Fetch
             </Button>
           </div>
           {profileData && (
-            <div className="bg-muted p-2 rounded text-xs">
+            <div className="rounded bg-muted p-2 text-xs">
               <pre className="whitespace-pre-wrap">
                 {JSON.stringify(profileData, null, 2)}
               </pre>
@@ -111,8 +111,8 @@ export function UserRoleDebug() {
 
         {/* Cookie Information */}
         <div>
-          <h4 className="font-medium text-sm mb-2">Cookie Data:</h4>
-          <div className="text-xs space-y-1">
+          <h4 className="mb-2 text-sm font-medium">Cookie Data:</h4>
+          <div className="space-y-1 text-xs">
             <div>Token: {document.cookie.includes('auth_token') ? "Present" : "Missing"}</div>
             <div>User: {document.cookie.includes('auth_user') ? "Present" : "Missing"}</div>
             <div>Expires: {document.cookie.includes('auth_expires') ? "Present" : "Missing"}</div>
@@ -121,7 +121,7 @@ export function UserRoleDebug() {
 
         {/* Local Storage */}
         <div>
-          <h4 className="font-medium text-sm mb-2">Local Storage:</h4>
+          <h4 className="mb-2 text-sm font-medium">Local Storage:</h4>
           <div className="text-xs">
             <div>Access Token: {localStorage.getItem('access_token') ? "Present" : "Missing"}</div>
           </div>
