@@ -5,40 +5,114 @@ export const sidebarLinks: SidebarNavItem[] = [
   {
     title: "MENU",
     items: [
+      // Unified Dashboard for Students & Guardians
       {
-        href: "/admin",
-        icon: "laptop",
-        title: "Admin Panel",
-        authorizeOnly: UserRole.ADMIN,
-      },
-      { href: "/dashboard", icon: "dashboard", title: "Dashboard" },
-      {
-        href: "/dashboard/billing",
-        icon: "billing",
-        title: "Billing",
+        href: "/dashboard",
+        icon: "dashboard",
+        title: "Dashboard",
         authorizeOnly: UserRole.STUDENT,
       },
-      { href: "/dashboard/charts", icon: "lineChart", title: "Charts" },
       {
-        href: "/admin/orders",
+        href: "/dashboard",
+        icon: "dashboard",
+        title: "Dashboard",
+        authorizeOnly: UserRole.GUARDIAN,
+      },
+      // Role-specific lesson management for Teachers, Admins, and SuperAdmins
+      {
+        href: "/dashboard/teacher/lessons",
+        icon: "graduationCap",
+        title: "Lessons",
+        authorizeOnly: UserRole.TEACHER,
+      },
+      {
+        href: "/dashboard/admin/charts",
+        icon: "lineChart",
+        title: "Analytics",
+        authorizeOnly: UserRole.ADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/lessons",
+        icon: "bookOpen",
+        title: "Lesson Management",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      // Unified billing across roles
+      {
+        href: "/dashboard/admin/billing",
+        icon: "billing",
+        title: "Billing",
+        authorizeOnly: UserRole.ADMIN,
+      },
+      {
+        href: "/dashboard/teacher/billing",
+        icon: "billing",
+        title: "Billing",
+        authorizeOnly: UserRole.TEACHER,
+      },
+      {
+        href: "/dashboard/superadmin/billing",
+        icon: "billing",
+        title: "Billing",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      // Unified orders
+      {
+        href: "/dashboard/admin/orders",
         icon: "package",
         title: "Orders",
         badge: 2,
         authorizeOnly: UserRole.ADMIN,
       },
       {
-        href: "#/dashboard/posts",
-        icon: "post",
-        title: "User Posts",
-        authorizeOnly: UserRole.STUDENT,
-        disabled: true,
+        href: "/dashboard/teacher/orders",
+        icon: "package",
+        title: "Orders",
+        authorizeOnly: UserRole.TEACHER,
+      },
+      {
+        href: "/dashboard/superadmin/orders",
+        icon: "package",
+        title: "Orders",
+        authorizeOnly: UserRole.SUPERADMIN,
       },
     ],
   },
   {
     title: "OPTIONS",
     items: [
-      { href: "/dashboard/settings", icon: "settings", title: "Settings" },
+      // Unified settings - students and guardians use main dashboard
+      {
+        href: "/dashboard/settings", 
+        icon: "settings", 
+        title: "Settings",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/settings", 
+        icon: "settings", 
+        title: "Settings",
+        authorizeOnly: UserRole.GUARDIAN,
+      },
+      // Role-specific settings
+      {
+        href: "/dashboard/teacher/settings", 
+        icon: "settings", 
+        title: "Settings",
+        authorizeOnly: UserRole.TEACHER,
+      },
+      {
+        href: "/dashboard/admin/settings", 
+        icon: "settings", 
+        title: "Settings",
+        authorizeOnly: UserRole.ADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/settings", 
+        icon: "settings", 
+        title: "Settings",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
       { href: "/", icon: "home", title: "Homepage" },
       { href: "/docs", icon: "bookOpen", title: "Documentation" },
       {
