@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getRoleBasedRoute, useAuthStore } from "@/store/authStore";
@@ -32,7 +32,14 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError } = useAuthStore();
+  const { login, isLoading, error, clearError, hydrate, isHydrated } = useAuthStore();
+
+  // Ensure auth store is properly hydrated on mount
+  useEffect(() => {
+    if (!isHydrated) {
+      hydrate();
+    }
+  }, [hydrate, isHydrated]);
 
   const {
     register,
@@ -154,7 +161,7 @@ export function LoginForm({
                 placeholder="m@example.com"
                 {...register("email_phone")}
                 className={errors.email_phone ? "border-destructive" : ""}
-                disabled={isLoading}
+                disabled={isLoading && isHydrated}
                 required
               />
               {errors.email_phone && (
@@ -182,7 +189,7 @@ export function LoginForm({
                   className={
                     errors.password ? "border-destructive pr-10" : "pr-10"
                   }
-                  disabled={isLoading}
+                  disabled={isLoading && isHydrated}
                   required
                 />
                 <Button
@@ -191,7 +198,7 @@ export function LoginForm({
                   size="sm"
                   className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
                   onClick={() => setShowPassword(!showPassword)}
-                  disabled={isLoading}
+                  disabled={isLoading && isHydrated}
                 >
                   {showPassword ? (
                     <EyeOff className="size-4 text-muted-foreground" />
@@ -210,9 +217,9 @@ export function LoginForm({
             <Button
               type="submit"
               className="w-full"
-              disabled={isLoading || isSubmitting}
+              disabled={(isLoading && isHydrated) || isSubmitting}
             >
-              {isLoading ? (
+              {(isLoading && isHydrated) || isSubmitting ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
                   Signing in...
@@ -233,7 +240,7 @@ export function LoginForm({
               variant="outline"
               className="w-full"
               onClick={handleGoogleLogin}
-              disabled={isLoading}
+              disabled={isLoading && isHydrated}
             >
               <svg className="mr-2 size-4" viewBox="0 0 24 24">
                 <path
