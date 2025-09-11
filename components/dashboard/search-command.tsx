@@ -16,7 +16,13 @@ import {
 } from "@/components/ui/command";
 import { Icons } from "@/components/shared/icons";
 
-export function SearchCommand({ links }: { links: SidebarNavItem[] }) {
+export function SearchCommand({
+  links,
+  className,
+}: {
+  links: SidebarNavItem[];
+  className?: string;
+}) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
 
@@ -42,6 +48,7 @@ export function SearchCommand({ links }: { links: SidebarNavItem[] }) {
         variant="outline"
         className={cn(
           "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-72",
+          className,
         )}
         onClick={() => setOpen(true)}
       >

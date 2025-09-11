@@ -21,7 +21,9 @@ import {
 } from "@/components/ui/tooltip";
 import ProjectSwitcher from "@/components/dashboard/project-switcher";
 import { UpgradeCard } from "@/components/dashboard/upgrade-card";
+import { NavUser } from "@/components/nav-user";
 import { Icons } from "@/components/shared/icons";
+import { useAuthStore } from "@/store/authStore";
 
 
 interface DashboardSidebarProps {
@@ -30,6 +32,10 @@ interface DashboardSidebarProps {
 
 export function DashboardSidebar({ links }: DashboardSidebarProps) {
   const path = usePathname();
+  const { user, isAuthenticated } = useAuthStore();
+  
+  // Determine if user is a guest
+  const isGuest = user?.role[0] === 'guest' || !isAuthenticated;
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -168,8 +174,23 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                 ))}
               </nav>
 
-              <div className="mt-auto xl:p-4">
-                {isSidebarExpanded ? <UpgradeCard /> : null}
+              <div className="mb-14 xl:p-4">
+                {isSidebarExpanded ? (
+                  isGuest ? (
+                    <UpgradeCard />
+                  ) : (
+                    user && (
+                      <NavUser 
+                        user={{
+                          name: user.name,
+                          email: user.email,
+                          image: user.image,
+                          role: user.role
+                        }} 
+                      />
+                    )
+                  )
+                ) : null}
               </div>
             </div>
           </aside>
@@ -183,6 +204,10 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
   const path = usePathname();
   const [open, setOpen] = useState(false);
   const { isSm, isMobile } = useMediaQuery();
+  const { user, isAuthenticated } = useAuthStore();
+  
+  // Determine if user is a guest
+  const isGuest = user?.role[0] === 'guest' || !isAuthenticated;
 
   if (isSm || isMobile) {
     return (
@@ -258,7 +283,20 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                 ))}
 
                 <div className="mt-auto">
-                  <UpgradeCard />
+                  {isGuest ? (
+                    <UpgradeCard />
+                  ) : (
+                    user && (
+                      <NavUser 
+                        user={{
+                          name: user.name,
+                          email: user.email,
+                          image: user.image,
+                          role: user.role
+                        }} 
+                      />
+                    )
+                  )}
                 </div>
               </nav>
             </div>
