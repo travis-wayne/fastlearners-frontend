@@ -1,16 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
+
+import { getAuthCookies, getUserFromCookies } from "@/lib/auth-cookies";
+import { RBACUtils } from "@/lib/rbac/role-config";
+import { usePermissionCheck } from "@/hooks/useRBACGuard";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { AuthDebug } from "@/components/auth/AuthDebug";
 import { DashboardHeader } from "@/components/dashboard/header";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/store/authStore";
-import { usePermissionCheck } from "@/hooks/useRBACGuard";
-import { RBACUtils } from "@/lib/rbac/role-config";
-import { getUserFromCookies, getAuthCookies } from "@/lib/auth-cookies";
-import { useState } from "react";
 
 export default function AuthDebugPage() {
   const { user, isAuthenticated, hasRole, isPrimaryRole } = useAuthStore();
@@ -27,27 +34,51 @@ export default function AuthDebugPage() {
     console.log("📧 User Email:", user.email);
     console.log("👤 User Roles:", user.role);
     console.log("🎯 Primary Role:", user.role[0]);
-    
+
     console.log("\n🔍 Auth Store Role Checks:");
-    console.log("  hasRole('admin'):", hasRole('admin'));
-    console.log("  hasRole('superadmin'):", hasRole('superadmin'));
-    console.log("  hasRole('teacher'):", hasRole('teacher'));
-    console.log("  isPrimaryRole('admin'):", isPrimaryRole('admin'));
-    console.log("  isPrimaryRole('superadmin'):", isPrimaryRole('superadmin'));
-    
+    console.log("  hasRole('admin'):", hasRole("admin"));
+    console.log("  hasRole('superadmin'):", hasRole("superadmin"));
+    console.log("  hasRole('teacher'):", hasRole("teacher"));
+    console.log("  isPrimaryRole('admin'):", isPrimaryRole("admin"));
+    console.log("  isPrimaryRole('superadmin'):", isPrimaryRole("superadmin"));
+
     console.log("\n🛡️ RBAC Utils Direct Tests:");
     const testRole = user.role[0];
-    console.log(`  RBACUtils.hasPermission(${testRole}, 'SUPERADMIN'):`, RBACUtils.hasPermission(testRole, 'SUPERADMIN'));
-    console.log(`  RBACUtils.hasPermission(${testRole}, 'ADMIN'):`, RBACUtils.hasPermission(testRole, 'ADMIN'));
-    console.log(`  RBACUtils.hasPermission(${testRole}, 'TEACHER'):`, RBACUtils.hasPermission(testRole, 'TEACHER'));
-    console.log(`  RBACUtils.canAccessRoute(${testRole}, '/admin/lessons'):`, RBACUtils.canAccessRoute(testRole, '/admin/lessons'));
-    
+    console.log(
+      `  RBACUtils.hasPermission(${testRole}, 'SUPERADMIN'):`,
+      RBACUtils.hasPermission(testRole, "SUPERADMIN"),
+    );
+    console.log(
+      `  RBACUtils.hasPermission(${testRole}, 'ADMIN'):`,
+      RBACUtils.hasPermission(testRole, "ADMIN"),
+    );
+    console.log(
+      `  RBACUtils.hasPermission(${testRole}, 'TEACHER'):`,
+      RBACUtils.hasPermission(testRole, "TEACHER"),
+    );
+    console.log(
+      `  RBACUtils.canAccessRoute(${testRole}, '/admin/lessons'):`,
+      RBACUtils.canAccessRoute(testRole, "/admin/lessons"),
+    );
+
     console.log("\n📋 Permission Hook Results:");
-    console.log("  hasPermission('manage_lessons'):", hasPermission('manage_lessons'));
-    console.log("  hasPermission('manage_users'):", hasPermission('manage_users'));
-    console.log("  hasPermission('system_config'):", hasPermission('system_config'));
-    console.log("  hasPermission('view_admin_panel'):", hasPermission('view_admin_panel'));
-    
+    console.log(
+      "  hasPermission('manage_lessons'):",
+      hasPermission("manage_lessons"),
+    );
+    console.log(
+      "  hasPermission('manage_users'):",
+      hasPermission("manage_users"),
+    );
+    console.log(
+      "  hasPermission('system_config'):",
+      hasPermission("system_config"),
+    );
+    console.log(
+      "  hasPermission('view_admin_panel'):",
+      hasPermission("view_admin_panel"),
+    );
+
     console.log("\n🍪 Cookie Data:");
     const cookieUser = getUserFromCookies();
     const authCookies = getAuthCookies();
@@ -59,24 +90,24 @@ export default function AuthDebugPage() {
   const testApiProfile = async () => {
     try {
       console.log("🌐 [API TEST] Fetching user profile from API...");
-      
-      const response = await fetch('/api/auth/profile', {
+
+      const response = await fetch("/api/auth/profile", {
         headers: {
-          'Authorization': `Bearer ${getAuthCookies()?.token}`,
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${getAuthCookies()?.token}`,
+          "Content-Type": "application/json",
         },
       });
-      
+
       const data = await response.json();
       console.log("📊 API Profile Response:", data);
-      
+
       if (response.ok && data.success) {
         console.log("✅ API returned user data:");
         console.log("  Email:", data.content?.email);
         console.log("  Roles:", data.content?.role);
         console.log("  Primary Role:", data.content?.role?.[0]);
       } else {
-        console.log("❌ API Error:", data.message || 'Unknown error');
+        console.log("❌ API Error:", data.message || "Unknown error");
       }
     } catch (error) {
       console.error("🚨 API Request failed:", error);
@@ -86,7 +117,7 @@ export default function AuthDebugPage() {
   return (
     <>
       <AuthDebug />
-      
+
       <DashboardHeader
         heading="Authentication Debug Panel"
         text="Debug authentication state and role-based permissions"
@@ -105,29 +136,41 @@ export default function AuthDebugPage() {
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <div className="text-sm font-medium text-muted-foreground">Status</div>
+                  <div className="text-sm font-medium text-muted-foreground">
+                    Status
+                  </div>
                   <Badge variant={isAuthenticated ? "default" : "destructive"}>
                     {isAuthenticated ? "Authenticated" : "Not Authenticated"}
                   </Badge>
                 </div>
-                
+
                 {user && (
                   <>
                     <div>
-                      <div className="text-sm font-medium text-muted-foreground">Email</div>
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Email
+                      </div>
                       <div className="font-mono text-sm">{user.email}</div>
                     </div>
-                    
+
                     <div>
-                      <div className="text-sm font-medium text-muted-foreground">Primary Role</div>
-                      <Badge variant="outline">{user.role[0] || 'None'}</Badge>
+                      <div className="text-sm font-medium text-muted-foreground">
+                        Primary Role
+                      </div>
+                      <Badge variant="outline">{user.role[0] || "None"}</Badge>
                     </div>
-                    
+
                     <div>
-                      <div className="text-sm font-medium text-muted-foreground">All Roles</div>
+                      <div className="text-sm font-medium text-muted-foreground">
+                        All Roles
+                      </div>
                       <div className="flex flex-wrap gap-1">
                         {user.role.map((role, index) => (
-                          <Badge key={index} variant={index === 0 ? "default" : "secondary"} className="text-xs">
+                          <Badge
+                            key={index}
+                            variant={index === 0 ? "default" : "secondary"}
+                            className="text-xs"
+                          >
                             {role}
                           </Badge>
                         ))}
@@ -157,56 +200,104 @@ export default function AuthDebugPage() {
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span>Manage Lessons:</span>
-                        <Badge variant={hasPermission('manage_lessons') ? "default" : "destructive"} className="text-xs">
-                          {hasPermission('manage_lessons') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            hasPermission("manage_lessons")
+                              ? "default"
+                              : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {hasPermission("manage_lessons") ? "✅" : "❌"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Manage Users:</span>
-                        <Badge variant={hasPermission('manage_users') ? "default" : "destructive"} className="text-xs">
-                          {hasPermission('manage_users') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            hasPermission("manage_users")
+                              ? "default"
+                              : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {hasPermission("manage_users") ? "✅" : "❌"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>View Admin Panel:</span>
-                        <Badge variant={hasPermission('view_admin_panel') ? "default" : "destructive"} className="text-xs">
-                          {hasPermission('view_admin_panel') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            hasPermission("view_admin_panel")
+                              ? "default"
+                              : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {hasPermission("view_admin_panel") ? "✅" : "❌"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>System Config:</span>
-                        <Badge variant={hasPermission('system_config') ? "default" : "destructive"} className="text-xs">
-                          {hasPermission('system_config') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            hasPermission("system_config")
+                              ? "default"
+                              : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {hasPermission("system_config") ? "✅" : "❌"}
                         </Badge>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
                     <h4 className="text-sm font-medium">Role Checks</h4>
                     <div className="space-y-1 text-sm">
                       <div className="flex justify-between">
                         <span>Has Admin Role:</span>
-                        <Badge variant={hasRole('admin') ? "default" : "destructive"} className="text-xs">
-                          {hasRole('admin') ? "✅" : "❌"}
+                        <Badge
+                          variant={hasRole("admin") ? "default" : "destructive"}
+                          className="text-xs"
+                        >
+                          {hasRole("admin") ? "✅" : "❌"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Has SuperAdmin Role:</span>
-                        <Badge variant={hasRole('superadmin') ? "default" : "destructive"} className="text-xs">
-                          {hasRole('superadmin') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            hasRole("superadmin") ? "default" : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {hasRole("superadmin") ? "✅" : "❌"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Has Teacher Role:</span>
-                        <Badge variant={hasRole('teacher') ? "default" : "destructive"} className="text-xs">
-                          {hasRole('teacher') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            hasRole("teacher") ? "default" : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {hasRole("teacher") ? "✅" : "❌"}
                         </Badge>
                       </div>
                       <div className="flex justify-between">
                         <span>Primary is SuperAdmin:</span>
-                        <Badge variant={isPrimaryRole('superadmin') ? "default" : "destructive"} className="text-xs">
-                          {isPrimaryRole('superadmin') ? "✅" : "❌"}
+                        <Badge
+                          variant={
+                            isPrimaryRole("superadmin")
+                              ? "default"
+                              : "destructive"
+                          }
+                          className="text-xs"
+                        >
+                          {isPrimaryRole("superadmin") ? "✅" : "❌"}
                         </Badge>
                       </div>
                     </div>
@@ -234,21 +325,19 @@ export default function AuthDebugPage() {
               <Button onClick={testRolePermissions} variant="outline">
                 🧪 Test Role Permissions
               </Button>
-              
+
               <Button onClick={testApiProfile} variant="outline">
                 🌐 Test API Profile
               </Button>
-              
-              {hasPermission('manage_lessons') && (
+
+              {hasPermission("manage_lessons") && (
                 <Link href="/debug/lesson-upload">
-                  <Button variant="outline">
-                    📤 Test Lesson Upload
-                  </Button>
+                  <Button variant="outline">📤 Test Lesson Upload</Button>
                 </Link>
               )}
-              
-              <Button 
-                onClick={() => window.location.reload()} 
+
+              <Button
+                onClick={() => window.location.reload()}
                 variant="outline"
               >
                 🔄 Reload Page

@@ -1,24 +1,31 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Shield,
-  Users,
-  Settings,
-  Database,
-  BarChart3,
-  UserPlus,
-  AlertTriangle,
+import {
   Activity,
-  Server,
-  Lock,
+  AlertTriangle,
+  BarChart3,
+  Database,
   FileText,
-  Globe
+  Globe,
+  Lock,
+  Server,
+  Settings,
+  Shield,
+  UserPlus,
+  Users,
 } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 export function SuperAdminDashboard() {
   // Mock data for superadmin - replace with real data from your API
@@ -30,15 +37,48 @@ export function SuperAdminDashboard() {
   ];
 
   const recentActions = [
-    { id: 1, action: "Created new Admin user", user: "john.doe@school.edu", time: "5 min ago", type: "user" },
-    { id: 2, action: "Updated system settings", user: "SuperAdmin", time: "1 hour ago", type: "system" },
-    { id: 3, action: "Assigned Teacher role", user: "sarah.smith@school.edu", time: "2 hours ago", type: "role" },
+    {
+      id: 1,
+      action: "Created new Admin user",
+      user: "john.doe@school.edu",
+      time: "5 min ago",
+      type: "user",
+    },
+    {
+      id: 2,
+      action: "Updated system settings",
+      user: "SuperAdmin",
+      time: "1 hour ago",
+      type: "system",
+    },
+    {
+      id: 3,
+      action: "Assigned Teacher role",
+      user: "sarah.smith@school.edu",
+      time: "2 hours ago",
+      type: "role",
+    },
   ];
 
   const systemAlerts = [
-    { id: 1, alert: "Database backup completed successfully", severity: "info", time: "10 min ago" },
-    { id: 2, alert: "High memory usage detected on server-2", severity: "warning", time: "1 hour ago" },
-    { id: 3, alert: "Security scan completed - no issues found", severity: "success", time: "3 hours ago" },
+    {
+      id: 1,
+      alert: "Database backup completed successfully",
+      severity: "info",
+      time: "10 min ago",
+    },
+    {
+      id: 2,
+      alert: "High memory usage detected on server-2",
+      severity: "warning",
+      time: "1 hour ago",
+    },
+    {
+      id: 3,
+      alert: "Security scan completed - no issues found",
+      severity: "success",
+      time: "3 hours ago",
+    },
   ];
 
   const roleDistribution = [
@@ -61,9 +101,11 @@ export function SuperAdminDashboard() {
                   <p className="text-sm text-muted-foreground">{stat.label}</p>
                   <p className="text-2xl font-bold">{stat.value}</p>
                 </div>
-                <div className={`text-sm font-medium ${
-                  stat.trend === 'up' ? 'text-green-600' : 'text-red-600'
-                }`}>
+                <div
+                  className={`text-sm font-medium ${
+                    stat.trend === "up" ? "text-green-600" : "text-red-600"
+                  }`}
+                >
                   {stat.change}
                 </div>
               </div>
@@ -90,7 +132,9 @@ export function SuperAdminDashboard() {
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{roleData.role}</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium">{roleData.count}</span>
+                    <span className="text-sm font-medium">
+                      {roleData.count}
+                    </span>
                     <span className="text-sm text-muted-foreground">
                       ({roleData.percentage}%)
                     </span>
@@ -99,7 +143,7 @@ export function SuperAdminDashboard() {
                 <Progress value={roleData.percentage} className="h-2" />
               </div>
             ))}
-            
+
             <div className="flex gap-2 pt-4">
               <Link href="/dashboard/superadmin/users" className="flex-1">
                 <Button className="w-full">
@@ -124,24 +168,30 @@ export function SuperAdminDashboard() {
               <AlertTriangle className="size-5" />
               System Alerts
             </CardTitle>
-            <CardDescription>
-              Recent system notifications
-            </CardDescription>
+            <CardDescription>Recent system notifications</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {systemAlerts.map((alert) => (
-              <div key={alert.id} className="space-y-1 rounded-lg bg-muted/50 p-3">
+              <div
+                key={alert.id}
+                className="space-y-1 rounded-lg bg-muted/50 p-3"
+              >
                 <div className="flex items-center gap-2">
-                  <Badge 
+                  <Badge
                     variant={
-                      alert.severity === "warning" ? "destructive" : 
-                      alert.severity === "success" ? "default" : "secondary"
+                      alert.severity === "warning"
+                        ? "destructive"
+                        : alert.severity === "success"
+                          ? "default"
+                          : "secondary"
                     }
                     className="text-xs"
                   >
                     {alert.severity}
                   </Badge>
-                  <span className="text-xs text-muted-foreground">{alert.time}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {alert.time}
+                  </span>
                 </div>
                 <p className="text-sm">{alert.alert}</p>
               </div>
@@ -161,9 +211,7 @@ export function SuperAdminDashboard() {
               <Shield className="size-5" />
               User Management
             </CardTitle>
-            <CardDescription>
-              Manage users and assign roles
-            </CardDescription>
+            <CardDescription>Manage users and assign roles</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid gap-2">
@@ -189,9 +237,7 @@ export function SuperAdminDashboard() {
               <Database className="size-5" />
               Content Management
             </CardTitle>
-            <CardDescription>
-              Manage lessons and system content
-            </CardDescription>
+            <CardDescription>Manage lessons and system content</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid gap-2">
@@ -217,9 +263,7 @@ export function SuperAdminDashboard() {
               <Settings className="size-5" />
               System Settings
             </CardTitle>
-            <CardDescription>
-              Configure platform settings
-            </CardDescription>
+            <CardDescription>Configure platform settings</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             <div className="grid gap-2">
@@ -254,22 +298,38 @@ export function SuperAdminDashboard() {
         <CardContent>
           <div className="space-y-3">
             {recentActions.map((action) => (
-              <div key={action.id} className="flex items-center justify-between rounded-lg bg-muted/50 p-3">
+              <div
+                key={action.id}
+                className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+              >
                 <div className="flex items-center gap-3">
-                  <div className={`flex size-8 items-center justify-center rounded-full ${
-                    action.type === 'user' ? 'bg-blue-100' :
-                    action.type === 'system' ? 'bg-green-100' : 'bg-purple-100'
-                  }`}>
-                    {action.type === 'user' ? <Users className="size-4 text-blue-600" /> :
-                     action.type === 'system' ? <Settings className="size-4 text-green-600" /> :
-                     <Lock className="size-4 text-purple-600" />}
+                  <div
+                    className={`flex size-8 items-center justify-center rounded-full ${
+                      action.type === "user"
+                        ? "bg-blue-100"
+                        : action.type === "system"
+                          ? "bg-green-100"
+                          : "bg-purple-100"
+                    }`}
+                  >
+                    {action.type === "user" ? (
+                      <Users className="size-4 text-blue-600" />
+                    ) : action.type === "system" ? (
+                      <Settings className="size-4 text-green-600" />
+                    ) : (
+                      <Lock className="size-4 text-purple-600" />
+                    )}
                   </div>
                   <div>
                     <p className="text-sm font-medium">{action.action}</p>
-                    <p className="text-sm text-muted-foreground">{action.user}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {action.user}
+                    </p>
                   </div>
                 </div>
-                <span className="text-xs text-muted-foreground">{action.time}</span>
+                <span className="text-xs text-muted-foreground">
+                  {action.time}
+                </span>
               </div>
             ))}
           </div>

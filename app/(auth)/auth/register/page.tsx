@@ -1,6 +1,6 @@
-import { RegisterForm } from '@/components/auth/RegisterForm';
-import { GoogleAuthChecker } from '@/components/auth/GoogleAuthChecker';
-import { AuthLayout } from '@/components/auth/AuthLayout';
+import { AuthLayout } from "@/components/auth/AuthLayout";
+import { GoogleAuthChecker } from "@/components/auth/GoogleAuthChecker";
+import { RegisterForm } from "@/components/auth/RegisterForm";
 
 export default function RegisterPage() {
   return (
@@ -10,5 +10,3 @@ export default function RegisterPage() {
     </AuthLayout>
   );
 }
-
-

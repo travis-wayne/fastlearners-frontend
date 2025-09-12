@@ -25,6 +25,7 @@ components/
 ## 🎯 Key Principles (Implemented)
 
 ### ✅ Role-Based Items
+
 Every role sees only relevant navigation items through config-driven approach:
 
 ```typescript
@@ -34,9 +35,11 @@ const teacherNav = getSidebarConfig(UserRole.TEACHER);
 ```
 
 ### ✅ Global Consistency
+
 Shared sections (Profile, Settings, Logout) maintain consistent placement across all roles.
 
 ### ✅ Scalability
+
 Adding new items is as simple as updating the configuration:
 
 ```typescript
@@ -50,16 +53,19 @@ Adding new items is as simple as updating the configuration:
 ```
 
 ### ✅ Modern UX
+
 Responsive sidebar + topbar combination with mobile-first approach.
 
 ## 🗂️ Role-Based Navigation Structure
 
 ### 🔹 Guest
+
 - Home
 - About / Explore Lessons (public preview)
 - Login / Register
 
 ### 🔹 Student
+
 - Dashboard (overview, quick stats)
 - Subjects → Scheme of Work → Lessons
 - Quizzes (Available / Ongoing / Completed)
@@ -68,6 +74,7 @@ Responsive sidebar + topbar combination with mobile-first approach.
 - Profile & Settings
 
 ### 🔹 Guardian (Parent)
+
 - Dashboard (child overview)
 - Child's Reports (performance, attendance)
 - Lessons View (read-only)
@@ -75,6 +82,7 @@ Responsive sidebar + topbar combination with mobile-first approach.
 - Profile & Settings
 
 ### 🔹 Teacher
+
 - Dashboard (classes overview)
 - Manage Lessons (create, edit, upload CSV, assign topics)
 - Quizzes (create, review, assign)
@@ -82,12 +90,14 @@ Responsive sidebar + topbar combination with mobile-first approach.
 - Profile & Settings
 
 ### 🔹 Admin
+
 - Dashboard (system overview)
 - User Management (students, guardians, teachers)
 - Reports & Analytics
 - Settings (school-level config)
 
 ### 🔹 Superadmin
+
 - Dashboard (global overview)
 - Role Management
 - User Management
@@ -97,6 +107,7 @@ Responsive sidebar + topbar combination with mobile-first approach.
 ## ⚡ UI Components
 
 ### 📱 Sidebar Features
+
 - **Collapsible Design**: Expand/collapse with smooth animations
 - **Role-based Sections**: Dynamic content based on user role
 - **Tooltips**: Available in collapsed state
@@ -106,16 +117,19 @@ Responsive sidebar + topbar combination with mobile-first approach.
 ### 🖥️ Topbar Structure
 
 #### Left Side
+
 - **Logo/App Name**: Clickable link to dashboard
 - **Enhanced Breadcrumbs**: Context-aware navigation path
 - **Mobile Compact**: Space-efficient breadcrumb on mobile
 
 #### Center
+
 - **Global Search**: Command palette style (⌘K/Ctrl+K)
 - **Searchable Content**: Lessons, subjects, users, navigation
 - **Role-based Filtering**: Users only visible to admins/teachers
 
 #### Right Side
+
 - **Quick Actions**: Role-specific primary actions
 - **Secondary Actions**: Dropdown menu for additional actions
 - **Notifications**: Grouped by type with unread badges
@@ -123,36 +137,40 @@ Responsive sidebar + topbar combination with mobile-first approach.
 
 ## ⚡ Role-Specific Actions
 
-| Role | Primary Action | Description |
-|------|----------------|-------------|
-| **Guest** | Login/Register | Authentication buttons |
-| **Student** | Join Quiz | Quick quiz access |
-| **Guardian** | Child Reports | Performance shortcuts |
-| **Teacher** | + Lesson Upload | Content creation |
-| **Admin** | + User | User management |
-| **Superadmin** | System Settings | Global configuration |
+| Role           | Primary Action  | Description            |
+| -------------- | --------------- | ---------------------- |
+| **Guest**      | Login/Register  | Authentication buttons |
+| **Student**    | Join Quiz       | Quick quiz access      |
+| **Guardian**   | Child Reports   | Performance shortcuts  |
+| **Teacher**    | + Lesson Upload | Content creation       |
+| **Admin**      | + User          | User management        |
+| **Superadmin** | System Settings | Global configuration   |
 
 ## 🎨 UX Features
 
 ### ✅ Command Palette (⌘K/Ctrl+K)
+
 - **Quick Actions**: Role-based shortcuts
 - **Content Search**: Lessons, subjects, quizzes
 - **Navigation**: All sidebar items searchable
 - **Settings**: Theme toggle, profile access
 
 ### ✅ Enhanced Notifications
+
 - **Type Grouping**: Quiz, lesson, system, achievement
 - **Visual Indicators**: Emoji icons and unread badges
 - **Click Navigation**: Direct routing to relevant pages
 - **Responsive**: Optimal viewing on all devices
 
 ### ✅ Smart Breadcrumbs
+
 - **Context-Aware**: Understands subject → lesson hierarchy
 - **Path Truncation**: Handles long navigation paths
 - **Mobile Compact**: Space-efficient on small screens
 - **Clickable Navigation**: Easy backtracking
 
 ### ✅ Mobile Floating Action Button
+
 - **Role-Specific**: Shows relevant quick actions
 - **Expandable Menu**: Multiple actions with animations
 - **Backdrop Blur**: Focus enhancement
@@ -230,12 +248,12 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             href: "/dashboard/exams",
             icon: "fileCheck",
             title: "Exams",
-            description: "Take your exams"
-          }
-        ]
-      }
-    ]
-  }
+            description: "Take your exams",
+          },
+        ],
+      },
+    ],
+  },
 };
 ```
 
@@ -261,18 +279,23 @@ const contextualBreadcrumbs: Record<string, BreadcrumbItem[]> = {
   "/dashboard/exams/midterm": [
     { label: "Dashboard", href: "/dashboard", icon: "dashboard" },
     { label: "Exams", href: "/dashboard/exams", icon: "fileCheck" },
-    { label: "Midterm Exam", href: "/dashboard/exams/midterm", icon: "fileCheck", isCurrentPage: true },
-  ]
+    {
+      label: "Midterm Exam",
+      href: "/dashboard/exams/midterm",
+      icon: "fileCheck",
+      isCurrentPage: true,
+    },
+  ],
 };
 ```
 
 ## 📱 Responsive Behavior
 
-| Screen Size | Sidebar | Topbar | FAB |
-|-------------|---------|--------|-----|
-| **Desktop** | Collapsible | Full breadcrumbs | Hidden |
-| **Tablet** | Auto-collapse | Compact breadcrumbs | Hidden |
-| **Mobile** | Sheet overlay | Mobile breadcrumbs | Visible |
+| Screen Size | Sidebar       | Topbar              | FAB     |
+| ----------- | ------------- | ------------------- | ------- |
+| **Desktop** | Collapsible   | Full breadcrumbs    | Hidden  |
+| **Tablet**  | Auto-collapse | Compact breadcrumbs | Hidden  |
+| **Mobile**  | Sheet overlay | Mobile breadcrumbs  | Visible |
 
 ## 🎯 Benefits Achieved
 
@@ -288,6 +311,7 @@ const contextualBreadcrumbs: Record<string, BreadcrumbItem[]> = {
 ## 🔮 Future Enhancements
 
 The system is designed to easily accommodate:
+
 - New user roles
 - Additional navigation items
 - Enhanced search capabilities

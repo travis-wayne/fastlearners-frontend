@@ -14,9 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocsSearch } from "@/components/docs/search";
 import { ModalContext } from "@/components/modals/providers";
+import { ClientOnly } from "@/components/shared/client-only";
 import { Icons } from "@/components/shared/icons";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { ClientOnly } from "@/components/shared/client-only";
 
 interface NavBarProps {
   scroll?: boolean;
@@ -101,7 +101,11 @@ export function NavBar({ scroll = false }: NavBarProps) {
             </div>
           ) : null}
 
-          <ClientOnly fallback={<Skeleton className="hidden h-9 w-28 rounded-full lg:flex" />}>
+          <ClientOnly
+            fallback={
+              <Skeleton className="hidden h-9 w-28 rounded-full lg:flex" />
+            }
+          >
             {isAuthenticated && user ? (
               <Link
                 href={user.role.includes("admin") ? "/admin" : "/dashboard"}

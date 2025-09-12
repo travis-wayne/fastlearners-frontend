@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import { NavItem, SidebarNavItem } from "@/types";
 import { Menu, PanelLeftClose, PanelRightClose } from "lucide-react";
 
@@ -23,8 +24,6 @@ import ProjectSwitcher from "@/components/dashboard/project-switcher";
 import { UpgradeCard } from "@/components/dashboard/upgrade-card";
 import { NavUser } from "@/components/nav-user";
 import { Icons } from "@/components/shared/icons";
-import { useAuthStore } from "@/store/authStore";
-
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
@@ -33,9 +32,9 @@ interface DashboardSidebarProps {
 export function DashboardSidebar({ links }: DashboardSidebarProps) {
   const path = usePathname();
   const { user, isAuthenticated } = useAuthStore();
-  
+
   // Determine if user is a guest
-  const isGuest = user?.role[0] === 'guest' || !isAuthenticated;
+  const isGuest = user?.role[0] === "guest" || !isAuthenticated;
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -180,13 +179,13 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                     <UpgradeCard />
                   ) : (
                     user && (
-                      <NavUser 
+                      <NavUser
                         user={{
                           name: user.name,
                           email: user.email,
                           image: user.image,
-                          role: user.role
-                        }} 
+                          role: user.role,
+                        }}
                       />
                     )
                   )
@@ -205,9 +204,9 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
   const [open, setOpen] = useState(false);
   const { isSm, isMobile } = useMediaQuery();
   const { user, isAuthenticated } = useAuthStore();
-  
+
   // Determine if user is a guest
-  const isGuest = user?.role[0] === 'guest' || !isAuthenticated;
+  const isGuest = user?.role[0] === "guest" || !isAuthenticated;
 
   if (isSm || isMobile) {
     return (
@@ -287,13 +286,13 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                     <UpgradeCard />
                   ) : (
                     user && (
-                      <NavUser 
+                      <NavUser
                         user={{
                           name: user.name,
                           email: user.email,
                           image: user.image,
-                          role: user.role
-                        }} 
+                          role: user.role,
+                        }}
                       />
                     )
                   )}

@@ -1,28 +1,56 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { 
-  BookOpen, 
-  Play, 
-  Clock, 
-  Trophy,
-  Target,
+import {
+  BookOpen,
   Calendar,
   ChevronRight,
+  Clock,
+  Play,
   Star,
-  Zap
+  Target,
+  Trophy,
+  Zap,
 } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 export function StudentDashboard() {
   // Mock data - replace with real data from your API
   const todaysLessons = [
-    { id: 1, subject: "Mathematics", lesson: "Algebra Basics", duration: "45 min", progress: 0, new: true },
-    { id: 2, subject: "Science", lesson: "Physics: Motion", duration: "30 min", progress: 75, new: false },
-    { id: 3, subject: "English", lesson: "Grammar Review", duration: "25 min", progress: 100, new: false },
+    {
+      id: 1,
+      subject: "Mathematics",
+      lesson: "Algebra Basics",
+      duration: "45 min",
+      progress: 0,
+      new: true,
+    },
+    {
+      id: 2,
+      subject: "Science",
+      lesson: "Physics: Motion",
+      duration: "30 min",
+      progress: 75,
+      new: false,
+    },
+    {
+      id: 3,
+      subject: "English",
+      lesson: "Grammar Review",
+      duration: "25 min",
+      progress: 100,
+      new: false,
+    },
   ];
 
   const weeklyProgress = [
@@ -57,7 +85,10 @@ export function StudentDashboard() {
         </CardHeader>
         <CardContent className="space-y-4">
           {todaysLessons.map((lesson) => (
-            <div key={lesson.id} className="flex items-center justify-between rounded-lg bg-background/50 p-3">
+            <div
+              key={lesson.id}
+              className="flex items-center justify-between rounded-lg bg-background/50 p-3"
+            >
               <div className="flex items-center gap-3">
                 <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
                   <BookOpen className="size-5 text-primary" />
@@ -65,7 +96,11 @@ export function StudentDashboard() {
                 <div>
                   <div className="flex items-center gap-2">
                     <h4 className="font-medium">{lesson.lesson}</h4>
-                    {lesson.new && <Badge variant="secondary" className="text-xs">New</Badge>}
+                    {lesson.new && (
+                      <Badge variant="secondary" className="text-xs">
+                        New
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center gap-3 text-sm text-muted-foreground">
                     <span>{lesson.subject}</span>
@@ -80,12 +115,18 @@ export function StudentDashboard() {
                 {lesson.progress > 0 && (
                   <div className="flex items-center gap-2">
                     <Progress value={lesson.progress} className="w-20" />
-                    <span className="text-sm text-muted-foreground">{lesson.progress}%</span>
+                    <span className="text-sm text-muted-foreground">
+                      {lesson.progress}%
+                    </span>
                   </div>
                 )}
                 <Button size="sm" className="gap-1">
                   <Play className="size-4" />
-                  {lesson.progress === 0 ? 'Start' : lesson.progress === 100 ? 'Review' : 'Continue'}
+                  {lesson.progress === 0
+                    ? "Start"
+                    : lesson.progress === 100
+                      ? "Review"
+                      : "Continue"}
                 </Button>
               </div>
             </div>
@@ -129,7 +170,7 @@ export function StudentDashboard() {
                 </div>
                 <div className="relative">
                   <Progress value={subject.progress} className="h-2" />
-                  <div 
+                  <div
                     className="absolute top-0 h-2 w-1 rounded-full bg-primary"
                     style={{ left: `${subject.target}%` }}
                   />
@@ -146,25 +187,29 @@ export function StudentDashboard() {
               <Trophy className="size-5" />
               Achievements
             </CardTitle>
-            <CardDescription>
-              Your learning milestones
-            </CardDescription>
+            <CardDescription>Your learning milestones</CardDescription>
           </CardHeader>
           <CardContent className="space-y-3">
             {achievements.map((achievement, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`flex items-center gap-3 rounded-lg p-2 ${
-                  achievement.earned ? 'bg-primary/5' : 'bg-muted/20'
+                  achievement.earned ? "bg-primary/5" : "bg-muted/20"
                 }`}
               >
-                <div className={`text-xl ${achievement.earned ? '' : 'opacity-50 grayscale'}`}>
+                <div
+                  className={`text-xl ${achievement.earned ? "" : "opacity-50 grayscale"}`}
+                >
                   {achievement.icon}
                 </div>
                 <div className="flex-1">
-                  <span className={`font-medium ${
-                    achievement.earned ? 'text-foreground' : 'text-muted-foreground'
-                  }`}>
+                  <span
+                    className={`font-medium ${
+                      achievement.earned
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                    }`}
+                  >
                     {achievement.title}
                   </span>
                 </div>
@@ -190,7 +235,9 @@ export function StudentDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Subjects</h4>
-                <p className="text-sm text-muted-foreground">Browse all subjects</p>
+                <p className="text-sm text-muted-foreground">
+                  Browse all subjects
+                </p>
               </div>
             </div>
           </CardContent>
@@ -204,7 +251,9 @@ export function StudentDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Practice</h4>
-                <p className="text-sm text-muted-foreground">Test your knowledge</p>
+                <p className="text-sm text-muted-foreground">
+                  Test your knowledge
+                </p>
               </div>
             </div>
           </CardContent>
@@ -218,7 +267,9 @@ export function StudentDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Achievements</h4>
-                <p className="text-sm text-muted-foreground">View your progress</p>
+                <p className="text-sm text-muted-foreground">
+                  View your progress
+                </p>
               </div>
             </div>
           </CardContent>
@@ -232,7 +283,9 @@ export function StudentDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Quick Quiz</h4>
-                <p className="text-sm text-muted-foreground">5-minute challenge</p>
+                <p className="text-sm text-muted-foreground">
+                  5-minute challenge
+                </p>
               </div>
             </div>
           </CardContent>

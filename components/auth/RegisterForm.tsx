@@ -60,7 +60,7 @@ export function RegisterForm({
       console.log("Error response:", err?.response);
       console.log("Error response data:", err?.response?.data);
       console.log("Error status:", err?.response?.status);
-      
+
       let errorMessage = "Registration failed. Please try again.";
 
       if (err && typeof err === "object") {
@@ -68,7 +68,7 @@ export function RegisterForm({
         if (err.response && err.response.data) {
           const apiError = err.response.data;
           console.log("API Error structure:", apiError);
-          
+
           // Handle API response with error message
           if (apiError.message) {
             errorMessage = apiError.message;
@@ -93,15 +93,21 @@ export function RegisterForm({
           }
           // Handle specific status codes
           else if (err.response.status === 422) {
-            errorMessage = "The email address is already registered. Please try logging in instead.";
+            errorMessage =
+              "The email address is already registered. Please try logging in instead.";
           } else if (err.response.status === 400) {
-            errorMessage = "Invalid email format. Please check your email and try again.";
+            errorMessage =
+              "Invalid email format. Please check your email and try again.";
           } else if (err.response.status === 409) {
-            errorMessage = "This email is already registered. Please try logging in instead.";
+            errorMessage =
+              "This email is already registered. Please try logging in instead.";
           }
         }
         // Handle direct error message
-        else if (err.message && err.message !== "Request failed with status code 422") {
+        else if (
+          err.message &&
+          err.message !== "Request failed with status code 422"
+        ) {
           errorMessage = err.message;
         }
         // Handle validation errors at the top level

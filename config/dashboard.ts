@@ -83,33 +83,33 @@ export const sidebarLinks: SidebarNavItem[] = [
     items: [
       // Unified settings - students and guardians use main dashboard
       {
-        href: "/dashboard/settings", 
-        icon: "settings", 
+        href: "/dashboard/settings",
+        icon: "settings",
         title: "Settings",
         authorizeOnly: UserRole.STUDENT,
       },
       {
-        href: "/dashboard/settings", 
-        icon: "settings", 
+        href: "/dashboard/settings",
+        icon: "settings",
         title: "Settings",
         authorizeOnly: UserRole.GUARDIAN,
       },
       // Role-specific settings
       {
-        href: "/dashboard/teacher/settings", 
-        icon: "settings", 
+        href: "/dashboard/teacher/settings",
+        icon: "settings",
         title: "Settings",
         authorizeOnly: UserRole.TEACHER,
       },
       {
-        href: "/dashboard/admin/settings", 
-        icon: "settings", 
+        href: "/dashboard/admin/settings",
+        icon: "settings",
         title: "Settings",
         authorizeOnly: UserRole.ADMIN,
       },
       {
-        href: "/dashboard/superadmin/settings", 
-        icon: "settings", 
+        href: "/dashboard/superadmin/settings",
+        icon: "settings",
         title: "Settings",
         authorizeOnly: UserRole.SUPERADMIN,
       },

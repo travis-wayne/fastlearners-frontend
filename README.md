@@ -1,4 +1,3 @@
-
 # Fast Learners — Frontend (Next.js)
 
 This repository contains the frontend for the Fast Learners platform — a modern, modular Next.js application built with TypeScript and Tailwind CSS. It provides the web UI, reusable components, content pages, and developer tooling used by the platform.
@@ -481,6 +480,7 @@ If you'd like, I can also:
 - Add an `engines` entry to `package.json` to recommend a Node version
 
 Tell me which of those you'd like and I will add it next.
+
 # Modular File Upload System
 
 This directory contains a modular file upload system for the Fast Learners platform. The system is designed to easily add/remove file upload APIs without breaking existing functionality.
@@ -488,7 +488,9 @@ This directory contains a modular file upload system for the Fast Learners platf
 ## 🏗️ Architecture
 
 ### Configuration-Driven System
+
 ---
+
 # Fast Learners — Frontend (Next.js)
 
 This repository contains the frontend for the Fast Learners platform — a modern, modular Next.js application built with TypeScript and Tailwind CSS. It provides the web UI, reusable components, content pages, and developer tools used by the platform.
@@ -556,8 +558,8 @@ Open `http://localhost:3000` in your browser.
 
 ## Useful scripts
 
-Use the scripts defined in `package.json` with `pnpm <script>`:
----
+## Use the scripts defined in `package.json` with `pnpm <script>`:
+
 # Fast Learners — Frontend (Next.js)
 
 This repository contains the frontend for the Fast Learners platform — a modern, modular Next.js application built with TypeScript and Tailwind CSS. It provides the web UI, reusable components, content pages, and developer tools used by the platform.
@@ -625,8 +627,8 @@ Open `http://localhost:3000` in your browser.
 
 ## Useful scripts
 
-Use the scripts defined in `package.json` with `pnpm <script>`:
----
+## Use the scripts defined in `package.json` with `pnpm <script>`:
+
 # Fast Learners — Frontend (Next.js)
 
 This repository contains the frontend for the Fast Learners platform — a modern, modular Next.js application built with TypeScript and Tailwind CSS. It provides the web UI, reusable components, content pages, and developer tools used by the platform.
@@ -694,8 +696,8 @@ Open `http://localhost:3000` in your browser.
 
 ## Useful scripts
 
-Use the scripts defined in `package.json` with `pnpm <script>`:
----
+## Use the scripts defined in `package.json` with `pnpm <script>`:
+
 # Fast Learners — Frontend (Next.js)
 
 This repository contains the frontend for the Fast Learners platform — a modern, modular Next.js application built with TypeScript and Tailwind CSS. It provides the web UI, reusable components, content pages, and developer tools used by the platform.

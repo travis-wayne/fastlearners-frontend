@@ -2,22 +2,25 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, AlertCircle } from "lucide-react";
-import { DashboardHeader } from "@/components/dashboard/header";
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { SmartCSVUpload } from "@/components/upload/SmartCSVUpload";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { SmartCSVUpload } from "@/components/upload/SmartCSVUpload";
 
 export default function LessonUploadPage() {
   const { hasPermission, userRole } = usePermissionCheck();
-  const [completedUploads, setCompletedUploads] = useState<Set<string>>(new Set());
+  const [completedUploads, setCompletedUploads] = useState<Set<string>>(
+    new Set(),
+  );
 
   // Check permissions
-  const canManageLessons = hasPermission('manage_lessons');
+  const canManageLessons = hasPermission("manage_lessons");
 
   const handleUploadSuccess = (configKey: string) => {
-    setCompletedUploads(prev => new Set([...Array.from(prev), configKey]));
+    setCompletedUploads((prev) => new Set([...Array.from(prev), configKey]));
   };
 
   if (!canManageLessons) {
@@ -40,8 +43,9 @@ export default function LessonUploadPage() {
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertDescription>
-            <strong>Access Restricted:</strong> Only Teachers, Admins, and SuperAdmins can upload lesson content. 
-            Your current role ({userRole}) does not have permission to manage lessons.
+            <strong>Access Restricted:</strong> Only Teachers, Admins, and
+            SuperAdmins can upload lesson content. Your current role ({userRole}
+            ) does not have permission to manage lessons.
           </AlertDescription>
         </Alert>
       </div>
@@ -59,7 +63,7 @@ export default function LessonUploadPage() {
         </Link>
       </div>
 
-      <SmartCSVUpload 
+      <SmartCSVUpload
         onUploadSuccess={handleUploadSuccess}
         completedUploads={completedUploads}
       />

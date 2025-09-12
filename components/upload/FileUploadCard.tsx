@@ -1,32 +1,42 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Upload, FileText, X, Check, AlertCircle, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useRef, useState } from "react";
+import { AlertCircle, Check, FileText, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+
 import { ErrorDiagnostics } from "./ErrorDiagnostics";
 
 interface FileUploadCardProps {
   title: string;
   description: string;
-  onUpload: (file: File) => Promise<{ success: boolean; message: string; error?: string }>;
+  onUpload: (
+    file: File,
+  ) => Promise<{ success: boolean; message: string; error?: string }>;
   disabled?: boolean;
   completed?: boolean;
   className?: string;
 }
 
-export function FileUploadCard({ 
-  title, 
-  description, 
-  onUpload, 
-  disabled = false, 
+export function FileUploadCard({
+  title,
+  description,
+  onUpload,
+  disabled = false,
   completed = false,
-  className 
+  className,
 }: FileUploadCardProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -40,17 +50,19 @@ export function FileUploadCard({
     if (!selectedFile) return;
 
     // Validate file type
-    const validTypes = ['.csv', '.txt'];
-    const fileExtension = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'));
-    
+    const validTypes = [".csv", ".txt"];
+    const fileExtension = selectedFile.name
+      .toLowerCase()
+      .substring(selectedFile.name.lastIndexOf("."));
+
     if (!validTypes.includes(fileExtension)) {
-      setError('Please select a CSV or TXT file');
+      setError("Please select a CSV or TXT file");
       return;
     }
 
     // Validate file size (10MB limit)
     if (selectedFile.size > 10 * 1024 * 1024) {
-      setError('File size must be less than 10MB');
+      setError("File size must be less than 10MB");
       return;
     }
 
@@ -66,7 +78,7 @@ export function FileUploadCard({
     setSuccess(false);
     setProgress(0);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
   };
 
@@ -79,15 +91,15 @@ export function FileUploadCard({
 
     // Simulate progress
     const progressInterval = setInterval(() => {
-      setProgress(prev => Math.min(prev + 10, 90));
+      setProgress((prev) => Math.min(prev + 10, 90));
     }, 100);
 
     try {
       const result = await onUpload(file);
-      
+
       clearInterval(progressInterval);
       setProgress(100);
-      
+
       if (result.success) {
         setSuccess(true);
         toast.success(result.message);
@@ -99,7 +111,7 @@ export function FileUploadCard({
     } catch (err: any) {
       clearInterval(progressInterval);
       setProgress(0);
-      const errorMessage = err.message || 'Upload failed';
+      const errorMessage = err.message || "Upload failed";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -108,21 +120,23 @@ export function FileUploadCard({
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   return (
-    <Card className={cn(
-      "w-full transition-all duration-200",
-      disabled && "cursor-not-allowed opacity-50",
-      success && "border-green-200 bg-green-50/50",
-      error && "border-red-200 bg-red-50/50",
-      className
-    )}>
+    <Card
+      className={cn(
+        "w-full transition-all duration-200",
+        disabled && "cursor-not-allowed opacity-50",
+        success && "border-green-200 bg-green-50/50",
+        error && "border-red-200 bg-red-50/50",
+        className,
+      )}
+    >
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <FileText className="size-5" />
@@ -132,16 +146,16 @@ export function FileUploadCard({
         </CardTitle>
         <CardDescription>{description}</CardDescription>
       </CardHeader>
-      
+
       <CardContent className="space-y-4">
         {/* File Upload Area */}
         {!file && !success && (
           <div
             className={cn(
               "cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors",
-              disabled 
-                ? "cursor-not-allowed border-gray-200 bg-gray-50" 
-                : "border-muted-foreground/25 hover:border-muted-foreground/50"
+              disabled
+                ? "cursor-not-allowed border-gray-200 bg-gray-50"
+                : "border-muted-foreground/25 hover:border-muted-foreground/50",
             )}
             onClick={() => !disabled && fileInputRef.current?.click()}
           >

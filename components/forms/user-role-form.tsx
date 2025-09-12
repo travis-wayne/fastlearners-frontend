@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { UserRole } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -9,7 +10,6 @@ import { z } from "zod";
 
 import { profileApi } from "@/lib/api/auth";
 import { User as AuthUser, UserRole as AuthUserRole } from "@/lib/types/auth";
-import { UserRole } from "@/types";
 import { userRoleSchema } from "@/lib/validations/user";
 import { Button } from "@/components/ui/button";
 import {
@@ -46,12 +46,12 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
   // Get available roles based on current user's permissions and RBAC rules
   const getAvailableRoles = (): UserRole[] => {
     const currentRole = user.role[0] as AuthUserRole;
-    
+
     // Guest users can only choose student or guardian (onboarding choice)
-    if (currentRole === 'guest') {
+    if (currentRole === "guest") {
       return [UserRole.GUEST, UserRole.STUDENT, UserRole.GUARDIAN];
     }
-    
+
     // For development/testing - show current role only for permanent roles
     // In production, remove the role selector entirely for non-guest users
     // Map auth role string to enum values
@@ -61,23 +61,30 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
       guardian: [UserRole.GUARDIAN],
       teacher: [UserRole.TEACHER],
       admin: [UserRole.ADMIN],
-      superadmin: [UserRole.SUPERADMIN]
+      superadmin: [UserRole.SUPERADMIN],
     };
-    
+
     return roleMapping[currentRole] || [UserRole.GUEST];
   };
-  
+
   const roles = getAvailableRoles();
   // Map auth role to enum for initial state
   const mapAuthRoleToEnum = (authRole: string): UserRole => {
     switch (authRole) {
-      case 'guest': return UserRole.GUEST;
-      case 'student': return UserRole.STUDENT;
-      case 'guardian': return UserRole.GUARDIAN;
-      case 'teacher': return UserRole.TEACHER;
-      case 'admin': return UserRole.ADMIN;
-      case 'superadmin': return UserRole.SUPERADMIN;
-      default: return UserRole.GUEST;
+      case "guest":
+        return UserRole.GUEST;
+      case "student":
+        return UserRole.STUDENT;
+      case "guardian":
+        return UserRole.GUARDIAN;
+      case "teacher":
+        return UserRole.TEACHER;
+      case "admin":
+        return UserRole.ADMIN;
+      case "superadmin":
+        return UserRole.SUPERADMIN;
+      default:
+        return UserRole.GUEST;
     }
   };
   const [role, setRole] = useState(mapAuthRoleToEnum(user.role[0])); // Use first role as primary
@@ -150,7 +157,8 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                     <SelectContent>
                       {roles.map((role) => (
                         <SelectItem key={role} value={role.toString()}>
-                          {role.charAt(0).toUpperCase() + role.slice(1).toLowerCase()}
+                          {role.charAt(0).toUpperCase() +
+                            role.slice(1).toLowerCase()}
                         </SelectItem>
                       ))}
                     </SelectContent>

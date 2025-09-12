@@ -1,6 +1,7 @@
 # Two-Tier Navigation Bar Implementation
 
 ## Overview
+
 This document outlines the implementation of the Two-Tier Navigation Bar feature, which replaces the previous simple header with a comprehensive navigation system that includes:
 
 1. **Notification Center** - Replaces the theme switcher with a full-featured notification system
@@ -10,15 +11,18 @@ This document outlines the implementation of the Two-Tier Navigation Bar feature
 ## File Structure
 
 ### Core Components
+
 - `components/navigation/two-tier-navigation-bar.tsx` - Main navigation component
 - `components/navigation/notification-center.tsx` - Notification system with badge
 - `components/navigation/network-status.tsx` - Network connectivity indicator
 - `components/navigation/marquee-messages.tsx` - Scrolling messages component
 
 ### API Endpoints
+
 - `app/api/marquee-messages/route.ts` - REST API for managing marquee messages
 
 ### Layout Integration
+
 - `components/layout/dashboard-layout-content.tsx` - Updated to use the new navigation
 
 ## Component Details
@@ -28,6 +32,7 @@ This document outlines the implementation of the Two-Tier Navigation Bar feature
 **Purpose**: Main navigation component with two tiers - top navigation bar and bottom marquee messages.
 
 **Key Features**:
+
 - Logo and brand display
 - Breadcrumb navigation
 - User menu with theme switching (integrated from ModeToggle)
@@ -36,6 +41,7 @@ This document outlines the implementation of the Two-Tier Navigation Bar feature
 - Sign-in prompt for unauthenticated users
 
 **Props**:
+
 ```typescript
 interface TwoTierNavigationBarProps {
   logoSrc?: string;
@@ -50,6 +56,7 @@ interface TwoTierNavigationBarProps {
 ```
 
 **Integration Points**:
+
 - Uses `NotificationCenter` for notifications
 - Uses `NetworkStatus` for connectivity indication
 - Uses `MarqueeMessages` for bottom-tier messages
@@ -60,6 +67,7 @@ interface TwoTierNavigationBarProps {
 **Purpose**: Full-featured notification system replacing the simple theme switcher.
 
 **Key Features**:
+
 - Bell icon with notification count badge
 - Dropdown panel with notification list
 - Different notification types (info, success, warning, error)
@@ -68,10 +76,11 @@ interface TwoTierNavigationBarProps {
 - Timestamps and relative time display
 
 **Sample Data Structure**:
+
 ```typescript
 interface Notification {
   id: string;
-  type: 'info' | 'success' | 'warning' | 'error';
+  type: "info" | "success" | "warning" | "error";
   title: string;
   message: string;
   timestamp: Date;
@@ -86,6 +95,7 @@ interface Notification {
 **Purpose**: Color-coded indicator showing network connectivity status.
 
 **Key Features**:
+
 - Real-time network status detection
 - Color-coded indicators:
   - Green: Online and connected
@@ -101,6 +111,7 @@ interface Notification {
 **Purpose**: Bottom-tier scrolling messages component that fetches content from an API.
 
 **Key Features**:
+
 - Horizontal scrolling animation
 - API-driven content
 - Different message types with color coding
@@ -111,8 +122,9 @@ interface Notification {
 **API Integration**: Fetches from `/api/marquee-messages` by default, configurable via props.
 
 **Message Types**:
+
 - `announcement` (blue)
-- `alert` (red) 
+- `alert` (red)
 - `info` (gray)
 - `maintenance` (yellow)
 
@@ -121,11 +133,13 @@ interface Notification {
 ### Marquee Messages API (`app/api/marquee-messages/route.ts`)
 
 **Endpoints**:
+
 - `GET /api/marquee-messages` - Retrieve all messages
 - `POST /api/marquee-messages` - Create new message
 - `DELETE /api/marquee-messages` - Delete message by ID
 
 **Sample Response**:
+
 ```json
 {
   "success": true,
@@ -148,39 +162,48 @@ interface Notification {
 ### Dashboard Layout Updates (`dashboard-layout-content.tsx`)
 
 **Changes Made**:
+
 1. **Removed old header components**:
+
    - `ModeToggle` (functionality moved to user menu)
    - `UserAccountNav` (integrated into navigation bar)
 
 2. **Added navigation configuration**:
+
    ```typescript
    // Map sidebar items to navigation items
-   const navigationItems = authorizedSidebarConfig.navMain.map(section => ({
+   const navigationItems = authorizedSidebarConfig.navMain.map((section) => ({
      name: section.title,
-     href: section.items?.[0]?.url || '#',
+     href: section.items?.[0]?.url || "#",
      icon: section.items?.[0]?.icon,
-     isActive: section.items?.some(item => 
-       pathname === item.url || pathname.startsWith(item.url + '/')
-     )
+     isActive: section.items?.some(
+       (item) => pathname === item.url || pathname.startsWith(item.url + "/"),
+     ),
    }));
 
    // Generate breadcrumbs from current path
-   const breadcrumbItems = generateBreadcrumbs(pathname, authorizedSidebarConfig);
+   const breadcrumbItems = generateBreadcrumbs(
+     pathname,
+     authorizedSidebarConfig,
+   );
    ```
 
 3. **Integration with user data**:
+
    - Passes user session to navigation
    - Maps user menu items from sidebar config
    - Handles authentication states
 
 4. **Environment configuration**:
    ```typescript
-   const marqueeApiEndpoint = process.env.NEXT_PUBLIC_MARQUEE_API_ENDPOINT || '/api/marquee-messages';
+   const marqueeApiEndpoint =
+     process.env.NEXT_PUBLIC_MARQUEE_API_ENDPOINT || "/api/marquee-messages";
    ```
 
 ## TypeScript Interfaces
 
 ### Core Types
+
 ```typescript
 // Navigation item for top-level navigation
 interface NavigationItem {
@@ -210,7 +233,7 @@ interface UserMenuItem {
 interface MarqueeMessage {
   id: string;
   content: string;
-  type: 'announcement' | 'alert' | 'info' | 'maintenance';
+  type: "announcement" | "alert" | "info" | "maintenance";
   isActive: boolean;
   createdAt: string;
 }
@@ -219,28 +242,33 @@ interface MarqueeMessage {
 ## Styling and Theming
 
 ### Tailwind Classes Used
+
 - **Navigation**: `bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60`
 - **Borders**: `border-b border-border/40`
-- **Status Colors**: 
+- **Status Colors**:
   - Green: `text-green-600 bg-green-100`
   - Yellow: `text-yellow-600 bg-yellow-100`
   - Red: `text-red-600 bg-red-100`
 
 ### Dark Mode Support
+
 All components support dark mode through Tailwind's dark mode classes and the integrated theme switcher.
 
 ## Installation and Setup
 
 ### Prerequisites
+
 - Next.js 14+
 - React 18+
 - Tailwind CSS
 - Lucide React (for icons)
 
 ### Dependencies Added
+
 No additional dependencies were required - uses existing project dependencies.
 
 ### Environment Variables
+
 ```env
 # Optional: Custom marquee messages API endpoint
 NEXT_PUBLIC_MARQUEE_API_ENDPOINT=/api/marquee-messages
@@ -249,8 +277,9 @@ NEXT_PUBLIC_MARQUEE_API_ENDPOINT=/api/marquee-messages
 ## Usage Examples
 
 ### Basic Integration
+
 ```tsx
-import { TwoTierNavigationBar } from '@/components/navigation/two-tier-navigation-bar';
+import { TwoTierNavigationBar } from "@/components/navigation/two-tier-navigation-bar";
 
 export default function Layout() {
   return (
@@ -269,6 +298,7 @@ export default function Layout() {
 ```
 
 ### Custom API Endpoint
+
 ```tsx
 <TwoTierNavigationBar
   apiEndpoint="/api/custom-messages"
@@ -279,6 +309,7 @@ export default function Layout() {
 ## Future Enhancements
 
 ### Planned Features
+
 1. **Database Integration**: Replace mock data with real database
 2. **Real-time Updates**: WebSocket integration for live notifications
 3. **User Preferences**: Customizable notification settings
@@ -287,6 +318,7 @@ export default function Layout() {
 6. **Analytics**: Track user interaction with notifications and messages
 
 ### API Improvements
+
 1. **Pagination**: Add pagination for large notification lists
 2. **Filtering**: Query parameters for filtering messages
 3. **Authentication**: Protect admin endpoints
@@ -297,11 +329,13 @@ export default function Layout() {
 ### Common Issues
 
 1. **Build Errors**:
+
    - Ensure all TypeScript interfaces are properly defined
    - Check that all icon imports are correct
    - Verify component props match interface definitions
 
 2. **Styling Issues**:
+
    - Ensure Tailwind CSS is properly configured
    - Check for conflicting CSS classes
    - Verify dark mode theme switching works

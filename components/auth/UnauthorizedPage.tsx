@@ -1,21 +1,22 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { AlertTriangle, ArrowLeft, Home, Lock, ShieldX } from "lucide-react";
+
 import { RBACUtils } from "@/lib/rbac/role-config";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { 
-  ShieldX, 
-  Home, 
-  ArrowLeft, 
-  AlertTriangle,
-  Lock
-} from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export function UnauthorizedPage() {
   const router = useRouter();
@@ -25,7 +26,8 @@ export function UnauthorizedPage() {
 
   useEffect(() => {
     // Get the attempted route from URL params or headers
-    const route = searchParams.get("route") || searchParams.get("callbackUrl") || "";
+    const route =
+      searchParams.get("route") || searchParams.get("callbackUrl") || "";
     setAttemptedRoute(route);
   }, [searchParams]);
 
@@ -55,9 +57,7 @@ export function UnauthorizedPage() {
           </CardHeader>
           <CardContent className="space-y-4 text-center">
             <Link href="/auth/login">
-              <Button className="w-full">
-                Sign In
-              </Button>
+              <Button className="w-full">Sign In</Button>
             </Link>
           </CardContent>
         </Card>
@@ -77,7 +77,7 @@ export function UnauthorizedPage() {
             You don&apos;t have permission to access this resource
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="space-y-6">
           {/* User Info */}
           <div className="rounded-lg bg-muted p-4">
@@ -96,7 +96,8 @@ export function UnauthorizedPage() {
             <Alert>
               <AlertTriangle className="size-4" />
               <AlertDescription>
-              <strong>Attempted to access:</strong> <code className="rounded bg-muted px-1">{attemptedRoute}</code>
+                <strong>Attempted to access:</strong>{" "}
+                <code className="rounded bg-muted px-1">{attemptedRoute}</code>
               </AlertDescription>
             </Alert>
           )}
@@ -105,34 +106,39 @@ export function UnauthorizedPage() {
           <div className="space-y-3">
             <h4 className="font-medium">Why am I seeing this?</h4>
             <div className="space-y-2 text-sm text-muted-foreground">
-              {userRole === 'guest' && (
+              {userRole === "guest" && (
                 <p>
-                  As a <Badge variant="outline">Guest</Badge>, you need to complete onboarding 
-                  and choose either Student or Guardian role to access most features.
+                  As a <Badge variant="outline">Guest</Badge>, you need to
+                  complete onboarding and choose either Student or Guardian role
+                  to access most features.
                 </p>
               )}
-              {userRole === 'student' && (
+              {userRole === "student" && (
                 <p>
-                  As a <Badge variant="outline">Student</Badge>, you can access lessons, 
-                  exercises, and your progress dashboard, but not administrative features.
+                  As a <Badge variant="outline">Student</Badge>, you can access
+                  lessons, exercises, and your progress dashboard, but not
+                  administrative features.
                 </p>
               )}
-              {userRole === 'guardian' && (
+              {userRole === "guardian" && (
                 <p>
-                  As a <Badge variant="outline">Guardian</Badge>, you can view children&apos;s 
-                  progress and manage family settings, but cannot access teaching or admin tools.
+                  As a <Badge variant="outline">Guardian</Badge>, you can view
+                  children&apos;s progress and manage family settings, but
+                  cannot access teaching or admin tools.
                 </p>
               )}
-              {userRole === 'teacher' && (
+              {userRole === "teacher" && (
                 <p>
-                  As a <Badge variant="outline">Teacher</Badge>, you can create and manage 
-                  lessons but cannot access user management or system settings.
+                  As a <Badge variant="outline">Teacher</Badge>, you can create
+                  and manage lessons but cannot access user management or system
+                  settings.
                 </p>
               )}
-              {userRole === 'admin' && (
+              {userRole === "admin" && (
                 <p>
-                  As an <Badge variant="outline">Admin</Badge>, you have broad access 
-                  but cannot modify system-level configurations or assign roles.
+                  As an <Badge variant="outline">Admin</Badge>, you have broad
+                  access but cannot modify system-level configurations or assign
+                  roles.
                 </p>
               )}
             </div>
@@ -144,7 +150,7 @@ export function UnauthorizedPage() {
               <Home className="mr-2 size-4" />
               Go to My Dashboard
             </Button>
-            
+
             <Button variant="outline" onClick={handleGoBack} className="flex-1">
               <ArrowLeft className="mr-2 size-4" />
               Go Back
@@ -155,7 +161,9 @@ export function UnauthorizedPage() {
           <div className="border-t pt-4">
             <h5 className="mb-2 font-medium">Need help?</h5>
             <div className="space-y-1 text-sm text-muted-foreground">
-              <p>• Contact your administrator if you think you should have access</p>
+              <p>
+                • Contact your administrator if you think you should have access
+              </p>
               <p>• Check if you&apos;re using the correct account</p>
               <p>• Guest users need to complete onboarding first</p>
             </div>

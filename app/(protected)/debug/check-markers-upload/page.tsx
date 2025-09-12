@@ -1,44 +1,45 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Upload, 
-  FileText, 
-  AlertCircle, 
-  CheckCircle, 
-  Info,
-  Eye,
-  Download,
-  RefreshCw,
-  Bug
-} from "lucide-react";
-import { 
-  uploadCheckMarkersFile,
-  uploadCheckMarkersFileWithValidation 
-} from "@/lib/api/lesson-service";
-import { 
-  uploadCheckMarkersSimple 
-} from "@/lib/api/simple-upload-service";
-import { 
-  uploadCheckMarkers 
-} from "@/lib/api/lesson-upload";
+import { useAuthStore } from "@/store/authStore";
 import {
-  uploadCheckMarkersDirectly
-} from "@/lib/api/direct-check-markers-upload";
+  AlertCircle,
+  Bug,
+  CheckCircle,
+  Download,
+  Eye,
+  FileText,
+  Info,
+  RefreshCw,
+  Upload,
+} from "lucide-react";
+import { toast } from "sonner";
+
 import {
   uploadAllLessonFilesBulk,
   validateBulkUploadFiles,
-  type BulkUploadFiles
+  type BulkUploadFiles,
 } from "@/lib/api/bulk-lesson-upload";
-import { getTokenFromCookies, getAuthCookies } from "@/lib/auth-cookies";
-import { useAuthStore } from "@/store/authStore";
+import { uploadCheckMarkersDirectly } from "@/lib/api/direct-check-markers-upload";
+import {
+  uploadCheckMarkersFile,
+  uploadCheckMarkersFileWithValidation,
+} from "@/lib/api/lesson-service";
+import { uploadCheckMarkers } from "@/lib/api/lesson-upload";
+import { uploadCheckMarkersSimple } from "@/lib/api/simple-upload-service";
+import { getAuthCookies, getTokenFromCookies } from "@/lib/auth-cookies";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface DebugLog {
   timestamp: Date;
@@ -58,12 +59,12 @@ export default function CheckMarkersUploadDebugPage() {
       timestamp: new Date(),
       type,
       message,
-      data
+      data,
     };
-    setDebugLogs(prev => [log, ...prev].slice(0, 50)); // Keep last 50 logs
-    
+    setDebugLogs((prev) => [log, ...prev].slice(0, 50)); // Keep last 50 logs
+
     // Also log to console for additional debugging
-    console.log(`[${type.toUpperCase()}] ${message}`, data ? data : '');
+    console.log(`[${type.toUpperCase()}] ${message}`, data ? data : "");
   };
 
   const clearLogs = () => {
@@ -76,39 +77,45 @@ export default function CheckMarkersUploadDebugPage() {
 Numbers and Counting,10,15,20,20,0,0,0,0,0,35
 Addition Basics,10,15,25,25,0,0,0,0,0,25
 The Alphabet,10,15,30,30,0,0,0,0,0,15`;
-    
-    const blob = new Blob([sampleContent], { type: 'text/csv' });
+
+    const blob = new Blob([sampleContent], { type: "text/csv" });
     const url = window.URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = 'sample_check_markers.csv';
+    a.download = "sample_check_markers.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    
+
     addLog("info", "Sample check-markers file downloaded");
   };
 
   const debugAuthState = () => {
     addLog("info", "=== AUTH STATE DEBUG ===");
-    
+
     // Check auth store
     addLog("info", `Auth Store - Authenticated: ${isAuthenticated}`);
     addLog("info", `Auth Store - User:`, user);
-    
+
     // Check cookies
     const authCookies = getAuthCookies();
     addLog("info", `Auth Cookies:`, authCookies);
-    
+
     const token = getTokenFromCookies();
-    addLog("info", `Token from cookies: ${token ? 'Present (' + token.substring(0, 20) + '...)' : 'Missing'}`);
-    
+    addLog(
+      "info",
+      `Token from cookies: ${token ? "Present (" + token.substring(0, 20) + "...)" : "Missing"}`,
+    );
+
     // Check if token is valid format
     if (token) {
       try {
-        const tokenParts = token.split('.');
-        addLog("info", `Token format: ${tokenParts.length === 3 ? 'JWT (3 parts)' : `${tokenParts.length} parts`}`);
+        const tokenParts = token.split(".");
+        addLog(
+          "info",
+          `Token format: ${tokenParts.length === 3 ? "JWT (3 parts)" : `${tokenParts.length} parts`}`,
+        );
       } catch (e) {
         addLog("warning", "Token format validation failed");
       }
@@ -120,36 +127,54 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
       addLog("warning", "No file selected for preview");
       return;
     }
-    
+
     try {
       const content = await file.text();
-      addLog("info", `File preview (first 1000 chars):`, content.substring(0, 1000));
-      
+      addLog(
+        "info",
+        `File preview (first 1000 chars):`,
+        content.substring(0, 1000),
+      );
+
       // Analyze file structure
-      const lines = content.split('\n');
+      const lines = content.split("\n");
       addLog("info", `File analysis - Total lines: ${lines.length}`);
-      
+
       if (lines.length > 0) {
         // Auto-detect delimiter
         const headerLine = lines[0];
         const commaCount = (headerLine.match(/,/g) || []).length;
         const pipeCount = (headerLine.match(/\|/g) || []).length;
-        
-        let delimiter = ',';
-        let format = 'comma';
-        
+
+        let delimiter = ",";
+        let format = "comma";
+
         if (pipeCount > commaCount) {
-          delimiter = '|';
-          format = 'pipe';
+          delimiter = "|";
+          format = "pipe";
         }
-        
-        const headers = headerLine.split(delimiter).map(h => h.trim());
+
+        const headers = headerLine.split(delimiter).map((h) => h.trim());
         addLog("info", `Format detected: ${format}-delimited`);
         addLog("info", `Headers found (${headers.length}):`, headers);
-        
-        const expectedHeaders = ['lesson', 'overview', 'lesson_video', 'concept_one', 'concept_two', 'concept_three', 'concept_four', 'concept_five', 'concept_six', 'concept_seven', 'general_exercises'];
-        const missingHeaders = expectedHeaders.filter(h => !headers.includes(h));
-        
+
+        const expectedHeaders = [
+          "lesson",
+          "overview",
+          "lesson_video",
+          "concept_one",
+          "concept_two",
+          "concept_three",
+          "concept_four",
+          "concept_five",
+          "concept_six",
+          "concept_seven",
+          "general_exercises",
+        ];
+        const missingHeaders = expectedHeaders.filter(
+          (h) => !headers.includes(h),
+        );
+
         if (missingHeaders.length > 0) {
           addLog("error", `Missing headers:`, missingHeaders);
         } else {
@@ -157,7 +182,10 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
         }
       }
     } catch (error) {
-      addLog("error", `Failed to preview file: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addLog(
+        "error",
+        `Failed to preview file: ${error instanceof Error ? error.message : "Unknown error"}`,
+      );
     }
   };
 
@@ -170,51 +198,61 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
 
     setIsUploading(true);
     addLog("info", `=== TESTING ${method.toUpperCase()} METHOD ===`);
-    
+
     try {
       let result;
-      
+
       switch (method) {
         case "basic":
           addLog("info", "Using uploadCheckMarkersFile (basic method)");
           result = await uploadCheckMarkersFile(file);
           break;
-          
+
         case "validated":
-          addLog("info", "Using uploadCheckMarkersFileWithValidation (smart method)");
+          addLog(
+            "info",
+            "Using uploadCheckMarkersFileWithValidation (smart method)",
+          );
           result = await uploadCheckMarkersFileWithValidation(file);
           break;
-          
+
         case "simple":
           addLog("info", "Using uploadCheckMarkersSimple (simple method)");
           result = await uploadCheckMarkersSimple(file);
           break;
-          
+
         case "generic":
           addLog("info", "Using uploadCheckMarkers (generic method)");
           result = await uploadCheckMarkers(file);
           break;
-          
+
         case "direct":
-          addLog("info", "Using uploadCheckMarkersDirectly (HTTPie-style direct method)");
+          addLog(
+            "info",
+            "Using uploadCheckMarkersDirectly (HTTPie-style direct method)",
+          );
           result = await uploadCheckMarkersDirectly(file);
           break;
-          
+
         default:
           throw new Error(`Unknown method: ${method}`);
       }
-      
+
       addLog("info", `Upload result:`, result);
-      
+
       if (result.success) {
         addLog("success", `✅ ${method} method succeeded: ${result.message}`);
         toast.success(`Upload successful with ${method} method!`);
       } else {
-        addLog("error", `❌ ${method} method failed: ${result.error || result.message}`);
+        addLog(
+          "error",
+          `❌ ${method} method failed: ${result.error || result.message}`,
+        );
         toast.error(`Upload failed with ${method} method`);
       }
     } catch (error: any) {
-      const errorMsg = error.response?.data?.message || error.message || 'Unknown error';
+      const errorMsg =
+        error.response?.data?.message || error.message || "Unknown error";
       addLog("error", `❌ ${method} method threw error: ${errorMsg}`);
       addLog("error", "Full error object:", error);
       toast.error(`${method} method error: ${errorMsg}`);
@@ -225,11 +263,11 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
 
   const testAllMethods = async () => {
     const methods = ["basic", "validated", "simple", "generic"];
-    
+
     for (const method of methods) {
       await testUploadMethod(method);
       // Add a small delay between tests
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise((resolve) => setTimeout(resolve, 1000));
     }
   };
 
@@ -237,7 +275,10 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      addLog("info", `File selected: ${selectedFile.name} (${selectedFile.size} bytes, ${selectedFile.type})`);
+      addLog(
+        "info",
+        `File selected: ${selectedFile.name} (${selectedFile.size} bytes, ${selectedFile.type})`,
+      );
     }
   };
 
@@ -246,12 +287,17 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
     // Correct comma-delimited format that API expects
     const correctCsvContent = `lesson,overview,lesson_video,concept_one,concept_two,concept_three,concept_four,concept_five,concept_six,concept_seven,general_exercises
 Number Bases System,5,5,20,25,25,0,0,0,0,20`;
-    
-    const blob = new Blob([correctCsvContent], { type: 'text/csv' });
-    const correctFile = new File([blob], 'correct_check_markers.csv', { type: 'text/csv' });
+
+    const blob = new Blob([correctCsvContent], { type: "text/csv" });
+    const correctFile = new File([blob], "correct_check_markers.csv", {
+      type: "text/csv",
+    });
     setFile(correctFile);
     addLog("info", `✅ Loaded correct comma-delimited CSV format for testing`);
-    addLog("info", `File details: ${correctFile.name} (${correctFile.size} bytes)`);
+    addLog(
+      "info",
+      `File details: ${correctFile.name} (${correctFile.size} bytes)`,
+    );
   };
 
   return (
@@ -262,7 +308,8 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
           Debug: Check-Markers Upload
         </h1>
         <p className="mt-2 text-muted-foreground">
-          Comprehensive testing and debugging for check-markers upload functionality
+          Comprehensive testing and debugging for check-markers upload
+          functionality
         </p>
       </div>
 
@@ -283,11 +330,15 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 ) : (
                   <AlertCircle className="size-4 text-red-500" />
                 )}
-                <span>Authentication: {isAuthenticated ? 'Authenticated' : 'Not Authenticated'}</span>
+                <span>
+                  Authentication:{" "}
+                  {isAuthenticated ? "Authenticated" : "Not Authenticated"}
+                </span>
               </div>
               {user && (
                 <div className="text-sm text-muted-foreground">
-                  User: {user.name} ({user.email}) - Role: {user.role.join(', ')}
+                  User: {user.name} ({user.email}) - Role:{" "}
+                  {user.role.join(", ")}
                 </div>
               )}
             </div>
@@ -313,12 +364,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 type="file"
                 accept=".csv,.txt"
                 onChange={handleFileSelect}
-                className="block w-full text-sm text-muted-foreground
-                file:mr-4 file:rounded-full file:border-0
-                file:bg-primary file:px-4
-                file:py-2 file:text-sm
-                file:font-semibold file:text-primary-foreground
-                hover:file:bg-primary/90"
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90"
               />
               {file && (
                 <div className="mt-2 text-sm text-muted-foreground">
@@ -326,22 +372,18 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 </div>
               )}
             </div>
-            
+
             <div className="flex flex-wrap gap-2">
               <Button onClick={downloadSampleFile} variant="outline" size="sm">
                 <Download className="mr-2 size-4" />
                 Download Sample
               </Button>
-              <Button 
-                onClick={loadCorrectCsvFile}
-                variant="default" 
-                size="sm"
-              >
+              <Button onClick={loadCorrectCsvFile} variant="default" size="sm">
                 ✅ Load Correct Format
               </Button>
-              <Button 
-                onClick={previewFileContent} 
-                variant="outline" 
+              <Button
+                onClick={previewFileContent}
+                variant="outline"
                 size="sm"
                 disabled={!file}
               >
@@ -370,7 +412,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
               <TabsTrigger value="individual">Individual Tests</TabsTrigger>
               <TabsTrigger value="batch">Batch Test</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="individual" className="space-y-4">
               <div className="grid gap-3 md:grid-cols-2">
                 <Button
@@ -410,7 +452,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 </Button>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="batch">
               <div className="space-y-4">
                 <Button
@@ -429,7 +471,8 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                 <Alert>
                   <Info className="size-4" />
                   <AlertDescription>
-                    This will test all upload methods sequentially. Check the logs below for detailed results.
+                    This will test all upload methods sequentially. Check the
+                    logs below for detailed results.
                   </AlertDescription>
                 </Alert>
               </div>
@@ -470,10 +513,10 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                     log.type === "success"
                       ? "border-green-500 bg-green-50/50"
                       : log.type === "error"
-                      ? "border-red-500 bg-red-50/50"
-                      : log.type === "warning"
-                      ? "border-yellow-500 bg-yellow-50/50"
-                      : "border-blue-500 bg-blue-50/50"
+                        ? "border-red-500 bg-red-50/50"
+                        : log.type === "warning"
+                          ? "border-yellow-500 bg-yellow-50/50"
+                          : "border-blue-500 bg-blue-50/50"
                   }`}
                 >
                   <div className="flex items-start justify-between">
@@ -484,8 +527,8 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                             log.type === "success"
                               ? "default"
                               : log.type === "error"
-                              ? "destructive"
-                              : "secondary"
+                                ? "destructive"
+                                : "secondary"
                           }
                           className="text-xs"
                         >
@@ -495,10 +538,9 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
                       </div>
                       {log.data && (
                         <pre className="mt-2 overflow-x-auto rounded bg-muted/50 p-2 text-xs">
-                          {typeof log.data === 'string' 
-                            ? log.data 
-                            : JSON.stringify(log.data, null, 2)
-                          }
+                          {typeof log.data === "string"
+                            ? log.data
+                            : JSON.stringify(log.data, null, 2)}
                         </pre>
                       )}
                     </div>
@@ -521,69 +563,99 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
         <CardContent>
           <div className="space-y-6 text-sm">
             <div>
-              <h4 className="mb-3 text-base font-medium">Check Markers Upload</h4>
+              <h4 className="mb-3 text-base font-medium">
+                Check Markers Upload
+              </h4>
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
                   <code className="rounded bg-muted px-2 py-1">
-                    POST https://fastlearnersapp.com/api/v1/superadmin/lessons/uploads/check-markers
+                    POST
+                    https://fastlearnersapp.com/api/v1/superadmin/lessons/uploads/check-markers
                   </code>
                 </div>
-                
+
                 <div>
                   <h5 className="font-medium">Expected Form Field:</h5>
-                  <code className="rounded bg-muted px-2 py-1">check_markers_file</code>
+                  <code className="rounded bg-muted px-2 py-1">
+                    check_markers_file
+                  </code>
                 </div>
-                
+
                 <div>
                   <h5 className="font-medium">Expected CSV Format:</h5>
                   <div className="rounded bg-muted p-3 font-mono text-xs">
                     lesson,overview,lesson_video,concept_one,concept_two,concept_three,concept_four,concept_five,concept_six,concept_seven,general_exercises
-                    <br />Number Bases System,5,5,20,25,25,0,0,0,0,20
+                    <br />
+                    Number Bases System,5,5,20,25,25,0,0,0,0,20
                   </div>
                 </div>
               </div>
             </div>
-            
+
             <Separator />
-            
+
             <div>
-              <h4 className="mb-3 text-base font-medium">Bulk Upload (All Lesson Files)</h4>
+              <h4 className="mb-3 text-base font-medium">
+                Bulk Upload (All Lesson Files)
+              </h4>
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
                   <code className="rounded bg-muted px-2 py-1">
-                    POST https://fastlearnersapp.com/api/v1/superadmin/lessons/uploads/all-lesson-files
+                    POST
+                    https://fastlearnersapp.com/api/v1/superadmin/lessons/uploads/all-lesson-files
                   </code>
                 </div>
-                
+
                 <div>
                   <h5 className="font-medium">Required Form Fields:</h5>
                   <div className="mt-2 grid grid-cols-2 gap-2">
-                    <code className="rounded bg-muted px-2 py-1 text-xs">lessons_file</code>
-                    <code className="rounded bg-muted px-2 py-1 text-xs">concepts_file</code>
-                    <code className="rounded bg-muted px-2 py-1 text-xs">examples_file</code>
-                    <code className="rounded bg-muted px-2 py-1 text-xs">exercises_file</code>
-                    <code className="rounded bg-muted px-2 py-1 text-xs">general_exercises_file</code>
-                    <code className="rounded bg-muted px-2 py-1 text-xs">check_markers_file</code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">
+                      lessons_file
+                    </code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">
+                      concepts_file
+                    </code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">
+                      examples_file
+                    </code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">
+                      exercises_file
+                    </code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">
+                      general_exercises_file
+                    </code>
+                    <code className="rounded bg-muted px-2 py-1 text-xs">
+                      check_markers_file
+                    </code>
                   </div>
                 </div>
-                
+
                 <div>
                   <h5 className="font-medium">File Types:</h5>
-                  <p className="text-muted-foreground">Only CSV (.csv) or TXT (.txt) files are accepted</p>
+                  <p className="text-muted-foreground">
+                    Only CSV (.csv) or TXT (.txt) files are accepted
+                  </p>
                 </div>
               </div>
             </div>
-            
+
             <Separator />
-            
+
             <div>
               <h4 className="mb-3 text-base font-medium">Common Headers</h4>
               <ul className="space-y-1">
-                <li>• <code>Authorization: Bearer {'{token}'}</code></li>
-                <li>• <code>Accept: application/json</code></li>
-                <li>• <code>Content-Type: multipart/form-data</code> (auto-set by browser)</li>
+                <li>
+                  • <code>Authorization: Bearer {"{token}"}</code>
+                </li>
+                <li>
+                  • <code>Accept: application/json</code>
+                </li>
+                <li>
+                  • <code>Content-Type: multipart/form-data</code> (auto-set by
+                  browser)
+                </li>
               </ul>
             </div>
           </div>

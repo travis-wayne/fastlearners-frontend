@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getRoleBasedRoute, useAuthStore } from "@/store/authStore";
@@ -32,7 +32,8 @@ export function LoginForm({
 }: React.ComponentProps<"form">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const { login, isLoading, error, clearError, hydrate, isHydrated } = useAuthStore();
+  const { login, isLoading, error, clearError, hydrate, isHydrated } =
+    useAuthStore();
 
   // Ensure auth store is properly hydrated on mount
   useEffect(() => {

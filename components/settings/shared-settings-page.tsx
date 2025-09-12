@@ -1,14 +1,29 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useAuthStore } from "@/store/authStore";
+import {
+  Crown,
+  GraduationCap,
+  Lock,
+  Shield,
+  Trash2,
+  User,
+  Users,
+} from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DeleteAccountSection } from "@/components/dashboard/delete-account";
 import { DashboardHeader } from "@/components/dashboard/header";
-import { ProfileForm } from "@/components/profile/profile-form";
 import { ChangePasswordForm } from "@/components/profile/change-password-form";
-import { User, Lock, Trash2, Shield, Crown, GraduationCap, Users } from "lucide-react";
-import { useAuthStore } from '@/store/authStore';
+import { ProfileForm } from "@/components/profile/profile-form";
 
 interface SharedSettingsPageProps {
   customTitle?: string;
@@ -16,10 +31,10 @@ interface SharedSettingsPageProps {
   hideAccountTab?: boolean;
 }
 
-export function SharedSettingsPage({ 
-  customTitle, 
+export function SharedSettingsPage({
+  customTitle,
   customDescription,
-  hideAccountTab = false 
+  hideAccountTab = false,
 }: SharedSettingsPageProps) {
   const { user } = useAuthStore();
 
@@ -34,51 +49,54 @@ export function SharedSettingsPage({
   // Role-based icon and color mapping
   const getRoleDisplay = (role: string) => {
     const roleMap = {
-      student: { 
-        icon: GraduationCap, 
-        label: 'Student', 
-        color: 'bg-blue-100 text-blue-800 border-blue-200' 
+      student: {
+        icon: GraduationCap,
+        label: "Student",
+        color: "bg-blue-100 text-blue-800 border-blue-200",
       },
-      guest: { 
-        icon: User, 
-        label: 'Guest', 
-        color: 'bg-gray-100 text-gray-800 border-gray-200' 
+      guest: {
+        icon: User,
+        label: "Guest",
+        color: "bg-gray-100 text-gray-800 border-gray-200",
       },
-      guardian: { 
-        icon: Shield, 
-        label: 'Guardian', 
-        color: 'bg-green-100 text-green-800 border-green-200' 
+      guardian: {
+        icon: Shield,
+        label: "Guardian",
+        color: "bg-green-100 text-green-800 border-green-200",
       },
-      teacher: { 
-        icon: Users, 
-        label: 'Teacher', 
-        color: 'bg-purple-100 text-purple-800 border-purple-200' 
+      teacher: {
+        icon: Users,
+        label: "Teacher",
+        color: "bg-purple-100 text-purple-800 border-purple-200",
       },
-      admin: { 
-        icon: Crown, 
-        label: 'Administrator', 
-        color: 'bg-orange-100 text-orange-800 border-orange-200' 
+      admin: {
+        icon: Crown,
+        label: "Administrator",
+        color: "bg-orange-100 text-orange-800 border-orange-200",
       },
-      superadmin: { 
-        icon: Crown, 
-        label: 'Super Administrator', 
-        color: 'bg-red-100 text-red-800 border-red-200' 
-      }
+      superadmin: {
+        icon: Crown,
+        label: "Super Administrator",
+        color: "bg-red-100 text-red-800 border-red-200",
+      },
     };
 
     return roleMap[role as keyof typeof roleMap] || roleMap.guest;
   };
 
-  const roleDisplay = getRoleDisplay(user.role[0] || 'guest'); // Use primary role
+  const roleDisplay = getRoleDisplay(user.role[0] || "guest"); // Use primary role
   const RoleIcon = roleDisplay.icon;
 
   return (
     <>
       <DashboardHeader
         heading={customTitle || "Settings"}
-        text={customDescription || "Manage your account, profile, and security settings."}
+        text={
+          customDescription ||
+          "Manage your account, profile, and security settings."
+        }
       />
-      
+
       {/* User Info Card */}
       <Card className="mb-6">
         <CardHeader className="pb-4">
@@ -88,7 +106,7 @@ export function SharedSettingsPage({
                 <RoleIcon className="size-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-lg">{user.name || 'User'}</CardTitle>
+                <CardTitle className="text-lg">{user.name || "User"}</CardTitle>
                 <CardDescription className="flex items-center gap-2">
                   <span>{user.email}</span>
                   <Badge className={roleDisplay.color}>
@@ -101,10 +119,12 @@ export function SharedSettingsPage({
           </div>
         </CardHeader>
       </Card>
-      
+
       <div className="space-y-6">
         <Tabs defaultValue="profile" className="w-full">
-          <TabsList className={`grid w-full ${hideAccountTab ? 'grid-cols-2' : 'grid-cols-3'}`}>
+          <TabsList
+            className={`grid w-full ${hideAccountTab ? "grid-cols-2" : "grid-cols-3"}`}
+          >
             <TabsTrigger value="profile" className="flex items-center gap-2">
               <User className="size-4" />
               Profile
@@ -122,19 +142,19 @@ export function SharedSettingsPage({
           </TabsList>
 
           <TabsContent value="profile" className="space-y-6">
-            <ProfileForm 
+            <ProfileForm
               onSuccess={(profile) => {
                 // You can add additional success handling here if needed
-                console.log('Profile updated:', profile);
+                console.log("Profile updated:", profile);
               }}
             />
           </TabsContent>
 
           <TabsContent value="security" className="space-y-6">
-            <ChangePasswordForm 
+            <ChangePasswordForm
               onSuccess={() => {
                 // You can add additional success handling here if needed
-                console.log('Password changed successfully');
+                console.log("Password changed successfully");
               }}
             />
           </TabsContent>

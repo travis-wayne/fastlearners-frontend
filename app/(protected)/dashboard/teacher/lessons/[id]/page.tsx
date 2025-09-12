@@ -1,35 +1,47 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
+import { useParams, useRouter } from "next/navigation";
+import {
+  AlertCircle,
+  ArrowLeft,
+  BookOpen,
+  Calculator,
+  CheckCircle,
+  Edit,
+  FileText,
+  Lightbulb,
+  Target,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
-import { DashboardHeader } from "@/components/dashboard/header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import {
+  getLessonContent,
+  trashLesson,
+  type Lesson,
+} from "@/lib/api/lesson-service";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { 
-  ArrowLeft, 
-  BookOpen, 
-  Target, 
-  Lightbulb, 
-  FileText, 
-  Calculator, 
-  CheckCircle,
-  AlertCircle,
-  Trash2,
-  Edit
-} from "lucide-react";
-import { 
-  getLessonContent, 
-  trashLesson,
-  type Lesson 
-} from "@/lib/api/lesson-service";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardHeader } from "@/components/dashboard/header";
 
 export default function LessonDetailPage() {
   const params = useParams();
@@ -41,50 +53,56 @@ export default function LessonDetailPage() {
   const [error, setError] = useState<string | null>(null);
 
   // Fetch lesson content
-  const fetchLesson = async () => {
+  const fetchLesson = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const response = await getLessonContent(lessonId);
-      
+
       if (response.success) {
         setLesson(response.content);
       } else {
         setError(response.message || "Failed to fetch lesson");
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || "Failed to fetch lesson");
+      setError(
+        err.response?.data?.message || err.message || "Failed to fetch lesson",
+      );
     } finally {
       setLoading(false);
     }
-  };
+  }, [lessonId]);
 
   useEffect(() => {
     if (lessonId) {
       fetchLesson();
     }
-  }, [lessonId]);
+  }, [lessonId, fetchLesson]);
 
   // Handle lesson deletion
   const handleTrashLesson = async () => {
     if (!lesson) return;
-    
+
     if (!confirm(`Are you sure you want to move "${lesson.topic}" to trash?`)) {
       return;
     }
 
     try {
       const response = await trashLesson(lesson.id);
-      
+
       if (response.success) {
         toast.success(response.message || "Lesson moved to trash successfully");
-        router.push('/dashboard/teacher/lessons');
+        router.push("/dashboard/teacher/lessons");
       } else {
         toast.error(response.message || "Failed to move lesson to trash");
       }
     } catch (err: any) {
-      toast.error(err.response?.data?.message || err.message || "Failed to move lesson to trash");
+      toast.error(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to move lesson to trash",
+      );
     }
   };
 
@@ -134,9 +152,7 @@ export default function LessonDetailPage() {
         </div>
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
-          <AlertDescription>
-            {error || "Lesson not found"}
-          </AlertDescription>
+          <AlertDescription>{error || "Lesson not found"}</AlertDescription>
         </Alert>
       </>
     );
@@ -228,19 +244,26 @@ export default function LessonDetailPage() {
                         )}
                         {objective.points && objective.points.length > 0 && (
                           <ul className="space-y-2">
-                            {objective.points.map((point: string, pointIndex: number) => (
-                              <li key={pointIndex} className="flex items-start gap-2">
-                                <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-500" />
-                                <span className="text-sm">{point}</span>
-                              </li>
-                            ))}
+                            {objective.points.map(
+                              (point: string, pointIndex: number) => (
+                                <li
+                                  key={pointIndex}
+                                  className="flex items-start gap-2"
+                                >
+                                  <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-500" />
+                                  <span className="text-sm">{point}</span>
+                                </li>
+                              ),
+                            )}
                           </ul>
                         )}
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No objectives defined for this lesson.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No objectives defined for this lesson.
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -261,15 +284,21 @@ export default function LessonDetailPage() {
               <CardContent>
                 {keyConcepts && Object.keys(keyConcepts).length > 0 ? (
                   <div className="space-y-4">
-                    {Object.entries(keyConcepts).map(([concept, description]: [string, any], index) => (
-                      <div key={index} className="rounded-lg border p-4">
-                        <h4 className="mb-2 font-medium">{concept}</h4>
-                        <p className="text-sm text-muted-foreground">{description as string}</p>
-                      </div>
-                    ))}
+                    {Object.entries(keyConcepts).map(
+                      ([concept, description]: [string, any], index) => (
+                        <div key={index} className="rounded-lg border p-4">
+                          <h4 className="mb-2 font-medium">{concept}</h4>
+                          <p className="text-sm text-muted-foreground">
+                            {description as string}
+                          </p>
+                        </div>
+                      ),
+                    )}
                   </div>
                 ) : (
-                  <p className="text-sm text-muted-foreground">No key concepts defined for this lesson.</p>
+                  <p className="text-sm text-muted-foreground">
+                    No key concepts defined for this lesson.
+                  </p>
                 )}
               </CardContent>
             </Card>
@@ -309,7 +338,8 @@ export default function LessonDetailPage() {
                   </h4>
                   <div className="rounded-lg bg-muted/50 p-4">
                     <p className="text-sm">
-                      {lesson.application || "No application information provided for this lesson."}
+                      {lesson.application ||
+                        "No application information provided for this lesson."}
                     </p>
                   </div>
                 </div>
@@ -331,8 +361,9 @@ export default function LessonDetailPage() {
               <FileText className="mx-auto mb-4 size-12 text-muted-foreground" />
               <h4 className="mb-2 font-medium">Content Coming Soon</h4>
               <p className="mb-4 text-sm text-muted-foreground">
-                Detailed lesson content including concepts, examples, and exercises will be displayed here 
-                once the content endpoints are available.
+                Detailed lesson content including concepts, examples, and
+                exercises will be displayed here once the content endpoints are
+                available.
               </p>
               <div className="flex flex-wrap justify-center gap-2">
                 <Badge variant="outline">Concepts</Badge>

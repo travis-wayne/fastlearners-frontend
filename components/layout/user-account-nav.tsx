@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 import { LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
 import { Drawer } from "vaul";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
-import { useAuthStore } from "@/store/authStore";
 import {
   DropdownMenu,
   DropdownMenuContent,

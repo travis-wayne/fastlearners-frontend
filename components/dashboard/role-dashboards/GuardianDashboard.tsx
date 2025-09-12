@@ -1,44 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { 
-  Users, 
-  TrendingUp, 
-  Clock, 
-  Trophy,
-  Target,
+import {
+  Bell,
+  BookOpen,
   Calendar,
   ChevronRight,
-  Star,
-  BookOpen,
+  Clock,
   MessageCircle,
-  Bell
+  Star,
+  Target,
+  TrendingUp,
+  Trophy,
+  Users,
 } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 export function GuardianDashboard() {
   // Mock data for children - replace with real data from your API
   const children = [
-    { 
-      id: 1, 
-      name: "Alex Johnson", 
-      grade: "Grade 8", 
-      weeklyProgress: 85, 
+    {
+      id: 1,
+      name: "Alex Johnson",
+      grade: "Grade 8",
+      weeklyProgress: 85,
       currentStreak: 7,
       todayStatus: "completed",
-      upcomingAssignments: 2
+      upcomingAssignments: 2,
     },
-    { 
-      id: 2, 
-      name: "Emma Johnson", 
-      grade: "Grade 5", 
-      weeklyProgress: 78, 
+    {
+      id: 2,
+      name: "Emma Johnson",
+      grade: "Grade 5",
+      weeklyProgress: 78,
       currentStreak: 3,
-      todayStatus: "in-progress", 
-      upcomingAssignments: 1
+      todayStatus: "in-progress",
+      upcomingAssignments: 1,
     },
   ];
 
@@ -53,19 +60,19 @@ export function GuardianDashboard() {
   ];
 
   const notifications = [
-    { 
-      id: 1, 
-      child: "Alex", 
-      message: "Completed Math assignment with 95% score", 
+    {
+      id: 1,
+      child: "Alex",
+      message: "Completed Math assignment with 95% score",
       time: "2 hours ago",
-      type: "achievement"
+      type: "achievement",
     },
-    { 
-      id: 2, 
-      child: "Emma", 
-      message: "Has an upcoming Science quiz tomorrow", 
+    {
+      id: 2,
+      child: "Emma",
+      message: "Has an upcoming Science quiz tomorrow",
       time: "5 hours ago",
-      type: "reminder"
+      type: "reminder",
     },
   ];
 
@@ -86,10 +93,14 @@ export function GuardianDashboard() {
                   </CardTitle>
                   <CardDescription>{child.grade}</CardDescription>
                 </div>
-                <Badge 
-                  variant={child.todayStatus === "completed" ? "default" : "secondary"}
+                <Badge
+                  variant={
+                    child.todayStatus === "completed" ? "default" : "secondary"
+                  }
                 >
-                  {child.todayStatus === "completed" ? "✓ Today Complete" : "In Progress"}
+                  {child.todayStatus === "completed"
+                    ? "✓ Today Complete"
+                    : "In Progress"}
                 </Badge>
               </div>
             </CardHeader>
@@ -97,22 +108,30 @@ export function GuardianDashboard() {
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Weekly Progress</span>
-                  <span className="text-sm text-muted-foreground">{child.weeklyProgress}%</span>
+                  <span className="text-sm text-muted-foreground">
+                    {child.weeklyProgress}%
+                  </span>
                 </div>
                 <Progress value={child.weeklyProgress} className="h-2" />
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4 pt-2">
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">{child.currentStreak}</div>
-                  <div className="text-xs text-muted-foreground">Day Streak</div>
+                  <div className="text-2xl font-bold text-primary">
+                    {child.currentStreak}
+                  </div>
+                  <div className="text-xs text-muted-foreground">
+                    Day Streak
+                  </div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-500">{child.upcomingAssignments}</div>
+                  <div className="text-2xl font-bold text-orange-500">
+                    {child.upcomingAssignments}
+                  </div>
                   <div className="text-xs text-muted-foreground">Due Soon</div>
                 </div>
               </div>
-              
+
               <div className="pt-2">
                 <Link href={`/dashboard/guardian/child/${child.id}`}>
                   <Button variant="outline" size="sm" className="w-full">
@@ -168,15 +187,22 @@ export function GuardianDashboard() {
           </CardHeader>
           <CardContent className="space-y-3">
             {notifications.map((notification) => (
-              <div key={notification.id} className="space-y-1 rounded-lg bg-muted/50 p-3">
+              <div
+                key={notification.id}
+                className="space-y-1 rounded-lg bg-muted/50 p-3"
+              >
                 <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">{notification.child}</Badge>
+                  <Badge variant="outline" className="text-xs">
+                    {notification.child}
+                  </Badge>
                   {notification.type === "achievement" && (
                     <Trophy className="size-3 text-yellow-500" />
                   )}
                 </div>
                 <p className="text-sm">{notification.message}</p>
-                <p className="text-xs text-muted-foreground">{notification.time}</p>
+                <p className="text-xs text-muted-foreground">
+                  {notification.time}
+                </p>
               </div>
             ))}
             <Button variant="outline" size="sm" className="mt-3 w-full">
@@ -196,7 +222,9 @@ export function GuardianDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Progress Reports</h4>
-                <p className="text-sm text-muted-foreground">View detailed reports</p>
+                <p className="text-sm text-muted-foreground">
+                  View detailed reports
+                </p>
               </div>
             </div>
           </CardContent>
@@ -224,7 +252,9 @@ export function GuardianDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Schedule</h4>
-                <p className="text-sm text-muted-foreground">View upcoming events</p>
+                <p className="text-sm text-muted-foreground">
+                  View upcoming events
+                </p>
               </div>
             </div>
           </CardContent>
@@ -238,7 +268,9 @@ export function GuardianDashboard() {
               </div>
               <div>
                 <h4 className="font-medium">Set Goals</h4>
-                <p className="text-sm text-muted-foreground">Family learning goals</p>
+                <p className="text-sm text-muted-foreground">
+                  Family learning goals
+                </p>
               </div>
             </div>
           </CardContent>

@@ -1,18 +1,25 @@
 "use client";
 
-import Link from "next/link";
-import { Upload, BookOpen, Trash2, Search, Plus, Eye } from "lucide-react";
 import { useState } from "react";
-import { DashboardHeader } from "@/components/dashboard/header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LessonsDataTable } from "@/components/lessons/LessonsDataTable";
+import Link from "next/link";
+import { BookOpen, Eye, Plus, Search, Trash2, Upload } from "lucide-react";
+
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { LessonsDataTable } from "@/components/lessons/LessonsDataTable";
 
 export default function LessonsPage() {
   const { hasPermission } = usePermissionCheck();
-  const canManageLessons = hasPermission('manage_lessons');
+  const canManageLessons = hasPermission("manage_lessons");
   const [activeTab, setActiveTab] = useState("overview");
 
   return (
@@ -106,7 +113,8 @@ export default function LessonsPage() {
                   Upload Lesson Content
                 </CardTitle>
                 <CardDescription>
-                  Upload CSV files containing lesson data, exercises, and assessments
+                  Upload CSV files containing lesson data, exercises, and
+                  assessments
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -172,7 +180,12 @@ export default function LessonsPage() {
                       Browse Lessons
                     </Button>
                   ) : (
-                    <Button variant="outline" className="w-full" size="lg" disabled>
+                    <Button
+                      variant="outline"
+                      className="w-full"
+                      size="lg"
+                      disabled
+                    >
                       <Eye className="mr-2 size-4" />
                       Browse Restricted
                     </Button>
@@ -204,7 +217,12 @@ export default function LessonsPage() {
                 </div>
 
                 <div className="pt-2">
-                  <Button variant="outline" className="w-full" size="lg" disabled>
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    size="lg"
+                    disabled
+                  >
                     <Trash2 className="mr-2 size-4" />
                     Coming Soon
                   </Button>
@@ -281,7 +299,8 @@ export default function LessonsPage() {
                 <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
                 <h3 className="mb-2 text-lg font-medium">Access Restricted</h3>
                 <p className="text-muted-foreground">
-                  Only Teachers, Admins, and SuperAdmins can browse lesson content.
+                  Only Teachers, Admins, and SuperAdmins can browse lesson
+                  content.
                 </p>
               </CardContent>
             </Card>
@@ -297,7 +316,8 @@ export default function LessonsPage() {
                 Upload Lesson Content
               </CardTitle>
               <CardDescription>
-                Choose your upload method and get started with lesson content management
+                Choose your upload method and get started with lesson content
+                management
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -305,7 +325,9 @@ export default function LessonsPage() {
                 <div className="grid gap-4 md:grid-cols-2">
                   <Card>
                     <CardHeader>
-                      <CardTitle className="text-lg">Individual Upload</CardTitle>
+                      <CardTitle className="text-lg">
+                        Individual Upload
+                      </CardTitle>
                       <CardDescription>
                         Upload files one by one with dependency management
                       </CardDescription>
@@ -340,9 +362,12 @@ export default function LessonsPage() {
               ) : (
                 <div className="py-8 text-center">
                   <Upload className="mx-auto mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-medium">Upload Restricted</h3>
+                  <h3 className="mb-2 text-lg font-medium">
+                    Upload Restricted
+                  </h3>
                   <p className="text-muted-foreground">
-                    Only Teachers, Admins, and SuperAdmins can upload lesson content.
+                    Only Teachers, Admins, and SuperAdmins can upload lesson
+                    content.
                   </p>
                 </div>
               )}

@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { ResetPasswordForm } from '@/components/auth/reset-password-form';
-import { Loader2 } from 'lucide-react';
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
+import { ResetPasswordForm } from "@/components/auth/reset-password-form";
 
 function ResetPasswordContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
-  const token = searchParams.get('token') || '';
+  const email = searchParams.get("email") || "";
+  const token = searchParams.get("token") || "";
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -21,16 +22,16 @@ function ResetPasswordContent() {
 
 export default function ResetPasswordPage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-        <div className="flex w-full max-w-sm items-center justify-center">
-          <Loader2 className="size-6 animate-spin" />
+    <Suspense
+      fallback={
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+          <div className="flex w-full max-w-sm items-center justify-center">
+            <Loader2 className="size-6 animate-spin" />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <ResetPasswordContent />
     </Suspense>
   );
 }
-
-

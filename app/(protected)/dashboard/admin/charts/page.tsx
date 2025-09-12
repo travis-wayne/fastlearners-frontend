@@ -19,7 +19,10 @@ export const metadata = constructMetadata({
 export default function ChartsPage() {
   return (
     <>
-      <DashboardHeader heading="Analytics & Reports" text="View analytics and reporting charts for FastLearners platform." />
+      <DashboardHeader
+        heading="Analytics & Reports"
+        text="View analytics and reporting charts for FastLearners platform."
+      />
       <div className="flex flex-col gap-5">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 2xl:grid-cols-4">
           <RadialTextChart />

@@ -118,15 +118,25 @@ export function ProtectedRoute({
 
 // Specific role-based route components
 export function AdminRoute({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute requiredRoles={["admin", "superadmin"]}>{children}</ProtectedRoute>;
+  return (
+    <ProtectedRoute requiredRoles={["admin", "superadmin"]}>
+      {children}
+    </ProtectedRoute>
+  );
 }
 
 export function SuperAdminRoute({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute requiredRoles={["superadmin"]}>{children}</ProtectedRoute>;
+  return (
+    <ProtectedRoute requiredRoles={["superadmin"]}>{children}</ProtectedRoute>
+  );
 }
 
 export function TeacherRoute({ children }: { children: React.ReactNode }) {
-  return <ProtectedRoute requiredRoles={["teacher", "admin", "superadmin"]}>{children}</ProtectedRoute>;
+  return (
+    <ProtectedRoute requiredRoles={["teacher", "admin", "superadmin"]}>
+      {children}
+    </ProtectedRoute>
+  );
 }
 
 export function StudentRoute({ children }: { children: React.ReactNode }) {

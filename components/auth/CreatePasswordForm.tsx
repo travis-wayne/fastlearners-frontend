@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Eye, EyeOff, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { authApi } from "@/lib/api/auth";
 import { setAuthCookies } from "@/lib/auth-cookies";
-import { useAuthStore } from "@/store/authStore";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -21,13 +21,13 @@ interface CreatePasswordFormProps {
 export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
   const router = useRouter();
   const { setUser } = useAuthStore();
-  
+
   // Form state
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   // Loading and error states
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -42,24 +42,34 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
     { text: "One special character", met: /[^A-Za-z0-9]/.test(password) },
   ];
 
-  const isPasswordValid = passwordRequirements.every(req => req.met);
+  const isPasswordValid = passwordRequirements.every((req) => req.met);
   const doPasswordsMatch = password === confirmPassword && password.length > 0;
   const canSubmit = isPasswordValid && doPasswordsMatch && !isLoading;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     console.log("=== CREATE PASSWORD FORM SUBMISSION ===");
-    console.log("Form data:", { email, token, passwordLength: password.length });
-    console.log("Validation:", { isPasswordValid, doPasswordsMatch, canSubmit });
-    
+    console.log("Form data:", {
+      email,
+      token,
+      passwordLength: password.length,
+    });
+    console.log("Validation:", {
+      isPasswordValid,
+      doPasswordsMatch,
+      canSubmit,
+    });
+
     if (!canSubmit) {
       console.log("Form submission blocked - validation failed");
       return;
     }
 
     if (!email || !token) {
-      setError("Missing email or token. Please try the registration process again.");
+      setError(
+        "Missing email or token. Please try the registration process again.",
+      );
       return;
     }
 
@@ -80,7 +90,7 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
       if (response.success) {
         console.log("Password created successfully!");
         setSuccess(true);
-        
+
         toast.success("Password created!", {
           description: "Redirecting to your dashboard...",
         });
@@ -89,20 +99,20 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
         if (response.content?.access_token && response.content?.user) {
           console.log("Setting auth cookies and user data");
           const { access_token, user } = response.content;
-          
-          const expiresAt = Date.now() + (7 * 24 * 60 * 60 * 1000);
+
+          const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
           setAuthCookies({ token: access_token, user, expiresAt });
           setUser(user);
         }
 
         // Redirect to role selection page
         console.log("Redirecting to /role...");
-        
+
         // Try multiple redirect methods
         setTimeout(() => {
           console.log("Attempting router.push to /role");
           router.push("/role");
-          
+
           // Fallback after 1 second
           setTimeout(() => {
             if (window.location.pathname.includes("create-password")) {
@@ -111,10 +121,11 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
             }
           }, 1000);
         }, 200);
-        
       } else {
         console.log("API returned error:", response.message);
-        setError(response.message || "Failed to create password. Please try again.");
+        setError(
+          response.message || "Failed to create password. Please try again.",
+        );
       }
     } catch (err: any) {
       console.error("Create password error:", err);
@@ -135,22 +146,20 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
         <div className="flex flex-col items-center gap-4 text-center">
           <CheckCircle2 className="size-16 text-green-500" />
           <div>
-            <h1 className="text-2xl font-bold text-green-800">Password Created!</h1>
+            <h1 className="text-2xl font-bold text-green-800">
+              Password Created!
+            </h1>
             <p className="mt-2 text-sm text-green-600">
               Your account has been successfully set up.
             </p>
           </div>
         </div>
-        
+
         <div className="space-y-3">
-          <Button 
-            onClick={handleManualRedirect}
-            className="w-full"
-            size="lg"
-          >
+          <Button onClick={handleManualRedirect} className="w-full" size="lg">
             Continue to Role Selection
           </Button>
-          
+
           <p className="text-center text-sm text-muted-foreground">
             You will be automatically redirected in a few seconds...
           </p>
@@ -196,7 +205,11 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
               onClick={() => setShowPassword(!showPassword)}
             >
-              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showPassword ? (
+                <EyeOff className="size-4" />
+              ) : (
+                <Eye className="size-4" />
+              )}
             </Button>
           </div>
         </div>
@@ -207,10 +220,16 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
             <p className="font-medium">Password requirements:</p>
             {passwordRequirements.map((req, index) => (
               <div key={index} className="flex items-center gap-2">
-                <CheckCircle2 
-                  className={req.met ? "size-4 text-green-500" : "size-4 text-gray-300"}
+                <CheckCircle2
+                  className={
+                    req.met ? "size-4 text-green-500" : "size-4 text-gray-300"
+                  }
                 />
-                <span className={req.met ? "text-green-700" : "text-muted-foreground"}>
+                <span
+                  className={
+                    req.met ? "text-green-700" : "text-muted-foreground"
+                  }
+                >
                   {req.text}
                 </span>
               </div>
@@ -238,14 +257,18 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
               className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
             >
-              {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+              {showConfirmPassword ? (
+                <EyeOff className="size-4" />
+              ) : (
+                <Eye className="size-4" />
+              )}
             </Button>
           </div>
-          
+
           {confirmPassword && !doPasswordsMatch && (
             <p className="text-sm text-red-500">Passwords do not match</p>
           )}
-          
+
           {confirmPassword && doPasswordsMatch && (
             <p className="text-sm text-green-600">Passwords match ✓</p>
           )}

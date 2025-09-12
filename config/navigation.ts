@@ -1,5 +1,6 @@
-import { UserRole } from "@/lib/types/auth";
 import { SidebarNavItem } from "@/types";
+
+import { UserRole } from "@/lib/types/auth";
 
 /**
  * Unified Navigation Configuration
@@ -28,7 +29,7 @@ export interface RoleNavigationConfig {
  */
 export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   guest: {
-    role: 'guest',
+    role: "guest",
     sidebarSections: [
       {
         title: "EXPLORE",
@@ -77,7 +78,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   student: {
-    role: 'student',
+    role: "student",
     sidebarSections: [
       {
         title: "LEARNING",
@@ -186,7 +187,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   guardian: {
-    role: 'guardian',
+    role: "guardian",
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -265,7 +266,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   teacher: {
-    role: 'teacher',
+    role: "teacher",
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -366,7 +367,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   admin: {
-    role: 'admin',
+    role: "admin",
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -459,7 +460,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
   },
 
   superadmin: {
-    role: 'superadmin',
+    role: "superadmin",
     sidebarSections: [
       {
         title: "OVERVIEW",
@@ -595,12 +596,12 @@ export function getNavigationForRole(role: UserRole): RoleNavigationConfig {
  */
 export function getSidebarConfig(role: UserRole): SidebarNavItem[] {
   const roleConfig = getNavigationForRole(role);
-  
+
   // For guests, don't add global items
-  if (role === 'guest') {
+  if (role === "guest") {
     return roleConfig.sidebarSections;
   }
-  
+
   // For authenticated users, combine role-specific + global
   return [...roleConfig.sidebarSections, ...globalNavItems];
 }

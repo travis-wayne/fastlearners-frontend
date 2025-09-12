@@ -1,14 +1,27 @@
 "use client";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Download,
+  Trash2,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Download, Clock, CheckCircle, AlertCircle } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 export interface UploadLog {
-  type: 'success' | 'error' | 'info';
+  type: "success" | "error" | "info";
   message: string;
   timestamp: Date;
   configKey?: string;
@@ -23,40 +36,47 @@ interface UploadLogsProps {
 
 export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
   const downloadLogs = () => {
-    const logText = logs.map(log => 
-      `[${log.timestamp.toISOString()}] ${log.type.toUpperCase()}: ${log.message}`
-    ).join('\n');
-    
-    const blob = new Blob([logText], { type: 'text/plain' });
+    const logText = logs
+      .map(
+        (log) =>
+          `[${log.timestamp.toISOString()}] ${log.type.toUpperCase()}: ${log.message}`,
+      )
+      .join("\n");
+
+    const blob = new Blob([logText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `upload-logs-${new Date().toISOString().split('T')[0]}.txt`;
+    a.download = `upload-logs-${new Date().toISOString().split("T")[0]}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
-  const getLogIcon = (type: UploadLog['type']) => {
+  const getLogIcon = (type: UploadLog["type"]) => {
     switch (type) {
-      case 'success':
-        return <CheckCircle className="size-4 text-green-600 dark:text-green-400" />;
-      case 'error':
-        return <AlertCircle className="size-4 text-red-600 dark:text-red-400" />;
+      case "success":
+        return (
+          <CheckCircle className="size-4 text-green-600 dark:text-green-400" />
+        );
+      case "error":
+        return (
+          <AlertCircle className="size-4 text-red-600 dark:text-red-400" />
+        );
       default:
         return <Clock className="size-4 text-blue-600 dark:text-blue-400" />;
     }
   };
 
-  const getLogStyles = (type: UploadLog['type']) => {
+  const getLogStyles = (type: UploadLog["type"]) => {
     switch (type) {
-      case 'success':
-        return 'border-green-500 bg-green-50/50 dark:bg-green-950/20';
-      case 'error':
-        return 'border-red-500 bg-red-50/50 dark:bg-red-950/20';
+      case "success":
+        return "border-green-500 bg-green-50/50 dark:bg-green-950/20";
+      case "error":
+        return "border-red-500 bg-red-50/50 dark:bg-red-950/20";
       default:
-        return 'border-blue-500 bg-blue-50/50 dark:bg-blue-950/20';
+        return "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20";
     }
   };
 
@@ -70,7 +90,8 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
               Upload Logs
             </CardTitle>
             <CardDescription>
-              Real-time logs of upload attempts and results ({logs.length} entries)
+              Real-time logs of upload attempts and results ({logs.length}{" "}
+              entries)
             </CardDescription>
           </div>
           <div className="flex gap-2">
@@ -98,22 +119,24 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
           </div>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         {logs.length === 0 ? (
           <div className="py-8 text-center">
             <Clock className="mx-auto mb-4 size-12 text-muted-foreground/50" />
-            <p className="text-muted-foreground">No logs yet. Upload activity will appear here.</p>
+            <p className="text-muted-foreground">
+              No logs yet. Upload activity will appear here.
+            </p>
           </div>
         ) : (
           <ScrollArea className="h-96">
             <div className="space-y-3">
               {logs.map((log, index) => (
-                <div 
+                <div
                   key={index}
                   className={cn(
                     "rounded-lg border-l-4 p-3 transition-all duration-200",
-                    getLogStyles(log.type)
+                    getLogStyles(log.type),
                   )}
                 >
                   <div className="flex items-start justify-between gap-3">
@@ -134,13 +157,13 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                       </div>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge 
+                      <Badge
                         variant={
-                          log.type === 'success' 
-                            ? 'default' 
-                            : log.type === 'error' 
-                            ? 'destructive' 
-                            : 'secondary'
+                          log.type === "success"
+                            ? "default"
+                            : log.type === "error"
+                              ? "destructive"
+                              : "secondary"
                         }
                         className="shrink-0 text-xs capitalize"
                       >

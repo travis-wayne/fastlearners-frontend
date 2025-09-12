@@ -1,27 +1,54 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   ColumnDef,
   ColumnFiltersState,
-  SortingState,
-  VisibilityState,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
+  SortingState,
   useReactTable,
+  VisibilityState,
 } from "@tanstack/react-table";
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+  BookOpen,
+  Calendar,
+  ChevronDown,
+  Download,
+  Eye,
+  Filter,
+  GraduationCap,
+  MoreHorizontal,
+  RefreshCw,
+  Search,
+  Trash2,
+  Users,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import {
+  Class,
+  deleteLesson,
+  getClassesAndSubjects,
+  getLessons,
+  Lesson,
+  LessonsResponse,
+  Subject,
+} from "@/lib/api/lessons";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -32,35 +59,21 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
-  ChevronDown,
-  MoreHorizontal,
-  Eye,
-  Trash2,
-  Download,
-  Filter,
-  RefreshCw,
-  Search,
-  BookOpen,
-  Calendar,
-  GraduationCap,
-  Users
-} from "lucide-react";
-import { toast } from "sonner";
-import { cn } from "@/lib/utils";
-import { 
-  Lesson, 
-  Class, 
-  Subject, 
-  getLessons, 
-  getClassesAndSubjects, 
-  deleteLesson,
-  LessonsResponse 
-} from "@/lib/api/lessons";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 interface LessonsDataTableProps {
   className?: string;
@@ -97,114 +110,191 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
 
-  const columns: ColumnDef<Lesson>[] = useMemo(() => [
-    {
-      accessorKey: "id",
-      header: "ID",
-      size: 60,
-    },
-    {
-      accessorKey: "topic",
-      header: "Topic",
-      cell: ({ row }) => (
-        <div className="max-w-[200px]">
-          <div className="truncate font-medium">{row.getValue("topic")}</div>
-          <div className="truncate text-xs text-muted-foreground">
-            {row.original.overview.substring(0, 50)}...
-          </div>
-        </div>
-      ),
-    },
-    {
-      accessorKey: "class",
-      header: "Class",
-      cell: ({ row }) => (
-        <Badge variant="outline" className="font-mono">
-          {row.getValue("class")}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "subject",
-      header: "Subject",
-      cell: ({ row }) => (
-        <div className="max-w-[150px] truncate font-medium">
-          {row.getValue("subject")}
-        </div>
-      ),
-    },
-    {
-      accessorKey: "term",
-      header: "Term",
-      cell: ({ row }) => (
-        <Badge variant="secondary">
-          {row.getValue("term")}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "week",
-      header: "Week",
-      cell: ({ row }) => (
-        <Badge variant="outline">
-          Week {row.getValue("week")}
-        </Badge>
-      ),
-    },
-    {
-      accessorKey: "created_at",
-      header: "Created",
-      cell: ({ row }) => (
-        <div className="text-xs text-muted-foreground">
-          {new Date(row.getValue("created_at")).toLocaleDateString()}
-        </div>
-      ),
-    },
-    {
-      id: "actions",
-      header: "Actions",
-      cell: ({ row }) => {
-        const lesson = row.original;
+  // Get filtered subjects based on selected class
+  const filteredSubjects = useMemo(() => {
+    if (!selectedClass) return subjects;
+    const classId = classes.find(c => c.name === selectedClass)?.id;
+    return subjects.filter(s => s.class_id === classId);
+  }, [selectedClass, subjects, classes]);
 
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="size-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="size-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => handleViewLesson(lesson.id)}
-                className="cursor-pointer"
-              >
-                <Eye className="mr-2 size-4" />
-                View Details
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleExportLesson(lesson)}
-                className="cursor-pointer"
-              >
-                <Download className="mr-2 size-4" />
-                Export
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => handleDeleteLesson(lesson.id)}
-                className="cursor-pointer text-red-600 focus:text-red-600"
-              >
-                <Trash2 className="mr-2 size-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        );
-      },
+  // Fetch lessons when filters change
+  const fetchLessons = useCallback(async (page: number = 1) => {
+    try {
+      setLoading(true);
+      const classId = selectedClass ? classes.find(c => c.name === selectedClass)?.id : undefined;
+      const subjectId = selectedSubject ? filteredSubjects.find(s => s.name === selectedSubject)?.id : undefined;
+      const week = selectedWeek ? parseInt(selectedWeek) : undefined;
+
+      const lessonsData = await getLessons({
+        class_id: classId,
+        subject_id: subjectId,
+        term: selectedTerm || undefined,
+        week,
+        search: searchQuery || undefined,
+        page,
+        per_page: pagination.per_page
+      });
+
+      setData(lessonsData.lessons);
+      setPagination(lessonsData.pagination);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to fetch lessons');
+    } finally {
+      setLoading(false);
+    }
+  }, [selectedClass, selectedSubject, selectedTerm, selectedWeek, searchQuery, pagination.per_page, classes, filteredSubjects]);
+
+  const handleViewLesson = useCallback(
+    (lessonId: number) => {
+      router.push(`/superadmin/lessons/view/${lessonId}`);
     },
-  ], []);
+    [router],
+  );
+
+  const handleDeleteLesson = useCallback(
+    async (lessonId: number) => {
+      if (
+        !confirm(
+          "Are you sure you want to delete this lesson? It will be moved to trash.",
+        )
+      ) {
+        return;
+      }
+
+      try {
+        await deleteLesson(lessonId);
+        toast.success("Lesson moved to trash successfully");
+        fetchLessons(pagination.current_page);
+      } catch (error: any) {
+        toast.error(error.message || "Failed to delete lesson");
+      }
+    },
+    [pagination.current_page, fetchLessons],
+  );
+
+  const handleExportLesson = useCallback((lesson: Lesson) => {
+    // Create downloadable JSON file
+    const dataStr = JSON.stringify(lesson, null, 2);
+    const dataBlob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(dataBlob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `lesson-${lesson.id}-${lesson.topic.replace(/\s+/g, "-").toLowerCase()}.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    toast.success("Lesson exported successfully");
+  }, []);
+
+  const columns: ColumnDef<Lesson>[] = useMemo(
+    () => [
+      {
+        accessorKey: "id",
+        header: "ID",
+        size: 60,
+      },
+      {
+        accessorKey: "topic",
+        header: "Topic",
+        cell: ({ row }) => (
+          <div className="max-w-[200px]">
+            <div className="truncate font-medium">{row.getValue("topic")}</div>
+            <div className="truncate text-xs text-muted-foreground">
+              {row.original.overview.substring(0, 50)}...
+            </div>
+          </div>
+        ),
+      },
+      {
+        accessorKey: "class",
+        header: "Class",
+        cell: ({ row }) => (
+          <Badge variant="outline" className="font-mono">
+            {row.getValue("class")}
+          </Badge>
+        ),
+      },
+      {
+        accessorKey: "subject",
+        header: "Subject",
+        cell: ({ row }) => (
+          <div className="max-w-[150px] truncate font-medium">
+            {row.getValue("subject")}
+          </div>
+        ),
+      },
+      {
+        accessorKey: "term",
+        header: "Term",
+        cell: ({ row }) => (
+          <Badge variant="secondary">{row.getValue("term")}</Badge>
+        ),
+      },
+      {
+        accessorKey: "week",
+        header: "Week",
+        cell: ({ row }) => (
+          <Badge variant="outline">Week {row.getValue("week")}</Badge>
+        ),
+      },
+      {
+        accessorKey: "created_at",
+        header: "Created",
+        cell: ({ row }) => (
+          <div className="text-xs text-muted-foreground">
+            {new Date(row.getValue("created_at")).toLocaleDateString()}
+          </div>
+        ),
+      },
+      {
+        id: "actions",
+        header: "Actions",
+        cell: ({ row }) => {
+          const lesson = row.original;
+
+          return (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="size-8 p-0">
+                  <span className="sr-only">Open menu</span>
+                  <MoreHorizontal className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handleViewLesson(lesson.id)}
+                  className="cursor-pointer"
+                >
+                  <Eye className="mr-2 size-4" />
+                  View Details
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => handleExportLesson(lesson)}
+                  className="cursor-pointer"
+                >
+                  <Download className="mr-2 size-4" />
+                  Export
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem
+                  onClick={() => handleDeleteLesson(lesson.id)}
+                  className="cursor-pointer text-red-600 focus:text-red-600"
+                >
+                  <Trash2 className="mr-2 size-4" />
+                  Delete
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          );
+        },
+      },
+    ],
+    [handleViewLesson, handleDeleteLesson, handleExportLesson],
+  );
 
   const table = useReactTable({
     data,
@@ -230,13 +320,6 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
     },
   });
 
-  // Get filtered subjects based on selected class
-  const filteredSubjects = useMemo(() => {
-    if (!selectedClass) return subjects;
-    const classId = classes.find(c => c.name === selectedClass)?.id;
-    return subjects.filter(s => s.class_id === classId);
-  }, [selectedClass, subjects, classes]);
-
   // Fetch initial data
   useEffect(() => {
     const fetchInitialData = async () => {
@@ -244,15 +327,15 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
         setLoading(true);
         const [classesAndSubjects, lessonsData] = await Promise.all([
           getClassesAndSubjects(),
-          getLessons({ page: 1, per_page: 10 })
+          getLessons({ page: 1, per_page: 10 }),
         ]);
-        
+
         setClasses(classesAndSubjects.classes);
         setSubjects(classesAndSubjects.subjects);
         setData(lessonsData.lessons);
         setPagination(lessonsData.pagination);
       } catch (error: any) {
-        toast.error(error.message || 'Failed to load lessons data');
+        toast.error(error.message || "Failed to load lessons data");
       } finally {
         setLoading(false);
       }
@@ -261,33 +344,6 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
     fetchInitialData();
   }, []);
 
-  // Fetch lessons when filters change
-  const fetchLessons = async (page: number = 1) => {
-    try {
-      setLoading(true);
-      const classId = selectedClass ? classes.find(c => c.name === selectedClass)?.id : undefined;
-      const subjectId = selectedSubject ? filteredSubjects.find(s => s.name === selectedSubject)?.id : undefined;
-      const week = selectedWeek ? parseInt(selectedWeek) : undefined;
-
-      const lessonsData = await getLessons({
-        class_id: classId,
-        subject_id: subjectId,
-        term: selectedTerm || undefined,
-        week,
-        search: searchQuery || undefined,
-        page,
-        per_page: pagination.per_page
-      });
-
-      setData(lessonsData.lessons);
-      setPagination(lessonsData.pagination);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to fetch lessons');
-    } finally {
-      setLoading(false);
-    }
-  };
-
   // Handle filter changes
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -295,41 +351,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
     }, 300);
 
     return () => clearTimeout(timeoutId);
-  }, [selectedClass, selectedSubject, selectedTerm, selectedWeek, searchQuery]);
-
-  const handleViewLesson = (lessonId: number) => {
-    router.push(`/superadmin/lessons/view/${lessonId}`);
-  };
-
-  const handleExportLesson = (lesson: Lesson) => {
-    // Create downloadable JSON file
-    const dataStr = JSON.stringify(lesson, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `lesson-${lesson.id}-${lesson.topic.replace(/\s+/g, '-').toLowerCase()}.json`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-    
-    toast.success('Lesson exported successfully');
-  };
-
-  const handleDeleteLesson = async (lessonId: number) => {
-    if (!confirm('Are you sure you want to delete this lesson? It will be moved to trash.')) {
-      return;
-    }
-
-    try {
-      await deleteLesson(lessonId);
-      toast.success('Lesson moved to trash successfully');
-      fetchLessons(pagination.current_page);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to delete lesson');
-    }
-  };
+  }, [fetchLessons]);
 
   const handleRefresh = () => {
     fetchLessons(pagination.current_page);
@@ -343,7 +365,12 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
     setSearchQuery("");
   };
 
-  const hasActiveFilters = selectedClass || selectedSubject || selectedTerm || selectedWeek || searchQuery;
+  const hasActiveFilters =
+    selectedClass ||
+    selectedSubject ||
+    selectedTerm ||
+    selectedWeek ||
+    searchQuery;
 
   return (
     <Card className={cn("w-full", className)}>
@@ -355,7 +382,8 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
               Browse Lessons
             </CardTitle>
             <CardDescription>
-              View and manage all lesson content ({pagination.total} total lessons)
+              View and manage all lesson content ({pagination.total} total
+              lessons)
             </CardDescription>
           </div>
           <Button onClick={handleRefresh} variant="outline" size="sm">
@@ -377,8 +405,13 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
               className="pl-10"
             />
           </div>
-          
-          <Select value={selectedClass || "all"} onValueChange={(value) => setSelectedClass(value === "all" ? "" : value)}>
+
+          <Select
+            value={selectedClass || "all"}
+            onValueChange={(value) =>
+              setSelectedClass(value === "all" ? "" : value)
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select Class" />
             </SelectTrigger>
@@ -392,7 +425,12 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
             </SelectContent>
           </Select>
 
-          <Select value={selectedSubject || "all"} onValueChange={(value) => setSelectedSubject(value === "all" ? "" : value)}>
+          <Select
+            value={selectedSubject || "all"}
+            onValueChange={(value) =>
+              setSelectedSubject(value === "all" ? "" : value)
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select Subject" />
             </SelectTrigger>
@@ -406,7 +444,12 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
             </SelectContent>
           </Select>
 
-          <Select value={selectedTerm || "all"} onValueChange={(value) => setSelectedTerm(value === "all" ? "" : value)}>
+          <Select
+            value={selectedTerm || "all"}
+            onValueChange={(value) =>
+              setSelectedTerm(value === "all" ? "" : value)
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select Term" />
             </SelectTrigger>
@@ -420,7 +463,12 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
             </SelectContent>
           </Select>
 
-          <Select value={selectedWeek || "all"} onValueChange={(value) => setSelectedWeek(value === "all" ? "" : value)}>
+          <Select
+            value={selectedWeek || "all"}
+            onValueChange={(value) =>
+              setSelectedWeek(value === "all" ? "" : value)
+            }
+          >
             <SelectTrigger>
               <SelectValue placeholder="Select Week" />
             </SelectTrigger>
@@ -439,9 +487,9 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             {hasActiveFilters && (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleClearFilters}
                 className="h-8"
               >
@@ -450,10 +498,11 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
               </Button>
             )}
             <div className="text-sm text-muted-foreground">
-              Showing {pagination.from}-{pagination.to} of {pagination.total} lessons
+              Showing {pagination.from}-{pagination.to} of {pagination.total}{" "}
+              lessons
             </div>
           </div>
-          
+
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="ml-auto">
@@ -495,7 +544,7 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                           ? null
                           : flexRender(
                               header.column.columnDef.header,
-                              header.getContext()
+                              header.getContext(),
                             )}
                       </TableHead>
                     );
@@ -506,7 +555,10 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
             <TableBody>
               {loading ? (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     <div className="flex items-center justify-center gap-2">
                       <RefreshCw className="size-4 animate-spin" />
                       Loading lessons...
@@ -522,13 +574,17 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                     onClick={() => handleViewLesson(row.original.id)}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell 
+                      <TableCell
                         key={cell.id}
-                        onClick={cell.column.id === 'actions' ? (e) => e.stopPropagation() : undefined}
+                        onClick={
+                          cell.column.id === "actions"
+                            ? (e) => e.stopPropagation()
+                            : undefined
+                        }
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}
@@ -536,12 +592,17 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={columns.length} className="h-24 text-center">
+                  <TableCell
+                    colSpan={columns.length}
+                    className="h-24 text-center"
+                  >
                     <div className="flex flex-col items-center gap-2 text-muted-foreground">
                       <BookOpen className="size-8" />
                       <div>No lessons found</div>
                       <div className="text-sm">
-                        {hasActiveFilters ? 'Try adjusting your filters' : 'No lessons have been uploaded yet'}
+                        {hasActiveFilters
+                          ? "Try adjusting your filters"
+                          : "No lessons have been uploaded yet"}
                       </div>
                     </div>
                   </TableCell>
@@ -571,7 +632,9 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
               variant="outline"
               size="sm"
               onClick={() => fetchLessons(pagination.current_page + 1)}
-              disabled={pagination.current_page >= pagination.last_page || loading}
+              disabled={
+                pagination.current_page >= pagination.last_page || loading
+              }
             >
               Next
             </Button>

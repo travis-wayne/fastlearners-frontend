@@ -1,16 +1,20 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { AlertCircle, Info, Megaphone, Settings, Pause, Play, Plus, Trash2 } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  AlertCircle,
+  Info,
+  Megaphone,
+  Pause,
+  Play,
+  Plus,
+  Settings,
+  Trash2,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -29,12 +33,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Type definitions
 interface MarqueeMessage {
   id: string;
   content: string;
-  type: 'announcement' | 'alert' | 'info' | 'maintenance';
+  type: "announcement" | "alert" | "info" | "maintenance";
   isActive: boolean;
   createdAt: string;
 }
@@ -45,10 +55,10 @@ interface MarqueeMessagesProps {
   autoRefreshInterval?: number; // milliseconds
 }
 
-export function MarqueeMessages({ 
-  apiEndpoint = '/api/marquee-messages',
+export function MarqueeMessages({
+  apiEndpoint = "/api/marquee-messages",
   className,
-  autoRefreshInterval = 60000 // 1 minute
+  autoRefreshInterval = 60000, // 1 minute
 }: MarqueeMessagesProps) {
   const { user } = useAuthStore();
   const [messages, setMessages] = useState<MarqueeMessage[]>([]);
@@ -56,17 +66,22 @@ export function MarqueeMessages({
   const [error, setError] = useState<string | null>(null);
   const [isPaused, setIsPaused] = useState(false);
   const [isAdminDialogOpen, setIsAdminDialogOpen] = useState(false);
-  const [newMessage, setNewMessage] = useState({ content: '', type: 'info' as MarqueeMessage['type'] });
+  const [newMessage, setNewMessage] = useState({
+    content: "",
+    type: "info" as MarqueeMessage["type"],
+  });
   const marqueeRef = useRef<HTMLDivElement>(null);
 
   // Check if user has admin permissions
-  const isAdmin = user?.role && (user.role.includes('admin') || user.role.includes('superadmin'));
+  const isAdmin =
+    user?.role &&
+    (user.role.includes("admin") || user.role.includes("superadmin"));
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     try {
       setError(null);
       const response = await fetch(apiEndpoint);
-      
+
       if (!response.ok) {
         // If API is not available, use mock data
         if (response.status === 404) {
@@ -76,42 +91,46 @@ export function MarqueeMessages({
         }
         throw new Error(`Failed to fetch messages: ${response.statusText}`);
       }
-      
+
       const data = await response.json();
       if (data.success && Array.isArray(data.messages)) {
-        setMessages(data.messages.filter((msg: MarqueeMessage) => msg.isActive));
+        setMessages(
+          data.messages.filter((msg: MarqueeMessage) => msg.isActive),
+        );
       } else {
-        throw new Error('Invalid response format');
+        throw new Error("Invalid response format");
       }
     } catch (error) {
-      console.error('Error fetching marquee messages:', error);
+      console.error("Error fetching marquee messages:", error);
       // Fallback to mock data if API fails
       setMessages(getMockMessages());
-      setError('Using offline messages');
+      setError("Using offline messages");
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiEndpoint]);
 
   const getMockMessages = (): MarqueeMessage[] => [
     {
-      id: '1',
-      content: 'Welcome to the enhanced navigation system! Enjoy the new features.',
-      type: 'announcement',
+      id: "1",
+      content:
+        "Welcome to the enhanced navigation system! Enjoy the new features.",
+      type: "announcement",
       isActive: true,
       createdAt: new Date().toISOString(),
     },
     {
-      id: '2', 
-      content: 'System maintenance scheduled for tonight at 2:00 AM EST.',
-      type: 'maintenance',
+      id: "2",
+      content: "System maintenance scheduled for tonight at 2:00 AM EST.",
+      type: "maintenance",
       isActive: true,
       createdAt: new Date().toISOString(),
     },
     {
-      id: '3',
-      content: 'New lesson upload feature now available in the teacher dashboard.',
-      type: 'info',
+      id: "3",
+      content:
+        "New lesson upload feature now available in the teacher dashboard.",
+      type: "info",
       isActive: true,
       createdAt: new Date().toISOString(),
     },
@@ -122,8 +141,8 @@ export function MarqueeMessages({
 
     try {
       const response = await fetch(apiEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           content: newMessage.content,
           type: newMessage.type,
@@ -133,75 +152,80 @@ export function MarqueeMessages({
 
       if (response.ok) {
         await fetchMessages();
-        setNewMessage({ content: '', type: 'info' });
+        setNewMessage({ content: "", type: "info" });
         setIsAdminDialogOpen(false);
       }
     } catch (error) {
-      console.error('Error adding message:', error);
+      console.error("Error adding message:", error);
     }
   };
 
   const deleteMessage = async (messageId: string) => {
     try {
       const response = await fetch(`${apiEndpoint}?id=${messageId}`, {
-        method: 'DELETE',
+        method: "DELETE",
       });
 
       if (response.ok) {
         await fetchMessages();
       }
     } catch (error) {
-      console.error('Error deleting message:', error);
+      console.error("Error deleting message:", error);
     }
   };
 
   useEffect(() => {
     fetchMessages();
-    
+
     // Set up auto-refresh
     const intervalId = setInterval(fetchMessages, autoRefreshInterval);
-    
-    return () => clearInterval(intervalId);
-  }, [apiEndpoint, autoRefreshInterval]);
 
-  const getMessageConfig = (type: MarqueeMessage['type']) => {
+    return () => clearInterval(intervalId);
+  }, [fetchMessages, autoRefreshInterval]);
+
+  const getMessageConfig = (type: MarqueeMessage["type"]) => {
     switch (type) {
-      case 'announcement':
+      case "announcement":
         return {
           icon: Megaphone,
-          color: 'text-blue-600',
-          bgColor: 'bg-blue-100 dark:bg-blue-900/20',
-          borderColor: 'border-blue-200 dark:border-blue-800',
+          color: "text-blue-600",
+          bgColor: "bg-blue-100 dark:bg-blue-900/20",
+          borderColor: "border-blue-200 dark:border-blue-800",
         };
-      case 'alert':
+      case "alert":
         return {
           icon: AlertCircle,
-          color: 'text-red-600',
-          bgColor: 'bg-red-100 dark:bg-red-900/20',
-          borderColor: 'border-red-200 dark:border-red-800',
+          color: "text-red-600",
+          bgColor: "bg-red-100 dark:bg-red-900/20",
+          borderColor: "border-red-200 dark:border-red-800",
         };
-      case 'maintenance':
+      case "maintenance":
         return {
           icon: Settings,
-          color: 'text-yellow-600',
-          bgColor: 'bg-yellow-100 dark:bg-yellow-900/20',
-          borderColor: 'border-yellow-200 dark:border-yellow-800',
+          color: "text-yellow-600",
+          bgColor: "bg-yellow-100 dark:bg-yellow-900/20",
+          borderColor: "border-yellow-200 dark:border-yellow-800",
         };
       default: // info
         return {
           icon: Info,
-          color: 'text-gray-600',
-          bgColor: 'bg-gray-100 dark:bg-gray-900/20',
-          borderColor: 'border-gray-200 dark:border-gray-800',
+          color: "text-gray-600",
+          bgColor: "bg-gray-100 dark:bg-gray-900/20",
+          borderColor: "border-gray-200 dark:border-gray-800",
         };
     }
   };
 
   if (loading) {
     return (
-      <div className={cn("h-12 bg-muted/50 border-t animate-pulse shadow-lg", className)}>
-        <div className="flex items-center h-full px-6">
-          <div className="h-4 w-64 bg-muted-foreground/20 rounded animate-pulse" />
+      <div
+        className={cn(
+          "h-12 animate-pulse border-t bg-muted/50 shadow-lg",
+          className,
+        )}
+      >
+        <div className="flex h-full items-center px-6">
+          <div className="h-4 w-64 animate-pulse rounded bg-muted-foreground/20" />
         </div>
       </div>
     );
@@ -212,8 +236,13 @@ export function MarqueeMessages({
   }
 
   return (
-    <div className={cn("relative w-full border-t bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-lg", className)}>
-      <div className="flex items-center h-12 px-4">
+    <div
+      className={cn(
+        "relative w-full border-t bg-background/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60",
+        className,
+      )}
+    >
+      <div className="flex h-12 items-center px-4">
         {/* Pause/Play Control */}
         <TooltipProvider>
           <Tooltip>
@@ -224,12 +253,18 @@ export function MarqueeMessages({
                 className="mr-2 size-8 shrink-0"
                 onClick={() => setIsPaused(!isPaused)}
               >
-                {isPaused ? <Play className="size-3" /> : <Pause className="size-3" />}
-                <span className="sr-only">{isPaused ? 'Resume' : 'Pause'} messages</span>
+                {isPaused ? (
+                  <Play className="size-3" />
+                ) : (
+                  <Pause className="size-3" />
+                )}
+                <span className="sr-only">
+                  {isPaused ? "Resume" : "Pause"} messages
+                </span>
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              {isPaused ? 'Resume' : 'Pause'} scrolling messages
+              {isPaused ? "Resume" : "Pause"} scrolling messages
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -239,8 +274,8 @@ export function MarqueeMessages({
           <div
             ref={marqueeRef}
             className={cn(
-              "flex items-center space-x-8 animate-marquee",
-              isPaused && "animation-paused"
+              "animate-marquee flex items-center space-x-8",
+              isPaused && "animation-paused",
             )}
             style={{
               animationDuration: `${Math.max(20, messages.length * 8)}s`,
@@ -251,15 +286,15 @@ export function MarqueeMessages({
             {messages.map((message) => {
               const config = getMessageConfig(message.type);
               const Icon = config.icon;
-              
+
               return (
                 <div
                   key={`${message.id}-${message.createdAt}`}
                   className={cn(
-                    "flex items-center space-x-2 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium border shrink-0",
+                    "flex shrink-0 items-center space-x-2 whitespace-nowrap rounded-md border px-3 py-1 text-sm font-medium",
                     config.color,
                     config.bgColor,
-                    config.borderColor
+                    config.borderColor,
                   )}
                 >
                   <Icon className="size-3 shrink-0" />
@@ -268,7 +303,7 @@ export function MarqueeMessages({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="size-5 p-0 ml-2 opacity-70 hover:opacity-100 hover:bg-background/50"
+                      className="ml-2 size-5 p-0 opacity-70 hover:bg-background/50 hover:opacity-100"
                       onClick={(e) => {
                         e.stopPropagation();
                         deleteMessage(message.id);
@@ -281,20 +316,20 @@ export function MarqueeMessages({
                 </div>
               );
             })}
-            
+
             {/* Duplicate messages for seamless loop */}
             {messages.map((message) => {
               const config = getMessageConfig(message.type);
               const Icon = config.icon;
-              
+
               return (
                 <div
                   key={`duplicate-${message.id}-${message.createdAt}`}
                   className={cn(
-                    "flex items-center space-x-2 whitespace-nowrap rounded-md px-3 py-1 text-sm font-medium border shrink-0",
+                    "flex shrink-0 items-center space-x-2 whitespace-nowrap rounded-md border px-3 py-1 text-sm font-medium",
                     config.color,
                     config.bgColor,
-                    config.borderColor
+                    config.borderColor,
                   )}
                   aria-hidden="true"
                 >
@@ -333,14 +368,16 @@ export function MarqueeMessages({
                     id="message-content"
                     placeholder="Enter your message..."
                     value={newMessage.content}
-                    onChange={(e) => setNewMessage({ ...newMessage, content: e.target.value })}
+                    onChange={(e) =>
+                      setNewMessage({ ...newMessage, content: e.target.value })
+                    }
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="message-type">Message Type</Label>
                   <Select
                     value={newMessage.type}
-                    onValueChange={(value: MarqueeMessage['type']) => 
+                    onValueChange={(value: MarqueeMessage["type"]) =>
                       setNewMessage({ ...newMessage, type: value })
                     }
                   >
@@ -357,10 +394,16 @@ export function MarqueeMessages({
                 </div>
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setIsAdminDialogOpen(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsAdminDialogOpen(false)}
+                >
                   Cancel
                 </Button>
-                <Button onClick={addMessage} disabled={!newMessage.content.trim()}>
+                <Button
+                  onClick={addMessage}
+                  disabled={!newMessage.content.trim()}
+                >
                   Add Message
                 </Button>
               </DialogFooter>

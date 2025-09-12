@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import type { HTMLAttributes } from 'react';
-import { forwardRef, useImperativeHandle } from 'react';
-import { cn } from '@/lib/utils';
+import type { HTMLAttributes } from "react";
+import { forwardRef, useImperativeHandle } from "react";
+
+import { cn } from "@/lib/utils";
 
 export interface SettingsGearIconHandle {
   startAnimation: () => void;
@@ -24,7 +25,10 @@ const SettingsGearIcon = forwardRef<
 
   return (
     <div
-      className={cn('hover:rotate-180 transition-transform duration-300', className)}
+      className={cn(
+        "transition-transform duration-300 hover:rotate-180",
+        className,
+      )}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       {...props}
@@ -47,6 +51,6 @@ const SettingsGearIcon = forwardRef<
   );
 });
 
-SettingsGearIcon.displayName = 'SettingsGearIcon';
+SettingsGearIcon.displayName = "SettingsGearIcon";
 
 export { SettingsGearIcon };

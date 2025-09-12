@@ -2,9 +2,11 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { sidebarLinks } from "@/config/dashboard";
 import { useAuthStore } from "@/store/authStore";
+
+import { sidebarLinks } from "@/config/dashboard";
 import { useAuthInit } from "@/hooks/useAuthInit";
+import { Breadcrumb } from "@/components/dashboard/breadcrumb";
 import { SearchCommand } from "@/components/dashboard/search-command";
 import {
   DashboardSidebar,
@@ -12,10 +14,9 @@ import {
 } from "@/components/layout/dashboard-sidebar";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { UserAccountNav } from "@/components/layout/user-account-nav";
-import { NotificationCenter } from "@/components/navigation/notification-center";
-import { NetworkStatus } from "@/components/navigation/network-status";
 import { MarqueeMessages } from "@/components/navigation/marquee-messages";
-import { Breadcrumb } from "@/components/dashboard/breadcrumb";
+import { NetworkStatus } from "@/components/navigation/network-status";
+import { NotificationCenter } from "@/components/navigation/notification-center";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ProtectedLayoutProps {
@@ -36,7 +37,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
   if (isLoading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="animate-spin rounded-full size-32 border-b-2 border-gray-900"></div>
+        <div className="size-32 animate-spin rounded-full border-b-2 border-gray-900"></div>
       </div>
     );
   }
@@ -47,15 +48,13 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
 
   const filteredLinks = sidebarLinks.map((section) => ({
     ...section,
-    items: section.items.filter(
-      ({ authorizeOnly }) => {
-        if (!authorizeOnly) return true;
-        if (!user.role) return false;
-        // Convert enum to string for comparison with user.role array from API
-        const roleString = authorizeOnly.toLowerCase();
-        return user.role.includes(roleString as any);
-      }
-    ),
+    items: section.items.filter(({ authorizeOnly }) => {
+      if (!authorizeOnly) return true;
+      if (!user.role) return false;
+      // Convert enum to string for comparison with user.role array from API
+      const roleString = authorizeOnly.toLowerCase();
+      return user.role.includes(roleString as any);
+    }),
   }));
 
   return (
@@ -63,7 +62,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
       <DashboardSidebar links={filteredLinks} />
 
       <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-50 flex h-14 bg-background/80 backdrop-blur-md border-b border-border/40 px-4 lg:h-[60px] xl:px-8">
+        <header className="sticky top-0 z-50 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8">
           <MaxWidthWrapper className="flex max-w-7xl items-center gap-x-3 px-0">
             <MobileSheetSidebar links={filteredLinks} />
 
@@ -79,13 +78,13 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
           </MaxWidthWrapper>
         </header>
 
-        <main className="flex-1 p-4 xl:px-8 pb-16">
+        <main className="flex-1 p-4 pb-16 xl:px-8">
           <MaxWidthWrapper className="flex h-full max-w-7xl flex-col gap-4 px-0 lg:gap-6">
             {children}
           </MaxWidthWrapper>
         </main>
       </div>
-      
+
       {/* Marquee Messages at bottom - full screen width and sticky */}
       <div className="fixed bottom-0 left-0 right-0 z-40">
         <MarqueeMessages />

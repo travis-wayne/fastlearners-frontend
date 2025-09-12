@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
+
+import { UserSubscriptionPlan } from "types";
 import { constructMetadata } from "@/lib/utils";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { BillingInfo } from "@/components/pricing/billing-info";
 import { Icons } from "@/components/shared/icons";
-import { UserSubscriptionPlan } from "types";
 
 export const metadata = constructMetadata({
   title: "Billing – SaaS Starter",

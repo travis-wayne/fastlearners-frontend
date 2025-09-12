@@ -1,31 +1,96 @@
 "use client";
 
-import { useState, useRef } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Upload, 
-  FileText, 
-  X, 
-  CheckCircle, 
+import { useRef, useState } from "react";
+import {
   AlertCircle,
+  CheckCircle,
   Download,
-  Eye
-} from 'lucide-react';
-import { toast } from 'sonner';
+  Eye,
+  FileText,
+  Upload,
+  X,
+} from "lucide-react";
+import { toast } from "sonner";
+
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 // Import CSV_COLUMNS for validation
 const CSV_COLUMNS = {
-  lessons: ['id', 'topic', 'overview', 'class', 'subject', 'term', 'week', 'objectives', 'key_concepts'],
-  concepts: ['id', 'lesson_id', 'title', 'description', 'detailed_explanation', 'practical_applications'],
-  examples: ['id', 'concept_id', 'title', 'description', 'solution_steps', 'solution_explanation'],
-  exercises: ['id', 'concept_id', 'question', 'options', 'correct_answer', 'explanation', 'difficulty_level'],
-  general_exercises: ['id', 'lesson_id', 'question', 'options', 'correct_answer', 'explanation', 'difficulty_level'],
-  check_markers: ['id', 'lesson_id', 'marker_type', 'question', 'expected_answer', 'scoring_criteria', 'points'],
-  scheme_of_work: ['id', 'class', 'subject', 'term', 'week', 'topic', 'subtopic', 'learning_objectives', 'activities']
+  lessons: [
+    "id",
+    "topic",
+    "overview",
+    "class",
+    "subject",
+    "term",
+    "week",
+    "objectives",
+    "key_concepts",
+  ],
+  concepts: [
+    "id",
+    "lesson_id",
+    "title",
+    "description",
+    "detailed_explanation",
+    "practical_applications",
+  ],
+  examples: [
+    "id",
+    "concept_id",
+    "title",
+    "description",
+    "solution_steps",
+    "solution_explanation",
+  ],
+  exercises: [
+    "id",
+    "concept_id",
+    "question",
+    "options",
+    "correct_answer",
+    "explanation",
+    "difficulty_level",
+  ],
+  general_exercises: [
+    "id",
+    "lesson_id",
+    "question",
+    "options",
+    "correct_answer",
+    "explanation",
+    "difficulty_level",
+  ],
+  check_markers: [
+    "id",
+    "lesson_id",
+    "marker_type",
+    "question",
+    "expected_answer",
+    "scoring_criteria",
+    "points",
+  ],
+  scheme_of_work: [
+    "id",
+    "class",
+    "subject",
+    "term",
+    "week",
+    "topic",
+    "subtopic",
+    "learning_objectives",
+    "activities",
+  ],
 };
 
 interface FileUploadProps {
@@ -53,7 +118,7 @@ export default function FileUpload({
   uploadProgress = 0,
   error = null,
   success = false,
-  maxSize = 10
+  maxSize = 10,
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -61,32 +126,41 @@ export default function FileUpload({
 
   const validateFile = (file: File): string[] => {
     const errors: string[] = [];
-    
+
     // Check file size
     const fileSizeInMB = file.size / (1024 * 1024);
     if (fileSizeInMB > maxSize) {
-      errors.push(`File size (${fileSizeInMB.toFixed(2)}MB) exceeds maximum allowed size of ${maxSize}MB`);
+      errors.push(
+        `File size (${fileSizeInMB.toFixed(2)}MB) exceeds maximum allowed size of ${maxSize}MB`,
+      );
     }
-    
+
     // Check file type
-    const allowedTypes = ['.csv', '.txt'];
-    const fileExtension = file.name.toLowerCase().slice(file.name.lastIndexOf('.'));
+    const allowedTypes = [".csv", ".txt"];
+    const fileExtension = file.name
+      .toLowerCase()
+      .slice(file.name.lastIndexOf("."));
     if (!allowedTypes.includes(fileExtension)) {
       errors.push(`Invalid file type. Only CSV and TXT files are allowed.`);
     }
-    
+
     // Basic content validation (we can't fully validate CSV structure without parsing)
-    if (file.type && !['text/csv', 'text/plain', 'application/csv'].includes(file.type)) {
-      errors.push('File appears to be in wrong format. Please ensure it\'s a CSV or TXT file.');
+    if (
+      file.type &&
+      !["text/csv", "text/plain", "application/csv"].includes(file.type)
+    ) {
+      errors.push(
+        "File appears to be in wrong format. Please ensure it's a CSV or TXT file.",
+      );
     }
-    
+
     return errors;
   };
 
   const handleFileSelection = (file: File) => {
     const errors = validateFile(file);
     setValidationErrors(errors);
-    
+
     if (errors.length === 0) {
       onFileSelect(file);
       toast.success(`${file.name} selected successfully`);
@@ -99,7 +173,7 @@ export default function FileUpload({
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
+
     const files = e.dataTransfer.files;
     if (files && files.length > 0) {
       handleFileSelection(files[0]);
@@ -129,17 +203,17 @@ export default function FileUpload({
     onFileRemove();
     setValidationErrors([]);
     if (fileInputRef.current) {
-      fileInputRef.current.value = '';
+      fileInputRef.current.value = "";
     }
-    toast.success('File removed');
+    toast.success("File removed");
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
   const getExpectedColumns = (): string[] => {
@@ -147,11 +221,17 @@ export default function FileUpload({
   };
 
   return (
-    <Card className={`transition-all duration-200 ${
-      success ? 'border-green-200 bg-green-50/30' : 
-      error || validationErrors.length > 0 ? 'border-red-200 bg-red-50/30' : 
-      dragActive ? 'border-primary bg-primary/5' : ''
-    }`}>
+    <Card
+      className={`transition-all duration-200 ${
+        success
+          ? "border-green-200 bg-green-50/30"
+          : error || validationErrors.length > 0
+            ? "border-red-200 bg-red-50/30"
+            : dragActive
+              ? "border-primary bg-primary/5"
+              : ""
+      }`}
+    >
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div>
@@ -162,7 +242,9 @@ export default function FileUpload({
             <CardDescription>{description}</CardDescription>
           </div>
           {success && <CheckCircle className="size-6 text-green-600" />}
-          {(error || validationErrors.length > 0) && <AlertCircle className="size-6 text-red-600" />}
+          {(error || validationErrors.length > 0) && (
+            <AlertCircle className="size-6 text-red-600" />
+          )}
         </div>
       </CardHeader>
 
@@ -171,8 +253,10 @@ export default function FileUpload({
         {!selectedFile && (
           <div
             className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
-              dragActive ? 'border-primary bg-primary/10' : 'border-muted-foreground/25 hover:border-primary/50'
-            } ${isUploading ? 'pointer-events-none opacity-50' : 'cursor-pointer'}`}
+              dragActive
+                ? "border-primary bg-primary/10"
+                : "border-muted-foreground/25 hover:border-primary/50"
+            } ${isUploading ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -181,7 +265,9 @@ export default function FileUpload({
             <Upload className="mx-auto mb-4 size-12 text-muted-foreground" />
             <div className="space-y-2">
               <p className="text-lg font-medium">
-                {dragActive ? 'Drop your file here' : 'Choose a file or drag it here'}
+                {dragActive
+                  ? "Drop your file here"
+                  : "Choose a file or drag it here"}
               </p>
               <p className="text-sm text-muted-foreground">
                 CSV or TXT files only, up to {maxSize}MB
@@ -204,7 +290,11 @@ export default function FileUpload({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                {success && <Badge className="bg-green-100 text-green-800">Uploaded</Badge>}
+                {success && (
+                  <Badge className="bg-green-100 text-green-800">
+                    Uploaded
+                  </Badge>
+                )}
                 <Button
                   variant="ghost"
                   size="sm"
@@ -272,7 +362,8 @@ export default function FileUpload({
             ))}
           </div>
           <p className="mt-2 text-xs text-muted-foreground">
-            Use pipe (|) as column delimiter. Ensure all columns are present in your CSV file.
+            Use pipe (|) as column delimiter. Ensure all columns are present in
+            your CSV file.
           </p>
         </div>
 

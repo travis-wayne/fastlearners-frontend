@@ -24,13 +24,24 @@ export interface User {
   address: string | null;
   gender: string | null;
   image: string | null;
-  status: 'active' | 'inactive' | 'suspended';
+  status: "active" | "inactive" | "suspended";
   created_at: string;
   role: UserRole[];
 }
 
-export type UserRole = 'guest' | 'student' | 'guardian' | 'teacher' | 'admin' | 'superadmin';
-export type ProfileStatus = 'guest' | 'basic_complete' | 'role_selected' | 'role_details_complete' | 'complete';
+export type UserRole =
+  | "guest"
+  | "student"
+  | "guardian"
+  | "teacher"
+  | "admin"
+  | "superadmin";
+export type ProfileStatus =
+  | "guest"
+  | "basic_complete"
+  | "role_selected"
+  | "role_details_complete"
+  | "complete";
 
 // Authentication Types
 export interface AuthTokens {
@@ -88,7 +99,7 @@ export interface ProfileUpdateData {
   address?: string;
   gender?: string;
   role?: string;
-  
+
   // Guardian-specific fields
   child_email?: string;
   child_phone?: string;
@@ -110,19 +121,19 @@ export interface GuestCapabilities {
 }
 
 export const guestCapabilities: GuestCapabilities = {
-  canBrowseContent: true,                    // ✅ Browse course catalogs, descriptions
-  canPreviewActivities: true,                // ✅ Preview sample lessons, demos
-  canAccessInteractiveFeatures: false,      // ❌ Cannot interact with content
-  canMakeTransactions: false,               // ❌ Cannot purchase or enroll
-  canAccessPersonalizedContent: false,      // ❌ No personalized recommendations
+  canBrowseContent: true, // ✅ Browse course catalogs, descriptions
+  canPreviewActivities: true, // ✅ Preview sample lessons, demos
+  canAccessInteractiveFeatures: false, // ❌ Cannot interact with content
+  canMakeTransactions: false, // ❌ Cannot purchase or enroll
+  canAccessPersonalizedContent: false, // ❌ No personalized recommendations
 };
 
 // Stage 1: Basic profile information
 export interface BasicProfileData {
   full_name: string;
-  email: string;           // Pre-filled from registration
-  date_of_birth: string;   // For age verification (COPPA compliance)
-  role: 'student' | 'parent';
+  email: string; // Pre-filled from registration
+  date_of_birth: string; // For age verification (COPPA compliance)
+  role: "student" | "parent";
 }
 
 // Stage 2A: Student-specific details
@@ -131,14 +142,14 @@ export interface StudentProfileData {
   school_name?: string;
   subjects_of_interest: string[];
   learning_goals?: string;
-  preferred_learning_style: 'visual' | 'auditory' | 'kinesthetic' | 'mixed';
+  preferred_learning_style: "visual" | "auditory" | "kinesthetic" | "mixed";
 }
 
 // Stage 2B: Parent-specific details
 export interface ParentProfileData {
   children: ChildInfo[];
   relationship_to_children: string;
-  educational_involvement_level: 'high' | 'medium' | 'low';
+  educational_involvement_level: "high" | "medium" | "low";
   communication_preferences: string[];
 }
 

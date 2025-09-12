@@ -1,16 +1,16 @@
 import type { Icon } from "lucide-react";
 
-import { Icons } from "@/components/shared/icons";
 import { plansColumns } from "@/config/subscriptions";
+import { Icons } from "@/components/shared/icons";
 
 // Define our own user role enum to match auth types
 export enum UserRole {
   GUEST = "guest",
-  STUDENT = "student", 
+  STUDENT = "student",
   GUARDIAN = "guardian",
   TEACHER = "teacher",
   ADMIN = "admin",
-  SUPERADMIN = "superadmin"
+  SUPERADMIN = "superadmin",
 }
 
 // Define our own user type (simplified version for UI components)

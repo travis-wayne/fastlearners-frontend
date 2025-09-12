@@ -1,6 +1,6 @@
-import axios from 'axios';
+import axios from "axios";
 
-const BASE_URL = 'https://fastlearnersapp.com/api/v1';
+const BASE_URL = "https://fastlearnersapp.com/api/v1";
 
 // Types
 export interface ApiResponse<T> {
@@ -120,8 +120,8 @@ export interface LessonsResponse {
 
 // Get auth token from storage
 const getAuthToken = (): string | null => {
-  if (typeof window !== 'undefined') {
-    return localStorage.getItem('access_token');
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("access_token");
   }
   return null;
 };
@@ -129,10 +129,12 @@ const getAuthToken = (): string | null => {
 // Create axios instance with auth headers
 const createAuthHeaders = () => {
   const token = getAuthToken();
-  return token ? { 
-    Authorization: `Bearer ${token}`,
-    Accept: 'application/json'
-  } : { Accept: 'application/json' };
+  return token
+    ? {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+      }
+    : { Accept: "application/json" };
 };
 
 // Get classes and subjects for filtering
@@ -140,11 +142,13 @@ export const getClassesAndSubjects = async (): Promise<ClassesAndSubjects> => {
   try {
     const response = await axios.get<ApiResponse<ClassesAndSubjects>>(
       `${BASE_URL}/superadmin/lessons`,
-      { headers: createAuthHeaders() }
+      { headers: createAuthHeaders() },
     );
     return response.data.content;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch classes and subjects');
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch classes and subjects",
+    );
   }
 };
 
@@ -160,53 +164,61 @@ export const getLessons = async (params?: {
 }): Promise<LessonsResponse> => {
   try {
     const queryParams = new URLSearchParams();
-    
-    if (params?.class_id) queryParams.append('class_id', params.class_id.toString());
-    if (params?.subject_id) queryParams.append('subject_id', params.subject_id.toString());
-    if (params?.term) queryParams.append('term', params.term);
-    if (params?.week) queryParams.append('week', params.week.toString());
-    if (params?.search) queryParams.append('search', params.search);
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
 
-    const url = `${BASE_URL}/superadmin/lessons/contents${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    
-    const response = await axios.get<ApiResponse<LessonsResponse>>(
-      url,
-      { headers: createAuthHeaders() }
-    );
+    if (params?.class_id)
+      queryParams.append("class_id", params.class_id.toString());
+    if (params?.subject_id)
+      queryParams.append("subject_id", params.subject_id.toString());
+    if (params?.term) queryParams.append("term", params.term);
+    if (params?.week) queryParams.append("week", params.week.toString());
+    if (params?.search) queryParams.append("search", params.search);
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.per_page)
+      queryParams.append("per_page", params.per_page.toString());
+
+    const url = `${BASE_URL}/superadmin/lessons/contents${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+
+    const response = await axios.get<ApiResponse<LessonsResponse>>(url, {
+      headers: createAuthHeaders(),
+    });
     return response.data.content;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch lessons');
+    throw new Error(error.response?.data?.message || "Failed to fetch lessons");
   }
 };
 
 // Get specific lesson content by ID
-export const getLessonContent = async (lessonId: number): Promise<LessonContent> => {
+export const getLessonContent = async (
+  lessonId: number,
+): Promise<LessonContent> => {
   try {
     const response = await axios.get<ApiResponse<LessonContent>>(
       `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/`,
-      { headers: createAuthHeaders() }
+      { headers: createAuthHeaders() },
     );
     return response.data.content;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch lesson content');
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch lesson content",
+    );
   }
 };
 
 // Delete lesson
-export const deleteLesson = async (lessonId: number): Promise<{ success: boolean; message: string }> => {
+export const deleteLesson = async (
+  lessonId: number,
+): Promise<{ success: boolean; message: string }> => {
   try {
     const response = await axios.delete<ApiResponse<any>>(
       `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/`,
-      { headers: createAuthHeaders() }
+      { headers: createAuthHeaders() },
     );
     return {
       success: true,
-      message: response.data.message || 'Lesson deleted successfully'
+      message: response.data.message || "Lesson deleted successfully",
     };
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to delete lesson');
+    throw new Error(error.response?.data?.message || "Failed to delete lesson");
   }
 };
 
@@ -217,51 +229,61 @@ export const getTrashedLessons = async (params?: {
 }): Promise<LessonsResponse> => {
   try {
     const queryParams = new URLSearchParams();
-    
-    if (params?.page) queryParams.append('page', params.page.toString());
-    if (params?.per_page) queryParams.append('per_page', params.per_page.toString());
 
-    const url = `${BASE_URL}/superadmin/lessons/trashed${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
-    
-    const response = await axios.get<ApiResponse<LessonsResponse>>(
-      url,
-      { headers: createAuthHeaders() }
-    );
+    if (params?.page) queryParams.append("page", params.page.toString());
+    if (params?.per_page)
+      queryParams.append("per_page", params.per_page.toString());
+
+    const url = `${BASE_URL}/superadmin/lessons/trashed${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
+
+    const response = await axios.get<ApiResponse<LessonsResponse>>(url, {
+      headers: createAuthHeaders(),
+    });
     return response.data.content;
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to fetch trashed lessons');
+    throw new Error(
+      error.response?.data?.message || "Failed to fetch trashed lessons",
+    );
   }
 };
 
 // Restore lesson from trash
-export const restoreLesson = async (lessonId: number): Promise<{ success: boolean; message: string }> => {
+export const restoreLesson = async (
+  lessonId: number,
+): Promise<{ success: boolean; message: string }> => {
   try {
     const response = await axios.post<ApiResponse<any>>(
       `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/restore/`,
       {},
-      { headers: createAuthHeaders() }
+      { headers: createAuthHeaders() },
     );
     return {
       success: true,
-      message: response.data.message || 'Lesson restored successfully'
+      message: response.data.message || "Lesson restored successfully",
     };
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to restore lesson');
+    throw new Error(
+      error.response?.data?.message || "Failed to restore lesson",
+    );
   }
 };
 
 // Permanently delete lesson
-export const permanentlyDeleteLesson = async (lessonId: number): Promise<{ success: boolean; message: string }> => {
+export const permanentlyDeleteLesson = async (
+  lessonId: number,
+): Promise<{ success: boolean; message: string }> => {
   try {
     const response = await axios.delete<ApiResponse<any>>(
       `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/force-delete/`,
-      { headers: createAuthHeaders() }
+      { headers: createAuthHeaders() },
     );
     return {
       success: true,
-      message: response.data.message || 'Lesson permanently deleted'
+      message: response.data.message || "Lesson permanently deleted",
     };
   } catch (error: any) {
-    throw new Error(error.response?.data?.message || 'Failed to permanently delete lesson');
+    throw new Error(
+      error.response?.data?.message || "Failed to permanently delete lesson",
+    );
   }
 };

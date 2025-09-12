@@ -1,21 +1,23 @@
-import axios from 'axios';
-import { 
-  validateCSVFile, 
-  normalizeCSVContent, 
-  createNormalizedFile,
+import axios from "axios";
+
+import { getTokenFromCookies } from "@/lib/auth-cookies";
+import {
+  CHECK_MARKER_REQUIRED_COLUMNS,
+  CONCEPT_REQUIRED_COLUMNS,
   convertToAPIFormat,
   createAPIFormattedFile,
-  LESSON_REQUIRED_COLUMNS,
-  CONCEPT_REQUIRED_COLUMNS,
+  createNormalizedFile,
   EXAMPLE_REQUIRED_COLUMNS,
   EXERCISE_REQUIRED_COLUMNS,
   GENERAL_EXERCISE_REQUIRED_COLUMNS,
-  CHECK_MARKER_REQUIRED_COLUMNS,
+  LESSON_REQUIRED_COLUMNS,
+  normalizeCSVContent,
   SCHEME_OF_WORK_REQUIRED_COLUMNS,
-  type CSVValidationResult
-} from '@/lib/utils/csv-upload-helper';
+  validateCSVFile,
+  type CSVValidationResult,
+} from "@/lib/utils/csv-upload-helper";
 
-const BASE_URL = 'https://fastlearnersapp.com/api/v1';
+const BASE_URL = "https://fastlearnersapp.com/api/v1";
 
 // Types based on API documentation
 export interface ApiResponse<T = any> {
@@ -127,8 +129,6 @@ export interface GetLessonsResponse {
   lessons?: Lesson[];
 }
 
-import { getTokenFromCookies } from '@/lib/auth-cookies';
-
 // Get auth token from cookies (matching your auth store)
 const getAuthToken = (): string | null => {
   return getTokenFromCookies();
@@ -143,137 +143,147 @@ const createAuthHeaders = () => {
 // Upload functions
 export const uploadLessonsFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('lessons_file', file);
-  
+  formData.append("lessons_file", file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/lessons`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
 export const uploadConceptsFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('concepts_file', file);
-  
+  formData.append("concepts_file", file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/concepts`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
 export const uploadExamplesFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('examples_file', file);
-  
+  formData.append("examples_file", file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/examples`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
 export const uploadExercisesFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('exercises_file', file);
-  
+  formData.append("exercises_file", file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/exercises`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
-export const uploadGeneralExercisesFile = async (file: File): Promise<ApiResponse> => {
+export const uploadGeneralExercisesFile = async (
+  file: File,
+): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('general_exercises_file', file);
-  
+  formData.append("general_exercises_file", file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/general-exercises`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
-export const uploadCheckMarkersFile = async (file: File): Promise<ApiResponse> => {
+export const uploadCheckMarkersFile = async (
+  file: File,
+): Promise<ApiResponse> => {
   const formData = new FormData();
-    formData.append('check_markers_file', file);
-  
-  console.log('FormData contents:', formData.get('check_markers_file'));
-  console.log('File details:', { name: file.name, size: file.size, type: file.type });
-  
+  formData.append("check_markers_file", file);
+
+  console.log("FormData contents:", formData.get("check_markers_file"));
+  console.log("File details:", {
+    name: file.name,
+    size: file.size,
+    type: file.type,
+  });
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/check-markers`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
+        Accept: "application/json",
         // Don't set Content-Type - let axios set it with boundary
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
-export const uploadSchemeOfWorkFile = async (file: File): Promise<ApiResponse> => {
+export const uploadSchemeOfWorkFile = async (
+  file: File,
+): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('scheme_of_work_file', file);
-  
+  formData.append("scheme_of_work_file", file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/scheme-of-work`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
@@ -286,61 +296,66 @@ export const uploadAllLessonFiles = async (files: {
   check_markers_file: File;
 }): Promise<ApiResponse> => {
   const formData = new FormData();
-  formData.append('lessons_file', files.lessons_file);
-  formData.append('concepts_file', files.concepts_file);
-  formData.append('examples_file', files.examples_file);
-  formData.append('exercises_file', files.exercises_file);
-  formData.append('general_exercises_file', files.general_exercises_file);
-  formData.append('check_markers_file', files.check_markers_file);
-  
+  formData.append("lessons_file", files.lessons_file);
+  formData.append("concepts_file", files.concepts_file);
+  formData.append("examples_file", files.examples_file);
+  formData.append("exercises_file", files.exercises_file);
+  formData.append("general_exercises_file", files.general_exercises_file);
+  formData.append("check_markers_file", files.check_markers_file);
+
   const response = await axios.post(
     `${BASE_URL}/superadmin/lessons/uploads/all-lesson-files`,
     formData,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
-        'Content-Type': 'multipart/form-data',
+        Accept: "application/json",
+        "Content-Type": "multipart/form-data",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
 // Get lessons data
-export const getLessons = async (classId?: number, subjectId?: number): Promise<ApiResponse<GetLessonsResponse>> => {
+export const getLessons = async (
+  classId?: number,
+  subjectId?: number,
+): Promise<ApiResponse<GetLessonsResponse>> => {
   let url = `${BASE_URL}/superadmin/lessons`;
   const params = new URLSearchParams();
-  
-  if (classId) params.append('class_id', classId.toString());
-  if (subjectId) params.append('subject_id', subjectId.toString());
-  
+
+  if (classId) params.append("class_id", classId.toString());
+  if (subjectId) params.append("subject_id", subjectId.toString());
+
   if (params.toString()) {
     url += `?${params.toString()}`;
   }
-  
+
   const response = await axios.get(url, {
     headers: {
       ...createAuthHeaders(),
-      'Accept': 'application/json',
+      Accept: "application/json",
     },
   });
-  
+
   return response.data;
 };
 
-export const getLessonContent = async (lessonId: number): Promise<ApiResponse<Lesson>> => {
+export const getLessonContent = async (
+  lessonId: number,
+): Promise<ApiResponse<Lesson>> => {
   const response = await axios.get(
     `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/`,
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
+        Accept: "application/json",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
@@ -351,11 +366,11 @@ export const trashLesson = async (lessonId: number): Promise<ApiResponse> => {
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
+        Accept: "application/json",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
@@ -367,60 +382,108 @@ export const getTrashedLessons = async (): Promise<ApiResponse<Lesson[]>> => {
     {
       headers: {
         ...createAuthHeaders(),
-        'Accept': 'application/json',
+        Accept: "application/json",
       },
-    }
+    },
   );
-  
+
   return response.data;
 };
 
 // CSV validation helpers
-export const validateCSVFormat = (file: File, expectedColumns: string[]): Promise<boolean> => {
+export const validateCSVFormat = (
+  file: File,
+  expectedColumns: string[],
+): Promise<boolean> => {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    
+
     reader.onload = (e) => {
       try {
         const text = e.target?.result as string;
-        const lines = text.split('\n');
-        
+        const lines = text.split("\n");
+
         if (lines.length < 2) {
           resolve(false);
           return;
         }
-        
+
         // Get header row and clean it
         const headers = lines[0]
-          .split('|')
-          .map(h => h.replace(/^\ufeff/, '').trim()) // Remove BOM if present
-          .filter(h => h.length > 0);
-        
+          .split("|")
+          .map((h) => h.replace(/^\ufeff/, "").trim()) // Remove BOM if present
+          .filter((h) => h.length > 0);
+
         // Check if all expected columns are present
-        const hasAllColumns = expectedColumns.every(col => 
-          headers.includes(col)
+        const hasAllColumns = expectedColumns.every((col) =>
+          headers.includes(col),
         );
-        
+
         resolve(hasAllColumns);
       } catch (error) {
         reject(error);
       }
     };
-    
-    reader.onerror = () => reject(new Error('Failed to read file'));
+
+    reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsText(file);
   });
 };
 
 // CSV column definitions for validation
 export const CSV_COLUMNS = {
-  lessons: ['class', 'subject', 'term', 'week', 'topic', 'overview', 'objectives', 'key_concepts', 'summary', 'application'],
-  concepts: ['lesson', 'title', 'description', 'order_index'],
-  examples: ['concept', 'title', 'problem', 'solution_steps', 'answer', 'order_index'],
-  exercises: ['concept', 'title', 'problem', 'solution_steps', 'answers', 'correct_answer', 'order_index'],
-  general_exercises: ['lesson', 'problem', 'solution_steps', 'answers', 'correct_answer', 'order_index'],
-  check_markers: ['lesson', 'overview', 'lesson_video', 'concept_one', 'concept_two', 'concept_three', 'concept_four', 'concept_five', 'concept_six', 'concept_seven', 'general_exercises'],
-  scheme_of_work: ['subject', 'class', 'term', 'week', 'topic', 'breakdown']
+  lessons: [
+    "class",
+    "subject",
+    "term",
+    "week",
+    "topic",
+    "overview",
+    "objectives",
+    "key_concepts",
+    "summary",
+    "application",
+  ],
+  concepts: ["lesson", "title", "description", "order_index"],
+  examples: [
+    "concept",
+    "title",
+    "problem",
+    "solution_steps",
+    "answer",
+    "order_index",
+  ],
+  exercises: [
+    "concept",
+    "title",
+    "problem",
+    "solution_steps",
+    "answers",
+    "correct_answer",
+    "order_index",
+  ],
+  general_exercises: [
+    "lesson",
+    "problem",
+    "solution_steps",
+    "answers",
+    "correct_answer",
+    "order_index",
+  ],
+  check_markers: [
+    "lesson",
+    "overview",
+    "lesson_video",
+    "concept_one",
+    "concept_two",
+    "concept_three",
+    "concept_four",
+    "concept_five",
+    "concept_six",
+    "concept_seven",
+    "general_exercises",
+  ],
+  scheme_of_work: ["subject", "class", "term", "week", "topic", "breakdown"],
 };
 
 // Enhanced upload results
@@ -433,136 +496,158 @@ export interface UploadResult {
 }
 
 // Smart upload function that tries both formats
-export const uploadLessonsFileWithValidation = async (file: File): Promise<UploadResult> => {
-  console.log('Starting upload validation for lessons file:', file.name);
-  
+export const uploadLessonsFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
+  console.log("Starting upload validation for lessons file:", file.name);
+
   try {
     // First, validate the file
     const validation = await validateCSVFile({
       file,
-      requiredColumns: LESSON_REQUIRED_COLUMNS
+      requiredColumns: LESSON_REQUIRED_COLUMNS,
     });
-    
-    console.log('Validation result:', validation);
-    
+
+    console.log("Validation result:", validation);
+
     if (!validation.isValid) {
       return {
         success: false,
         validation,
-        error: `File validation failed: ${validation.errors.join(', ')}`
+        error: `File validation failed: ${validation.errors.join(", ")}`,
       };
     }
-    
+
     // Try uploading with detected format first
     let uploadResult = await tryUploadLessonsFile(file);
     let triedFormats = [validation.format];
-    
+
     if (!uploadResult.success) {
-      console.log(`Upload failed with ${validation.format} format, trying alternative format`);
-      
+      console.log(
+        `Upload failed with ${validation.format} format, trying alternative format`,
+      );
+
       // Try the alternative format
-      const alternativeFormat = validation.format === 'comma' ? 'pipe' : 'comma';
+      const alternativeFormat =
+        validation.format === "comma" ? "pipe" : "comma";
       const content = await file.text();
       const normalizedContent = normalizeCSVContent(content, alternativeFormat);
-      const normalizedFile = createNormalizedFile(file, normalizedContent, alternativeFormat);
-      
+      const normalizedFile = createNormalizedFile(
+        file,
+        normalizedContent,
+        alternativeFormat,
+      );
+
       uploadResult = await tryUploadLessonsFile(normalizedFile);
       triedFormats.push(alternativeFormat);
     }
-    
+
     return {
       success: uploadResult.success,
       validation,
       apiResponse: uploadResult.apiResponse,
       error: uploadResult.error,
-      triedFormats
+      triedFormats,
     };
-    
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error("Upload error:", error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 };
 
 // Helper function to try uploading a file
-const tryUploadLessonsFile = async (file: File): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
+const tryUploadLessonsFile = async (
+  file: File,
+): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
   try {
     const apiResponse = await uploadLessonsFile(file);
     return { success: true, apiResponse };
   } catch (error: any) {
-    console.error('Upload API error:', error);
-    
-    let errorMessage = 'Upload failed';
-    
+    console.error("Upload API error:", error);
+
+    let errorMessage = "Upload failed";
+
     if (error.response?.data?.message) {
       errorMessage = error.response.data.message;
     } else if (error.message) {
       errorMessage = error.message;
     }
-    
-    return { 
-      success: false, 
+
+    return {
+      success: false,
       error: errorMessage,
-      apiResponse: error.response?.data 
+      apiResponse: error.response?.data,
     };
   }
 };
 
 // Smart upload functions for other file types
-export const uploadConceptsFileWithValidation = async (file: File): Promise<UploadResult> => {
+export const uploadConceptsFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
   return await smartUploadWithValidation(
-    file, 
-    CONCEPT_REQUIRED_COLUMNS, 
+    file,
+    CONCEPT_REQUIRED_COLUMNS,
     uploadConceptsFile,
-    'concepts'
+    "concepts",
   );
 };
 
-export const uploadExamplesFileWithValidation = async (file: File): Promise<UploadResult> => {
+export const uploadExamplesFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
   return await smartUploadWithValidation(
-    file, 
-    EXAMPLE_REQUIRED_COLUMNS, 
+    file,
+    EXAMPLE_REQUIRED_COLUMNS,
     uploadExamplesFile,
-    'examples'
+    "examples",
   );
 };
 
-export const uploadExercisesFileWithValidation = async (file: File): Promise<UploadResult> => {
+export const uploadExercisesFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
   return await smartUploadWithValidation(
-    file, 
-    EXERCISE_REQUIRED_COLUMNS, 
+    file,
+    EXERCISE_REQUIRED_COLUMNS,
     uploadExercisesFile,
-    'exercises'
+    "exercises",
   );
 };
 
-export const uploadGeneralExercisesFileWithValidation = async (file: File): Promise<UploadResult> => {
+export const uploadGeneralExercisesFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
   return await smartUploadWithValidation(
-    file, 
-    GENERAL_EXERCISE_REQUIRED_COLUMNS, 
+    file,
+    GENERAL_EXERCISE_REQUIRED_COLUMNS,
     uploadGeneralExercisesFile,
-    'general_exercises'
+    "general_exercises",
   );
 };
 
-export const uploadCheckMarkersFileWithValidation = async (file: File): Promise<UploadResult> => {
+export const uploadCheckMarkersFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
   return await smartUploadWithValidation(
-    file, 
-    CHECK_MARKER_REQUIRED_COLUMNS, 
+    file,
+    CHECK_MARKER_REQUIRED_COLUMNS,
     uploadCheckMarkersFile,
-    'check_markers'
+    "check_markers",
   );
 };
 
-export const uploadSchemeOfWorkFileWithValidation = async (file: File): Promise<UploadResult> => {
+export const uploadSchemeOfWorkFileWithValidation = async (
+  file: File,
+): Promise<UploadResult> => {
   return await smartUploadWithValidation(
-    file, 
-    SCHEME_OF_WORK_REQUIRED_COLUMNS, 
+    file,
+    SCHEME_OF_WORK_REQUIRED_COLUMNS,
     uploadSchemeOfWorkFile,
-    'scheme_of_work'
+    "scheme_of_work",
   );
 };
 
@@ -571,115 +656,135 @@ const smartUploadWithValidation = async (
   file: File,
   requiredColumns: string[],
   uploadFunction: (file: File) => Promise<ApiResponse>,
-  fileType: string
+  fileType: string,
 ): Promise<UploadResult> => {
   console.log(`Starting upload validation for ${fileType} file:`, file.name);
-  
+
   try {
     // Log file content for debugging
     const fileContent = await file.text();
-    console.log(`${fileType} file content preview:`, fileContent.substring(0, 500));
-    console.log(`${fileType} file size:`, file.size, 'bytes');
-    
+    console.log(
+      `${fileType} file content preview:`,
+      fileContent.substring(0, 500),
+    );
+    console.log(`${fileType} file size:`, file.size, "bytes");
+
     // Validate the file
     const validation = await validateCSVFile({
       file,
-      requiredColumns
+      requiredColumns,
     });
-    
-    console.log('Validation result:', validation);
-    
+
+    console.log("Validation result:", validation);
+
     if (!validation.isValid) {
       return {
         success: false,
         validation,
-        error: `File validation failed: ${validation.errors.join(', ')}`
+        error: `File validation failed: ${validation.errors.join(", ")}`,
       };
     }
-    
+
     // Convert file to API format before upload
-    console.log('Converting file to API format...');
+    console.log("Converting file to API format...");
     const apiFormattedFile = createAPIFormattedFile(file, fileContent);
-    console.log('API formatted file created:', apiFormattedFile.name, apiFormattedFile.size, 'bytes');
-    
+    console.log(
+      "API formatted file created:",
+      apiFormattedFile.name,
+      apiFormattedFile.size,
+      "bytes",
+    );
+
     // Try uploading with API format
     let uploadResult = await tryUpload(apiFormattedFile, uploadFunction);
     let triedFormats = [`api_${validation.format}`];
-    
+
     if (!uploadResult.success) {
       console.log(`Upload failed with API format, trying original file`);
-      
+
       // Fallback: try uploading the original file
       uploadResult = await tryUpload(file, uploadFunction);
       triedFormats.push(validation.format);
-      
+
       if (!uploadResult.success) {
-        console.log(`Upload failed with original format, trying alternative format`);
-        
+        console.log(
+          `Upload failed with original format, trying alternative format`,
+        );
+
         // Try the alternative format
-        const alternativeFormat = validation.format === 'comma' ? 'pipe' : 'comma';
-        const normalizedContent = normalizeCSVContent(fileContent, alternativeFormat);
-        const normalizedFile = createNormalizedFile(file, normalizedContent, alternativeFormat);
-        
+        const alternativeFormat =
+          validation.format === "comma" ? "pipe" : "comma";
+        const normalizedContent = normalizeCSVContent(
+          fileContent,
+          alternativeFormat,
+        );
+        const normalizedFile = createNormalizedFile(
+          file,
+          normalizedContent,
+          alternativeFormat,
+        );
+
         uploadResult = await tryUpload(normalizedFile, uploadFunction);
         triedFormats.push(alternativeFormat);
       }
     }
-    
+
     return {
       success: uploadResult.success,
       validation,
       apiResponse: uploadResult.apiResponse,
       error: uploadResult.error,
-      triedFormats
+      triedFormats,
     };
-    
   } catch (error) {
     console.error(`${fileType} upload error:`, error);
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error occurred'
+      error: error instanceof Error ? error.message : "Unknown error occurred",
     };
   }
 };
 
 // Generic helper function to try uploading a file
 const tryUpload = async (
-  file: File, 
-  uploadFunction: (file: File) => Promise<ApiResponse>
+  file: File,
+  uploadFunction: (file: File) => Promise<ApiResponse>,
 ): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
   try {
-    console.log('Attempting upload with file:', {
+    console.log("Attempting upload with file:", {
       name: file.name,
       size: file.size,
       type: file.type,
-      lastModified: file.lastModified
+      lastModified: file.lastModified,
     });
-    
+
     // Log a preview of the file content being sent
     const fileContent = await file.text();
-    console.log('File content being uploaded (first 1000 chars):', fileContent.substring(0, 1000));
-    
+    console.log(
+      "File content being uploaded (first 1000 chars):",
+      fileContent.substring(0, 1000),
+    );
+
     const apiResponse = await uploadFunction(file);
-    console.log('Upload successful! API Response:', apiResponse);
+    console.log("Upload successful! API Response:", apiResponse);
     return { success: true, apiResponse };
   } catch (error: any) {
-    console.error('=== UPLOAD API ERROR DETAILS ===');
-    console.error('Error object:', error);
-    console.error('Response status:', error.response?.status);
-    console.error('Response status text:', error.response?.statusText);
-    console.error('Response headers:', error.response?.headers);
-    console.error('Full response data:', error.response?.data);
-    
+    console.error("=== UPLOAD API ERROR DETAILS ===");
+    console.error("Error object:", error);
+    console.error("Response status:", error.response?.status);
+    console.error("Response status text:", error.response?.statusText);
+    console.error("Response headers:", error.response?.headers);
+    console.error("Full response data:", error.response?.data);
+
     // Try to extract more detailed error information
-    let errorMessage = 'Upload failed';
+    let errorMessage = "Upload failed";
     let validationDetails = null;
-    
+
     if (error.response?.data) {
       const responseData = error.response.data;
-      
+
       // Handle different response formats
-      if (typeof responseData === 'string') {
+      if (typeof responseData === "string") {
         errorMessage = responseData;
       } else if (responseData.message) {
         errorMessage = responseData.message;
@@ -688,12 +793,15 @@ const tryUpload = async (
       } else if (responseData.errors) {
         // Handle validation errors array
         if (Array.isArray(responseData.errors)) {
-          errorMessage = responseData.errors.join(', ');
-        } else if (typeof responseData.errors === 'object') {
+          errorMessage = responseData.errors.join(", ");
+        } else if (typeof responseData.errors === "object") {
           // Handle field-specific validation errors
           const fieldErrors = Object.entries(responseData.errors)
-            .map(([field, errors]) => `${field}: ${Array.isArray(errors) ? errors.join(', ') : errors}`)
-            .join('; ');
+            .map(
+              ([field, errors]) =>
+                `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`,
+            )
+            .join("; ");
           errorMessage = fieldErrors;
           validationDetails = responseData.errors;
         } else {
@@ -705,17 +813,17 @@ const tryUpload = async (
     } else if (error.message) {
       errorMessage = error.message;
     }
-    
-    console.error('Processed error message:', errorMessage);
+
+    console.error("Processed error message:", errorMessage);
     if (validationDetails) {
-      console.error('Validation details:', validationDetails);
+      console.error("Validation details:", validationDetails);
     }
-    console.error('=== END ERROR DETAILS ===');
-    
-    return { 
-      success: false, 
+    console.error("=== END ERROR DETAILS ===");
+
+    return {
+      success: false,
       error: errorMessage,
-      apiResponse: error.response?.data 
+      apiResponse: error.response?.data,
     };
   }
 };

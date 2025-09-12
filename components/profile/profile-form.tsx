@@ -1,54 +1,72 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Badge } from '@/components/ui/badge';
-import { 
-  User, 
-  Mail, 
-  Phone, 
-  Shield, 
-  AlertCircle, 
-  CheckCircle, 
+import { useEffect, useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  AlertCircle,
+  CheckCircle,
+  Mail,
+  Phone,
   RefreshCw,
+  Save,
+  Shield,
+  User,
   UserCheck,
-  Save
-} from 'lucide-react';
-import { toast } from 'sonner';
-import { useAuthStore } from '@/store/authStore';
-import { 
-  getProfile, 
-  updateProfile, 
+} from "lucide-react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+
+import {
+  getProfile,
+  ProfileEditData,
+  updateProfile,
+  UserProfile,
   validateProfileData,
-  UserProfile, 
-  ProfileEditData 
-} from '@/lib/api/profile';
+} from "@/lib/api/profile";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Form validation schema
-const profileSchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  email: z.string().email('Please enter a valid email address'),
-  phone: z.string().min(1, 'Phone number is required'),
-  role: z.enum(['student', 'guest', 'guardian']),
-  child_email: z.string().email().optional().or(z.literal('')),
-  child_phone: z.string().optional().or(z.literal(''))
-}).refine((data) => {
-  if (data.role === 'guardian') {
-    return data.child_email && data.child_phone;
-  }
-  return true;
-}, {
-  message: "Child email and phone are required for guardians",
-  path: ["child_email"]
-});
+const profileSchema = z
+  .object({
+    name: z.string().min(1, "Name is required"),
+    email: z.string().email("Please enter a valid email address"),
+    phone: z.string().min(1, "Phone number is required"),
+    role: z.enum(["student", "guest", "guardian"]),
+    child_email: z.string().email().optional().or(z.literal("")),
+    child_phone: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      if (data.role === "guardian") {
+        return data.child_email && data.child_phone;
+      }
+      return true;
+    },
+    {
+      message: "Child email and phone are required for guardians",
+      path: ["child_email"],
+    },
+  );
 
 type ProfileFormData = z.infer<typeof profileSchema>;
 
@@ -61,22 +79,22 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  
+
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
     watch,
-    reset
+    reset,
   } = useForm<ProfileFormData>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
-      role: 'student'
-    }
+      role: "student",
+    },
   });
 
-  const selectedRole = watch('role');
+  const selectedRole = watch("role");
 
   // Load profile data
   useEffect(() => {
@@ -85,18 +103,18 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         setIsLoading(true);
         const profileData = await getProfile();
         setProfile(profileData);
-        
+
         // Populate form with profile data
         reset({
           name: profileData.name,
           email: profileData.email,
           phone: profileData.phone,
-          role: profileData.role as 'student' | 'guest' | 'guardian',
-          child_email: profileData.child_email || '',
-          child_phone: profileData.child_phone || ''
+          role: profileData.role as "student" | "guest" | "guardian",
+          child_email: profileData.child_email || "",
+          child_phone: profileData.child_phone || "",
         });
       } catch (error: any) {
-        toast.error(error.message || 'Failed to load profile');
+        toast.error(error.message || "Failed to load profile");
       } finally {
         setIsLoading(false);
       }
@@ -118,19 +136,19 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
 
       // Update profile
       const updatedProfile = await updateProfile(data as ProfileEditData);
-      
+
       // Update auth store
       updateUserProfile({
         name: updatedProfile.name,
         email: updatedProfile.email,
-        role: [updatedProfile.role] // Wrap single role in array for auth store
+        role: [updatedProfile.role], // Wrap single role in array for auth store
       });
-      
+
       setProfile(updatedProfile);
-      toast.success('Profile updated successfully');
+      toast.success("Profile updated successfully");
       onSuccess?.(updatedProfile);
     } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error.message || "Failed to update profile");
     } finally {
       setIsSaving(false);
     }
@@ -175,7 +193,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 <Label htmlFor="name">Full Name</Label>
                 <Input
                   id="name"
-                  {...register('name')}
+                  {...register("name")}
                   placeholder="Enter your full name"
                 />
                 {errors.name && (
@@ -187,7 +205,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 <Label htmlFor="role">Account Type</Label>
                 <Select
                   value={selectedRole}
-                  onValueChange={(value) => setValue('role', value as 'student' | 'guest' | 'guardian')}
+                  onValueChange={(value) =>
+                    setValue("role", value as "student" | "guest" | "guardian")
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select account type" />
@@ -219,7 +239,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Input
                     id="email"
                     type="email"
-                    {...register('email')}
+                    {...register("email")}
                     placeholder="your.email@example.com"
                   />
                   {profile?.email_verified_at && (
@@ -243,7 +263,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Input
                     id="phone"
                     type="tel"
-                    {...register('phone')}
+                    {...register("phone")}
                     placeholder="+1 (555) 123-4567"
                   />
                   {profile?.phone_verified_at && (
@@ -264,19 +284,21 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           </div>
 
           {/* Guardian-specific fields */}
-          {selectedRole === 'guardian' && (
+          {selectedRole === "guardian" && (
             <div className="space-y-4">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Shield className="size-4" />
                 Child Information
-                <Badge variant="secondary" className="ml-auto">Guardian Required</Badge>
+                <Badge variant="secondary" className="ml-auto">
+                  Guardian Required
+                </Badge>
               </div>
 
               <Alert>
                 <AlertCircle className="size-4" />
                 <AlertDescription>
-                  As a guardian, you need to provide your child&apos;s contact information 
-                  for account management and communication purposes.
+                  As a guardian, you need to provide your child&apos;s contact
+                  information for account management and communication purposes.
                 </AlertDescription>
               </Alert>
 
@@ -286,11 +308,13 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Input
                     id="child_email"
                     type="email"
-                    {...register('child_email')}
+                    {...register("child_email")}
                     placeholder="child@example.com"
                   />
                   {errors.child_email && (
-                    <p className="text-sm text-red-600">{errors.child_email.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.child_email.message}
+                    </p>
                   )}
                 </div>
 
@@ -299,11 +323,13 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Input
                     id="child_phone"
                     type="tel"
-                    {...register('child_phone')}
+                    {...register("child_phone")}
                     placeholder="+1 (555) 987-6543"
                   />
                   {errors.child_phone && (
-                    <p className="text-sm text-red-600">{errors.child_phone.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.child_phone.message}
+                    </p>
                   )}
                 </div>
               </div>
@@ -323,7 +349,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Mail className="size-4 text-muted-foreground" />
                   <span className="text-sm">Email Verification</span>
                 </div>
-                <Badge variant={profile?.email_verified_at ? "default" : "secondary"}>
+                <Badge
+                  variant={profile?.email_verified_at ? "default" : "secondary"}
+                >
                   {profile?.email_verified_at ? "Verified" : "Pending"}
                 </Badge>
               </div>
@@ -333,7 +361,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Phone className="size-4 text-muted-foreground" />
                   <span className="text-sm">Phone Verification</span>
                 </div>
-                <Badge variant={profile?.phone_verified_at ? "default" : "secondary"}>
+                <Badge
+                  variant={profile?.phone_verified_at ? "default" : "secondary"}
+                >
                   {profile?.phone_verified_at ? "Verified" : "Pending"}
                 </Badge>
               </div>

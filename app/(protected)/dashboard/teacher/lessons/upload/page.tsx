@@ -1,17 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { DashboardHeader } from "@/components/dashboard/header";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Download, FileStack, FileText, Info, Upload } from "lucide-react";
+
 import { Badge } from "@/components/ui/badge";
-import { Upload, FileStack, FileText, Download, Info } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { DashboardHeader } from "@/components/dashboard/header";
+
 // Note: metadata cannot be exported from client components
 
 export default function UploadPage() {
   const downloadTemplate = (filename: string) => {
     // Create download link for CSV templates from the lesson-csv-files directory
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = `/lesson-csv-files/${filename}`;
     link.download = filename;
     document.body.appendChild(link);
@@ -20,13 +28,16 @@ export default function UploadPage() {
   };
 
   const templateFiles = [
-    { name: 'lesson-structure.csv', label: 'Lessons Template' },
-    { name: 'concept-structure.csv', label: 'Concepts Template' },
-    { name: 'examples-structure.csv', label: 'Examples Template' },
-    { name: 'exercises-structure.csv', label: 'Exercises Template' },
-    { name: 'general-exercises-structure.csv', label: 'General Exercises Template' },
-    { name: 'check-markers-structure.csv', label: 'Check Markers Template' },
-    { name: 'scheme-civic-education.csv', label: 'Scheme of Work Template' }
+    { name: "lesson-structure.csv", label: "Lessons Template" },
+    { name: "concept-structure.csv", label: "Concepts Template" },
+    { name: "examples-structure.csv", label: "Examples Template" },
+    { name: "exercises-structure.csv", label: "Exercises Template" },
+    {
+      name: "general-exercises-structure.csv",
+      label: "General Exercises Template",
+    },
+    { name: "check-markers-structure.csv", label: "Check Markers Template" },
+    { name: "scheme-civic-education.csv", label: "Scheme of Work Template" },
   ];
 
   return (
@@ -47,7 +58,8 @@ export default function UploadPage() {
                 <CardTitle>Individual File Upload</CardTitle>
               </div>
               <CardDescription>
-                Upload lesson components one at a time with detailed control and validation.
+                Upload lesson components one at a time with detailed control and
+                validation.
               </CardDescription>
               <Badge className="absolute right-4 top-4" variant="secondary">
                 Recommended
@@ -63,11 +75,19 @@ export default function UploadPage() {
                   <li>• Continue from where you left off</li>
                 </ul>
               </div>
-              
+
               <div className="space-y-2">
                 <h4 className="text-sm font-medium">File Types:</h4>
                 <div className="flex flex-wrap gap-1">
-                  {['Lessons', 'Concepts', 'Examples', 'Exercises', 'General Exercises', 'Check Markers', 'Scheme of Work'].map((type) => (
+                  {[
+                    "Lessons",
+                    "Concepts",
+                    "Examples",
+                    "Exercises",
+                    "General Exercises",
+                    "Check Markers",
+                    "Scheme of Work",
+                  ].map((type) => (
                     <Badge key={type} variant="outline" className="text-xs">
                       {type}
                     </Badge>
@@ -92,7 +112,8 @@ export default function UploadPage() {
                 <CardTitle>Bulk File Upload</CardTitle>
               </div>
               <CardDescription>
-                Upload all lesson components at once for efficient batch processing.
+                Upload all lesson components at once for efficient batch
+                processing.
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -133,7 +154,8 @@ export default function UploadPage() {
               CSV Templates
             </CardTitle>
             <CardDescription>
-              Download template files to understand the required format for each lesson component
+              Download template files to understand the required format for each
+              lesson component
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -222,8 +244,9 @@ export default function UploadPage() {
             <div className="mt-6 rounded-lg bg-muted/50 p-4">
               <h4 className="mb-2 text-sm font-medium">💡 Pro Tip:</h4>
               <p className="text-sm text-muted-foreground">
-                Start with the individual upload method if you&apos;re new to the system. It provides better feedback 
-                and allows you to understand the data structure before attempting bulk uploads.
+                Start with the individual upload method if you&apos;re new to
+                the system. It provides better feedback and allows you to
+                understand the data structure before attempting bulk uploads.
               </p>
             </div>
           </CardContent>

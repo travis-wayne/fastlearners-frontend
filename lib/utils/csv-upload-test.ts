@@ -1,8 +1,14 @@
 // CSV Upload Test Utility
 // This demonstrates how to use the enhanced upload functions
 
-import { uploadLessonsFileWithValidation, type UploadResult } from '@/lib/api/lesson-service';
-import { validateCSVFile, LESSON_REQUIRED_COLUMNS } from '@/lib/utils/csv-upload-helper';
+import {
+  uploadLessonsFileWithValidation,
+  type UploadResult,
+} from "@/lib/api/lesson-service";
+import {
+  LESSON_REQUIRED_COLUMNS,
+  validateCSVFile,
+} from "@/lib/utils/csv-upload-helper";
 
 /**
  * Test the enhanced CSV upload functionality
@@ -10,48 +16,50 @@ import { validateCSVFile, LESSON_REQUIRED_COLUMNS } from '@/lib/utils/csv-upload
  * @returns Upload result with detailed information
  */
 export async function testLessonCSVUpload(file: File): Promise<UploadResult> {
-  console.log('🔄 Testing CSV upload for file:', file.name);
-  
+  console.log("🔄 Testing CSV upload for file:", file.name);
+
   // First, let's validate the file before attempting upload
-  console.log('📋 Step 1: Validating CSV format...');
+  console.log("📋 Step 1: Validating CSV format...");
   const validation = await validateCSVFile({
     file,
-    requiredColumns: LESSON_REQUIRED_COLUMNS
+    requiredColumns: LESSON_REQUIRED_COLUMNS,
   });
-  
-  console.log('📊 Validation Results:');
+
+  console.log("📊 Validation Results:");
   console.log(`  ✅ Format detected: ${validation.format}`);
-  console.log(`  ✅ Headers found: ${validation.headers.join(', ')}`);
+  console.log(`  ✅ Headers found: ${validation.headers.join(", ")}`);
   console.log(`  ✅ Row count: ${validation.rowCount}`);
   console.log(`  ✅ Valid: ${validation.isValid}`);
-  
+
   if (!validation.isValid) {
-    console.log('❌ Validation failed:');
-    validation.errors.forEach(error => console.log(`    - ${error}`));
+    console.log("❌ Validation failed:");
+    validation.errors.forEach((error) => console.log(`    - ${error}`));
     if (validation.missingColumns.length > 0) {
-      console.log(`    - Missing columns: ${validation.missingColumns.join(', ')}`);
+      console.log(
+        `    - Missing columns: ${validation.missingColumns.join(", ")}`,
+      );
     }
   }
-  
+
   // Now attempt the smart upload
-  console.log('📤 Step 2: Attempting smart upload...');
+  console.log("📤 Step 2: Attempting smart upload...");
   const uploadResult = await uploadLessonsFileWithValidation(file);
-  
-  console.log('📈 Upload Results:');
+
+  console.log("📈 Upload Results:");
   console.log(`  ✅ Success: ${uploadResult.success}`);
-  
+
   if (uploadResult.triedFormats) {
-    console.log(`  ✅ Formats tried: ${uploadResult.triedFormats.join(', ')}`);
+    console.log(`  ✅ Formats tried: ${uploadResult.triedFormats.join(", ")}`);
   }
-  
+
   if (uploadResult.success) {
-    console.log('🎉 Upload successful!');
+    console.log("🎉 Upload successful!");
     if (uploadResult.apiResponse) {
       console.log(`  ✅ API Message: ${uploadResult.apiResponse.message}`);
       console.log(`  ✅ API Code: ${uploadResult.apiResponse.code}`);
     }
   } else {
-    console.log('❌ Upload failed:');
+    console.log("❌ Upload failed:");
     if (uploadResult.error) {
       console.log(`    - Error: ${uploadResult.error}`);
     }
@@ -63,7 +71,7 @@ export async function testLessonCSVUpload(file: File): Promise<UploadResult> {
       }
     }
   }
-  
+
   return uploadResult;
 }
 
@@ -75,7 +83,7 @@ export async function testLessonCSVUpload(file: File): Promise<UploadResult> {
 export async function createFileFromPath(filePath: string): Promise<File> {
   // This would work in a Node.js environment or with a file input
   // For browser usage, you'd typically get the File from an input element
-  
+
   // Example usage in a React component:
   // const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
   //   const file = event.target.files?.[0];
@@ -84,8 +92,10 @@ export async function createFileFromPath(filePath: string): Promise<File> {
   //     console.log('Upload result:', result);
   //   }
   // };
-  
-  throw new Error('createFileFromPath is not implemented for browser usage. Use a file input element instead.');
+
+  throw new Error(
+    "createFileFromPath is not implemented for browser usage. Use a file input element instead.",
+  );
 }
 
 /**
@@ -161,21 +171,21 @@ export async function quickValidateCSV(file: File): Promise<{
   try {
     const validation = await validateCSVFile({
       file,
-      requiredColumns: LESSON_REQUIRED_COLUMNS
+      requiredColumns: LESSON_REQUIRED_COLUMNS,
     });
-    
+
     return {
       isValid: validation.isValid,
       format: validation.format,
       headers: validation.headers,
-      issues: validation.errors
+      issues: validation.errors,
     };
   } catch (error) {
     return {
       isValid: false,
-      format: 'unknown',
+      format: "unknown",
       headers: [],
-      issues: [error instanceof Error ? error.message : 'Unknown error']
+      issues: [error instanceof Error ? error.message : "Unknown error"],
     };
   }
 }

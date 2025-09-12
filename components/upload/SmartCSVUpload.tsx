@@ -1,18 +1,34 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
 import Link from "next/link";
-import { Upload, FileText, X, Check, AlertCircle, Loader2, CloudUpload } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  AlertCircle,
+  Check,
+  CloudUpload,
+  FileText,
+  Loader2,
+  Upload,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
+
 import { UPLOAD_CONFIGS } from "@/lib/api/lesson-upload";
-import { UploadLogs, UploadLog } from "./UploadLogs";
+import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+
+import { UploadLog, UploadLogs } from "./UploadLogs";
 
 interface SmartCSVUploadProps {
   onUploadSuccess?: (configKey: string) => void;
@@ -22,23 +38,77 @@ interface SmartCSVUploadProps {
 
 interface FileUploadSectionProps {
   config: (typeof UPLOAD_CONFIGS)[number];
-  onUpload: (file: File) => Promise<{ success: boolean; message: string; error?: string }>;
+  onUpload: (
+    file: File,
+  ) => Promise<{ success: boolean; message: string; error?: string }>;
   disabled?: boolean;
   completed?: boolean;
 }
 
 // Required columns for each upload type
 const REQUIRED_COLUMNS = {
-  lessons: ["class", "subject", "term", "week", "topic", "overview", "objectives", "key_concepts", "summary", "application"],
-  concepts: ["lesson_name", "concept_name", "description", "examples", "exercises"],
+  lessons: [
+    "class",
+    "subject",
+    "term",
+    "week",
+    "topic",
+    "overview",
+    "objectives",
+    "key_concepts",
+    "summary",
+    "application",
+  ],
+  concepts: [
+    "lesson_name",
+    "concept_name",
+    "description",
+    "examples",
+    "exercises",
+  ],
   examples: ["concept_name", "example_title", "example_content", "explanation"],
-  exercises: ["concept_name", "question", "options", "correct_answer", "explanation"],
-  general_exercises: ["lesson_name", "question", "options", "correct_answer", "explanation", "difficulty_level"],
-  check_markers: ["lesson_name", "marker_type", "criteria", "points", "description"],
-  scheme_of_work: ["class", "subject", "term", "week", "topic", "objectives", "activities", "resources", "assessment", "breakdown"]
+  exercises: [
+    "concept_name",
+    "question",
+    "options",
+    "correct_answer",
+    "explanation",
+  ],
+  general_exercises: [
+    "lesson_name",
+    "question",
+    "options",
+    "correct_answer",
+    "explanation",
+    "difficulty_level",
+  ],
+  check_markers: [
+    "lesson_name",
+    "marker_type",
+    "criteria",
+    "points",
+    "description",
+  ],
+  scheme_of_work: [
+    "class",
+    "subject",
+    "term",
+    "week",
+    "topic",
+    "objectives",
+    "activities",
+    "resources",
+    "assessment",
+    "breakdown",
+  ],
 };
 
-function FileUploadSection({ config, onUpload, disabled = false, completed = false }: FileUploadSectionProps) {
+function FileUploadSection({
+  config,
+  onUpload,
+  disabled = false,
+  completed = false,
+}: FileUploadSectionProps) {
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -49,17 +119,19 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
 
   const handleFileSelect = (selectedFile: File) => {
     // Validate file type
-    const validTypes = ['.csv', '.txt'];
-    const fileExtension = selectedFile.name.toLowerCase().substring(selectedFile.name.lastIndexOf('.'));
+    const validTypes = [".csv", ".txt"];
+    const fileExtension = selectedFile.name
+      .toLowerCase()
+      .substring(selectedFile.name.lastIndexOf("."));
 
     if (!validTypes.includes(fileExtension)) {
-      setError('Please select a CSV or TXT file');
+      setError("Please select a CSV or TXT file");
       return;
     }
 
     // Validate file size (10MB limit)
     if (selectedFile.size > 10 * 1024 * 1024) {
-      setError('File size must be less than 10MB');
+      setError("File size must be less than 10MB");
       return;
     }
 
@@ -99,7 +171,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
 
     // Simulate progress
     const progressInterval = setInterval(() => {
-      setProgress(prev => Math.min(prev + 10, 90));
+      setProgress((prev) => Math.min(prev + 10, 90));
     }, 100);
 
     try {
@@ -119,7 +191,7 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
     } catch (err: any) {
       clearInterval(progressInterval);
       setProgress(0);
-      const errorMessage = err.message || 'Upload failed';
+      const errorMessage = err.message || "Upload failed";
       setError(errorMessage);
       toast.error(errorMessage);
     } finally {
@@ -128,41 +200,56 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
   };
 
   const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
+    if (bytes === 0) return "0 Bytes";
     const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+    const sizes = ["Bytes", "KB", "MB", "GB"];
     const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   };
 
-  const requiredColumns = REQUIRED_COLUMNS[config.key as keyof typeof REQUIRED_COLUMNS] || [];
+  const requiredColumns =
+    REQUIRED_COLUMNS[config.key as keyof typeof REQUIRED_COLUMNS] || [];
 
   return (
     <div className="space-y-6">
       {/* Upload Section */}
-      <Card className={cn(
-        "border-border transition-all duration-200 dark:border-border",
-        disabled && "opacity-50",
-        success && "border-green-500 bg-green-50/50 dark:border-green-400 dark:bg-green-950/20",
-        error && "border-red-500 bg-red-50/50 dark:border-red-400 dark:bg-red-950/20"
-      )}>
+      <Card
+        className={cn(
+          "border-border transition-all duration-200 dark:border-border",
+          disabled && "opacity-50",
+          success &&
+            "border-green-500 bg-green-50/50 dark:border-green-400 dark:bg-green-950/20",
+          error &&
+            "border-red-500 bg-red-50/50 dark:border-red-400 dark:bg-red-950/20",
+        )}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-3">
-            <div className={cn(
-              "rounded-lg p-2",
-              disabled ? "bg-gray-100 dark:bg-gray-800" :
-                success ? "bg-green-100 dark:bg-green-900" :
-                  "bg-blue-100 dark:bg-blue-900"
-            )}>
-              <FileText className={cn(
-                "size-5",
-                disabled ? "text-gray-500" :
-                  success ? "text-green-600 dark:text-green-400" :
-                    "text-blue-600 dark:text-blue-400"
-              )} />
+            <div
+              className={cn(
+                "rounded-lg p-2",
+                disabled
+                  ? "bg-gray-100 dark:bg-gray-800"
+                  : success
+                    ? "bg-green-100 dark:bg-green-900"
+                    : "bg-blue-100 dark:bg-blue-900",
+              )}
+            >
+              <FileText
+                className={cn(
+                  "size-5",
+                  disabled
+                    ? "text-gray-500"
+                    : success
+                      ? "text-green-600 dark:text-green-400"
+                      : "text-blue-600 dark:text-blue-400",
+                )}
+              />
             </div>
             Upload {config.title}
-            {success && <Check className="size-4 text-green-600 dark:text-green-400" />}
+            {success && (
+              <Check className="size-4 text-green-600 dark:text-green-400" />
+            )}
           </CardTitle>
           <CardDescription className="text-sm text-muted-foreground">
             {config.description}
@@ -179,19 +266,23 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
                   ? "cursor-not-allowed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50"
                   : isDragOver
                     ? "border-primary bg-primary/5 dark:bg-primary/10"
-                    : "cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50"
+                    : "cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50",
               )}
               onDrop={handleDrop}
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={() => !disabled && fileInputRef.current?.click()}
             >
-              <CloudUpload className={cn(
-                "mx-auto mb-4 size-12",
-                disabled ? "text-gray-400" : "text-muted-foreground"
-              )} />
+              <CloudUpload
+                className={cn(
+                  "mx-auto mb-4 size-12",
+                  disabled ? "text-gray-400" : "text-muted-foreground",
+                )}
+              />
               <p className="mb-2 text-base font-medium">
-                {disabled ? "Upload disabled" : "Drop your CSV file here, or click to browse"}
+                {disabled
+                  ? "Upload disabled"
+                  : "Drop your CSV file here, or click to browse"}
               </p>
               <p className="text-sm text-muted-foreground">
                 Supports: .csv files (max 10MB)
@@ -242,7 +333,11 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
                     {error ? "Error" : "Ready"}
                   </Badge>
                   {!isUploading && (
-                    <Button variant="ghost" size="sm" onClick={() => setFile(null)}>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setFile(null)}
+                    >
                       <X className="size-4" />
                     </Button>
                   )}
@@ -331,7 +426,9 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
       {/* Required Format Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Required Format - {config.title}</CardTitle>
+          <CardTitle className="text-lg">
+            Required Format - {config.title}
+          </CardTitle>
           <CardDescription>
             Your CSV file must include these columns in the correct order
           </CardDescription>
@@ -343,7 +440,11 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
             </p>
             <div className="flex flex-wrap gap-2">
               {requiredColumns.map((column) => (
-                <Badge key={column} variant="secondary" className="font-mono text-xs">
+                <Badge
+                  key={column}
+                  variant="secondary"
+                  className="font-mono text-xs"
+                >
                   {column}
                 </Badge>
               ))}
@@ -351,7 +452,8 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
             {config.key === "lessons" && (
               <div className="mt-4 rounded-lg border-l-4 border-blue-500 bg-blue-50 p-4 dark:bg-blue-900/20">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                  <strong>Note:</strong> The objectives, key_concepts, and application columns should contain valid JSON arrays.
+                  <strong>Note:</strong> The objectives, key_concepts, and
+                  application columns should contain valid JSON arrays.
                 </p>
               </div>
             )}
@@ -367,17 +469,31 @@ function FileUploadSection({ config, onUpload, disabled = false, completed = fal
   );
 }
 
-export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), className }: SmartCSVUploadProps) {
+export function SmartCSVUpload({
+  onUploadSuccess,
+  completedUploads = new Set(),
+  className,
+}: SmartCSVUploadProps) {
   const [logs, setLogs] = useState<UploadLog[]>([]);
 
-  const addLog = (type: UploadLog['type'], message: string, configKey?: string, fileName?: string) => {
-    setLogs(prev => [{
-      type,
-      message,
-      timestamp: new Date(),
-      configKey,
-      fileName
-    }, ...prev].slice(0, 50)); // Keep only last 50 logs
+  const addLog = (
+    type: UploadLog["type"],
+    message: string,
+    configKey?: string,
+    fileName?: string,
+  ) => {
+    setLogs((prev) =>
+      [
+        {
+          type,
+          message,
+          timestamp: new Date(),
+          configKey,
+          fileName,
+        },
+        ...prev,
+      ].slice(0, 50),
+    ); // Keep only last 50 logs
   };
 
   const clearLogs = () => {
@@ -386,24 +502,28 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
 
   const handleUploadSuccess = (configKey: string) => {
     onUploadSuccess?.(configKey);
-    addLog('success', `Successfully uploaded ${configKey}`, configKey);
+    addLog("success", `Successfully uploaded ${configKey}`, configKey);
   };
 
-  const isUploadEnabled = (config: typeof UPLOAD_CONFIGS[number]) => {
+  const isUploadEnabled = (config: (typeof UPLOAD_CONFIGS)[number]) => {
     if (!config.dependency) return true;
     return completedUploads.has(config.dependency);
   };
 
   const getUploadStatus = (configKey: string) => {
-    if (completedUploads.has(configKey)) return 'completed';
-    const config = UPLOAD_CONFIGS.find(c => c.key === configKey);
-    if (config && isUploadEnabled(config)) return 'enabled';
-    return 'disabled';
+    if (completedUploads.has(configKey)) return "completed";
+    const config = UPLOAD_CONFIGS.find((c) => c.key === configKey);
+    if (config && isUploadEnabled(config)) return "enabled";
+    return "disabled";
   };
 
   // Get active configs (exclude scheme_of_work for main tabs)
-  const mainConfigs = UPLOAD_CONFIGS.filter(config => config.key !== 'scheme_of_work');
-  const schemeOfWork = UPLOAD_CONFIGS.find(config => config.key === 'scheme_of_work');
+  const mainConfigs = UPLOAD_CONFIGS.filter(
+    (config) => config.key !== "scheme_of_work",
+  );
+  const schemeOfWork = UPLOAD_CONFIGS.find(
+    (config) => config.key === "scheme_of_work",
+  );
 
   return (
     <div className={cn("w-full", className)}>
@@ -425,7 +545,7 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
               className={cn(
                 "px-3 py-2 text-xs font-medium transition-all",
                 "data-[state=active]:bg-background data-[state=active]:shadow-sm",
-                "disabled:cursor-not-allowed disabled:opacity-50"
+                "disabled:cursor-not-allowed disabled:opacity-50",
               )}
               disabled={!isUploadEnabled(config)}
             >
@@ -446,18 +566,38 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
             <FileUploadSection
               config={config}
               onUpload={async (file) => {
-                addLog('info', `Starting upload of ${config.title}`, config.key, file.name);
+                addLog(
+                  "info",
+                  `Starting upload of ${config.title}`,
+                  config.key,
+                  file.name,
+                );
                 try {
                   const result = await config.uploadFunction(file);
                   if (result.success) {
                     handleUploadSuccess(config.key);
-                    addLog('success', `${config.title}: ${result.message}`, config.key, file.name);
+                    addLog(
+                      "success",
+                      `${config.title}: ${result.message}`,
+                      config.key,
+                      file.name,
+                    );
                   } else {
-                    addLog('error', `${config.title}: ${result.error || result.message}`, config.key, file.name);
+                    addLog(
+                      "error",
+                      `${config.title}: ${result.error || result.message}`,
+                      config.key,
+                      file.name,
+                    );
                   }
                   return result;
                 } catch (error: any) {
-                  addLog('error', `${config.title}: ${error.message || 'Unexpected error'}`, config.key, file.name);
+                  addLog(
+                    "error",
+                    `${config.title}: ${error.message || "Unexpected error"}`,
+                    config.key,
+                    file.name,
+                  );
                   throw error;
                 }
               }}
@@ -473,18 +613,38 @@ export function SmartCSVUpload({ onUploadSuccess, completedUploads = new Set(), 
             <FileUploadSection
               config={schemeOfWork}
               onUpload={async (file) => {
-                addLog('info', `Starting upload of ${schemeOfWork.title}`, schemeOfWork.key, file.name);
+                addLog(
+                  "info",
+                  `Starting upload of ${schemeOfWork.title}`,
+                  schemeOfWork.key,
+                  file.name,
+                );
                 try {
                   const result = await schemeOfWork.uploadFunction(file);
                   if (result.success) {
                     handleUploadSuccess(schemeOfWork.key);
-                    addLog('success', `${schemeOfWork.title}: ${result.message}`, schemeOfWork.key, file.name);
+                    addLog(
+                      "success",
+                      `${schemeOfWork.title}: ${result.message}`,
+                      schemeOfWork.key,
+                      file.name,
+                    );
                   } else {
-                    addLog('error', `${schemeOfWork.title}: ${result.error || result.message}`, schemeOfWork.key, file.name);
+                    addLog(
+                      "error",
+                      `${schemeOfWork.title}: ${result.error || result.message}`,
+                      schemeOfWork.key,
+                      file.name,
+                    );
                   }
                   return result;
                 } catch (error: any) {
-                  addLog('error', `${schemeOfWork.title}: ${error.message || 'Unexpected error'}`, schemeOfWork.key, file.name);
+                  addLog(
+                    "error",
+                    `${schemeOfWork.title}: ${error.message || "Unexpected error"}`,
+                    schemeOfWork.key,
+                    file.name,
+                  );
                   throw error;
                 }
               }}

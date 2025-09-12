@@ -1,18 +1,25 @@
 "use client";
 
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { 
-  BookOpen, 
-  Upload, 
-  Users, 
+import {
   BarChart3,
+  BookOpen,
   Settings,
   Shield,
+  TrendingUp,
+  Upload,
   UserCheck,
-  TrendingUp
+  Users,
 } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import InfoCard from "@/components/dashboard/info-card";
 import TransactionsList from "@/components/dashboard/transactions-list";
 

@@ -2,12 +2,19 @@
 
 import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
+import { Eye, EyeOff, RefreshCw } from "lucide-react";
+
 import { profileApi } from "@/lib/api/auth";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { RefreshCw, Eye, EyeOff } from "lucide-react";
 
 export function UserRoleDebug() {
   const { user, isAuthenticated } = useAuthStore();
@@ -48,35 +55,40 @@ export function UserRoleDebug() {
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm">User Role Debug</CardTitle>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setShowDebug(false)}
-          >
+          <Button variant="ghost" size="sm" onClick={() => setShowDebug(false)}>
             <EyeOff className="size-4" />
           </Button>
         </div>
-        <CardDescription>
-          Current user authentication state
-        </CardDescription>
+        <CardDescription>Current user authentication state</CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
         {/* Current Auth State */}
         <div>
           <h4 className="mb-2 text-sm font-medium">Auth Store State:</h4>
           <div className="space-y-1 text-xs">
-            <div>Authenticated: <Badge variant={isAuthenticated ? "default" : "destructive"}>{isAuthenticated ? "Yes" : "No"}</Badge></div>
+            <div>
+              Authenticated:{" "}
+              <Badge variant={isAuthenticated ? "default" : "destructive"}>
+                {isAuthenticated ? "Yes" : "No"}
+              </Badge>
+            </div>
             {user && (
               <>
                 <div>ID: {user.id}</div>
                 <div>Name: {user.name || "No name"}</div>
                 <div>Email: {user.email}</div>
-                <div>Roles: {user.role.map(role => (
-                  <Badge key={role} variant="outline" className="ml-1">
-                    {role}
-                  </Badge>
-                ))}</div>
-                <div>Primary Role: <Badge variant="secondary">{user.role[0]}</Badge></div>
+                <div>
+                  Roles:{" "}
+                  {user.role.map((role) => (
+                    <Badge key={role} variant="outline" className="ml-1">
+                      {role}
+                    </Badge>
+                  ))}
+                </div>
+                <div>
+                  Primary Role:{" "}
+                  <Badge variant="secondary">{user.role[0]}</Badge>
+                </div>
               </>
             )}
           </div>
@@ -94,7 +106,9 @@ export function UserRoleDebug() {
               onClick={fetchProfile}
               disabled={loading}
             >
-              <RefreshCw className={`mr-1 size-3 ${loading ? 'animate-spin' : ''}`} />
+              <RefreshCw
+                className={`mr-1 size-3 ${loading ? "animate-spin" : ""}`}
+              />
               Fetch
             </Button>
           </div>
@@ -113,9 +127,18 @@ export function UserRoleDebug() {
         <div>
           <h4 className="mb-2 text-sm font-medium">Cookie Data:</h4>
           <div className="space-y-1 text-xs">
-            <div>Token: {document.cookie.includes('auth_token') ? "Present" : "Missing"}</div>
-            <div>User: {document.cookie.includes('auth_user') ? "Present" : "Missing"}</div>
-            <div>Expires: {document.cookie.includes('auth_expires') ? "Present" : "Missing"}</div>
+            <div>
+              Token:{" "}
+              {document.cookie.includes("auth_token") ? "Present" : "Missing"}
+            </div>
+            <div>
+              User:{" "}
+              {document.cookie.includes("auth_user") ? "Present" : "Missing"}
+            </div>
+            <div>
+              Expires:{" "}
+              {document.cookie.includes("auth_expires") ? "Present" : "Missing"}
+            </div>
           </div>
         </div>
 
@@ -123,7 +146,10 @@ export function UserRoleDebug() {
         <div>
           <h4 className="mb-2 text-sm font-medium">Local Storage:</h4>
           <div className="text-xs">
-            <div>Access Token: {localStorage.getItem('access_token') ? "Present" : "Missing"}</div>
+            <div>
+              Access Token:{" "}
+              {localStorage.getItem("access_token") ? "Present" : "Missing"}
+            </div>
           </div>
         </div>
       </CardContent>

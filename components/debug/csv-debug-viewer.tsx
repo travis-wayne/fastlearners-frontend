@@ -1,13 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Eye, Download, FileText, AlertCircle } from "lucide-react";
+import { AlertCircle, Download, Eye, FileText } from "lucide-react";
+
 import { convertToAPIFormat } from "@/lib/utils/csv-upload-helper";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Textarea } from "@/components/ui/textarea";
 
 interface CSVDebugViewerProps {
   file: File | null;
@@ -21,12 +28,12 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
 
   const analyzeFile = async () => {
     if (!file) return;
-    
+
     setIsLoading(true);
     try {
       const content = await file.text();
       setOriginalContent(content);
-      
+
       const apiFormatted = convertToAPIFormat(content);
       setApiFormattedContent(apiFormatted);
     } catch (error) {
@@ -38,12 +45,13 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
 
   const downloadAPIFormat = () => {
     if (!apiFormattedContent) return;
-    
-    const blob = new Blob([apiFormattedContent], { type: 'text/csv' });
+
+    const blob = new Blob([apiFormattedContent], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
-    a.download = `${file?.name?.replace('.csv', '')}_api_format.csv` || 'api_format.csv';
+    a.download =
+      `${file?.name?.replace(".csv", "")}_api_format.csv` || "api_format.csv";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -89,17 +97,11 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
               <Badge variant="outline">
                 {(file.size / 1024).toFixed(1)} KB
               </Badge>
-              <Badge variant="outline">
-                {file.type || 'text/csv'}
-              </Badge>
+              <Badge variant="outline">{file.type || "text/csv"}</Badge>
             </div>
           </div>
           <div className="space-x-2">
-            <Button
-              onClick={analyzeFile}
-              disabled={isLoading}
-              size="sm"
-            >
+            <Button onClick={analyzeFile} disabled={isLoading} size="sm">
               {isLoading ? "Analyzing..." : "Analyze File"}
             </Button>
           </div>
@@ -110,8 +112,9 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
             <Alert>
               <AlertCircle className="size-4" />
               <AlertDescription>
-                <strong>Debug Information:</strong> This shows the original file content 
-                and how it gets converted to the API&apos;s expected format.
+                <strong>Debug Information:</strong> This shows the original file
+                content and how it gets converted to the API&apos;s expected
+                format.
               </AlertDescription>
             </Alert>
 
@@ -120,7 +123,7 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
                 <div className="flex items-center justify-between">
                   <h4 className="text-sm font-medium">Original Content</h4>
                   <Badge variant="secondary">
-                    {originalContent.split('\n').length} lines
+                    {originalContent.split("\n").length} lines
                   </Badge>
                 </div>
                 <Textarea
@@ -136,7 +139,7 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
                   <h4 className="text-sm font-medium">API Format</h4>
                   <div className="flex gap-2">
                     <Badge variant="default">
-                      {apiFormattedContent.split('\n').length} lines
+                      {apiFormattedContent.split("\n").length} lines
                     </Badge>
                     {apiFormattedContent && (
                       <Button
@@ -166,19 +169,27 @@ export default function CSVDebugViewer({ file, onClose }: CSVDebugViewerProps) {
                   <div className="rounded border p-3">
                     <p className="text-xs text-muted-foreground">Row Numbers</p>
                     <p className="font-mono text-sm">
-                      {apiFormattedContent.includes('1|') ? '✅ Added' : '❌ Missing'}
+                      {apiFormattedContent.includes("1|")
+                        ? "✅ Added"
+                        : "❌ Missing"}
                     </p>
                   </div>
                   <div className="rounded border p-3">
-                    <p className="text-xs text-muted-foreground">BOM Character</p>
+                    <p className="text-xs text-muted-foreground">
+                      BOM Character
+                    </p>
                     <p className="font-mono text-sm">
-                      {apiFormattedContent.includes('\ufeff') ? '✅ Present' : '⚠️ Missing'}
+                      {apiFormattedContent.includes("\ufeff")
+                        ? "✅ Present"
+                        : "⚠️ Missing"}
                     </p>
                   </div>
                   <div className="rounded border p-3">
-                    <p className="text-xs text-muted-foreground">Line Endings</p>
+                    <p className="text-xs text-muted-foreground">
+                      Line Endings
+                    </p>
                     <p className="font-mono text-sm">
-                      {apiFormattedContent.includes('\r\n') ? 'CRLF' : 'LF'}
+                      {apiFormattedContent.includes("\r\n") ? "CRLF" : "LF"}
                     </p>
                   </div>
                 </div>

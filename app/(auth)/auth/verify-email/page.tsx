@@ -1,14 +1,15 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { VerifyOtpForm } from '@/components/auth/VerifyOtpForm';
-import { AuthLayout } from '@/components/auth/AuthLayout';
-import { Loader2 } from 'lucide-react';
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
+import { AuthLayout } from "@/components/auth/AuthLayout";
+import { VerifyOtpForm } from "@/components/auth/VerifyOtpForm";
 
 function VerifyEmailContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get("email") || "";
 
   return (
     <AuthLayout subtitle="Verify your email to continue">
@@ -19,16 +20,16 @@ function VerifyEmailContent() {
 
 export default function VerifyEmailPage() {
   return (
-    <Suspense fallback={
-      <AuthLayout subtitle="Verify your email to continue">
-        <div className="flex items-center justify-center p-6">
-          <Loader2 className="size-6 animate-spin" />
-        </div>
-      </AuthLayout>
-    }>
+    <Suspense
+      fallback={
+        <AuthLayout subtitle="Verify your email to continue">
+          <div className="flex items-center justify-center p-6">
+            <Loader2 className="size-6 animate-spin" />
+          </div>
+        </AuthLayout>
+      }
+    >
       <VerifyEmailContent />
     </Suspense>
   );
 }
-
-

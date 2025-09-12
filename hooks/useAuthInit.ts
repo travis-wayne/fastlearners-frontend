@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useAuthStore } from '@/store/authStore';
-import { getAuthCookies } from '@/lib/auth-cookies';
+import { useEffect, useState } from "react";
+import { useAuthStore } from "@/store/authStore";
+
+import { getAuthCookies } from "@/lib/auth-cookies";
 
 export function useAuthInit() {
   const [isInitialized, setIsInitialized] = useState(false);
@@ -14,31 +15,33 @@ export function useAuthInit() {
       // with the cookie data on mount. Just verify the state.
       const state = useAuthStore.getState();
       const cookieData = getAuthCookies();
-      
-      console.log('useAuthInit - Auth state check:', {
+
+      console.log("useAuthInit - Auth state check:", {
         isHydrated: state.isHydrated,
         isAuthenticated: state.isAuthenticated,
         user: state.user ? { id: state.user.id, role: state.user.role } : null,
         isLoading: state.isLoading,
-        cookieData: cookieData ? { hasUser: !!cookieData.user, hasToken: !!cookieData.token } : null
+        cookieData: cookieData
+          ? { hasUser: !!cookieData.user, hasToken: !!cookieData.token }
+          : null,
       });
 
       // Ensure the store state matches cookie data
       if (cookieData && (!state.isAuthenticated || !state.user)) {
-        console.log('useAuthInit - Syncing store with cookie data');
+        console.log("useAuthInit - Syncing store with cookie data");
         useAuthStore.setState({
           user: cookieData.user,
           isAuthenticated: true,
           isHydrated: true,
-          isLoading: false
+          isLoading: false,
         });
       } else if (!cookieData && state.isAuthenticated) {
-        console.log('useAuthInit - Clearing store state (no valid cookies)');
+        console.log("useAuthInit - Clearing store state (no valid cookies)");
         useAuthStore.setState({
           user: null,
           isAuthenticated: false,
           isHydrated: true,
-          isLoading: false
+          isLoading: false,
         });
       }
 
@@ -50,6 +53,6 @@ export function useAuthInit() {
 
   return {
     isInitialized: isInitialized && isHydrated && !isLoading,
-    isLoading: !isInitialized || isLoading || !isHydrated
+    isLoading: !isInitialized || isLoading || !isHydrated,
   };
 }

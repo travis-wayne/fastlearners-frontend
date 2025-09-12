@@ -1,13 +1,14 @@
-'use client';
+"use client";
 
-import { useSearchParams } from 'next/navigation';
-import { Suspense } from 'react';
-import { VerifyResetCodeForm } from '@/components/auth/verify-reset-code-form';
-import { Loader2 } from 'lucide-react';
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
+import { Loader2 } from "lucide-react";
+
+import { VerifyResetCodeForm } from "@/components/auth/verify-reset-code-form";
 
 function VerifyResetCodeContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get('email') || '';
+  const email = searchParams.get("email") || "";
 
   return (
     <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
@@ -20,16 +21,16 @@ function VerifyResetCodeContent() {
 
 export default function VerifyResetCodePage() {
   return (
-    <Suspense fallback={
-      <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-        <div className="flex w-full max-w-sm items-center justify-center">
-          <Loader2 className="size-6 animate-spin" />
+    <Suspense
+      fallback={
+        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
+          <div className="flex w-full max-w-sm items-center justify-center">
+            <Loader2 className="size-6 animate-spin" />
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <VerifyResetCodeContent />
     </Suspense>
   );
 }
-
-
