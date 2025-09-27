@@ -81,7 +81,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
     role: "student",
     sidebarSections: [
       {
-        title: "LEARNING",
+        title: "MAIN",
         items: [
           {
             href: "/dashboard",
@@ -97,8 +97,14 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
           {
             href: "/dashboard/lessons",
             icon: "graduationCap",
-            title: "My Lessons",
+            title: "Lessons",
             description: "Continue your learning journey",
+          },
+          {
+            href: "/dashboard/quiz",
+            icon: "helpCircle",
+            title: "Quiz",
+            description: "Take quizzes and assessments",
           },
           {
             href: "/dashboard/past-questions",
@@ -106,43 +112,11 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             title: "Past Questions",
             description: "Practice with previous exam questions",
           },
-        ],
-      },
-      {
-        title: "ASSESSMENTS",
-        items: [
-          {
-            href: "/dashboard/quizzes/available",
-            icon: "helpCircle",
-            title: "Available Quizzes",
-            description: "Take new quizzes",
-          },
-          {
-            href: "/dashboard/quizzes/ongoing",
-            icon: "clock",
-            title: "Ongoing Quizzes",
-            description: "Continue in-progress quizzes",
-          },
-          {
-            href: "/dashboard/quizzes/completed",
-            icon: "checkCircle",
-            title: "Completed Quizzes",
-            description: "Review your quiz history",
-          },
-        ],
-      },
-      {
-        title: "PROGRESS",
-        items: [
           {
             href: "/dashboard/reports",
             icon: "barChart3",
             title: "Reports",
-          },
-          {
-            href: "/dashboard/achievements",
-            icon: "trophy",
-            title: "Achievements",
+            description: "View your progress and analytics",
           },
         ],
       },

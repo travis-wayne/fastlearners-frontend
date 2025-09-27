@@ -1,10 +1,9 @@
 "use client";
 
 import { useAuthStore } from "@/store/authStore";
-import { UserRole } from "@/types";
+import { motion } from "framer-motion";
 
 import { Button } from "@/components/ui/button";
-import { DashboardHeader } from "@/components/dashboard/header";
 import {
   AdminDashboard,
   GuardianDashboard,
@@ -14,115 +13,116 @@ import {
 } from "@/components/dashboard/role-dashboards";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 
-// Role-specific welcome messages and descriptions
-const getRoleContent = (role: string) => {
-  switch (role) {
-    case UserRole.STUDENT:
-      return {
-        heading: "Welcome back, Student!",
-        text: "Ready to continue your learning journey? Let's pick up where you left off.",
-      };
-    case UserRole.GUARDIAN:
-      return {
-        heading: "Guardian Dashboard",
-        text: "Monitor your children's progress and stay connected with their learning journey.",
-      };
-    case UserRole.ADMIN:
-    case UserRole.SUPERADMIN:
-      return {
-        heading: "Admin Dashboard",
-        text: "Manage platform content, users, and monitor system performance.",
-      };
-    case UserRole.TEACHER:
-      return {
-        heading: "Teacher Dashboard",
-        text: "Manage your classes, create lessons, and track student progress.",
-      };
-    case UserRole.GUEST:
-      return {
-        heading: "Welcome to FastLearners!",
-        text: "Explore our platform and discover what we have to offer.",
-      };
-    default:
-      return {
-        heading: "Dashboard",
-        text: "Welcome to your personalized dashboard.",
-      };
-  }
-};
+// Loading component with nice animation
+function DashboardLoading() {
+  return (
+    <div className="min-h-screen flex items-center justify-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.5 }}
+        className="text-center space-y-4"
+      >
+        <div className="flex items-center justify-center">
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="size-8 border-2 border-primary border-t-transparent rounded-full"
+          />
+        </div>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-muted-foreground"
+        >
+          Loading your personalized dashboard...
+        </motion.p>
+      </motion.div>
+    </div>
+  );
+}
+
+// Guest dashboard component
+function GuestDashboard() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="min-h-[60vh] flex items-center justify-center"
+    >
+      <EmptyPlaceholder>
+        <EmptyPlaceholder.Icon name="eye" />
+        <EmptyPlaceholder.Title>Explore FastLearners</EmptyPlaceholder.Title>
+        <EmptyPlaceholder.Description>
+          As a guest, you can browse our content. Sign up to unlock the full
+          learning experience!
+        </EmptyPlaceholder.Description>
+        <div className="flex gap-2">
+          <Button>Upgrade Account</Button>
+          <Button variant="outline">Browse Content</Button>
+        </div>
+      </EmptyPlaceholder>
+    </motion.div>
+  );
+}
 
 // Component that renders the appropriate dashboard based on user role
 function RoleDashboard({ userRole }: { userRole: string }) {
   switch (userRole) {
-    case UserRole.STUDENT:
+    case "student":
       return <StudentDashboard />;
-
-    case UserRole.GUARDIAN:
+    case "guardian":
       return <GuardianDashboard />;
-
-    case UserRole.ADMIN:
-    case UserRole.SUPERADMIN:
-      return <AdminDashboard />;
-
-    case UserRole.TEACHER:
+    case "teacher":
       return <TeacherDashboard />;
-
-    case UserRole.GUEST:
-      return (
-        <EmptyPlaceholder>
-          <EmptyPlaceholder.Icon name="eye" />
-          <EmptyPlaceholder.Title>Explore FastLearners</EmptyPlaceholder.Title>
-          <EmptyPlaceholder.Description>
-            As a guest, you can browse our content. Sign up to unlock the full
-            learning experience!
-          </EmptyPlaceholder.Description>
-          <div className="flex gap-2">
-            <Button>Upgrade Account</Button>
-            <Button variant="outline">Browse Content</Button>
-          </div>
-        </EmptyPlaceholder>
-      );
-
+    case "admin":
+      return <AdminDashboard />;
+    case "superadmin":
+      return <SuperAdminDashboard />;
+    case "guest":
+      return <GuestDashboard />;
     default:
       return (
-        <EmptyPlaceholder>
-          <EmptyPlaceholder.Icon name="alertCircle" />
-          <EmptyPlaceholder.Title>Role Not Recognized</EmptyPlaceholder.Title>
-          <EmptyPlaceholder.Description>
-            We couldn&apos;t determine your role. Please contact support.
-          </EmptyPlaceholder.Description>
-          <Button>Contact Support</Button>
-        </EmptyPlaceholder>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          className="min-h-[60vh] flex items-center justify-center"
+        >
+          <EmptyPlaceholder>
+            <EmptyPlaceholder.Icon name="alertCircle" />
+            <EmptyPlaceholder.Title>Role Not Recognized</EmptyPlaceholder.Title>
+            <EmptyPlaceholder.Description>
+              We couldn&apos;t determine your role. Please contact support.
+            </EmptyPlaceholder.Description>
+            <Button>Contact Support</Button>
+          </EmptyPlaceholder>
+        </motion.div>
       );
   }
 }
 
 export default function UnifiedDashboardPage() {
-  const { user } = useAuthStore();
+  const { user, isHydrated } = useAuthStore();
 
   // Show loading state while user data is being fetched
-  if (!user) {
-    return (
-      <>
-        <DashboardHeader
-          heading="Dashboard"
-          text="Loading your personalized dashboard..."
-        />
-        <div className="flex min-h-[400px] items-center justify-center">
-          <div className="size-8 animate-spin rounded-full border-b-2 border-primary"></div>
-        </div>
-      </>
-    );
+  if (!isHydrated || !user) {
+    return <DashboardLoading />;
   }
 
   // Get the user's primary role (first role in the array)
-  const primaryRole = user.role[0] || UserRole.GUEST;
-  const roleContent = getRoleContent(primaryRole);
+  const primaryRole = user.role[0] || "guest";
 
   return (
-    <>
-      <DashboardHeader heading={roleContent.heading} text={roleContent.text} />
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-background"
+    >
       <RoleDashboard userRole={primaryRole} />
-    </>
+    </motion.div>
   );
 }

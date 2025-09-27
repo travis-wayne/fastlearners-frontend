@@ -21,6 +21,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       "/register",
       "/onboarding",
       "/auth",
+      "/auth/role", // Role selection during onboarding
       "/role", // Role selection during onboarding
     ],
     restrictedRoutes: ["/dashboard", "/superadmin", "/admin", "/teacher"],
@@ -164,6 +165,7 @@ export const PUBLIC_ROUTES = [
   "/auth/register",
   "/auth/forgot-password",
   "/auth/reset-password",
+  "/auth/role", 
 ];
 
 /**
