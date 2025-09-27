@@ -13,6 +13,36 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.STUDENT,
       },
       {
+        href: "/dashboard/subjects",
+        icon: "dashboard",
+        title: "Subjects",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/lessons",
+        icon: "dashboard",
+        title: "Lessons",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/quizzes",
+        icon: "dashboard",
+        title: "Quizzes",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/past-questions",
+        icon: "dashboard",
+        title: "Past Questions",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/records",
+        icon: "dashboard",
+        title: "Records",
+        authorizeOnly: UserRole.GUARDIAN,
+      },
+      {
         href: "/dashboard",
         icon: "dashboard",
         title: "Dashboard",
@@ -114,7 +144,7 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.SUPERADMIN,
       },
       { href: "/", icon: "home", title: "Homepage" },
-      { href: "/docs", icon: "bookOpen", title: "Documentation" },
+      { href: "/docs", icon: "bookOpen", title: "Documentation", authorizeOnly: UserRole.SUPERADMIN },
       {
         href: "#",
         icon: "messages",
