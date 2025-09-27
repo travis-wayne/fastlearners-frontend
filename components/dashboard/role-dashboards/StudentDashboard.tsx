@@ -44,17 +44,8 @@ import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-import {
-  ChartConfig,
-  ChartContainer,
-} from "@/components/ui/chart";
-import {
-  Label,
-  PolarGrid,
-  PolarRadiusAxis,
-  RadialBar,
-  RadialBarChart,
-} from "recharts";
+import { ProgressChart } from "@/components/charts/progress-chart";
+import type { ChartConfig } from "@/components/ui/chart";
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -203,20 +194,6 @@ export function StudentDashboard() {
   ];
 
   // NEW SECTIONS DATA for the three cards from the image
-  // Progress data for pie chart (Physics subject)
-  const progressChartData = [
-    { name: "physics", value: 75, fill: "hsl(var(--chart-1))" },
-  ];
-  
-  const progressChartConfig = {
-    value: {
-      label: "Progress",
-    },
-    physics: {
-      label: "Physics",
-      color: "hsl(var(--chart-1))",
-    },
-  } satisfies ChartConfig;
 
   // Leaderboard data
   const leaderboard = [
@@ -422,165 +399,6 @@ export function StudentDashboard() {
             </Card>
           </motion.div>
         ))}
-      </motion.div>
-
-      {/* NEW SECTIONS - Bento Grid Layout with Three Sections from Image */}
-      <motion.div variants={itemVariants}>
-        <BentoGrid className="grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Progress Section with Pie Chart */}
-          <BentoGridItem className="col-span-1">
-            <Card className="h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Progress</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm font-medium">Physics</span>
-                  <Button variant="ghost" size="sm" className="h-6 text-xs">
-                    ▼
-                  </Button>
-                </div>
-                
-                {/* Radial Progress Chart using Recharts */}
-                <div className="flex justify-center">
-                  <ChartContainer
-                    config={progressChartConfig}
-                    className="mx-auto aspect-square max-h-[200px]"
-                  >
-                    <RadialBarChart
-                      data={progressChartData}
-                      startAngle={90}
-                      endAngle={90 + (progressChartData[0].value / 100) * 360}
-                      innerRadius={60}
-                      outerRadius={90}
-                    >
-                      <PolarGrid
-                        gridType="circle"
-                        radialLines={false}
-                        stroke="none"
-                        className="first:fill-muted last:fill-background"
-                        polarRadius={[66, 54]}
-                      />
-                      <RadialBar 
-                        dataKey="value" 
-                        background 
-                        cornerRadius={10}
-                        fill="var(--color-physics)"
-                      />
-                      <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
-                        <Label
-                          content={({ viewBox }) => {
-                            if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                              return (
-                                <text
-                                  x={viewBox.cx}
-                                  y={viewBox.cy}
-                                  textAnchor="middle"
-                                  dominantBaseline="middle"
-                                >
-                                  <tspan
-                                    x={viewBox.cx}
-                                    y={viewBox.cy}
-                                    className="fill-foreground text-2xl font-bold"
-                                  >
-                                    {progressChartData[0].value}%
-                                  </tspan>
-                                </text>
-                              );
-                            }
-                          }}
-                        />
-                      </PolarRadiusAxis>
-                    </RadialBarChart>
-                  </ChartContainer>
-                </div>
-                
-                <div className="flex items-center gap-4 justify-center mt-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-primary"></div>
-                    <span className="text-sm text-muted-foreground">Covered</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-muted"></div>
-                    <span className="text-sm text-muted-foreground">What&apos;s left</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </BentoGridItem>
-
-          {/* Achievements Section */}
-          <BentoGridItem className="col-span-1">
-            <Card className="h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Achievements</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/30"
-                >
-                  <div className="text-lg">🔥</div>
-                  <span className="text-sm font-medium">7-Day Learning Streak</span>
-                  <div className="ml-auto">
-                    <Star className="size-4 fill-current text-yellow-500" />
-                  </div>
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 }}
-                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/30"
-                >
-                  <div className="text-lg">⭐</div>
-                  <span className="text-sm font-medium">Perfect Score</span>
-                  <div className="ml-auto">
-                    <Star className="size-4 fill-current text-yellow-500" />
-                  </div>
-                </motion.div>
-                
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.2 }}
-                  className="flex items-center gap-3 p-2 rounded-lg bg-muted/30"
-                >
-                  <div className="text-lg">⭐</div>
-                  <span className="text-sm font-medium">Perfect Score</span>
-                  <div className="ml-auto">
-                    <Star className="size-4 fill-current text-yellow-500" />
-                  </div>
-                </motion.div>
-              </CardContent>
-            </Card>
-          </BentoGridItem>
-
-          {/* Overview Section */}
-          <BentoGridItem className="col-span-1">
-            <Card className="h-full">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">Overview</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                {overviewStats.map((stat, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <span className="text-sm text-muted-foreground">{stat.label}</span>
-                    <span className="text-sm font-semibold">{stat.value}</span>
-                  </div>
-                ))}
-                
-                <div className="pt-2 border-t">
-                  <div className="text-sm font-medium mb-1">Time Spent Learning</div>
-                  <div className="text-lg font-bold">300 hrs</div>
-                  <div className="text-sm text-muted-foreground mt-1">Subscription Status</div>
-                  <div className="text-sm font-medium text-green-600">Active</div>
-                </div>
-              </CardContent>
-            </Card>
-          </BentoGridItem>
-        </BentoGrid>
       </motion.div>
 
       {/* Today's Lessons - Enhanced */}
@@ -791,6 +609,7 @@ export function StudentDashboard() {
           </Card>
         </motion.div>
       </div>
+
     </motion.div>
   );
 }

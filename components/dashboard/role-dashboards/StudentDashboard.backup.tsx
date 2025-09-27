@@ -49,7 +49,7 @@ const itemVariants = {
     y: 0,
     opacity: 1,
     transition: {
-      type: "spring",
+      type: "spring" as const,
       stiffness: 100,
     },
   },
@@ -350,7 +350,7 @@ export function StudentDashboard() {
                   <Calendar className="size-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="flex items-center gap-2">Today's Lessons</CardTitle>
+                  <CardTitle className="flex items-center gap-2">Today&apos;s Lessons</CardTitle>
                   <CardDescription>Start with your scheduled lessons for today</CardDescription>
                 </div>
               </div>
@@ -433,7 +433,7 @@ export function StudentDashboard() {
                 <div className="p-2 bg-green-100 rounded-lg">
                   <Target className="size-5 text-green-600" />
                 </div>
-                This Week's Progress
+                This Week&apos;s Progress
               </CardTitle>
               <CardDescription>Track your progress across all subjects</CardDescription>
             </CardHeader>
