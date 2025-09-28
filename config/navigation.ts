@@ -85,8 +85,9 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
         items: [
           {
             href: "/dashboard",
-            icon: "dashboard",
+            icon: "home",
             title: "Dashboard",
+            description: "Overview of your learning progress",
           },
           {
             href: "/dashboard/subjects",
@@ -101,9 +102,9 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             description: "Continue your learning journey",
           },
           {
-            href: "/dashboard/quiz",
+            href: "/dashboard/quizzes",
             icon: "helpCircle",
-            title: "Quiz",
+            title: "Quizzes",
             description: "Take quizzes and assessments",
           },
           {
@@ -113,10 +114,10 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             description: "Practice with previous exam questions",
           },
           {
-            href: "/dashboard/reports",
-            icon: "barChart3",
-            title: "Reports",
-            description: "View your progress and analytics",
+            href: "/dashboard/records",
+            icon: "folder",
+            title: "Records",
+            description: "View your academic records and reports",
           },
         ],
       },
@@ -181,6 +182,12 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
       {
         title: "MONITORING",
         items: [
+          {
+            href: "/dashboard/records",
+            icon: "folder",
+            title: "Records",
+            description: "View child's academic records and reports",
+          },
           {
             href: "/dashboard/reports",
             icon: "barChart3",

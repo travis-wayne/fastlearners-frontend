@@ -18,6 +18,7 @@ import { MarqueeMessages } from "@/components/navigation/marquee-messages";
 import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { AcademicProvider } from "@/components/providers/academic-context";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -58,37 +59,39 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
   }));
 
   return (
-    <div className="relative flex min-h-screen w-full">
-      <DashboardSidebar links={filteredLinks} />
+    <AcademicProvider>
+      <div className="relative flex min-h-screen w-full">
+        <DashboardSidebar links={filteredLinks} />
 
-      <div className="flex flex-1 flex-col">
-        <header className="sticky top-0 z-50 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8">
-          <MaxWidthWrapper className="flex max-w-7xl items-center gap-x-3 px-0">
-            <MobileSheetSidebar links={filteredLinks} />
+        <div className="flex flex-1 flex-col">
+          <header className="sticky top-0 z-50 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8">
+            <MaxWidthWrapper className="flex max-w-full items-center gap-x-3 px-0">
+              <MobileSheetSidebar links={filteredLinks} />
 
-            <div className="w-full flex-1">
-              <Breadcrumb />
-            </div>
+              <div className="w-full flex-1">
+                <Breadcrumb />
+              </div>
 
-            <SearchCommand links={filteredLinks} className="mr-2" />
-            <NetworkStatus className="mr-2" />
-            <NotificationCenter className="mr-2" />
-            <ModeToggle />
-            <UserAccountNav />
-          </MaxWidthWrapper>
-        </header>
+              <SearchCommand links={filteredLinks} className="mr-2" />
+              <NetworkStatus className="mr-2" />
+              <NotificationCenter className="mr-2" />
+              <ModeToggle />
+              <UserAccountNav />
+            </MaxWidthWrapper>
+          </header>
 
-        <main className="flex-1 p-4 pb-16 xl:px-8">
-          <MaxWidthWrapper className="flex h-full max-w-7xl flex-col gap-4 px-0 lg:gap-6">
-            {children}
-          </MaxWidthWrapper>
-        </main>
+          <main className="flex-1 p-4 pb-16 xl:px-8">
+            <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-0 lg:gap-6">
+              {children}
+            </MaxWidthWrapper>
+          </main>
+        </div>
+
+        {/* Marquee Messages at bottom - full screen width and sticky */}
+        <div className="fixed bottom-0 left-0 right-0 z-40">
+          <MarqueeMessages />
+        </div>
       </div>
-
-      {/* Marquee Messages at bottom - full screen width and sticky */}
-      <div className="fixed bottom-0 left-0 right-0 z-40">
-        <MarqueeMessages />
-      </div>
-    </div>
+    </AcademicProvider>
   );
 }
