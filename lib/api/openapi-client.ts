@@ -3,7 +3,6 @@ import axios from "axios";
 // Generated types will be written to types/openapi/fastlearners.ts by running:
 //   pnpm gen:openapi
 // We import them with a type-only import to avoid runtime issues if not generated yet.
-// eslint-disable-next-line @typescript-eslint/consistent-type-imports
 import type { paths, components } from "@/types/openapi/fastlearners";
 
 type ApiResponse = components["schemas"]["ApiResponse"];
