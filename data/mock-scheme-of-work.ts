@@ -18,20 +18,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Identify place values up to millions",
         "Read and write numbers in words and figures",
-        "Compare and order numbers"
+        "Compare and order numbers",
       ],
       activities: [
         "Practice writing numbers in expanded form",
         "Number games and exercises",
-        "Real-life examples using large numbers"
+        "Real-life examples using large numbers",
       ],
       resources: [
         "Mathematics textbook",
         "Number cards",
         "Calculator",
-        "Whiteboard and markers"
+        "Whiteboard and markers",
       ],
-      assessment: "Class work on place value identification and number writing"
+      assessment: "Class work on place value identification and number writing",
     },
     {
       week: 2,
@@ -39,20 +39,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Perform addition and subtraction of whole numbers",
         "Solve word problems involving addition and subtraction",
-        "Apply mental arithmetic strategies"
+        "Apply mental arithmetic strategies",
       ],
       activities: [
         "Group work on addition problems",
         "Creating word problems",
-        "Mental math competitions"
+        "Mental math competitions",
       ],
       resources: [
         "Mathematics textbook",
         "Exercise books",
         "Mathematical charts",
-        "Abacus"
+        "Abacus",
       ],
-      assessment: "Quiz on basic operations and word problems"
+      assessment: "Quiz on basic operations and word problems",
     },
     {
       week: 3,
@@ -60,20 +60,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Multiply numbers using various methods",
         "Divide numbers with and without remainders",
-        "Apply multiplication and division to solve problems"
+        "Apply multiplication and division to solve problems",
       ],
       activities: [
         "Long multiplication practice",
         "Division by single and double digits",
-        "Problem-solving exercises"
+        "Problem-solving exercises",
       ],
       resources: [
         "Mathematics textbook",
         "Multiplication tables",
         "Worksheets",
-        "Mathematical instruments"
+        "Mathematical instruments",
       ],
-      assessment: "Test on multiplication and division operations"
+      assessment: "Test on multiplication and division operations",
     },
     {
       week: 4,
@@ -81,20 +81,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Find factors of given numbers",
         "Identify multiples of numbers",
-        "Determine HCF and LCM of numbers"
+        "Determine HCF and LCM of numbers",
       ],
       activities: [
         "Factor tree construction",
         "Multiple identification games",
-        "Practical applications of HCF and LCM"
+        "Practical applications of HCF and LCM",
       ],
       resources: [
         "Mathematics textbook",
         "Factor cards",
         "Grid paper",
-        "Calculators"
+        "Calculators",
       ],
-      assessment: "Assignment on factors, multiples, HCF and LCM"
+      assessment: "Assignment on factors, multiples, HCF and LCM",
     },
     {
       week: 5,
@@ -102,20 +102,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Identify different types of fractions",
         "Convert improper fractions to mixed numbers",
-        "Compare and order fractions"
+        "Compare and order fractions",
       ],
       activities: [
         "Fraction charts creation",
         "Hands-on activities with fraction strips",
-        "Real-life fraction examples"
+        "Real-life fraction examples",
       ],
       resources: [
         "Mathematics textbook",
         "Fraction strips",
         "Pie charts",
-        "Measuring cups"
+        "Measuring cups",
       ],
-      assessment: "Class test on types and comparison of fractions"
+      assessment: "Class test on types and comparison of fractions",
     },
     {
       week: 6,
@@ -123,20 +123,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Add fractions with same denominators",
         "Subtract fractions with same denominators",
-        "Solve problems involving addition and subtraction of fractions"
+        "Solve problems involving addition and subtraction of fractions",
       ],
       activities: [
         "Step-by-step fraction calculations",
         "Word problem solving",
-        "Group exercises"
+        "Group exercises",
       ],
       resources: [
         "Mathematics textbook",
         "Fraction worksheets",
         "Visual aids",
-        "Practice sheets"
+        "Practice sheets",
       ],
-      assessment: "Quiz on addition and subtraction of fractions"
+      assessment: "Quiz on addition and subtraction of fractions",
     },
     {
       week: 7,
@@ -144,20 +144,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand decimal place values",
         "Read and write decimal numbers",
-        "Convert fractions to decimals and vice versa"
+        "Convert fractions to decimals and vice versa",
       ],
       activities: [
         "Decimal place value charts",
         "Conversion exercises",
-        "Money calculations using decimals"
+        "Money calculations using decimals",
       ],
       resources: [
         "Mathematics textbook",
         "Decimal charts",
         "Play money",
-        "Calculators"
+        "Calculators",
       ],
-      assessment: "Test on decimal concepts and conversions"
+      assessment: "Test on decimal concepts and conversions",
     },
     {
       week: 8,
@@ -165,20 +165,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Add and subtract decimal numbers",
         "Multiply and divide decimals",
-        "Solve real-world problems with decimals"
+        "Solve real-world problems with decimals",
       ],
       activities: [
         "Decimal operations practice",
         "Shopping calculations",
-        "Problem-solving sessions"
+        "Problem-solving sessions",
       ],
       resources: [
         "Mathematics textbook",
         "Calculators",
         "Price lists",
-        "Exercise books"
+        "Exercise books",
       ],
-      assessment: "Assignment on decimal operations"
+      assessment: "Assignment on decimal operations",
     },
     {
       week: 9,
@@ -186,20 +186,20 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand the concept of percentage",
         "Convert percentages to fractions and decimals",
-        "Calculate simple percentages"
+        "Calculate simple percentages",
       ],
       activities: [
         "Percentage charts creation",
         "Real-life percentage examples",
-        "Conversion practice exercises"
+        "Conversion practice exercises",
       ],
       resources: [
         "Mathematics textbook",
         "Percentage charts",
         "Newspapers with statistics",
-        "Calculators"
+        "Calculators",
       ],
-      assessment: "Quiz on percentage concepts and calculations"
+      assessment: "Quiz on percentage concepts and calculations",
     },
     {
       week: 10,
@@ -207,20 +207,21 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Review all topics covered in the term",
         "Practice examination techniques",
-        "Identify and address weak areas"
+        "Identify and address weak areas",
       ],
       activities: [
         "Comprehensive revision exercises",
         "Past questions practice",
-        "Group discussions and peer teaching"
+        "Group discussions and peer teaching",
       ],
       resources: [
         "All previous materials",
         "Past examination papers",
         "Revision guides",
-        "Summary notes"
+        "Summary notes",
       ],
-      assessment: "Continuous assessment and preparation for end-of-term examination"
+      assessment:
+        "Continuous assessment and preparation for end-of-term examination",
     },
     {
       week: 11,
@@ -228,22 +229,22 @@ export const mathematicsJSS1Term1: SchemeOfWork = {
       objectives: [
         "Demonstrate mastery of term's learning objectives",
         "Apply mathematical concepts to solve problems",
-        "Show understanding through written examination"
+        "Show understanding through written examination",
       ],
       activities: [
         "Final examination",
         "Examination review",
-        "Result analysis and feedback"
+        "Result analysis and feedback",
       ],
       resources: [
         "Examination papers",
         "Answer sheets",
         "Mathematical instruments",
-        "Calculators (where permitted)"
+        "Calculators (where permitted)",
       ],
-      assessment: "End-of-term examination (60% of total score)"
-    }
-  ]
+      assessment: "End-of-term examination (60% of total score)",
+    },
+  ],
 };
 
 // English Studies JSS 1 First Term Scheme of Work
@@ -259,20 +260,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand the importance of English language",
         "Identify different types of nouns",
-        "Use nouns correctly in sentences"
+        "Use nouns correctly in sentences",
       ],
       activities: [
         "Introduction games and icebreakers",
         "Noun identification exercises",
-        "Creating sentences with different types of nouns"
+        "Creating sentences with different types of nouns",
       ],
       resources: [
         "English textbook",
         "Dictionary",
         "Noun charts",
-        "Worksheets"
+        "Worksheets",
       ],
-      assessment: "Class participation and noun identification exercise"
+      assessment: "Class participation and noun identification exercise",
     },
     {
       week: 2,
@@ -280,20 +281,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Identify personal pronouns",
         "Distinguish between subject and object pronouns",
-        "Use pronouns correctly in speech and writing"
+        "Use pronouns correctly in speech and writing",
       ],
       activities: [
         "Pronoun substitution exercises",
         "Role-playing activities",
-        "Sentence construction practice"
+        "Sentence construction practice",
       ],
       resources: [
         "English textbook",
         "Pronoun reference charts",
         "Exercise books",
-        "Audio materials"
+        "Audio materials",
       ],
-      assessment: "Quiz on pronoun usage and sentence correction"
+      assessment: "Quiz on pronoun usage and sentence correction",
     },
     {
       week: 3,
@@ -301,20 +302,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Distinguish between action and linking verbs",
         "Identify verbs in sentences",
-        "Understand verb tenses (present, past, future)"
+        "Understand verb tenses (present, past, future)",
       ],
       activities: [
         "Verb charades and games",
         "Tense transformation exercises",
-        "Story writing using different tenses"
+        "Story writing using different tenses",
       ],
       resources: [
         "English textbook",
         "Verb charts",
         "Story books",
-        "Writing materials"
+        "Writing materials",
       ],
-      assessment: "Test on verb identification and tense usage"
+      assessment: "Test on verb identification and tense usage",
     },
     {
       week: 4,
@@ -322,20 +323,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Identify adjectives and their functions",
         "Use adjectives to enhance descriptions",
-        "Write descriptive paragraphs"
+        "Write descriptive paragraphs",
       ],
       activities: [
         "Description games",
         "Adjective matching exercises",
-        "Creative writing with focus on descriptions"
+        "Creative writing with focus on descriptions",
       ],
       resources: [
         "English textbook",
         "Picture cards",
         "Descriptive passages",
-        "Art materials"
+        "Art materials",
       ],
-      assessment: "Descriptive writing assignment"
+      assessment: "Descriptive writing assignment",
     },
     {
       week: 5,
@@ -343,20 +344,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand sentence structure",
         "Construct simple and compound sentences",
-        "Identify subject and predicate"
+        "Identify subject and predicate",
       ],
       activities: [
         "Sentence building activities",
         "Combining simple sentences",
-        "Grammar analysis exercises"
+        "Grammar analysis exercises",
       ],
       resources: [
         "English textbook",
         "Grammar worksheets",
         "Sentence strips",
-        "Markers"
+        "Markers",
       ],
-      assessment: "Quiz on sentence structure and construction"
+      assessment: "Quiz on sentence structure and construction",
     },
     {
       week: 6,
@@ -364,20 +365,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Develop reading comprehension skills",
         "Answer different types of questions",
-        "Extract information from texts"
+        "Extract information from texts",
       ],
       activities: [
         "Guided reading sessions",
         "Question and answer practice",
-        "Discussion of reading passages"
+        "Discussion of reading passages",
       ],
       resources: [
         "Comprehension passages",
         "Question sheets",
         "Timer",
-        "Highlighters"
+        "Highlighters",
       ],
-      assessment: "Reading comprehension test"
+      assessment: "Reading comprehension test",
     },
     {
       week: 7,
@@ -385,20 +386,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand the structure of narrative essays",
         "Write coherent stories with beginning, middle, and end",
-        "Use appropriate vocabulary and grammar"
+        "Use appropriate vocabulary and grammar",
       ],
       activities: [
         "Story planning and outlining",
         "Collaborative storytelling",
-        "Peer review sessions"
+        "Peer review sessions",
       ],
       resources: [
         "English textbook",
         "Story prompts",
         "Planning sheets",
-        "Sample essays"
+        "Sample essays",
       ],
-      assessment: "Narrative essay writing"
+      assessment: "Narrative essay writing",
     },
     {
       week: 8,
@@ -406,20 +407,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Expand vocabulary through synonyms and antonyms",
         "Use context clues to determine word meanings",
-        "Apply new vocabulary in writing and speech"
+        "Apply new vocabulary in writing and speech",
       ],
       activities: [
         "Word games and puzzles",
         "Synonym/antonym matching",
-        "Vocabulary journals"
+        "Vocabulary journals",
       ],
       resources: [
         "English textbook",
         "Dictionaries",
         "Vocabulary cards",
-        "Word games"
+        "Word games",
       ],
-      assessment: "Vocabulary quiz and application exercise"
+      assessment: "Vocabulary quiz and application exercise",
     },
     {
       week: 9,
@@ -427,20 +428,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand the format of informal letters",
         "Write letters to friends and family",
-        "Use appropriate tone and language"
+        "Use appropriate tone and language",
       ],
       activities: [
         "Letter format practice",
         "Writing letters to classmates",
-        "Sharing and feedback sessions"
+        "Sharing and feedback sessions",
       ],
       resources: [
         "English textbook",
         "Letter samples",
         "Writing paper",
-        "Envelopes"
+        "Envelopes",
       ],
-      assessment: "Informal letter writing assignment"
+      assessment: "Informal letter writing assignment",
     },
     {
       week: 10,
@@ -448,20 +449,20 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Review all topics covered in the term",
         "Practice examination techniques",
-        "Build confidence for assessment"
+        "Build confidence for assessment",
       ],
       activities: [
         "Comprehensive revision exercises",
         "Mock examinations",
-        "Question and answer sessions"
+        "Question and answer sessions",
       ],
       resources: [
         "All term materials",
         "Past questions",
         "Revision guides",
-        "Sample papers"
+        "Sample papers",
       ],
-      assessment: "Continuous assessment and mock examination"
+      assessment: "Continuous assessment and mock examination",
     },
     {
       week: 11,
@@ -469,22 +470,22 @@ export const englishJSS1Term1: SchemeOfWork = {
       objectives: [
         "Demonstrate understanding of English language concepts",
         "Apply grammar rules correctly",
-        "Show proficiency in reading and writing"
+        "Show proficiency in reading and writing",
       ],
       activities: [
         "Written examination",
         "Oral assessment",
-        "Result review and feedback"
+        "Result review and feedback",
       ],
       resources: [
         "Examination papers",
         "Answer sheets",
         "Dictionaries",
-        "Audio equipment"
+        "Audio equipment",
       ],
-      assessment: "End-of-term examination (comprehensive assessment)"
-    }
-  ]
+      assessment: "End-of-term examination (comprehensive assessment)",
+    },
+  ],
 };
 
 // Basic Science JSS 1 First Term Scheme of Work
@@ -500,20 +501,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Define science and its importance",
         "Identify the main branches of science",
-        "Relate science to everyday life"
+        "Relate science to everyday life",
       ],
       activities: [
         "Science discovery discussion",
         "Branch identification activities",
-        "Real-life science examples sharing"
+        "Real-life science examples sharing",
       ],
       resources: [
         "Basic Science textbook",
         "Science magazines",
         "Chart of science branches",
-        "Multimedia presentations"
+        "Multimedia presentations",
       ],
-      assessment: "Class discussion and branch identification quiz"
+      assessment: "Class discussion and branch identification quiz",
     },
     {
       week: 2,
@@ -521,20 +522,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Understand the steps of scientific method",
         "Make accurate observations",
-        "Form testable hypotheses"
+        "Form testable hypotheses",
       ],
       activities: [
         "Simple experiments and observations",
         "Hypothesis formation practice",
-        "Recording observations systematically"
+        "Recording observations systematically",
       ],
       resources: [
         "Basic Science textbook",
         "Observation sheets",
         "Simple laboratory equipment",
-        "Notebooks"
+        "Notebooks",
       ],
-      assessment: "Observation and hypothesis writing exercise"
+      assessment: "Observation and hypothesis writing exercise",
     },
     {
       week: 3,
@@ -542,20 +543,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Define matter and identify its properties",
         "Distinguish between solid, liquid, and gas",
-        "Explain changes of state"
+        "Explain changes of state",
       ],
       activities: [
         "Matter identification activities",
         "State change demonstrations",
-        "Properties comparison exercises"
+        "Properties comparison exercises",
       ],
       resources: [
         "Basic Science textbook",
         "Various materials (ice, water, etc.)",
         "Thermometer",
-        "Observation charts"
+        "Observation charts",
       ],
-      assessment: "Test on matter properties and states"
+      assessment: "Test on matter properties and states",
     },
     {
       week: 4,
@@ -563,20 +564,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Differentiate between elements, compounds, and mixtures",
         "Give examples of each category",
-        "Understand basic separation techniques"
+        "Understand basic separation techniques",
       ],
       activities: [
         "Classification exercises",
         "Simple separation experiments",
-        "Real-world examples identification"
+        "Real-world examples identification",
       ],
       resources: [
         "Basic Science textbook",
         "Various substances for classification",
         "Separation apparatus",
-        "Reference charts"
+        "Reference charts",
       ],
-      assessment: "Classification and separation quiz"
+      assessment: "Classification and separation quiz",
     },
     {
       week: 5,
@@ -584,20 +585,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Distinguish between living and non-living things",
         "List characteristics of living things",
-        "Identify life processes"
+        "Identify life processes",
       ],
       activities: [
         "Nature walk and observation",
         "Living/non-living classification games",
-        "Life process identification activities"
+        "Life process identification activities",
       ],
       resources: [
         "Basic Science textbook",
         "Pictures of various objects",
         "Magnifying glasses",
-        "Classification charts"
+        "Classification charts",
       ],
-      assessment: "Living vs non-living identification test"
+      assessment: "Living vs non-living identification test",
     },
     {
       week: 6,
@@ -605,20 +606,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Identify basic cell structures",
         "Compare plant and animal cells",
-        "Understand the functions of cell parts"
+        "Understand the functions of cell parts",
       ],
       activities: [
         "Microscope observation of cells",
         "Cell drawing and labeling",
-        "Comparison chart creation"
+        "Comparison chart creation",
       ],
       resources: [
         "Basic Science textbook",
         "Microscopes",
         "Prepared slides",
-        "Drawing materials"
+        "Drawing materials",
       ],
-      assessment: "Cell structure drawing and labeling exercise"
+      assessment: "Cell structure drawing and labeling exercise",
     },
     {
       week: 7,
@@ -626,20 +627,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Define energy and identify its forms",
         "Distinguish between renewable and non-renewable energy",
-        "Understand energy transformations"
+        "Understand energy transformations",
       ],
       activities: [
         "Energy form identification activities",
         "Energy source investigations",
-        "Simple energy transformation experiments"
+        "Simple energy transformation experiments",
       ],
       resources: [
         "Basic Science textbook",
         "Pictures of energy sources",
         "Simple machines for demonstrations",
-        "Energy charts"
+        "Energy charts",
       ],
-      assessment: "Energy forms and sources quiz"
+      assessment: "Energy forms and sources quiz",
     },
     {
       week: 8,
@@ -647,20 +648,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Define force and identify different types",
         "Understand the relationship between force and motion",
-        "Demonstrate simple machines"
+        "Demonstrate simple machines",
       ],
       activities: [
         "Force demonstration experiments",
         "Simple machine investigations",
-        "Motion observation activities"
+        "Motion observation activities",
       ],
       resources: [
         "Basic Science textbook",
         "Spring balances",
         "Simple machines (pulleys, levers)",
-        "Measuring tools"
+        "Measuring tools",
       ],
-      assessment: "Force and motion practical test"
+      assessment: "Force and motion practical test",
     },
     {
       week: 9,
@@ -668,20 +669,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Explain the water cycle process",
         "Distinguish between weather and climate",
-        "Identify factors affecting weather"
+        "Identify factors affecting weather",
       ],
       activities: [
         "Water cycle model creation",
         "Weather observation and recording",
-        "Climate data analysis"
+        "Climate data analysis",
       ],
       resources: [
         "Basic Science textbook",
         "Weather instruments",
         "Water cycle diagrams",
-        "Local weather data"
+        "Local weather data",
       ],
-      assessment: "Water cycle and weather patterns test"
+      assessment: "Water cycle and weather patterns test",
     },
     {
       week: 10,
@@ -689,20 +690,20 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Review all topics covered in the term",
         "Apply scientific knowledge in projects",
-        "Demonstrate understanding through presentations"
+        "Demonstrate understanding through presentations",
       ],
       activities: [
         "Comprehensive revision exercises",
         "Science project presentations",
-        "Peer teaching sessions"
+        "Peer teaching sessions",
       ],
       resources: [
         "All term materials",
         "Project materials",
         "Presentation equipment",
-        "Evaluation rubrics"
+        "Evaluation rubrics",
       ],
-      assessment: "Project presentation and revision exercises"
+      assessment: "Project presentation and revision exercises",
     },
     {
       week: 11,
@@ -710,27 +711,27 @@ export const basicScienceJSS1Term1: SchemeOfWork = {
       objectives: [
         "Demonstrate mastery of basic science concepts",
         "Apply scientific methods in problem-solving",
-        "Show understanding through written and practical examination"
+        "Show understanding through written and practical examination",
       ],
       activities: [
         "Written examination",
         "Practical examination",
-        "Result analysis and feedback"
+        "Result analysis and feedback",
       ],
       resources: [
         "Examination papers",
         "Laboratory equipment",
         "Answer sheets",
-        "Assessment sheets"
+        "Assessment sheets",
       ],
-      assessment: "Comprehensive end-of-term examination"
-    }
-  ]
+      assessment: "Comprehensive end-of-term examination",
+    },
+  ],
 };
 
 // Export all schemes
 export const mockSchemeOfWork = {
   mathematicsJSS1Term1,
   englishJSS1Term1,
-  basicScienceJSS1Term1
+  basicScienceJSS1Term1,
 };

@@ -1,37 +1,50 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
 import { useParams, useRouter } from "next/navigation";
-import { 
-  ArrowLeft, 
-  BookOpen, 
+import { mockSchemeOfWork } from "@/data/mock-scheme-of-work";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Award,
+  BookOpen,
   Calendar,
-  Clock,
   CheckCircle,
   Circle,
-  Target,
-  Users,
+  Clock,
+  Download,
   FileText,
   PlayCircle,
-  Award,
+  Share2,
+  Target,
   TrendingUp,
-  Download,
-  Share2
+  Users,
 } from "lucide-react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Separator } from "@/components/ui/separator";
-
-import { AcademicSelector } from "@/components/dashboard/student/shared/academic-selector";
-import { useAcademicContext, useAcademicDisplay } from "@/components/providers/academic-context";
 import { getSubjectById } from "@/config/education";
-import { mockSchemeOfWork } from "@/data/mock-scheme-of-work";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { AcademicSelector } from "@/components/dashboard/student/shared/academic-selector";
+import {
+  useAcademicContext,
+  useAcademicDisplay,
+} from "@/components/providers/academic-context";
 
 // Mock data for subject progress
 const mockSubjectProgress = {
@@ -50,20 +63,22 @@ export default function SubjectDetailPage() {
   const params = useParams();
   const router = useRouter();
   const subjectId = params?.id as string;
-  
+
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
   const subject = getSubjectById(subjectId);
-  
+
   // Get scheme of work for current subject, class, and term
   const getSchemeOfWork = () => {
     const key = `${subjectId}${currentClass?.stage?.toUpperCase()}${currentClass?.level}Term${currentTerm?.order}`;
     // For demo, we'll use the JSS1 Term1 schemes we have
-    if (subjectId === 'mathematics') return mockSchemeOfWork.mathematicsJSS1Term1;
-    if (subjectId === 'english') return mockSchemeOfWork.englishJSS1Term1;
-    if (subjectId === 'basic-science') return mockSchemeOfWork.basicScienceJSS1Term1;
-    
+    if (subjectId === "mathematics")
+      return mockSchemeOfWork.mathematicsJSS1Term1;
+    if (subjectId === "english") return mockSchemeOfWork.englishJSS1Term1;
+    if (subjectId === "basic-science")
+      return mockSchemeOfWork.basicScienceJSS1Term1;
+
     // Return null if no scheme found
     return null;
   };
@@ -75,13 +90,14 @@ export default function SubjectDetailPage() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-8 text-center">
-            <BookOpen className="size-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Subject Not Found</h3>
-              <p className="text-muted-foreground mb-4">
-                The subject you&apos;re looking for doesn&apos;t exist or isn&apos;t available.
-              </p>
+            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">Subject Not Found</h3>
+            <p className="mb-4 text-muted-foreground">
+              The subject you&apos;re looking for doesn&apos;t exist or
+              isn&apos;t available.
+            </p>
             <Button onClick={() => router.back()} variant="outline">
-              <ArrowLeft className="size-4 mr-2" />
+              <ArrowLeft className="mr-2 size-4" />
               Go Back
             </Button>
           </CardContent>
@@ -95,9 +111,11 @@ export default function SubjectDetailPage() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-8 text-center">
-            <Calendar className="size-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Select Class and Term</h3>
-            <p className="text-muted-foreground mb-4">
+            <Calendar className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">
+              Select Class and Term
+            </h3>
+            <p className="mb-4 text-muted-foreground">
               Please select your class and term to view the scheme of work.
             </p>
             <AcademicSelector variant="default" />
@@ -130,22 +148,18 @@ export default function SubjectDetailPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto p-6 space-y-6"
+      className="container mx-auto space-y-6 p-6"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <div className="flex items-center gap-4 mb-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => router.back()}
-          >
+        <div className="mb-4 flex items-center gap-4">
+          <Button variant="outline" size="icon" onClick={() => router.back()}>
             <ArrowLeft className="size-4" />
           </Button>
           <div className="flex-1">
-            <div className="flex items-center gap-3 mb-2">
-              <div 
-                className="p-2 rounded-lg flex items-center justify-center"
+            <div className="mb-2 flex items-center gap-3">
+              <div
+                className="flex items-center justify-center rounded-lg p-2"
                 style={{ backgroundColor: `${subject.color}20` }}
               >
                 <BookOpen className="size-5" style={{ color: subject.color }} />
@@ -166,7 +180,7 @@ export default function SubjectDetailPage() {
           <div className="flex items-center gap-2">
             <AcademicSelector variant="compact" />
             <Button variant="outline" size="sm">
-              <Share2 className="size-4 mr-2" />
+              <Share2 className="mr-2 size-4" />
               Share
             </Button>
           </div>
@@ -175,49 +189,68 @@ export default function SubjectDetailPage() {
 
       {/* Subject Overview Cards */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <TrendingUp className="size-4 text-green-600" />
                 <span className="text-sm text-muted-foreground">Progress</span>
               </div>
               <div className="space-y-2">
-                <p className="text-2xl font-bold">{mockSubjectProgress.termProgress}%</p>
-                <Progress value={mockSubjectProgress.termProgress} className="h-2" />
+                <p className="text-2xl font-bold">
+                  {mockSubjectProgress.termProgress}%
+                </p>
+                <Progress
+                  value={mockSubjectProgress.termProgress}
+                  className="h-2"
+                />
               </div>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <Award className="size-4 text-blue-600" />
-                <span className="text-sm text-muted-foreground">Current Grade</span>
+                <span className="text-sm text-muted-foreground">
+                  Current Grade
+                </span>
               </div>
               <p className="text-2xl font-bold">{mockSubjectProgress.grade}</p>
-              <p className="text-sm text-muted-foreground">CA: {mockSubjectProgress.caScore}%</p>
+              <p className="text-sm text-muted-foreground">
+                CA: {mockSubjectProgress.caScore}%
+              </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <Calendar className="size-4 text-purple-600" />
-                <span className="text-sm text-muted-foreground">Current Week</span>
+                <span className="text-sm text-muted-foreground">
+                  Current Week
+                </span>
               </div>
-              <p className="text-2xl font-bold">{mockSubjectProgress.currentWeek}</p>
-              <p className="text-sm text-muted-foreground">of {mockSubjectProgress.totalWeeks} weeks</p>
+              <p className="text-2xl font-bold">
+                {mockSubjectProgress.currentWeek}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                of {mockSubjectProgress.totalWeeks} weeks
+              </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <Target className="size-4 text-orange-600" />
-                <span className="text-sm text-muted-foreground">Assessments</span>
+                <span className="text-sm text-muted-foreground">
+                  Assessments
+                </span>
               </div>
-              <p className="text-2xl font-bold">{mockSubjectProgress.upcomingAssessments}</p>
+              <p className="text-2xl font-bold">
+                {mockSubjectProgress.upcomingAssessments}
+              </p>
               <p className="text-sm text-muted-foreground">upcoming</p>
             </CardContent>
           </Card>
@@ -246,7 +279,7 @@ export default function SubjectDetailPage() {
                       </CardDescription>
                     </div>
                     <Button variant="outline" size="sm">
-                      <Download className="size-4 mr-2" />
+                      <Download className="mr-2 size-4" />
                       Download PDF
                     </Button>
                   </div>
@@ -254,22 +287,29 @@ export default function SubjectDetailPage() {
                 <CardContent>
                   <Accordion type="single" collapsible className="space-y-2">
                     {schemeOfWork.weeks.map((week, index) => (
-                      <AccordionItem key={week.week} value={`week-${week.week}`}>
+                      <AccordionItem
+                        key={week.week}
+                        value={`week-${week.week}`}
+                      >
                         <AccordionTrigger className="hover:no-underline">
-                          <div className="flex items-center gap-4 flex-1">
+                          <div className="flex flex-1 items-center gap-4">
                             <div className="flex items-center gap-2">
                               {week.week <= mockSubjectProgress.currentWeek ? (
                                 <CheckCircle className="size-5 text-green-600" />
                               ) : (
                                 <Circle className="size-5 text-muted-foreground" />
                               )}
-                              <span className="font-semibold">Week {week.week}</span>
+                              <span className="font-semibold">
+                                Week {week.week}
+                              </span>
                             </div>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground">
                               <span>{week.topics.join(", ")}</span>
                             </div>
                             {week.week === mockSubjectProgress.currentWeek && (
-                              <Badge variant="default" className="ml-auto">Current</Badge>
+                              <Badge variant="default" className="ml-auto">
+                                Current
+                              </Badge>
                             )}
                           </div>
                         </AccordionTrigger>
@@ -277,14 +317,17 @@ export default function SubjectDetailPage() {
                           <div className="grid gap-6 md:grid-cols-2">
                             <div className="space-y-4">
                               <div>
-                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
                                   <BookOpen className="size-4" />
                                   Topics
                                 </h4>
                                 <ul className="space-y-1">
                                   {week.topics.map((topic, i) => (
-                                    <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
+                                    <li
+                                      key={i}
+                                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                                    >
+                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
                                       {topic}
                                     </li>
                                   ))}
@@ -292,14 +335,17 @@ export default function SubjectDetailPage() {
                               </div>
 
                               <div>
-                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
                                   <Target className="size-4" />
                                   Learning Objectives
                                 </h4>
                                 <ul className="space-y-1">
                                   {week.objectives.map((objective, i) => (
-                                    <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
+                                    <li
+                                      key={i}
+                                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                                    >
+                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
                                       {objective}
                                     </li>
                                   ))}
@@ -309,14 +355,17 @@ export default function SubjectDetailPage() {
 
                             <div className="space-y-4">
                               <div>
-                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
                                   <PlayCircle className="size-4" />
                                   Activities
                                 </h4>
                                 <ul className="space-y-1">
                                   {week.activities.map((activity, i) => (
-                                    <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
+                                    <li
+                                      key={i}
+                                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                                    >
+                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
                                       {activity}
                                     </li>
                                   ))}
@@ -324,14 +373,17 @@ export default function SubjectDetailPage() {
                               </div>
 
                               <div>
-                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
                                   <FileText className="size-4" />
                                   Resources
                                 </h4>
                                 <ul className="space-y-1">
                                   {week.resources.map((resource, i) => (
-                                    <li key={i} className="text-sm text-muted-foreground flex items-center gap-2">
-                                      <div className="w-1.5 h-1.5 rounded-full bg-current opacity-60" />
+                                    <li
+                                      key={i}
+                                      className="flex items-center gap-2 text-sm text-muted-foreground"
+                                    >
+                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
                                       {resource}
                                     </li>
                                   ))}
@@ -339,17 +391,19 @@ export default function SubjectDetailPage() {
                               </div>
 
                               <div>
-                                <h4 className="font-semibold flex items-center gap-2 mb-2">
+                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
                                   <Award className="size-4" />
                                   Assessment
                                 </h4>
-                                <p className="text-sm text-muted-foreground">{week.assessment}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {week.assessment}
+                                </p>
                               </div>
                             </div>
                           </div>
 
                           {week.week <= mockSubjectProgress.currentWeek && (
-                            <div className="mt-6 pt-4 border-t">
+                            <div className="mt-6 border-t pt-4">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm text-green-600">
                                   <CheckCircle className="size-4" />
@@ -363,7 +417,7 @@ export default function SubjectDetailPage() {
                           )}
 
                           {week.week === mockSubjectProgress.currentWeek && (
-                            <div className="mt-6 pt-4 border-t">
+                            <div className="mt-6 border-t pt-4">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2 text-sm text-blue-600">
                                   <Clock className="size-4" />
@@ -373,9 +427,7 @@ export default function SubjectDetailPage() {
                                   <Button size="sm" variant="outline">
                                     Continue Lesson
                                   </Button>
-                                  <Button size="sm">
-                                    Take Quiz
-                                  </Button>
+                                  <Button size="sm">Take Quiz</Button>
                                 </div>
                               </div>
                             </div>
@@ -389,10 +441,13 @@ export default function SubjectDetailPage() {
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <FileText className="size-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Scheme of Work Available</h3>
+                  <FileText className="mx-auto mb-4 size-12 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-semibold">
+                    No Scheme of Work Available
+                  </h3>
                   <p className="text-muted-foreground">
-                    The scheme of work for {subject.name} in {classDisplay} - {termDisplay} is not yet available.
+                    The scheme of work for {subject.name} in {classDisplay} -{" "}
+                    {termDisplay} is not yet available.
                   </p>
                 </CardContent>
               </Card>
@@ -402,8 +457,10 @@ export default function SubjectDetailPage() {
           <TabsContent value="lessons" className="space-y-4">
             <Card>
               <CardContent className="p-8 text-center">
-                <PlayCircle className="size-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Lessons Coming Soon</h3>
+                <PlayCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-semibold">
+                  Lessons Coming Soon
+                </h3>
                 <p className="text-muted-foreground">
                   Interactive lessons for {subject.name} will be available soon.
                 </p>
@@ -414,10 +471,13 @@ export default function SubjectDetailPage() {
           <TabsContent value="assessments" className="space-y-4">
             <Card>
               <CardContent className="p-8 text-center">
-                <Award className="size-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Assessments Coming Soon</h3>
+                <Award className="mx-auto mb-4 size-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-semibold">
+                  Assessments Coming Soon
+                </h3>
                 <p className="text-muted-foreground">
-                  Quizzes and assessments for {subject.name} will be available soon.
+                  Quizzes and assessments for {subject.name} will be available
+                  soon.
                 </p>
               </CardContent>
             </Card>
@@ -426,10 +486,13 @@ export default function SubjectDetailPage() {
           <TabsContent value="resources" className="space-y-4">
             <Card>
               <CardContent className="p-8 text-center">
-                <FileText className="size-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Resources Coming Soon</h3>
+                <FileText className="mx-auto mb-4 size-12 text-muted-foreground" />
+                <h3 className="mb-2 text-lg font-semibold">
+                  Resources Coming Soon
+                </h3>
                 <p className="text-muted-foreground">
-                  Additional resources and materials for {subject.name} will be available soon.
+                  Additional resources and materials for {subject.name} will be
+                  available soon.
                 </p>
               </CardContent>
             </Card>

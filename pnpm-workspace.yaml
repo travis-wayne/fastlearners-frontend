@@ -1,0 +1,5 @@
+fetchRetries: 5
+
+fetchRetryMaxtimeout: 120000
+
+fetchRetryMintimeout: 20000

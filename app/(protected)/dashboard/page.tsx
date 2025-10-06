@@ -10,24 +10,25 @@ import {
   StudentDashboard,
   SuperAdminDashboard,
   TeacherDashboard,
+  GuestDashboard,
 } from "@/components/dashboard/role-dashboards";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 
 // Loading component with nice animation
 function DashboardLoading() {
   return (
-    <div className="min-h-screen flex items-center justify-center">
+    <div className="flex min-h-screen items-center justify-center">
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="text-center space-y-4"
+        className="space-y-4 text-center"
       >
         <div className="flex items-center justify-center">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="size-8 border-2 border-primary border-t-transparent rounded-full"
+            className="size-8 rounded-full border-2 border-primary border-t-transparent"
           />
         </div>
         <motion.p
@@ -44,29 +45,6 @@ function DashboardLoading() {
 }
 
 // Guest dashboard component
-function GuestDashboard() {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="min-h-[60vh] flex items-center justify-center"
-    >
-      <EmptyPlaceholder>
-        <EmptyPlaceholder.Icon name="eye" />
-        <EmptyPlaceholder.Title>Explore FastLearners</EmptyPlaceholder.Title>
-        <EmptyPlaceholder.Description>
-          As a guest, you can browse our content. Sign up to unlock the full
-          learning experience!
-        </EmptyPlaceholder.Description>
-        <div className="flex gap-2">
-          <Button>Upgrade Account</Button>
-          <Button variant="outline">Browse Content</Button>
-        </div>
-      </EmptyPlaceholder>
-    </motion.div>
-  );
-}
 
 // Component that renders the appropriate dashboard based on user role
 function RoleDashboard({ userRole }: { userRole: string }) {
@@ -89,7 +67,7 @@ function RoleDashboard({ userRole }: { userRole: string }) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="min-h-[60vh] flex items-center justify-center"
+          className="flex min-h-[60vh] items-center justify-center"
         >
           <EmptyPlaceholder>
             <EmptyPlaceholder.Icon name="alertCircle" />

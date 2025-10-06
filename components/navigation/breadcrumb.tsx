@@ -104,7 +104,7 @@ export function Breadcrumb({ className }: { className?: string }) {
 
         return (
           <Fragment key={breadcrumb.href}>
-            {index === 0 && Icon ? <Icon className="h-4 w-4 shrink-0" /> : null}
+            {index === 0 && Icon ? <Icon className="size-4 shrink-0" /> : null}
 
             {isLast ? (
               <span className="truncate font-medium text-foreground">
@@ -119,7 +119,7 @@ export function Breadcrumb({ className }: { className?: string }) {
               </Link>
             )}
 
-            {!isLast && <ChevronRight className="h-4 w-4 shrink-0" />}
+            {!isLast && <ChevronRight className="size-4 shrink-0" />}
           </Fragment>
         );
       })}

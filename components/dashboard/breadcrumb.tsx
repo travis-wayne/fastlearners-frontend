@@ -63,10 +63,10 @@ export function Breadcrumb({ className }: { className?: string }) {
         className,
       )}
     >
-      <Home className="h-4 w-4" />
+      <Home className="size-4" />
       {breadcrumbs.map((item, index) => (
         <React.Fragment key={item.href}>
-          {index > 0 && <ChevronRight className="h-4 w-4" />}
+          {index > 0 && <ChevronRight className="size-4" />}
           {item.isLast ? (
             <span className="font-medium text-foreground">{item.title}</span>
           ) : (

@@ -27,7 +27,8 @@ import {
 
 export function RoleSelectionForm() {
   const router = useRouter();
-  const { user, updateUserProfile, canChangeRole, hydrate, isHydrated } = useAuthStore();
+  const { user, updateUserProfile, canChangeRole, hydrate, isHydrated } =
+    useAuthStore();
 
   // Form state
   const [selectedRole, setSelectedRole] = useState<
@@ -54,7 +55,7 @@ export function RoleSelectionForm() {
     },
     {
       value: "guardian" as const,
-      title: "Guardian", 
+      title: "Guardian",
       description: "Monitoring and supporting child's learning",
       icon: Shield,
       route: "/dashboard",
@@ -155,9 +156,7 @@ export function RoleSelectionForm() {
             allowed.
           </p>
         </div>
-        <Button onClick={() => router.push(roleRoute)}>
-          Go to Dashboard
-        </Button>
+        <Button onClick={() => router.push(roleRoute)}>Go to Dashboard</Button>
       </div>
     );
   }
@@ -178,7 +177,7 @@ export function RoleSelectionForm() {
         </Alert>
       )}
 
-      <div className="space-y-4 max-w-md mx-auto">
+      <div className="mx-auto max-w-md space-y-4">
         {roleOptions.map((option) => {
           const Icon = option.icon;
           const isSelected = selectedRole === option.value;
@@ -187,36 +186,42 @@ export function RoleSelectionForm() {
             <Card
               key={option.value}
               className={cn(
-                "relative cursor-pointer transition-all duration-200 p-4 group",
-                "border border-gray-200 rounded-lg",
-                isSelected 
-                  ? "border-primary bg-primary/5 hover:bg-primary/10 hover:border-primary/80" 
-                  : "hover:border-gray-300 hover:bg-gray-50/50"
+                "group relative cursor-pointer p-4 transition-all duration-200",
+                "rounded-lg border border-gray-200",
+                isSelected
+                  ? "border-primary bg-primary/5 hover:border-primary/80 hover:bg-primary/10"
+                  : "hover:border-gray-300 hover:bg-gray-50/50",
               )}
               onClick={() => handleRoleSelect(option.value)}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={cn(
-                    "rounded-lg p-2 flex-shrink-0",
-                    option.color === "blue" ? "bg-blue-100" : "bg-green-100"
-                  )}>
-                    <Icon className={cn(
-                      "size-5",
-                      option.color === "blue" ? "text-blue-600" : "text-green-600"
-                    )} />
+                  <div
+                    className={cn(
+                      "shrink-0 rounded-lg p-2",
+                      option.color === "blue" ? "bg-blue-100" : "bg-green-100",
+                    )}
+                  >
+                    <Icon
+                      className={cn(
+                        "size-5",
+                        option.color === "blue"
+                          ? "text-blue-600"
+                          : "text-green-600",
+                      )}
+                    />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-sm uppercase tracking-wide text-gray-600">
+                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
                       {option.title.toUpperCase()}
                     </h3>
-                    <p className="text-sm text-muted-foreground mt-0.5">
+                    <p className="mt-0.5 text-sm text-muted-foreground">
                       {option.description}
                     </p>
                   </div>
                 </div>
-                
-                <div className="flex-shrink-0">
+
+                <div className="shrink-0">
                   {isSelected ? (
                     <CheckCircle2 className="size-5 text-primary transition-colors" />
                   ) : (
@@ -229,14 +234,14 @@ export function RoleSelectionForm() {
         })}
       </div>
 
-      <div className="space-y-4 max-w-md mx-auto">
+      <div className="mx-auto max-w-md space-y-4">
         <Button
           onClick={handleSubmit}
           disabled={!selectedRole || isLoading}
           className={cn(
-            "w-full h-12 text-base font-medium transition-all duration-200",
+            "h-12 w-full text-base font-medium transition-all duration-200",
             selectedRole && "shadow-lg hover:shadow-xl",
-            !selectedRole && "opacity-60"
+            !selectedRole && "opacity-60",
           )}
           size="lg"
         >
@@ -252,7 +257,7 @@ export function RoleSelectionForm() {
           )}
         </Button>
 
-        <div className="text-center space-y-2">
+        <div className="space-y-2 text-center">
           <p className="text-sm text-muted-foreground">
             Your role selection helps us customize your learning experience
           </p>

@@ -2,19 +2,19 @@
 
 import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
-import { 
-  Clock, 
-  BookOpen, 
-  Trophy, 
-  TrendingUp,
-  Sparkles,
+import {
+  BookOpen,
+  Clock,
   GraduationCap,
+  Shield,
+  Sparkles,
+  TrendingUp,
+  Trophy,
   Users,
-  Shield
 } from "lucide-react";
 
-import { WobbleCard } from "@/components/ui/wobble-card";
 import { Badge } from "@/components/ui/badge";
+import { WobbleCard } from "@/components/ui/wobble-card";
 
 interface WelcomeBackCardProps {
   className?: string;
@@ -22,7 +22,7 @@ interface WelcomeBackCardProps {
 
 export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
   const { user } = useAuthStore();
-  
+
   if (!user) return null;
 
   const currentHour = new Date().getHours();
@@ -69,17 +69,17 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
 
   const getCurrentTime = () => {
     return new Date().toLocaleTimeString([], {
-      hour: '2-digit',
-      minute: '2-digit',
+      hour: "2-digit",
+      minute: "2-digit",
     });
   };
 
   const getCurrentDate = () => {
     return new Date().toLocaleDateString([], {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
     });
   };
 
@@ -93,17 +93,20 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="flex items-center gap-3 mb-4"
+          className="mb-4 flex items-center gap-3"
         >
-          <div className="p-2 bg-white/20 rounded-lg backdrop-blur-sm">
+          <div className="rounded-lg bg-white/20 p-2 backdrop-blur-sm">
             {getRoleIcon()}
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white mb-1">
+            <h2 className="mb-1 text-2xl font-bold text-white">
               {getGreeting()}, {user.name || "there"}!
             </h2>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+              <Badge
+                variant="secondary"
+                className="border-white/30 bg-white/20 text-white"
+              >
                 {user.role[0].charAt(0).toUpperCase() + user.role[0].slice(1)}
               </Badge>
             </div>
@@ -117,8 +120,9 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
           transition={{ delay: 0.2 }}
           className="mb-6"
         >
-          <p className="text-white/90 text-lg leading-relaxed">
-            Welcome back to Fast Learners! Ready to continue your learning journey?
+          <p className="text-lg leading-relaxed text-white/90">
+            Welcome back to Fast Learners! Ready to continue your learning
+            journey?
           </p>
         </motion.div>
 
@@ -127,17 +131,17 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="flex items-center gap-4 mb-4"
+          className="mb-4 flex items-center gap-4"
         >
-          <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
             <Clock className="size-4 text-white/70" />
-            <span className="text-white/90 text-sm font-medium">
+            <span className="text-sm font-medium text-white/90">
               {getCurrentTime()}
             </span>
           </div>
-          <div className="flex items-center gap-2 bg-white/10 rounded-lg px-3 py-2">
+          <div className="flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2">
             <Sparkles className="size-4 text-white/70" />
-            <span className="text-white/90 text-sm font-medium">
+            <span className="text-sm font-medium text-white/90">
               Learning Mode
             </span>
           </div>
@@ -148,25 +152,25 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="text-white/70 text-sm"
+          className="text-sm text-white/70"
         >
           {getCurrentDate()}
         </motion.div>
 
         {/* Decorative elements */}
-        <div className="absolute top-4 right-4 opacity-20">
+        <div className="absolute right-4 top-4 opacity-20">
           <div className="flex flex-col gap-2">
-            <div className="size-2 bg-white rounded-full"></div>
-            <div className="size-1 bg-white rounded-full"></div>
-            <div className="size-1.5 bg-white rounded-full"></div>
+            <div className="size-2 rounded-full bg-white"></div>
+            <div className="size-1 rounded-full bg-white"></div>
+            <div className="size-1.5 rounded-full bg-white"></div>
           </div>
         </div>
       </div>
 
       {/* Background decorative pattern */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 size-80 bg-white/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 size-60 bg-white/5 rounded-full blur-2xl"></div>
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
+        <div className="absolute -right-40 -top-40 size-80 rounded-full bg-white/10 blur-3xl"></div>
+        <div className="absolute -bottom-40 -left-40 size-60 rounded-full bg-white/5 blur-2xl"></div>
       </div>
     </WobbleCard>
   );
@@ -175,7 +179,7 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
 // Compact version for smaller screens
 export function CompactWelcomeCard({ className }: WelcomeBackCardProps) {
   const { user } = useAuthStore();
-  
+
   if (!user) return null;
 
   const currentHour = new Date().getHours();
@@ -195,13 +199,16 @@ export function CompactWelcomeCard({ className }: WelcomeBackCardProps) {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.1 }}
         >
-          <h3 className="text-xl font-bold text-white mb-2">
+          <h3 className="mb-2 text-xl font-bold text-white">
             {getGreeting()}!
           </h3>
-          <p className="text-white/80 text-sm mb-4">
+          <p className="mb-4 text-sm text-white/80">
             Welcome back, {user.name || "there"}
           </p>
-          <Badge variant="secondary" className="bg-white/20 text-white border-white/30">
+          <Badge
+            variant="secondary"
+            className="border-white/30 bg-white/20 text-white"
+          >
             {user.role[0].charAt(0).toUpperCase() + user.role[0].slice(1)}
           </Badge>
         </motion.div>

@@ -31,20 +31,20 @@ export const transitions = {
 
 // Common hover variants
 export const hoverVariants = {
-  hover: { 
+  hover: {
     scale: 1.02,
-    transition: transitions.fast
-  }
+    transition: transitions.fast,
+  },
 };
 
 // Card hover effects
 export const cardVariants = {
-  initial: { 
-    boxShadow: "0 0 0 0 rgba(59, 130, 246, 0)" 
+  initial: {
+    boxShadow: "0 0 0 0 rgba(59, 130, 246, 0)",
   },
-  hover: { 
+  hover: {
     boxShadow: "0 10px 40px -10px rgba(59, 130, 246, 0.4)",
     y: -2,
-    transition: transitions.default
-  }
+    transition: transitions.default,
+  },
 };

@@ -60,19 +60,14 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   // Actions
   setUser: (user: User) => {
-    // Save to cookies with 7-day expiration
-    const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-    setAuthCookies({
-      token: "dummy-token", // You'll get this from your API
-      user,
-      expiresAt,
-    });
+    const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
+    if (!useHttpOnly) {
+      // Legacy client-side cookies path
+      const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
+      setAuthCookies({ token: "dummy-token", user, expiresAt });
+    }
 
-    set({
-      user,
-      isAuthenticated: true,
-      error: null,
-    });
+    set({ user, isAuthenticated: true, error: null });
   },
 
   setLoading: (loading: boolean) => set({ isLoading: loading }),
@@ -81,21 +76,52 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   hydrate: () => {
     if (typeof window !== "undefined") {
-      const user = getUserFromCookies();
-      const isAuthenticated = isAuthenticatedFromCookies();
-
-      set({
-        user,
-        isAuthenticated,
-        isLoading: false,
-        isHydrated: true,
-      });
+      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
+      if (useHttpOnly) {
+        // Fetch session from server (HttpOnly cookies)
+        fetch("/api/auth/session")
+          .then(async (r) => {
+            if (!r.ok) throw new Error("No session");
+            const data = await r.json();
+            set({
+              user: data.user || null,
+              isAuthenticated: Boolean(data.user),
+              isLoading: false,
+              isHydrated: true,
+            });
+          })
+          .catch(() => {
+            set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
+          });
+      } else {
+        const user = getUserFromCookies();
+        const isAuthenticated = isAuthenticatedFromCookies();
+        set({ user, isAuthenticated, isLoading: false, isHydrated: true });
+      }
     }
   },
 
   login: async (credentials: LoginCredentials) => {
     try {
       set({ isLoading: true, error: null });
+
+      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
+      if (useHttpOnly) {
+        const r = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(credentials),
+        });
+        const data = await r.json();
+        if (r.ok && data?.user) {
+          set({ user: data.user, isAuthenticated: true, error: null });
+        } else {
+          const errorMessage = data?.message || "Login failed";
+          set({ error: errorMessage, isAuthenticated: false, user: null });
+          throw new Error(errorMessage);
+        }
+        return;
+      }
 
       const response = await authApi.login(credentials);
 
@@ -162,6 +188,18 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
+      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
+      if (useHttpOnly) {
+        // If Google auth is handled server-side, we would hit a callback route that sets cookies.
+        // For now, emulate standard login by setting the cookies via server route not implemented here.
+        const r = await fetch("/api/auth/login", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email_phone: data.user.email, password: "google-oauth" }),
+        });
+        if (!r.ok) throw new Error("Google auth (server) failed");
+      }
+
       // DEBUG: Log Google auth user data
       console.log("🔍 [AUTH DEBUG] Google Login Data:");
       console.log("📧 User Email:", data.user.email);
@@ -209,11 +247,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   logout: async () => {
     try {
       set({ isLoading: true });
-      await authApi.logout();
+      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
+      if (useHttpOnly) {
+        await fetch("/api/auth/logout", { method: "POST" });
+      } else {
+        await authApi.logout();
+      }
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
-      // Clear auth cookies
+      // Clear client-side cookies if used
       clearAuthCookies();
       set({
         user: null,

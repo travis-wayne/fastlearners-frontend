@@ -15,7 +15,6 @@ import {
   Users,
 } from "lucide-react";
 
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,256 +25,220 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 
+import { format } from "date-fns";
+import { Medal, ShieldCheck, Smile } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import { useAuthStore } from "@/store/authStore";
+
+function formatDisplayName(user?: { name?: string | null; username?: string | null; email?: string | null }) {
+  if (!user) return "Learner";
+  if (user.name && user.name.trim()) return user.name.split(" ")[0];
+  if (user.username && user.username.trim()) return user.username;
+  if (user.email) return (user.email.split("@")[0] || "Learner").replace(/\./g, " ");
+  return "Learner";
+}
+
 export function GuardianDashboard() {
-  // Mock data for children - replace with real data from your API
-  const children = [
-    {
-      id: 1,
-      name: "Alex Johnson",
-      grade: "Grade 8",
-      weeklyProgress: 85,
-      currentStreak: 7,
-      todayStatus: "completed",
-      upcomingAssignments: 2,
-    },
-    {
-      id: 2,
-      name: "Emma Johnson",
-      grade: "Grade 5",
-      weeklyProgress: 78,
-      currentStreak: 3,
-      todayStatus: "in-progress",
-      upcomingAssignments: 1,
-    },
+  const today = format(new Date(), "EEEE do, yyyy");
+  const { user } = useAuthStore();
+  const displayName = formatDisplayName(user as any);
+  const role = (user?.role?.[0] || "guardian") as string;
+  const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
+
+  // Mocked wards and metrics
+  const wards = [
+    { id: "w1", name: "MB" },
+    { id: "w2", name: "AJ" },
   ];
 
-  const weeklyOverview = [
-    { day: "Mon", completion: 95 },
-    { day: "Tue", completion: 88 },
-    { day: "Wed", completion: 92 },
-    { day: "Thu", completion: 85 },
-    { day: "Fri", completion: 90 },
-    { day: "Sat", completion: 78 },
-    { day: "Sun", completion: 82 },
+  const overview = {
+    learningHours: 300,
+    quizzesCompleted: "6/20",
+    lessonsCompleted: "10/200",
+    subscription: "Active",
+  };
+
+  const performance = [
+    { subject: "Mathematics", pct: 65 },
+    { subject: "Physics", pct: 50 },
+    { subject: "Chemistry", pct: 80 },
+    { subject: "Biology", pct: 90 },
   ];
 
-  const notifications = [
-    {
-      id: 1,
-      child: "Alex",
-      message: "Completed Math assignment with 95% score",
-      time: "2 hours ago",
-      type: "achievement",
-    },
-    {
-      id: 2,
-      child: "Emma",
-      message: "Has an upcoming Science quiz tomorrow",
-      time: "5 hours ago",
-      type: "reminder",
-    },
+  const achievements = [
+    { id: 1, label: "7-Day Learning Streak", icon: <ShieldCheck className="size-4 text-amber-500" /> },
+    { id: 2, label: "Perfect Score", icon: <Medal className="size-4 text-yellow-500" /> },
+    { id: 3, label: "Perfect Score", icon: <Medal className="size-4 text-yellow-500" /> },
   ];
+
+  const Donut = ({ value }: { value: number }) => (
+    <div className="relative size-24">
+      <svg viewBox="0 0 36 36" className="size-24">
+        <path
+          className="fill-none stroke-muted"
+          strokeWidth="3"
+          d="M18 2.0845
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+        <path
+          className="fill-none stroke-primary"
+          strokeWidth="3"
+          strokeDasharray={`${value}, 100`}
+          d="M18 2.0845
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
+        />
+      </svg>
+      <div className="absolute inset-0 grid place-items-center">
+        <span className="text-lg font-semibold">{value}%</span>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="space-y-8">
-      {/* Children Overview Cards */}
-      <div className="grid gap-6 md:grid-cols-2">
-        {children.map((child) => (
-          <Card key={child.id} className="relative">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="flex items-center gap-2">
-                    <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
-                      <Users className="size-4 text-primary" />
-                    </div>
-                    {child.name}
-                  </CardTitle>
-                  <CardDescription>{child.grade}</CardDescription>
-                </div>
-                <Badge
-                  variant={
-                    child.todayStatus === "completed" ? "default" : "secondary"
-                  }
-                >
-                  {child.todayStatus === "completed"
-                    ? "✓ Today Complete"
-                    : "In Progress"}
-                </Badge>
-              </div>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <span className="text-sm font-medium">Weekly Progress</span>
-                  <span className="text-sm text-muted-foreground">
-                    {child.weeklyProgress}%
-                  </span>
-                </div>
-                <Progress value={child.weeklyProgress} className="h-2" />
-              </div>
+    <div className="space-y-6">
+      {/* Header banner */}
+      <Card className="overflow-hidden border-none bg-muted/60 shadow-none">
+        <CardContent className="grid gap-6 p-6 md:grid-cols-[1fr_auto] md:items-center">
+          <div>
+            <p className="text-sm text-muted-foreground">{today}</p>
+            <h2 className="mt-1 text-2xl font-bold">Good Morning, {displayName}</h2>
+            <div className="mt-1 flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="h-5 px-2 text-xs">Role: {roleLabel}</Badge>
+              {user?.email ? (
+                <Badge variant="outline" className="h-5 px-2 text-xs">{user.email}</Badge>
+              ) : null}
+            </div>
+            <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+              Possible announcements // Possible announcements // Possible announcements.
+            </p>
+          </div>
+          <div className="hidden select-none md:block">
+            <div className="relative size-28">
+              <div className="absolute inset-0 rounded-full bg-yellow-300" />
+              <div className="absolute inset-1 rounded-full bg-yellow-200" />
+              <div className="absolute right-4 top-6 h-3 w-5 rounded bg-black" />
+              <div className="absolute right-10 top-6 h-3 w-5 rounded bg-black" />
+              <div className="absolute right-7 top-12 h-1.5 w-10 rounded-full bg-amber-700" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-              <div className="grid grid-cols-2 gap-4 pt-2">
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-primary">
-                    {child.currentStreak}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    Day Streak
-                  </div>
-                </div>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-orange-500">
-                    {child.upcomingAssignments}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Due Soon</div>
-                </div>
-              </div>
+      <div className="grid gap-6 md:grid-cols-3">
+        {/* Progress */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Progress</CardTitle>
+            <CardDescription>Physics</CardDescription>
+          </CardHeader>
+          <CardContent className="flex items-center justify-center">
+            <Donut value={72} />
+          </CardContent>
+        </Card>
 
-              <div className="pt-2">
-                <Link href={`/dashboard/guardian/child/${child.id}`}>
-                  <Button variant="outline" size="sm" className="w-full">
-                    View Details
-                    <ChevronRight className="ml-2 size-4" />
-                  </Button>
-                </Link>
+        {/* Achievements */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">Achievements</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            {achievements.map((a) => (
+              <div key={a.id} className="flex items-center justify-between rounded-md border p-2">
+                <div className="flex items-center gap-2 text-sm">
+                  {a.icon}
+                  <span>{a.label}</span>
+                </div>
+                <Smile className="size-4 text-primary" />
               </div>
-            </CardContent>
-          </Card>
-        ))}
+            ))}
+            <Button variant="outline" size="sm" className="mt-2 w-full">
+              View All Achievements
+            </Button>
+          </CardContent>
+        </Card>
+
+        {/* Overview + Ward select */}
+        <Card>
+          <CardHeader className="pb-2">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-base">Select Ward</CardTitle>
+              <Select defaultValue={wards[0].id}>
+                <SelectTrigger className="w-[160px]">
+                  <SelectValue placeholder="Select Ward" />
+                </SelectTrigger>
+                <SelectContent>
+                  {wards.map((w) => (
+                    <SelectItem key={w.id} value={w.id}>
+                      {w.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div>
+              <p className="text-sm font-medium">Overview</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3 text-sm">
+              <div>
+                <p className="text-muted-foreground">Time Spent Learning</p>
+                <p className="font-medium">{overview.learningHours} hrs</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Quizzes Comp.</p>
+                <p className="font-medium">{overview.quizzesCompleted}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Lessons Comp.</p>
+                <p className="font-medium">{overview.lessonsCompleted}</p>
+              </div>
+              <div>
+                <p className="text-muted-foreground">Subscription Status</p>
+                <p className="font-medium">{overview.subscription}</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Weekly Family Progress */}
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="size-5" />
-              Family Weekly Overview
-            </CardTitle>
-            <CardDescription>
-              Combined progress across all children
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {weeklyOverview.map((day, index) => (
-                <div key={day.day} className="flex items-center gap-3">
-                  <div className="w-12 text-sm font-medium">{day.day}</div>
-                  <div className="flex-1">
-                    <Progress value={day.completion} className="h-2" />
-                  </div>
-                  <div className="w-12 text-right text-sm text-muted-foreground">
-                    {day.completion}%
+      {/* Performance section */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">View Performance</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <div className="grid grid-cols-[220px_1fr] items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground">
+              <span>Performance</span>
+              <span>Lesson’s Progress</span>
+            </div>
+            <Separator />
+            <div className="divide-y">
+              {performance.map((row) => (
+                <div key={row.subject} className="grid grid-cols-[220px_1fr] items-center gap-4 px-4 py-3">
+                  <span className="text-sm">{row.subject}</span>
+                  <div className="flex items-center gap-3">
+                    <div className="h-2 w-full rounded bg-muted">
+                      <div
+                        className="h-2 rounded bg-primary"
+                        style={{ width: `${row.pct}%` }}
+                      />
+                    </div>
+                    <span className="w-10 shrink-0 text-right text-xs text-muted-foreground">
+                      {row.pct}%
+                    </span>
                   </div>
                 </div>
               ))}
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Recent Notifications */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bell className="size-5" />
-              Recent Updates
-            </CardTitle>
-            <CardDescription>
-              Latest activity from your children
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3">
-            {notifications.map((notification) => (
-              <div
-                key={notification.id}
-                className="space-y-1 rounded-lg bg-muted/50 p-3"
-              >
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline" className="text-xs">
-                    {notification.child}
-                  </Badge>
-                  {notification.type === "achievement" && (
-                    <Trophy className="size-3 text-yellow-500" />
-                  )}
-                </div>
-                <p className="text-sm">{notification.message}</p>
-                <p className="text-xs text-muted-foreground">
-                  {notification.time}
-                </p>
-              </div>
-            ))}
-            <Button variant="outline" size="sm" className="mt-3 w-full">
-              View All Notifications
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-blue-100">
-                <BookOpen className="size-5 text-blue-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">Progress Reports</h4>
-                <p className="text-sm text-muted-foreground">
-                  View detailed reports
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-green-100">
-                <MessageCircle className="size-5 text-green-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">Contact Teachers</h4>
-                <p className="text-sm text-muted-foreground">Send messages</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-purple-100">
-                <Calendar className="size-5 text-purple-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">Schedule</h4>
-                <p className="text-sm text-muted-foreground">
-                  View upcoming events
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-orange-100">
-                <Target className="size-5 text-orange-600" />
-              </div>
-              <div>
-                <h4 className="font-medium">Set Goals</h4>
-                <p className="text-sm text-muted-foreground">
-                  Family learning goals
-                </p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

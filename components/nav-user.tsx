@@ -81,13 +81,13 @@ export function NavUser({ user }: NavUserProps) {
             )}
           >
             <div className="relative">
-              <Avatar className="h-10 w-10 rounded-xl shadow-sm ring-2 ring-background">
+              <Avatar className="size-10 rounded-xl shadow-sm ring-2 ring-background">
                 <AvatarImage src={user.image || ""} alt={user.name} />
                 <AvatarFallback className="rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 font-semibold text-white">
                   {getInitials(user.name)}
                 </AvatarFallback>
               </Avatar>
-              <div className="absolute -bottom-1 -right-1 h-3 w-3 rounded-full border-2 border-background bg-green-500" />
+              <div className="absolute -bottom-1 -right-1 size-3 rounded-full border-2 border-background bg-green-500" />
             </div>
             <div className="min-w-0 flex-1 text-left">
               <div className="mb-1 flex items-center gap-2">
@@ -118,15 +118,15 @@ export function NavUser({ user }: NavUserProps) {
           sideOffset={8}
         >
           <DropdownMenuLabel className="p-0 font-normal">
-            <div className="flex items-center gap-3 rounded-lg bg-accent/30 px-3 py-3">
+            <div className="flex items-center gap-3 rounded-lg bg-accent/30 p-3">
               <div className="relative">
-                <Avatar className="h-12 w-12 rounded-xl shadow-md ring-2 ring-background">
+                <Avatar className="size-12 rounded-xl shadow-md ring-2 ring-background">
                   <AvatarImage src={user.image || ""} alt={user.name} />
                   <AvatarFallback className="rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-lg font-bold text-white">
                     {getInitials(user.name)}
                   </AvatarFallback>
                 </Avatar>
-                <div className="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-2 border-background bg-green-500" />
+                <div className="absolute -bottom-1 -right-1 size-4 rounded-full border-2 border-background bg-green-500" />
               </div>
               <div className="min-w-0 flex-1">
                 <div className="mb-1 flex items-center gap-2">
@@ -147,7 +147,7 @@ export function NavUser({ user }: NavUserProps) {
                   {user.email}
                 </span>
                 <div className="mt-1 flex items-center gap-1">
-                  <div className="h-2 w-2 rounded-full bg-green-500" />
+                  <div className="size-2 rounded-full bg-green-500" />
                   <span className="text-xs text-green-600 dark:text-green-400">
                     Online
                   </span>
@@ -161,7 +161,7 @@ export function NavUser({ user }: NavUserProps) {
               onClick={() => router.push("/dashboard/profile")}
               className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-accent/80"
             >
-              <Icons.user className="mr-3 h-5 w-5 text-blue-600" />
+              <Icons.user className="mr-3 size-5 text-blue-600" />
               <div className="flex flex-col">
                 <span className="font-medium">My Profile</span>
                 <span className="text-xs text-muted-foreground">
@@ -173,7 +173,7 @@ export function NavUser({ user }: NavUserProps) {
               onClick={() => router.push("/dashboard/settings")}
               className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-accent/80"
             >
-              <Icons.settings className="mr-3 h-5 w-5 text-gray-600" />
+              <Icons.settings className="mr-3 size-5 text-gray-600" />
               <div className="flex flex-col">
                 <span className="font-medium">Settings</span>
                 <span className="text-xs text-muted-foreground">
@@ -185,7 +185,7 @@ export function NavUser({ user }: NavUserProps) {
               onClick={() => router.push("/dashboard/billing")}
               className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-accent/80"
             >
-              <Icons.billing className="mr-3 h-5 w-5 text-green-600" />
+              <Icons.billing className="mr-3 size-5 text-green-600" />
               <div className="flex flex-col">
                 <span className="font-medium">Billing</span>
                 <span className="text-xs text-muted-foreground">
@@ -201,9 +201,9 @@ export function NavUser({ user }: NavUserProps) {
               className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-accent/80"
             >
               {theme === "dark" ? (
-                <Icons.sun className="mr-3 h-5 w-5 text-yellow-600" />
+                <Icons.sun className="mr-3 size-5 text-yellow-600" />
               ) : (
-                <Icons.moon className="mr-3 h-5 w-5 text-indigo-600" />
+                <Icons.moon className="mr-3 size-5 text-indigo-600" />
               )}
               <div className="flex flex-col">
                 <span className="font-medium">
@@ -218,7 +218,7 @@ export function NavUser({ user }: NavUserProps) {
               onClick={() => router.push("/help")}
               className="cursor-pointer rounded-lg p-3 transition-colors hover:bg-accent/80"
             >
-              <Icons.help className="mr-3 h-5 w-5 text-purple-600" />
+              <Icons.help className="mr-3 size-5 text-purple-600" />
               <div className="flex flex-col">
                 <span className="font-medium">Help & Support</span>
                 <span className="text-xs text-muted-foreground">
@@ -232,7 +232,7 @@ export function NavUser({ user }: NavUserProps) {
             onClick={handleLogout}
             className="cursor-pointer rounded-lg p-3 text-red-600 transition-colors hover:bg-red-50 hover:text-red-600 dark:text-red-400 dark:hover:bg-red-950 dark:hover:text-red-400"
           >
-            <Icons.close className="mr-3 h-5 w-5" />
+            <Icons.close className="mr-3 size-5" />
             <div className="flex flex-col">
               <span className="font-medium">Sign Out</span>
               <span className="text-xs opacity-70">End your session</span>

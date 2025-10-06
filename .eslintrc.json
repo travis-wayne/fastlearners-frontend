@@ -7,13 +7,14 @@
     "plugin:tailwindcss/recommended"
   ],
   "plugins": ["tailwindcss"],
+  "ignorePatterns": ["content/**/*.mdx"],
   "rules": {
     "@next/next/no-html-link-for-pages": "off",
     "react/jsx-key": "off",
     "tailwindcss/no-custom-classname": "off",
-    "tailwindcss/classnames-order": "warn",
-    "tailwindcss/enforces-shorthand": "warn",
-    "tailwindcss/migration-from-tailwind-2": "warn",
+    "tailwindcss/classnames-order": "error",
+    "tailwindcss/enforces-shorthand": "error",
+    "tailwindcss/migration-from-tailwind-2": "error",
     "react/no-unescaped-entities": "error",
     "react-hooks/exhaustive-deps": "warn"
   },

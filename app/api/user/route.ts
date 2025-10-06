@@ -1,16 +1,12 @@
 // TODO: Implement user deletion via Fastlearners API
+// For now, return a clear 501 Not Implemented so clients don't interpret this as success.
 
-export async function DELETE(req: Request) {
-  // For now, return a placeholder response
-  // This will need to be implemented to call the Fastlearners API
-  // to delete the user account
-
-  try {
-    // TODO: Add authentication check using JWT token from request headers
-    // TODO: Call Fastlearners API to delete user account
-
-    return new Response("User deleted successfully!", { status: 200 });
-  } catch (error) {
-    return new Response("Internal server error", { status: 500 });
-  }
+export async function DELETE(_req: Request) {
+  return new Response(
+    JSON.stringify({
+      success: false,
+      message: "DELETE /api/user not implemented",
+    }),
+    { status: 501, headers: { "Content-Type": "application/json" } },
+  );
 }

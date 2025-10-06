@@ -17,8 +17,8 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
   guest: {
     homeRoute: "/onboarding",
     allowedRoutes: [
-      "/login",
-      "/register",
+      "/auth/login",
+      "/auth/register",
       "/onboarding",
       "/auth",
       "/auth/role", // Role selection during onboarding
@@ -165,7 +165,7 @@ export const PUBLIC_ROUTES = [
   "/auth/register",
   "/auth/forgot-password",
   "/auth/reset-password",
-  "/auth/role", 
+  "/auth/role",
 ];
 
 /**

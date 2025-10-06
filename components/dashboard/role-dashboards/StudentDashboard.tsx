@@ -1,29 +1,40 @@
 "use client";
 
-import { motion } from "framer-motion";
-import Link from "next/link";
 import { useEffect, useState } from "react";
+import Link from "next/link";
+import { motion } from "framer-motion";
 import {
+  ArrowRight,
   BookOpen,
   Calendar,
+  CheckCircle2,
   ChevronRight,
+  Circle,
   Clock,
+  Moon,
   Play,
   Star,
-  Target,
-  Trophy,
-  TrendingUp,
   Sun,
-  Moon,
   Sunrise,
   Sunset,
-  ArrowRight,
-  CheckCircle2,
-  Circle,
+  Target,
+  TrendingUp,
+  Trophy,
 } from "lucide-react";
 
-import { WobbleCard } from "@/components/ui/wobble-card";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import type { ChartConfig } from "@/components/ui/chart";
+import { Progress } from "@/components/ui/progress";
 import {
   Table,
   TableBody,
@@ -32,20 +43,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
+import { WobbleCard } from "@/components/ui/wobble-card";
 import { ProgressChart } from "@/components/charts/progress-chart";
-import type { ChartConfig } from "@/components/ui/chart";
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -75,7 +74,7 @@ interface TimeData {
   time: string;
   date: string;
   greeting: string;
-  period: 'morning' | 'afternoon' | 'evening' | 'night';
+  period: "morning" | "afternoon" | "evening" | "night";
 }
 
 export function StudentDashboard() {
@@ -86,38 +85,38 @@ export function StudentDashboard() {
     const updateTime = () => {
       const now = new Date();
       const hours = now.getHours();
-      
+
       // Determine greeting and period based on time
       let greeting = "Good evening";
-      let period: TimeData['period'] = 'evening';
-      
+      let period: TimeData["period"] = "evening";
+
       if (hours >= 5 && hours < 12) {
         greeting = "Good morning";
-        period = 'morning';
+        period = "morning";
       } else if (hours >= 12 && hours < 17) {
         greeting = "Good afternoon";
-        period = 'afternoon';
+        period = "afternoon";
       } else if (hours >= 17 && hours < 21) {
         greeting = "Good evening";
-        period = 'evening';
+        period = "evening";
       } else {
         greeting = "Good night";
-        period = 'night';
+        period = "night";
       }
 
       setTimeData({
-        time: now.toLocaleTimeString([], { 
-          hour: '2-digit', 
-          minute: '2-digit',
-          hour12: true 
+        time: now.toLocaleTimeString([], {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
         }),
         date: now.toLocaleDateString([], {
-          weekday: 'long',
-          month: 'long',
-          day: 'numeric'
+          weekday: "long",
+          month: "long",
+          day: "numeric",
         }),
         greeting,
-        period
+        period,
       });
     };
 
@@ -129,15 +128,15 @@ export function StudentDashboard() {
   // Time period icons
   const getPeriodIcon = () => {
     if (!timeData) return <Sun className="size-4 text-white/80" />;
-    
+
     switch (timeData.period) {
-      case 'morning':
+      case "morning":
         return <Sunrise className="size-4 text-white/80" />;
-      case 'afternoon':
+      case "afternoon":
         return <Sun className="size-4 text-white/80" />;
-      case 'evening':
+      case "evening":
         return <Sunset className="size-4 text-white/80" />;
-      case 'night':
+      case "night":
         return <Moon className="size-4 text-white/80" />;
       default:
         return <Sun className="size-4 text-white/80" />;
@@ -156,7 +155,7 @@ export function StudentDashboard() {
     },
     {
       id: 2,
-      subject: "Science", 
+      subject: "Science",
       lesson: "Physics: Motion",
       duration: "30 min",
       progress: 75,
@@ -165,7 +164,7 @@ export function StudentDashboard() {
     {
       id: 3,
       subject: "English",
-      lesson: "Grammar Review", 
+      lesson: "Grammar Review",
       duration: "25 min",
       progress: 100,
       new: false,
@@ -198,9 +197,20 @@ export function StudentDashboard() {
   // Leaderboard data
   const leaderboard = [
     { rank: 1, name: "Alex Johnson", score: 2840, avatar: "/avatars/alex.jpg" },
-    { rank: 2, name: "Sarah Wilson", score: 2750, avatar: "/avatars/sarah.jpg" },
+    {
+      rank: 2,
+      name: "Sarah Wilson",
+      score: 2750,
+      avatar: "/avatars/sarah.jpg",
+    },
     { rank: 3, name: "Mike Chen", score: 2680, avatar: "/avatars/mike.jpg" },
-    { rank: 4, name: "You", score: 2620, avatar: "/avatars/you.jpg", isCurrentUser: true },
+    {
+      rank: 4,
+      name: "You",
+      score: 2620,
+      avatar: "/avatars/you.jpg",
+      isCurrentUser: true,
+    },
   ];
 
   // Overview data
@@ -215,7 +225,7 @@ export function StudentDashboard() {
     {
       id: 1,
       subject: "Physics",
-      lesson: "Introduction to Mechanics", 
+      lesson: "Introduction to Mechanics",
       duration: "45 min",
       status: "Continue",
       progress: 65,
@@ -224,7 +234,7 @@ export function StudentDashboard() {
       id: 2,
       subject: "Mathematics",
       lesson: "Algebra Fundamentals",
-      duration: "30 min", 
+      duration: "30 min",
       status: "Start",
       progress: 0,
     },
@@ -233,7 +243,7 @@ export function StudentDashboard() {
       subject: "Chemistry",
       lesson: "Atomic Structure",
       duration: "40 min",
-      status: "Continue", 
+      status: "Continue",
       progress: 80,
     },
   ];
@@ -255,17 +265,17 @@ export function StudentDashboard() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="flex items-center justify-between mb-4"
+                className="mb-4 flex items-center justify-between"
               >
-                <div className="flex items-center gap-2 bg-blue-100/20 rounded-lg px-3 py-2 backdrop-blur-sm">
+                <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
                   <Calendar className="size-4 text-white/80" />
-                  <span className="text-white/90 text-sm font-medium">
+                  <span className="text-sm font-medium text-white/90">
                     {timeData.date}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 bg-blue-100/20 rounded-lg px-3 py-2 backdrop-blur-sm">
+                <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
                   <Clock className="size-4 text-white/80" />
-                  <span className="text-white/90 text-sm font-medium font-mono">
+                  <span className="font-mono text-sm font-medium text-white/90">
                     {timeData.time}
                   </span>
                 </div>
@@ -279,13 +289,13 @@ export function StudentDashboard() {
               transition={{ delay: 0.3 }}
               className="mb-6"
             >
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 {getPeriodIcon()}
                 <h2 className="text-2xl font-bold text-white">
                   {timeData?.greeting || "Good day"}, Student! 🎓
                 </h2>
               </div>
-              <p className="text-white/90 text-base leading-relaxed">
+              <p className="text-base leading-relaxed text-white/90">
                 Ready to learn something amazing today?
               </p>
             </motion.div>
@@ -295,21 +305,21 @@ export function StudentDashboard() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
-              className="flex items-center gap-3 mb-4"
+              className="mb-4 flex items-center gap-3"
             >
-              <Badge 
-                variant="secondary" 
-                className="bg-white/20 text-white border-white/30 hover:bg-white/30 transition-colors"
+              <Badge
+                variant="secondary"
+                className="border-white/30 bg-white/20 text-white transition-colors hover:bg-white/30"
               >
                 <span className="mr-1">🎓</span>
                 Student
               </Badge>
-              
-              <Badge 
-                variant="secondary" 
-                className="bg-white/15 text-white/90 border-white/20"
+
+              <Badge
+                variant="secondary"
+                className="border-white/20 bg-white/15 text-white/90"
               >
-                <Star className="size-3 mr-1" />
+                <Star className="mr-1 size-3" />
                 Level 5
               </Badge>
             </motion.div>
@@ -321,28 +331,32 @@ export function StudentDashboard() {
               transition={{ delay: 0.5 }}
               className="flex items-center gap-4"
             >
-              <div className="flex items-center gap-2 bg-blue-100/20 rounded-lg px-3 py-2 backdrop-blur-sm">
-                <span className="text-white/70 text-sm">🔥</span>
-                <span className="text-white/90 text-sm font-medium">7 day streak</span>
+              <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
+                <span className="text-sm text-white/70">🔥</span>
+                <span className="text-sm font-medium text-white/90">
+                  7 day streak
+                </span>
               </div>
-              <div className="flex items-center gap-2 bg-blue-100/20 rounded-lg px-3 py-2 backdrop-blur-sm">
-                <span className="text-white/70 text-sm">📚</span>
-                <span className="text-white/90 text-sm font-medium">3 lessons today</span>
+              <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
+                <span className="text-sm text-white/70">📚</span>
+                <span className="text-sm font-medium text-white/90">
+                  3 lessons today
+                </span>
               </div>
             </motion.div>
 
             {/* Decorative elements */}
-            <div className="absolute -top-4 -right-4 opacity-20">
+            <div className="absolute -right-4 -top-4 opacity-20">
               <motion.div
-                animate={{ 
+                animate={{
                   rotate: 360,
-                  scale: [1, 1.1, 1]
+                  scale: [1, 1.1, 1],
                 }}
-                transition={{ 
+                transition={{
                   rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 3, repeat: Infinity }
+                  scale: { duration: 3, repeat: Infinity },
                 }}
-                className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center"
+                className="flex size-16 items-center justify-center rounded-full bg-white/10"
               >
                 <span className="text-2xl">🎓</span>
               </motion.div>
@@ -350,50 +364,58 @@ export function StudentDashboard() {
           </div>
 
           {/* Animated background elements */}
-          <div className="absolute inset-0 overflow-hidden pointer-events-none">
-            <motion.div 
-              animate={{ 
+          <div className="pointer-events-none absolute inset-0 overflow-hidden">
+            <motion.div
+              animate={{
                 x: [0, 100, 0],
                 y: [0, -50, 0],
-                opacity: [0.1, 0.2, 0.1]
+                opacity: [0.1, 0.2, 0.1],
               }}
               transition={{ duration: 8, repeat: Infinity }}
-              className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/5 blur-xl"
+              className="absolute -right-10 -top-10 size-32 rounded-full bg-white/5 blur-xl"
             />
-            <motion.div 
-              animate={{ 
+            <motion.div
+              animate={{
                 x: [0, -80, 0],
                 y: [0, 60, 0],
-                opacity: [0.05, 0.15, 0.05]
+                opacity: [0.05, 0.15, 0.05],
               }}
               transition={{ duration: 12, repeat: Infinity, delay: 2 }}
-              className="absolute -bottom-10 -left-10 w-40 h-40 rounded-full bg-white/5 blur-2xl"
+              className="absolute -bottom-10 -left-10 size-40 rounded-full bg-white/5 blur-2xl"
             />
           </div>
         </WobbleCard>
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div variants={itemVariants} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+      >
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
             whileHover={{ scale: 1.02, y: -2 }}
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
-            <Card className="relative overflow-hidden bg-gradient-to-br from-white to-gray-50/50 dark:from-gray-900 dark:to-gray-800/50 border-gray-200/50 dark:border-gray-700/50">
+            <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
               <CardContent className="p-4">
                 <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    {stat.label}
+                  </p>
                   <div className="flex items-baseline gap-2">
                     <h3 className="text-2xl font-bold">{stat.value}</h3>
-                    <Badge variant={stat.positive ? "default" : "secondary"} className="text-xs">
+                    <Badge
+                      variant={stat.positive ? "default" : "secondary"}
+                      className="text-xs"
+                    >
                       {stat.change}
                     </Badge>
                   </div>
                 </div>
-                <div className="absolute top-0 right-0 w-8 h-8 bg-primary/10 rounded-bl-xl flex items-center justify-center">
-                  <div className="w-2 h-2 bg-primary/40 rounded-full"></div>
+                <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
+                  <div className="size-2 rounded-full bg-primary/40"></div>
                 </div>
               </CardContent>
             </Card>
@@ -407,12 +429,16 @@ export function StudentDashboard() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="p-2 bg-primary/10 rounded-lg">
+                <div className="rounded-lg bg-primary/10 p-2">
                   <Calendar className="size-5 text-primary" />
                 </div>
                 <div>
-                  <CardTitle className="flex items-center gap-2">Today&apos;s Lessons</CardTitle>
-                  <CardDescription>Start with your scheduled lessons for today</CardDescription>
+                  <CardTitle className="flex items-center gap-2">
+                    Today&apos;s Lessons
+                  </CardTitle>
+                  <CardDescription>
+                    Start with your scheduled lessons for today
+                  </CardDescription>
                 </div>
               </div>
               <Badge variant="secondary" className="bg-primary/10 text-primary">
@@ -434,7 +460,9 @@ export function StudentDashboard() {
               <TableBody>
                 {todaysLessonsTable.map((lesson) => (
                   <TableRow key={lesson.id}>
-                    <TableCell className="font-medium">{lesson.subject}</TableCell>
+                    <TableCell className="font-medium">
+                      {lesson.subject}
+                    </TableCell>
                     <TableCell>{lesson.lesson}</TableCell>
                     <TableCell>{lesson.duration}</TableCell>
                     <TableCell>
@@ -444,11 +472,16 @@ export function StudentDashboard() {
                           <span className="text-sm">{lesson.progress}%</span>
                         </div>
                       ) : (
-                        <span className="text-sm text-muted-foreground">Not started</span>
+                        <span className="text-sm text-muted-foreground">
+                          Not started
+                        </span>
                       )}
                     </TableCell>
                     <TableCell>
-                      <Button size="sm" variant={lesson.progress === 0 ? "default" : "outline"}>
+                      <Button
+                        size="sm"
+                        variant={lesson.progress === 0 ? "default" : "outline"}
+                      >
                         {lesson.status}
                       </Button>
                     </TableCell>
@@ -474,21 +507,21 @@ export function StudentDashboard() {
           <CardContent>
             <div className="space-y-3">
               {leaderboard.map((student) => (
-                <div 
-                  key={student.rank} 
-                  className={`flex items-center gap-3 p-2 rounded-lg ${
-                    student.isCurrentUser ? 'bg-primary/10' : 'hover:bg-muted/50'
+                <div
+                  key={student.rank}
+                  className={`flex items-center gap-3 rounded-lg p-2 ${
+                    student.isCurrentUser
+                      ? "bg-primary/10"
+                      : "hover:bg-muted/50"
                   }`}
                 >
-                  <div className="text-sm font-bold w-6">
-                    #{student.rank}
-                  </div>
+                  <div className="w-6 text-sm font-bold">#{student.rank}</div>
                   <Avatar className="size-8">
                     <AvatarImage src={student.avatar} />
                     <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div className="flex-1">
-                    <div className="font-medium text-sm">{student.name}</div>
+                    <div className="text-sm font-medium">{student.name}</div>
                   </div>
                   <div className="text-sm font-semibold">
                     {student.score.toLocaleString()}
@@ -507,12 +540,14 @@ export function StudentDashboard() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="p-2 bg-green-100 rounded-lg">
+                <div className="rounded-lg bg-green-100 p-2">
                   <Target className="size-5 text-green-600" />
                 </div>
                 This Week&apos;s Progress
               </CardTitle>
-              <CardDescription>Track your progress across all subjects</CardDescription>
+              <CardDescription>
+                Track your progress across all subjects
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {weeklyProgress.map((subject, index) => (
@@ -558,7 +593,7 @@ export function StudentDashboard() {
           <Card className="h-full">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <div className="p-2 bg-yellow-100 rounded-lg">
+                <div className="rounded-lg bg-yellow-100 p-2">
                   <Trophy className="size-5 text-yellow-600" />
                 </div>
                 Achievements
@@ -574,7 +609,9 @@ export function StudentDashboard() {
                   transition={{ delay: 0.1 * index }}
                   whileHover={{ scale: 1.02 }}
                   className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${
-                    achievement.earned ? "bg-primary/5 border border-primary/20" : "bg-muted/30"
+                    achievement.earned
+                      ? "border border-primary/20 bg-primary/5"
+                      : "bg-muted/30"
                   }`}
                 >
                   <div
@@ -585,7 +622,9 @@ export function StudentDashboard() {
                   <div className="flex-1">
                     <span
                       className={`font-medium ${
-                        achievement.earned ? "text-foreground" : "text-muted-foreground"
+                        achievement.earned
+                          ? "text-foreground"
+                          : "text-muted-foreground"
                       }`}
                     >
                       {achievement.title}
@@ -609,7 +648,6 @@ export function StudentDashboard() {
           </Card>
         </motion.div>
       </div>
-
     </motion.div>
   );
 }

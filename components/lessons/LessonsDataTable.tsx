@@ -113,36 +113,52 @@ export function LessonsDataTable({ className }: LessonsDataTableProps) {
   // Get filtered subjects based on selected class
   const filteredSubjects = useMemo(() => {
     if (!selectedClass) return subjects;
-    const classId = classes.find(c => c.name === selectedClass)?.id;
-    return subjects.filter(s => s.class_id === classId);
+    const classId = classes.find((c) => c.name === selectedClass)?.id;
+    return subjects.filter((s) => s.class_id === classId);
   }, [selectedClass, subjects, classes]);
 
   // Fetch lessons when filters change
-  const fetchLessons = useCallback(async (page: number = 1) => {
-    try {
-      setLoading(true);
-      const classId = selectedClass ? classes.find(c => c.name === selectedClass)?.id : undefined;
-      const subjectId = selectedSubject ? filteredSubjects.find(s => s.name === selectedSubject)?.id : undefined;
-      const week = selectedWeek ? parseInt(selectedWeek) : undefined;
+  const fetchLessons = useCallback(
+    async (page: number = 1) => {
+      try {
+        setLoading(true);
+        const classId = selectedClass
+          ? classes.find((c) => c.name === selectedClass)?.id
+          : undefined;
+        const subjectId = selectedSubject
+          ? filteredSubjects.find((s) => s.name === selectedSubject)?.id
+          : undefined;
+        const week = selectedWeek ? parseInt(selectedWeek) : undefined;
 
-      const lessonsData = await getLessons({
-        class_id: classId,
-        subject_id: subjectId,
-        term: selectedTerm || undefined,
-        week,
-        search: searchQuery || undefined,
-        page,
-        per_page: pagination.per_page
-      });
+        const lessonsData = await getLessons({
+          class_id: classId,
+          subject_id: subjectId,
+          term: selectedTerm || undefined,
+          week,
+          search: searchQuery || undefined,
+          page,
+          per_page: pagination.per_page,
+        });
 
-      setData(lessonsData.lessons);
-      setPagination(lessonsData.pagination);
-    } catch (error: any) {
-      toast.error(error.message || 'Failed to fetch lessons');
-    } finally {
-      setLoading(false);
-    }
-  }, [selectedClass, selectedSubject, selectedTerm, selectedWeek, searchQuery, pagination.per_page, classes, filteredSubjects]);
+        setData(lessonsData.lessons);
+        setPagination(lessonsData.pagination);
+      } catch (error: any) {
+        toast.error(error.message || "Failed to fetch lessons");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [
+      selectedClass,
+      selectedSubject,
+      selectedTerm,
+      selectedWeek,
+      searchQuery,
+      pagination.per_page,
+      classes,
+      filteredSubjects,
+    ],
+  );
 
   const handleViewLesson = useCallback(
     (lessonId: number) => {

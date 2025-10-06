@@ -17,8 +17,8 @@ import { UserAccountNav } from "@/components/layout/user-account-nav";
 import { MarqueeMessages } from "@/components/navigation/marquee-messages";
 import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { AcademicProvider } from "@/components/providers/academic-context";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -88,7 +88,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
         </div>
 
         {/* Marquee Messages at bottom - full screen width and sticky */}
-        <div className="fixed bottom-0 left-0 right-0 z-40">
+        <div className="fixed inset-x-0 bottom-0 z-40">
           <MarqueeMessages />
         </div>
       </div>

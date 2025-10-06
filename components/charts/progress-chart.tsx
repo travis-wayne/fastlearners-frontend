@@ -8,6 +8,7 @@ import {
   RadialBarChart,
 } from "recharts";
 
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,7 +17,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
-import { Button } from "@/components/ui/button";
 
 interface ProgressChartProps {
   subject: string;
@@ -24,9 +24,17 @@ interface ProgressChartProps {
   className?: string;
 }
 
-export function ProgressChart({ subject, progress, className }: ProgressChartProps) {
+export function ProgressChart({
+  subject,
+  progress,
+  className,
+}: ProgressChartProps) {
   const chartData = [
-    { subject: subject.toLowerCase(), progress: progress, fill: "var(--color-progress)" },
+    {
+      subject: subject.toLowerCase(),
+      progress: progress,
+      fill: "var(--color-progress)",
+    },
   ];
 
   const chartConfig = {
@@ -45,13 +53,13 @@ export function ProgressChart({ subject, progress, className }: ProgressChartPro
         <CardTitle className="text-lg">Progress</CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between mb-2">
+        <div className="mb-2 flex items-center justify-between">
           <span className="text-sm font-medium">{subject}</span>
           <Button variant="ghost" size="sm" className="h-6 text-xs">
             ▼
           </Button>
         </div>
-        
+
         <div className="flex justify-center">
           <ChartContainer
             config={chartConfig}
@@ -99,15 +107,17 @@ export function ProgressChart({ subject, progress, className }: ProgressChartPro
             </RadialBarChart>
           </ChartContainer>
         </div>
-        
-        <div className="flex items-center gap-4 justify-center mt-4">
+
+        <div className="mt-4 flex items-center justify-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-primary"></div>
+            <div className="size-3 rounded-full bg-primary"></div>
             <span className="text-sm text-muted-foreground">Covered</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 rounded-full bg-muted"></div>
-            <span className="text-sm text-muted-foreground">What&apos;s left</span>
+            <div className="size-3 rounded-full bg-muted"></div>
+            <span className="text-sm text-muted-foreground">
+              What&apos;s left
+            </span>
           </div>
         </div>
       </CardContent>

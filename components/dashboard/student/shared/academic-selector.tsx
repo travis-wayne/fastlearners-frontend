@@ -1,20 +1,12 @@
 "use client";
 
-import { useState } from 'react';
-import { Check, ChevronDown, GraduationCap, Calendar } from 'lucide-react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useState } from "react";
+import { Calendar, Check, ChevronDown, GraduationCap } from "lucide-react";
+
+import { ClassLevel, Term } from "@/config/education";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Command,
   CommandEmpty,
@@ -22,34 +14,46 @@ import {
   CommandInput,
   CommandItem,
 } from "@/components/ui/command";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { useAcademicContext, useAcademicDisplay } from '@/components/providers/academic-context';
-import { ClassLevel, Term } from '@/config/education';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  useAcademicContext,
+  useAcademicDisplay,
+} from "@/components/providers/academic-context";
 
 interface AcademicSelectorProps {
-  variant?: 'default' | 'compact' | 'card';
+  variant?: "default" | "compact" | "card";
   showAcademicYear?: boolean;
   className?: string;
 }
 
-export function AcademicSelector({ 
-  variant = 'default', 
+export function AcademicSelector({
+  variant = "default",
   showAcademicYear = true,
-  className = '' 
+  className = "",
 }: AcademicSelectorProps) {
   const [classOpen, setClassOpen] = useState(false);
   const [termOpen, setTermOpen] = useState(false);
-  
+
   const {
     currentClass,
     currentTerm,
     availableClasses,
     availableTerms,
     setCurrentClass,
-    setCurrentTerm
+    setCurrentTerm,
   } = useAcademicContext();
-  
+
   const { academicYear } = useAcademicDisplay();
 
   const handleClassSelect = (classLevel: ClassLevel) => {
@@ -63,17 +67,17 @@ export function AcademicSelector({
   };
 
   // Group classes by stage
-  const primaryClasses = availableClasses.filter(c => c.stage === 'primary');
-  const jssClasses = availableClasses.filter(c => c.stage === 'jss');
-  const sssClasses = availableClasses.filter(c => c.stage === 'sss');
+  const primaryClasses = availableClasses.filter((c) => c.stage === "primary");
+  const jssClasses = availableClasses.filter((c) => c.stage === "jss");
+  const sssClasses = availableClasses.filter((c) => c.stage === "sss");
 
-  if (variant === 'compact') {
+  if (variant === "compact") {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <Select
-          value={currentClass?.id || ''}
+          value={currentClass?.id || ""}
           onValueChange={(value) => {
-            const classLevel = availableClasses.find(c => c.id === value);
+            const classLevel = availableClasses.find((c) => c.id === value);
             if (classLevel) handleClassSelect(classLevel);
           }}
         >
@@ -115,9 +119,9 @@ export function AcademicSelector({
         </Select>
 
         <Select
-          value={currentTerm?.id || ''}
+          value={currentTerm?.id || ""}
           onValueChange={(value) => {
-            const term = availableTerms.find(t => t.id === value);
+            const term = availableTerms.find((t) => t.id === value);
             if (term) handleTermSelect(term);
           }}
         >
@@ -142,7 +146,7 @@ export function AcademicSelector({
     );
   }
 
-  if (variant === 'card') {
+  if (variant === "card") {
     return (
       <Card className={className}>
         <CardContent className="p-4">
@@ -183,7 +187,7 @@ export function AcademicSelector({
             <Command>
               <CommandInput placeholder="Search class..." />
               <CommandEmpty>No class found.</CommandEmpty>
-              
+
               {primaryClasses.length > 0 && (
                 <CommandGroup heading="Primary Education">
                   {primaryClasses.map((cls) => (
@@ -193,7 +197,9 @@ export function AcademicSelector({
                     >
                       <Check
                         className={`mr-2 size-4 ${
-                          currentClass?.id === cls.id ? "opacity-100" : "opacity-0"
+                          currentClass?.id === cls.id
+                            ? "opacity-100"
+                            : "opacity-0"
                         }`}
                       />
                       <div>
@@ -206,7 +212,7 @@ export function AcademicSelector({
                   ))}
                 </CommandGroup>
               )}
-              
+
               {jssClasses.length > 0 && (
                 <CommandGroup heading="Junior Secondary">
                   {jssClasses.map((cls) => (
@@ -216,7 +222,9 @@ export function AcademicSelector({
                     >
                       <Check
                         className={`mr-2 size-4 ${
-                          currentClass?.id === cls.id ? "opacity-100" : "opacity-0"
+                          currentClass?.id === cls.id
+                            ? "opacity-100"
+                            : "opacity-0"
                         }`}
                       />
                       <div>
@@ -229,7 +237,7 @@ export function AcademicSelector({
                   ))}
                 </CommandGroup>
               )}
-              
+
               {sssClasses.length > 0 && (
                 <CommandGroup heading="Senior Secondary">
                   {sssClasses.map((cls) => (
@@ -239,7 +247,9 @@ export function AcademicSelector({
                     >
                       <Check
                         className={`mr-2 size-4 ${
-                          currentClass?.id === cls.id ? "opacity-100" : "opacity-0"
+                          currentClass?.id === cls.id
+                            ? "opacity-100"
+                            : "opacity-0"
                         }`}
                       />
                       <div>
@@ -282,7 +292,9 @@ export function AcademicSelector({
                   >
                     <Check
                       className={`mr-2 size-4 ${
-                        currentTerm?.id === term.id ? "opacity-100" : "opacity-0"
+                        currentTerm?.id === term.id
+                          ? "opacity-100"
+                          : "opacity-0"
                       }`}
                     />
                     <div>

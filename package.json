@@ -6,7 +6,11 @@
     "name": "mickasmt",
     "url": "https://twitter.com/mickasmt"
   },
+  "engines": {
+    "node": ">=18.17.0 <23"
+  },
   "scripts": {
+    "gen:openapi": "openapi-typescript openapi/fastlearners-auth.yaml -o types/openapi/fastlearners.ts",
     "dev": "next dev",
     "build": "next build",
     "turbo": "next dev --turbo",
@@ -106,7 +110,7 @@
     "zod": "^3.23.8",
     "zustand": "^5.0.7"
   },
-  "devDependencies": {
+  "devDependencies": {"openapi-typescript": "^6.7.0",
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",

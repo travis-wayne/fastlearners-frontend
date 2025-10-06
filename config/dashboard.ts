@@ -144,7 +144,12 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.SUPERADMIN,
       },
       { href: "/", icon: "home", title: "Homepage" },
-      { href: "/docs", icon: "bookOpen", title: "Documentation", authorizeOnly: UserRole.SUPERADMIN },
+      {
+        href: "/docs",
+        icon: "bookOpen",
+        title: "Documentation",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
       {
         href: "#",
         icon: "messages",

@@ -4,5 +4,4 @@ export { GuardianDashboard } from "./GuardianDashboard";
 export { TeacherDashboard } from "./TeacherDashboard";
 export { SuperAdminDashboard } from "./SuperAdminDashboard";
 
-// TODO: Add when created
-// export { GuestDashboard } from './GuestDashboard';
+export { GuestDashboard } from "./GuestDashboard";

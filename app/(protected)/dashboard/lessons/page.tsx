@@ -1,38 +1,60 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
-  GraduationCap,
-  Search,
-  Filter,
-  Clock,
-  Play,
-  CheckCircle,
-  Circle,
+  getCompletedLessons,
+  getInProgressLessons,
+  getLessonsByClassAndTerm,
+  getLessonStats,
+  getNotStartedLessons,
+  mockLessons,
+  type Lesson,
+} from "@/data/mock-lessons";
+import { motion } from "framer-motion";
+import {
+  ArrowRight,
   BookOpen,
   Calendar,
-  Target,
-  ArrowRight,
-  TrendingUp,
+  CheckCircle,
+  Circle,
+  Clock,
+  Filter,
+  GraduationCap,
   Pause,
-  RotateCcw
+  Play,
+  RotateCcw,
+  Search,
+  Target,
+  TrendingUp,
 } from "lucide-react";
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { getSubjectById, getSubjects } from "@/config/education";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Progress } from "@/components/ui/progress";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AcademicSelector } from "@/components/dashboard/student/shared/academic-selector";
-import { useAcademicContext, useAcademicDisplay } from "@/components/providers/academic-context";
-import { getSubjects, getSubjectById } from "@/config/education";
-import { mockLessons, getLessonsByClassAndTerm, getLessonStats, getCompletedLessons, getInProgressLessons, getNotStartedLessons, type Lesson } from "@/data/mock-lessons";
+import {
+  useAcademicContext,
+  useAcademicDisplay,
+} from "@/components/providers/academic-context";
 
 interface LessonCardProps {
   lesson: Lesson;
@@ -41,8 +63,11 @@ interface LessonCardProps {
 
 function LessonCard({ lesson, onClick }: LessonCardProps) {
   const subject = getSubjectById(lesson.subjectId);
-  const progressPercentage = lesson.progress.completed ? 100 : 
-    lesson.duration > 0 ? Math.round((lesson.progress.timeSpent / lesson.duration) * 100) : 0;
+  const progressPercentage = lesson.progress.completed
+    ? 100
+    : lesson.duration > 0
+      ? Math.round((lesson.progress.timeSpent / lesson.duration) * 100)
+      : 0;
 
   const getStatusIcon = () => {
     if (lesson.progress.completed) {
@@ -72,19 +97,24 @@ function LessonCard({ lesson, onClick }: LessonCardProps) {
       whileTap={{ scale: 0.98 }}
       className="cursor-pointer"
     >
-      <Card className="h-full hover:shadow-md transition-shadow">
+      <Card className="h-full transition-shadow hover:shadow-md">
         <CardHeader className="pb-3">
           <div className="flex items-start justify-between">
-            <div className="flex items-center gap-3 flex-1">
-              <div 
-                className="p-2 rounded-lg flex items-center justify-center shrink-0"
-                style={{ backgroundColor: `${subject?.color || '#6B7280'}20` }}
+            <div className="flex flex-1 items-center gap-3">
+              <div
+                className="flex shrink-0 items-center justify-center rounded-lg p-2"
+                style={{ backgroundColor: `${subject?.color || "#6B7280"}20` }}
               >
-                <BookOpen className="size-4" style={{ color: subject?.color || '#6B7280' }} />
+                <BookOpen
+                  className="size-4"
+                  style={{ color: subject?.color || "#6B7280" }}
+                />
               </div>
               <div className="min-w-0 flex-1">
-                <CardTitle className="text-base leading-tight mb-1">{lesson.title}</CardTitle>
-                <CardDescription className="text-sm line-clamp-2">
+                <CardTitle className="mb-1 text-base leading-tight">
+                  {lesson.title}
+                </CardTitle>
+                <CardDescription className="line-clamp-2 text-sm">
                   {lesson.description}
                 </CardDescription>
               </div>
@@ -92,7 +122,7 @@ function LessonCard({ lesson, onClick }: LessonCardProps) {
             {getStatusIcon()}
           </div>
         </CardHeader>
-        <CardContent className="pt-0 space-y-3">
+        <CardContent className="space-y-3 pt-0">
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
               <Clock className="size-4" />
@@ -107,7 +137,9 @@ function LessonCard({ lesson, onClick }: LessonCardProps) {
           <div className="space-y-2">
             <div className="flex items-center justify-between text-sm">
               <span className={getStatusColor()}>{getStatusText()}</span>
-              <span className="text-muted-foreground">{progressPercentage}%</span>
+              <span className="text-muted-foreground">
+                {progressPercentage}%
+              </span>
             </div>
             <Progress value={progressPercentage} className="h-2" />
           </div>
@@ -126,9 +158,12 @@ function LessonCard({ lesson, onClick }: LessonCardProps) {
               )}
             </div>
             <Button size="sm" onClick={onClick} className="ml-2">
-              {lesson.progress.completed ? "Review" : 
-               lesson.progress.timeSpent > 0 ? "Continue" : "Start"}
-              <ArrowRight className="size-3 ml-1" />
+              {lesson.progress.completed
+                ? "Review"
+                : lesson.progress.timeSpent > 0
+                  ? "Continue"
+                  : "Start"}
+              <ArrowRight className="ml-1 size-3" />
             </Button>
           </div>
         </CardContent>
@@ -141,37 +176,58 @@ export default function LessonsPage() {
   const router = useRouter();
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubject, setSelectedSubject] = useState<string>("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>("all");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   // Get lessons for current class and term
-  const lessons = currentClass && currentTerm ? 
-    getLessonsByClassAndTerm(currentClass.name, currentTerm.name) : [];
+  const lessons =
+    currentClass && currentTerm
+      ? getLessonsByClassAndTerm(currentClass.name, currentTerm.name)
+      : [];
 
   // Get available subjects from lessons
   const availableSubjects = useMemo(() => {
-    const subjectIds = Array.from(new Set(lessons.map(lesson => lesson.subjectId)));
-    return getSubjects().filter(subject => subjectIds.includes(subject.id));
+    const subjectIds = Array.from(
+      new Set(lessons.map((lesson) => lesson.subjectId)),
+    );
+    return getSubjects().filter((subject) => subjectIds.includes(subject.id));
   }, [lessons]);
 
   // Filter lessons
   const filteredLessons = useMemo(() => {
-    return lessons.filter(lesson => {
-      const matchesSearch = lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSubject = selectedSubject === "all" || lesson.subjectId === selectedSubject;
-      const matchesDifficulty = selectedDifficulty === "all" || lesson.difficulty === selectedDifficulty;
-      const matchesStatus = selectedStatus === "all" || 
+    return lessons.filter((lesson) => {
+      const matchesSearch =
+        lesson.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        lesson.description.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSubject =
+        selectedSubject === "all" || lesson.subjectId === selectedSubject;
+      const matchesDifficulty =
+        selectedDifficulty === "all" ||
+        lesson.difficulty === selectedDifficulty;
+      const matchesStatus =
+        selectedStatus === "all" ||
         (selectedStatus === "completed" && lesson.progress.completed) ||
-        (selectedStatus === "in-progress" && !lesson.progress.completed && lesson.progress.timeSpent > 0) ||
-        (selectedStatus === "not-started" && !lesson.progress.completed && lesson.progress.timeSpent === 0);
+        (selectedStatus === "in-progress" &&
+          !lesson.progress.completed &&
+          lesson.progress.timeSpent > 0) ||
+        (selectedStatus === "not-started" &&
+          !lesson.progress.completed &&
+          lesson.progress.timeSpent === 0);
 
-      return matchesSearch && matchesSubject && matchesDifficulty && matchesStatus;
+      return (
+        matchesSearch && matchesSubject && matchesDifficulty && matchesStatus
+      );
     });
-  }, [lessons, searchQuery, selectedSubject, selectedDifficulty, selectedStatus]);
+  }, [
+    lessons,
+    searchQuery,
+    selectedSubject,
+    selectedDifficulty,
+    selectedStatus,
+  ]);
 
   // Get lesson statistics
   const stats = getLessonStats();
@@ -202,9 +258,11 @@ export default function LessonsPage() {
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-8 text-center">
-            <Calendar className="size-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">Select Class and Term</h3>
-            <p className="text-muted-foreground mb-4">
+            <Calendar className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">
+              Select Class and Term
+            </h3>
+            <p className="mb-4 text-muted-foreground">
               Please select your class and term to view available lessons.
             </p>
             <AcademicSelector variant="default" />
@@ -219,17 +277,17 @@ export default function LessonsPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto p-6 space-y-6"
+      className="container mx-auto space-y-6 p-6"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold flex items-center gap-3">
+            <h1 className="flex items-center gap-3 text-3xl font-bold">
               <GraduationCap className="size-8 text-primary" />
               Lessons
             </h1>
-            <p className="text-muted-foreground mt-1">
+            <p className="mt-1 text-muted-foreground">
               Interactive lessons for {classDisplay} - {termDisplay}
             </p>
           </div>
@@ -239,43 +297,51 @@ export default function LessonsPage() {
 
       {/* Stats Cards */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <TrendingUp className="size-4 text-blue-600" />
-                <span className="text-sm text-muted-foreground">Total Lessons</span>
+                <span className="text-sm text-muted-foreground">
+                  Total Lessons
+                </span>
               </div>
               <p className="text-2xl font-bold">{stats.total}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <CheckCircle className="size-4 text-green-600" />
                 <span className="text-sm text-muted-foreground">Completed</span>
               </div>
               <p className="text-2xl font-bold">{stats.completed}</p>
-              <p className="text-sm text-muted-foreground">{stats.completionRate}% complete</p>
+              <p className="text-sm text-muted-foreground">
+                {stats.completionRate}% complete
+              </p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <Pause className="size-4 text-yellow-600" />
-                <span className="text-sm text-muted-foreground">In Progress</span>
+                <span className="text-sm text-muted-foreground">
+                  In Progress
+                </span>
               </div>
               <p className="text-2xl font-bold">{stats.inProgress}</p>
             </CardContent>
           </Card>
-          
+
           <Card>
             <CardContent className="p-4">
-              <div className="flex items-center gap-2 mb-2">
+              <div className="mb-2 flex items-center gap-2">
                 <Circle className="size-4 text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">Not Started</span>
+                <span className="text-sm text-muted-foreground">
+                  Not Started
+                </span>
               </div>
               <p className="text-2xl font-bold">{stats.notStarted}</p>
             </CardContent>
@@ -287,10 +353,10 @@ export default function LessonsPage() {
       <motion.div variants={itemVariants}>
         <Card>
           <CardContent className="p-4">
-            <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex flex-col gap-4 md:flex-row">
               <div className="flex-1">
                 <div className="relative">
-                  <Search className="size-4 absolute left-3 top-3 text-muted-foreground" />
+                  <Search className="absolute left-3 top-3 size-4 text-muted-foreground" />
                   <Input
                     placeholder="Search lessons..."
                     value={searchQuery}
@@ -299,9 +365,12 @@ export default function LessonsPage() {
                   />
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-2">
-                <Select value={selectedSubject} onValueChange={setSelectedSubject}>
+
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <Select
+                  value={selectedSubject}
+                  onValueChange={setSelectedSubject}
+                >
                   <SelectTrigger className="w-full sm:w-[180px]">
                     <SelectValue placeholder="All Subjects" />
                   </SelectTrigger>
@@ -315,7 +384,10 @@ export default function LessonsPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedDifficulty} onValueChange={setSelectedDifficulty}>
+                <Select
+                  value={selectedDifficulty}
+                  onValueChange={setSelectedDifficulty}
+                >
                   <SelectTrigger className="w-full sm:w-[150px]">
                     <SelectValue placeholder="Difficulty" />
                   </SelectTrigger>
@@ -327,7 +399,10 @@ export default function LessonsPage() {
                   </SelectContent>
                 </Select>
 
-                <Select value={selectedStatus} onValueChange={setSelectedStatus}>
+                <Select
+                  value={selectedStatus}
+                  onValueChange={setSelectedStatus}
+                >
                   <SelectTrigger className="w-full sm:w-[150px]">
                     <SelectValue placeholder="Status" />
                   </SelectTrigger>
@@ -339,8 +414,8 @@ export default function LessonsPage() {
                   </SelectContent>
                 </Select>
 
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="icon"
                   onClick={() => {
                     setSearchQuery("");
@@ -362,30 +437,40 @@ export default function LessonsPage() {
       <motion.div variants={itemVariants}>
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList>
-            <TabsTrigger value="all">All Lessons ({filteredLessons.length})</TabsTrigger>
-            <TabsTrigger value="in-progress">Continue ({inProgressLessons.length})</TabsTrigger>
-            <TabsTrigger value="completed">Completed ({completedLessons.length})</TabsTrigger>
+            <TabsTrigger value="all">
+              All Lessons ({filteredLessons.length})
+            </TabsTrigger>
+            <TabsTrigger value="in-progress">
+              Continue ({inProgressLessons.length})
+            </TabsTrigger>
+            <TabsTrigger value="completed">
+              Completed ({completedLessons.length})
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
             {filteredLessons.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {filteredLessons.map((lesson) => (
                   <LessonCard
                     key={lesson.id}
                     lesson={lesson}
-                    onClick={() => router.push(`/dashboard/lessons/${lesson.id}`)}
+                    onClick={() =>
+                      router.push(`/dashboard/lessons/${lesson.id}`)
+                    }
                   />
                 ))}
               </div>
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <GraduationCap className="size-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Lessons Found</h3>
+                  <GraduationCap className="mx-auto mb-4 size-12 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-semibold">
+                    No Lessons Found
+                  </h3>
                   <p className="text-muted-foreground">
-                    {lessons.length === 0 
-                      ? `No lessons available for ${classDisplay} - ${termDisplay}` 
+                    {lessons.length === 0
+                      ? `No lessons available for ${classDisplay} - ${termDisplay}`
                       : "Try adjusting your search or filters"}
                   </p>
                 </CardContent>
@@ -395,20 +480,24 @@ export default function LessonsPage() {
 
           <TabsContent value="in-progress" className="space-y-4">
             {inProgressLessons.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {inProgressLessons.map((lesson) => (
                   <LessonCard
                     key={lesson.id}
                     lesson={lesson}
-                    onClick={() => router.push(`/dashboard/lessons/${lesson.id}`)}
+                    onClick={() =>
+                      router.push(`/dashboard/lessons/${lesson.id}`)
+                    }
                   />
                 ))}
               </div>
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <Pause className="size-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Lessons in Progress</h3>
+                  <Pause className="mx-auto mb-4 size-12 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-semibold">
+                    No Lessons in Progress
+                  </h3>
                   <p className="text-muted-foreground">
                     Start a lesson to see it here
                   </p>
@@ -419,20 +508,24 @@ export default function LessonsPage() {
 
           <TabsContent value="completed" className="space-y-4">
             {completedLessons.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
                 {completedLessons.map((lesson) => (
                   <LessonCard
                     key={lesson.id}
                     lesson={lesson}
-                    onClick={() => router.push(`/dashboard/lessons/${lesson.id}`)}
+                    onClick={() =>
+                      router.push(`/dashboard/lessons/${lesson.id}`)
+                    }
                   />
                 ))}
               </div>
             ) : (
               <Card>
                 <CardContent className="p-8 text-center">
-                  <CheckCircle className="size-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold mb-2">No Completed Lessons</h3>
+                  <CheckCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
+                  <h3 className="mb-2 text-lg font-semibold">
+                    No Completed Lessons
+                  </h3>
                   <p className="text-muted-foreground">
                     Complete a lesson to see it here
                   </p>
