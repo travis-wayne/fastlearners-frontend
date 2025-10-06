@@ -34,10 +34,13 @@ import { useAuthStore } from "@/store/authStore";
 
 function formatDisplayName(user?: { name?: string | null; username?: string | null; email?: string | null }) {
   if (!user) return "Learner";
-  if (user.name && user.name.trim()) return user.name.split(" ")[0];
-  if (user.username && user.username.trim()) return user.username;
-  if (user.email) return (user.email.split("@")[0] || "Learner").replace(/\./g, " ");
-  return "Learner";
+  const candidates = [user.name, user.username, user.email].filter(
+    (v): v is string => typeof v === "string" && v.trim().length > 0,
+  );
+  const first = candidates[0];
+  if (!first) return "Learner";
+  const base = first.includes("@") ? first.split("@")[0] : first;
+  return base.split(" ")[0].replace(/\./g, " ");
 }
 
 export function GuardianDashboard() {
