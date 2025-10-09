@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -43,8 +43,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { WobbleCard } from "@/components/ui/wobble-card";
-import { ProgressChart } from "@/components/charts/progress-chart";
+import { AchievementsSection } from "@/components/dashboard/AchievementsSection";
+import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
+import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
+import { LeaderBoard } from "@/components/dashboard/LeaderBoard";
+import { ProgressDonut } from "@/components/dashboard/ProgressDonut";
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -79,6 +82,13 @@ interface TimeData {
 
 export function StudentDashboard() {
   const [timeData, setTimeData] = useState<TimeData | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string>("Physics");
+  const subjectToProgress: Record<string, number> = {
+    Mathematics: 65,
+    Physics: 50,
+    Chemistry: 80,
+    Biology: 90,
+  };
 
   // Update time every second
   useEffect(() => {
@@ -255,34 +265,50 @@ export function StudentDashboard() {
       animate="visible"
       className="space-y-8 p-6"
     >
-      {/* Enhanced Welcome Header with WobbleCard */}
+      {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
-        <WobbleCard containerClassName="col-span-1 lg:col-span-2 h-full min-h-[240px] bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-700 relative overflow-hidden">
+        <div
+          className={`relative overflow-hidden rounded-2xl p-8 ${
+            (useMemo(() => {
+              switch (timeData?.period) {
+                case "morning":
+                  return "bg-gradient-to-br from-blue-200 via-cyan-200 to-yellow-100 dark:from-blue-400 dark:via-cyan-300 dark:to-yellow-200";
+                case "afternoon":
+                  return "bg-gradient-to-br from-blue-300 via-purple-200 to-orange-200 dark:from-blue-500 dark:via-purple-400 dark:to-orange-300";
+                case "evening":
+                  return "bg-gradient-to-br from-purple-300 via-pink-300 to-orange-200 dark:from-purple-500 dark:via-pink-500 dark:to-orange-400";
+                case "night":
+                default:
+                  return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
+              }
+            }, [timeData?.period]))
+          } transition-all duration-700 ease-in-out`}
+        >
           <div className="relative z-10 max-w-lg">
-            {/* Header with time and date */}
+            {/* Header with date and time */}
             {timeData && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="mb-4 flex items-center justify-between"
+                className="mb-4 flex items-center justify-between text-gray-900 dark:text-white/90"
               >
-                <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
-                  <Calendar className="size-4 text-white/80" />
-                  <span className="text-sm font-medium text-white/90">
+                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm dark:bg-white/20">
+                  <Calendar className="size-4 text-gray-900 dark:text-white" />
+                  <span className="text-sm font-medium">
                     {timeData.date}
                   </span>
                 </div>
-                <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
-                  <Clock className="size-4 text-white/80" />
-                  <span className="font-mono text-sm font-medium text-white/90">
+                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm dark:bg-white/20">
+                  <Clock className="size-4 text-gray-900 dark:text-white" />
+                  <span className="font-mono text-sm font-medium">
                     {timeData.time}
                   </span>
                 </div>
               </motion.div>
             )}
 
-            {/* Main greeting */}
+            {/* Greeting */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -291,16 +317,16 @@ export function StudentDashboard() {
             >
               <div className="mb-2 flex items-center gap-2">
                 {getPeriodIcon()}
-                <h2 className="text-2xl font-bold text-white">
+                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
                   {timeData?.greeting || "Good day"}, Student! 🎓
                 </h2>
               </div>
-              <p className="text-base leading-relaxed text-white/90">
+              <p className="text-base leading-relaxed text-gray-800 dark:text-white/90">
                 Ready to learn something amazing today?
               </p>
             </motion.div>
 
-            {/* Role and status badges */}
+            {/* Badges */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -331,27 +357,24 @@ export function StudentDashboard() {
               transition={{ delay: 0.5 }}
               className="flex items-center gap-4"
             >
-              <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
-                <span className="text-sm text-white/70">🔥</span>
-                <span className="text-sm font-medium text-white/90">
+              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 backdrop-blur-sm">
+                <span className="text-sm text-white">🔥</span>
+                <span className="text-sm font-medium text-white">
                   7 day streak
                 </span>
               </div>
-              <div className="flex items-center gap-2 rounded-lg bg-blue-100/20 px-3 py-2 backdrop-blur-sm">
-                <span className="text-sm text-white/70">📚</span>
-                <span className="text-sm font-medium text-white/90">
+              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 backdrop-blur-sm">
+                <span className="text-sm text-white">📚</span>
+                <span className="text-sm font-medium text-white">
                   3 lessons today
                 </span>
               </div>
             </motion.div>
 
-            {/* Decorative elements */}
+            {/* Decorative icon */}
             <div className="absolute -right-4 -top-4 opacity-20">
               <motion.div
-                animate={{
-                  rotate: 360,
-                  scale: [1, 1.1, 1],
-                }}
+                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
                 transition={{
                   rotate: { duration: 20, repeat: Infinity, ease: "linear" },
                   scale: { duration: 3, repeat: Infinity },
@@ -363,31 +386,23 @@ export function StudentDashboard() {
             </div>
           </div>
 
-          {/* Animated background elements */}
+          {/* Soft moving highlights */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <motion.div
-              animate={{
-                x: [0, 100, 0],
-                y: [0, -50, 0],
-                opacity: [0.1, 0.2, 0.1],
-              }}
+              animate={{ x: [0, 100, 0], y: [0, -50, 0], opacity: [0.1, 0.2, 0.1] }}
               transition={{ duration: 8, repeat: Infinity }}
               className="absolute -right-10 -top-10 size-32 rounded-full bg-white/5 blur-xl"
             />
             <motion.div
-              animate={{
-                x: [0, -80, 0],
-                y: [0, 60, 0],
-                opacity: [0.05, 0.15, 0.05],
-              }}
+              animate={{ x: [0, -80, 0], y: [0, 60, 0], opacity: [0.05, 0.15, 0.05] }}
               transition={{ duration: 12, repeat: Infinity, delay: 2 }}
               className="absolute -bottom-10 -left-10 size-40 rounded-full bg-white/5 blur-2xl"
             />
           </div>
-        </WobbleCard>
+        </div>
       </motion.div>
 
-      {/* Stats Grid */}
+      {/* Top Stats Grid */}
       <motion.div
         variants={itemVariants}
         className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
@@ -421,6 +436,45 @@ export function StudentDashboard() {
             </Card>
           </motion.div>
         ))}
+      </motion.div>
+
+      {/* Progress + Achievements + Overview row */}
+      <motion.div
+        variants={itemVariants}
+        className="grid grid-cols-1 gap-4 lg:grid-cols-3"
+      >
+        {/* Progress Donut - Phase B replacement */}
+        <ProgressDonut
+          options={[
+            { label: "Mathematics", value: "Mathematics", color: "#3b82f6" },
+            { label: "Physics", value: "Physics", color: "#8b5cf6" },
+            { label: "Chemistry", value: "Chemistry", color: "#10b981" },
+            { label: "Biology", value: "Biology", color: "#f59e0b" },
+          ]}
+          value={selectedSubject}
+          onChange={setSelectedSubject}
+          progressMap={subjectToProgress}
+        />
+
+        {/* Achievements (3 cards) - extracted */}
+        <AchievementsSection
+          items={[
+            { title: "7-Day Streak", icon: "🔥" },
+            { title: "Perfect Score", icon: "⭐" },
+            { title: "Perfect Score", icon: "🏆" },
+          ]}
+        />
+
+        {/* Overview grid - extracted */}
+        <OverviewGrid
+          stats={[
+            { label: "Subjects Registered", value: "9/11" },
+            { label: "Lessons Completed", value: "100/200" },
+            { label: "Quizzes Completed", value: "6/20" },
+            { label: "Time Spent Learning", value: "300 hrs" },
+            { label: "Subscription Status", value: "Active" },
+          ]}
+        />
       </motion.div>
 
       {/* Today's Lessons - Enhanced */}
@@ -493,99 +547,33 @@ export function StudentDashboard() {
         </Card>
       </motion.div>
 
-      {/* Leaderboard Section */}
+      {/* Leaderboard Section - extracted */}
       <motion.div variants={itemVariants}>
-        <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <CardTitle>Leader&apos;s Board</CardTitle>
-              <Button variant="ghost" size="sm">
-                View All
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {leaderboard.map((student) => (
-                <div
-                  key={student.rank}
-                  className={`flex items-center gap-3 rounded-lg p-2 ${
-                    student.isCurrentUser
-                      ? "bg-primary/10"
-                      : "hover:bg-muted/50"
-                  }`}
-                >
-                  <div className="w-6 text-sm font-bold">#{student.rank}</div>
-                  <Avatar className="size-8">
-                    <AvatarImage src={student.avatar} />
-                    <AvatarFallback>{student.name.charAt(0)}</AvatarFallback>
-                  </Avatar>
-                  <div className="flex-1">
-                    <div className="text-sm font-medium">{student.name}</div>
-                  </div>
-                  <div className="text-sm font-semibold">
-                    {student.score.toLocaleString()}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
+        <LeaderBoard
+          entries={leaderboard.map((e) => ({
+            rank: e.rank,
+            name: e.name,
+            avatar: e.avatar,
+            score: e.score,
+            isCurrentUser: (e as any).isCurrentUser,
+          }))}
+        />
       </motion.div>
 
-      {/* Progress and Achievements Grid - Original */}
+      {/* Performance (bars) + Achievements - Original */}
       <div className="grid gap-6 lg:grid-cols-3">
-        {/* Weekly Progress - Takes 2 columns */}
+        {/* Weekly Progress - extracted (takes 2 columns) */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <Card className="h-full">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <div className="rounded-lg bg-green-100 p-2">
-                  <Target className="size-5 text-green-600" />
-                </div>
-                This Week&apos;s Progress
-              </CardTitle>
-              <CardDescription>
-                Track your progress across all subjects
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {weeklyProgress.map((subject, index) => (
-                <motion.div
-                  key={subject.subject}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                  className="space-y-2"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="font-semibold">{subject.subject}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm text-muted-foreground">
-                        {subject.progress}% of {subject.target}%
-                      </span>
-                      {subject.progress >= subject.target && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ type: "spring", delay: 0.5 }}
-                        >
-                          <Trophy className="size-4 text-yellow-500" />
-                        </motion.div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="relative">
-                    <Progress value={subject.progress} className="h-3" />
-                    <div
-                      className="absolute top-0 h-3 w-1 rounded-full bg-primary opacity-60"
-                      style={{ left: `${Math.min(subject.target, 95)}%` }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </CardContent>
-          </Card>
+          <PerformanceSection
+            items={weeklyProgress.map((s) => ({
+              subject: s.subject,
+              percentage: s.progress,
+              target: s.target,
+              colorClass: "bg-primary",
+            }))}
+            title="Performance"
+            description="Subject progress vs target for this week"
+          />
         </motion.div>
 
         {/* Achievements - Original */}

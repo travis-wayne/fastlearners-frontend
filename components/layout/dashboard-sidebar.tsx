@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { NavItem, SidebarNavItem } from "@/types";
-import { Menu, PanelLeftClose, PanelRightClose } from "lucide-react";
+import { LogOut, Menu, MessageCircle, PanelLeftClose, PanelRightClose, CreditCard } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -123,8 +123,10 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                               <Link
                                 key={`link-${item.title}`}
                                 href={item.disabled ? "#" : item.href}
+                                aria-label={item.title}
+                                aria-current={path === item.href ? "page" : undefined}
                                 className={cn(
-                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
+                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                                   path === item.href
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
@@ -132,10 +134,10 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                 )}
                               >
-                                <Icon className="size-5" />
+                                <Icon className="size-5" aria-hidden="true" />
                                 {item.title}
                                 {item.badge && (
-                                  <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
+                                  <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full" aria-label={`${item.badge} notifications`}>
                                     {item.badge}
                                   </Badge>
                                 )}
@@ -146,8 +148,10 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                   <Link
                                     key={`link-tooltip-${item.title}`}
                                     href={item.disabled ? "#" : item.href}
+                                    aria-label={item.title}
+                                    aria-current={path === item.href ? "page" : undefined}
                                     className={cn(
-                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted",
+                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                                       path === item.href
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
@@ -155,7 +159,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                         "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                     )}
                                   >
-                                    <span className="flex size-full items-center justify-center">
+                                    <span className="flex size-full items-center justify-center" aria-hidden="true">
                                       <Icon className="size-5" />
                                     </span>
                                   </Link>
@@ -190,6 +194,55 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                     )
                   )
                 ) : null}
+
+                {/* {isSidebarExpanded && (
+                  <div className="mt-4 border-t pt-4">
+                    <div className="flex flex-col gap-1">
+                      <Link
+                        href="/dashboard/billing"
+                        aria-label="Subscription"
+                        className={cn(
+                          "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+                          path === "/dashboard/billing"
+                            ? "bg-muted"
+                            : "text-muted-foreground hover:text-accent-foreground",
+                        )}
+                      >
+                        <CreditCard className="size-5" aria-hidden="true" />
+                        Subscription
+                      </Link>
+
+                      <Link
+                        href="/support"
+                        aria-label="Support"
+                        className={cn(
+                          "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+                          path === "/support"
+                            ? "bg-muted"
+                            : "text-muted-foreground hover:text-accent-foreground",
+                        )}
+                      >
+                        <MessageCircle className="size-5" aria-hidden="true" />
+                        Support
+                      </Link>
+
+                      <button
+                        type="button"
+                        aria-label="Logout"
+                        onClick={() => {
+                          // Prefer store logout (handles HttpOnly flow)
+                          try {
+                            void useAuthStore.getState().logout?.();
+                          } catch {}
+                        }}
+                        className="flex items-center gap-3 rounded-md p-2 text-left text-sm font-medium text-destructive hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background"
+                      >
+                        <LogOut className="size-5" aria-hidden="true" />
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )} */}
               </div>
             </div>
           </aside>
@@ -257,8 +310,10 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                 if (!item.disabled) setOpen(false);
                               }}
                               href={item.disabled ? "#" : item.href}
+                              aria-label={item.title}
+                              aria-current={path === item.href ? "page" : undefined}
                               className={cn(
-                                "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted",
+                                "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                                 path === item.href
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",
@@ -266,10 +321,10 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                   "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                               )}
                             >
-                              <Icon className="size-5" />
+                              <Icon className="size-5" aria-hidden="true" />
                               {item.title}
                               {item.badge && (
-                                <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full">
+                                <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full" aria-label={`${item.badge} notifications`}>
                                   {item.badge}
                                 </Badge>
                               )}

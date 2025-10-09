@@ -265,6 +265,8 @@ function QuizCard({ quiz, onClick }: QuizCardProps) {
 export default function QuizzesPage() {
   const router = useRouter();
   const { currentClass, currentTerm } = useAcademicContext();
+  const className = currentClass?.name;
+  const termName = currentTerm?.name;
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -273,10 +275,11 @@ export default function QuizzesPage() {
   const [selectedScope, setSelectedScope] = useState<string>("all");
 
   // Get quizzes for current class and term
-  const quizzes =
-    currentClass && currentTerm
-      ? getQuizzesByClassAndTerm(currentClass.name, currentTerm.name)
+  const quizzes = useMemo(() => {
+    return className && termName
+      ? getQuizzesByClassAndTerm(className, termName)
       : [];
+  }, [className, termName]);
 
   // Get available subjects from quizzes
   const availableSubjects = useMemo(() => {

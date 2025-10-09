@@ -175,6 +175,8 @@ function LessonCard({ lesson, onClick }: LessonCardProps) {
 export default function LessonsPage() {
   const router = useRouter();
   const { currentClass, currentTerm } = useAcademicContext();
+  const className = currentClass?.name;
+  const termName = currentTerm?.name;
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -183,10 +185,11 @@ export default function LessonsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
   // Get lessons for current class and term
-  const lessons =
-    currentClass && currentTerm
-      ? getLessonsByClassAndTerm(currentClass.name, currentTerm.name)
+  const lessons = useMemo(() => {
+    return className && termName
+      ? getLessonsByClassAndTerm(className, termName)
       : [];
+  }, [className, termName]);
 
   // Get available subjects from lessons
   const availableSubjects = useMemo(() => {

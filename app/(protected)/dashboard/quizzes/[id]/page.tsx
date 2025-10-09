@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { getQuizById, type Quiz, type QuizQuestion } from "@/data/mock-quizzes";
 import { motion } from "framer-motion";
@@ -43,6 +43,22 @@ export default function QuizDetailPage() {
     }
   }, [quizId]);
 
+
+  const handleSubmitQuiz = useCallback(() => {
+    if (!quiz) return;
+    setIsCompleted(true);
+    let score = 0;
+    quiz.questions.forEach((question) => {
+      const userAnswer = answers[question.id];
+      if (userAnswer === question.correctAnswer) {
+        score += question.points;
+      }
+    });
+    alert(
+      `Quiz completed! Your score: ${score}/${quiz.totalPoints} (${Math.round((score / quiz.totalPoints) * 100)}%)`,
+    );
+  }, [answers, quiz]);
+
   useEffect(() => {
     let interval: NodeJS.Timeout;
     if (isStarted && !isCompleted && timeLeft > 0) {
@@ -59,7 +75,7 @@ export default function QuizDetailPage() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isStarted, isCompleted, timeLeft]);
+  }, [isStarted, isCompleted, timeLeft, handleSubmitQuiz]);
 
   if (!quiz) {
     return (
@@ -101,20 +117,7 @@ export default function QuizDetailPage() {
     }
   };
 
-  const handleSubmitQuiz = () => {
-    setIsCompleted(true);
-    // Calculate score
-    let score = 0;
-    quiz.questions.forEach((question) => {
-      const userAnswer = answers[question.id];
-      if (userAnswer === question.correctAnswer) {
-        score += question.points;
-      }
-    });
-    alert(
-      `Quiz completed! Your score: ${score}/${quiz.totalPoints} (${Math.round((score / quiz.totalPoints) * 100)}%)`,
-    );
-  };
+  // moved earlier
 
   if (!isStarted) {
     return (
