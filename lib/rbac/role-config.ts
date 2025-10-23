@@ -84,6 +84,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       "/admin",
       "/users",
       "/reports",
+      "/lessons", // Can view lessons
       "/profile",
     ],
     restrictedRoutes: [
@@ -97,7 +98,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
   },
 
   superadmin: {
-    homeRoute: "/dashboard/superadmin/lessons",
+    homeRoute: "/dashboard/superadmin",
     allowedRoutes: [
       "/dashboard/superadmin",
       "/dashboard",
@@ -141,10 +142,10 @@ export const PROTECTED_ROUTE_PATTERNS = {
   ],
 
   // Admin and above
-  ADMIN: ["/admin/users", "/admin/classes", "/admin/reports"],
+  ADMIN: ["/admin/users", "/admin/classes", "/admin/reports", "/dashboard/admin/lessons"],
 
   // Teacher and above
-  TEACHER: ["/admin/lessons", "/teacher/create", "/teacher/evaluate"],
+  TEACHER: ["/admin/lessons", "/teacher/create", "/teacher/evaluate", "/dashboard/lessons"],
 
   // Student/Guardian specific
   STUDENT: ["/dashboard/exercises", "/dashboard/progress"],

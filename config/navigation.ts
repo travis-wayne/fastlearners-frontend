@@ -511,6 +511,12 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             icon: "fileText",
             title: "System Logs",
           },
+          {
+            href: "/dashboard/api-test",
+            icon: "settings",
+            title: "API Testing",
+            description: "Test API connectivity and endpoints",
+          },
         ],
       },
     ],

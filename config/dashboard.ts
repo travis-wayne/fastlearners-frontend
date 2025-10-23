@@ -69,6 +69,12 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.ADMIN,
       },
       {
+        href: "/dashboard/admin/lessons",
+        icon: "graduationCap",
+        title: "Lessons",
+        authorizeOnly: UserRole.ADMIN,
+      },
+      {
         href: "/dashboard/superadmin/lessons",
         icon: "bookOpen",
         title: "Lesson Management",

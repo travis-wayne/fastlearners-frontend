@@ -1,289 +1,183 @@
-import axios from "axios";
+// Import types from separate file for better organization
+import {
+  ApiResponse,
+  ApiErrorResponse,
+  LessonsMetadataResponse,
+  LessonsListResponse,
+  LessonDetail,
+  LessonContent,
+  LessonFilters,
+} from '@/lib/types/lessons';
 
-const BASE_URL = "https://fastlearnersapp.com/api/v1";
+const BASE_URL = 'https://fastlearnersapp.com/api/v1/superadmin';
 
-// Types
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  content: T;
-  code: number;
+// Generic error handler for API responses
+class LessonsApiError extends Error {
+  constructor(
+    message: string,
+    public code: number,
+    public errors?: Record<string, string[]> | null
+  ) {
+    super(message);
+    this.name = 'LessonsApiError';
+  }
 }
 
-export interface Class {
-  id: number;
-  name: string;
-}
+import { getTokenFromCookies } from '@/lib/auth-cookies';
 
-export interface Subject {
-  id: number;
-  name: string;
-  class_id: number;
-}
-
-export interface ClassesAndSubjects {
-  classes: Class[];
-  subjects: Subject[];
-}
-
-export interface Lesson {
-  id: number;
-  class: string;
-  subject: string;
-  term: string;
-  week: number;
-  topic: string;
-  overview: string;
-  objectives: string[];
-  key_concepts: string[];
-  summary: string;
-  application: string[];
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Concept {
-  id: number;
-  lesson_name: string;
-  concept_name: string;
-  description: string;
-  examples: string;
-  exercises: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Example {
-  id: number;
-  concept_name: string;
-  example_title: string;
-  example_content: string;
-  explanation: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface Exercise {
-  id: number;
-  concept_name: string;
-  question: string;
-  options: string[];
-  correct_answer: string;
-  explanation: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface GeneralExercise {
-  id: number;
-  lesson_name: string;
-  question: string;
-  options: string[];
-  correct_answer: string;
-  explanation: string;
-  difficulty_level: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface CheckMarker {
-  id: number;
-  lesson_name: string;
-  marker_type: string;
-  criteria: string;
-  points: number;
-  description: string;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface LessonContent {
-  lesson: Lesson;
-  concepts: Concept[];
-  examples: Example[];
-  exercises: Exercise[];
-  general_exercises: GeneralExercise[];
-  check_markers: CheckMarker[];
-}
-
-export interface LessonsResponse {
-  lessons: Lesson[];
-  pagination: {
-    current_page: number;
-    last_page: number;
-    per_page: number;
-    total: number;
-    from: number;
-    to: number;
+// Helper function to get auth headers
+function getAuthHeaders(): HeadersInit {
+  const token = getTokenFromCookies();
+  
+  if (!token) {
+    console.warn('No auth token found');
+  }
+  
+  return {
+    'Authorization': `Bearer ${token}`,
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
   };
 }
 
-// Get auth token from storage
-const getAuthToken = (): string | null => {
-  if (typeof window !== "undefined") {
-    return localStorage.getItem("access_token");
+// Helper function to handle API responses
+async function handleApiResponse<T>(response: Response): Promise<T> {
+  const data = await response.json();
+  
+  if (!response.ok || !data.success) {
+    const errorData = data as ApiErrorResponse;
+    throw new LessonsApiError(
+      errorData.message || 'An error occurred',
+      errorData.code || response.status,
+      errorData.errors
+    );
+  }
+  
+  return (data as ApiResponse<T>).content;
+}
+
+/**
+ * Get classes, subjects, terms, and weeks metadata
+ */
+export async function getLessonsMetadata(): Promise<LessonsMetadataResponse> {
+  try {
+    const response = await fetch(`${BASE_URL}/lessons/get-classes-subjects-terms-weeks`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    return await handleApiResponse<LessonsMetadataResponse>(response);
+  } catch (error) {
+    if (error instanceof LessonsApiError) {
+      throw error;
+    }
+    throw new LessonsApiError('Failed to fetch lessons metadata', 500);
+  }
+}
+
+/**
+ * Get lessons filtered by class, subject, term, and week
+ */
+export async function getLessons(filters: LessonFilters): Promise<LessonsListResponse> {
+  try {
+    const response = await fetch(`${BASE_URL}/lessons/lessons/`, {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(filters),
+    });
+    
+    return await handleApiResponse<LessonsListResponse>(response);
+  } catch (error) {
+    if (error instanceof LessonsApiError) {
+      throw error;
+    }
+    throw new LessonsApiError('Failed to fetch lessons', 500);
+  }
+}
+
+/**
+ * Get specific lesson details by ID
+ */
+export async function getLessonById(lessonId: number): Promise<LessonDetail> {
+  try {
+    const response = await fetch(`${BASE_URL}/lessons/lesson/${lessonId}`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    return await handleApiResponse<LessonDetail>(response);
+  } catch (error) {
+    if (error instanceof LessonsApiError) {
+      throw error;
+    }
+    throw new LessonsApiError('Failed to fetch lesson details', 500);
+  }
+}
+
+/**
+ * Get specific lesson content by ID (includes concepts, exercises, etc.)
+ */
+export async function getLessonContent(lessonId: number): Promise<LessonContent> {
+  try {
+    const response = await fetch(`${BASE_URL}/lessons/lesson/${lessonId}/content`, {
+      method: 'GET',
+      headers: getAuthHeaders(),
+    });
+    
+    return await handleApiResponse<LessonContent>(response);
+  } catch (error) {
+    if (error instanceof LessonsApiError) {
+      throw error;
+    }
+    throw new LessonsApiError('Failed to fetch lesson content', 500);
+  }
+}
+
+/**
+ * Get lessons with pagination support
+ */
+export async function getLessonsPaginated(
+  filters: LessonFilters,
+  page = 1,
+  perPage = 20
+): Promise<LessonsListResponse> {
+  try {
+    const url = new URL(`${BASE_URL}/lessons/lessons/`);
+    url.searchParams.append('page', page.toString());
+    url.searchParams.append('per_page', perPage.toString());
+    
+    const response = await fetch(url.toString(), {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(filters),
+    });
+    
+    return await handleApiResponse<LessonsListResponse>(response);
+  } catch (error) {
+    if (error instanceof LessonsApiError) {
+      throw error;
+    }
+    throw new LessonsApiError('Failed to fetch paginated lessons', 500);
+  }
+}
+
+// Export the error class for use in components
+export { LessonsApiError };
+
+// Helper function to check if user is authorized (can be used in components)
+export function isUnauthorized(error: unknown): boolean {
+  return error instanceof LessonsApiError && error.code === 401;
+}
+
+// Helper function to check if it's a validation error
+export function isValidationError(error: unknown): boolean {
+  return error instanceof LessonsApiError && error.code === 422;
+}
+
+// Helper function to get validation errors
+export function getValidationErrors(error: unknown): Record<string, string[]> | null {
+  if (error instanceof LessonsApiError && error.errors) {
+    return error.errors;
   }
   return null;
-};
-
-// Create axios instance with auth headers
-const createAuthHeaders = () => {
-  const token = getAuthToken();
-  return token
-    ? {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-      }
-    : { Accept: "application/json" };
-};
-
-// Get classes and subjects for filtering
-export const getClassesAndSubjects = async (): Promise<ClassesAndSubjects> => {
-  try {
-    const response = await axios.get<ApiResponse<ClassesAndSubjects>>(
-      `${BASE_URL}/superadmin/lessons`,
-      { headers: createAuthHeaders() },
-    );
-    return response.data.content;
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch classes and subjects",
-    );
-  }
-};
-
-// Get lessons with optional filtering
-export const getLessons = async (params?: {
-  class_id?: number;
-  subject_id?: number;
-  term?: string;
-  week?: number;
-  search?: string;
-  page?: number;
-  per_page?: number;
-}): Promise<LessonsResponse> => {
-  try {
-    const queryParams = new URLSearchParams();
-
-    if (params?.class_id)
-      queryParams.append("class_id", params.class_id.toString());
-    if (params?.subject_id)
-      queryParams.append("subject_id", params.subject_id.toString());
-    if (params?.term) queryParams.append("term", params.term);
-    if (params?.week) queryParams.append("week", params.week.toString());
-    if (params?.search) queryParams.append("search", params.search);
-    if (params?.page) queryParams.append("page", params.page.toString());
-    if (params?.per_page)
-      queryParams.append("per_page", params.per_page.toString());
-
-    const url = `${BASE_URL}/superadmin/lessons/contents${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
-
-    const response = await axios.get<ApiResponse<LessonsResponse>>(url, {
-      headers: createAuthHeaders(),
-    });
-    return response.data.content;
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Failed to fetch lessons");
-  }
-};
-
-// Get specific lesson content by ID
-export const getLessonContent = async (
-  lessonId: number,
-): Promise<LessonContent> => {
-  try {
-    const response = await axios.get<ApiResponse<LessonContent>>(
-      `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/`,
-      { headers: createAuthHeaders() },
-    );
-    return response.data.content;
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch lesson content",
-    );
-  }
-};
-
-// Delete lesson
-export const deleteLesson = async (
-  lessonId: number,
-): Promise<{ success: boolean; message: string }> => {
-  try {
-    const response = await axios.delete<ApiResponse<any>>(
-      `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/`,
-      { headers: createAuthHeaders() },
-    );
-    return {
-      success: true,
-      message: response.data.message || "Lesson deleted successfully",
-    };
-  } catch (error: any) {
-    throw new Error(error.response?.data?.message || "Failed to delete lesson");
-  }
-};
-
-// Get trashed lessons
-export const getTrashedLessons = async (params?: {
-  page?: number;
-  per_page?: number;
-}): Promise<LessonsResponse> => {
-  try {
-    const queryParams = new URLSearchParams();
-
-    if (params?.page) queryParams.append("page", params.page.toString());
-    if (params?.per_page)
-      queryParams.append("per_page", params.per_page.toString());
-
-    const url = `${BASE_URL}/superadmin/lessons/trashed${queryParams.toString() ? `?${queryParams.toString()}` : ""}`;
-
-    const response = await axios.get<ApiResponse<LessonsResponse>>(url, {
-      headers: createAuthHeaders(),
-    });
-    return response.data.content;
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || "Failed to fetch trashed lessons",
-    );
-  }
-};
-
-// Restore lesson from trash
-export const restoreLesson = async (
-  lessonId: number,
-): Promise<{ success: boolean; message: string }> => {
-  try {
-    const response = await axios.post<ApiResponse<any>>(
-      `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/restore/`,
-      {},
-      { headers: createAuthHeaders() },
-    );
-    return {
-      success: true,
-      message: response.data.message || "Lesson restored successfully",
-    };
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || "Failed to restore lesson",
-    );
-  }
-};
-
-// Permanently delete lesson
-export const permanentlyDeleteLesson = async (
-  lessonId: number,
-): Promise<{ success: boolean; message: string }> => {
-  try {
-    const response = await axios.delete<ApiResponse<any>>(
-      `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/force-delete/`,
-      { headers: createAuthHeaders() },
-    );
-    return {
-      success: true,
-      message: response.data.message || "Lesson permanently deleted",
-    };
-  } catch (error: any) {
-    throw new Error(
-      error.response?.data?.message || "Failed to permanently delete lesson",
-    );
-  }
-};
+}
