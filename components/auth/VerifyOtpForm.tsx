@@ -76,16 +76,12 @@ export function VerifyOtpForm({
           description: "Your email has been successfully verified.",
         });
 
-        // Store the temporary token and navigate to create password
-        const { access_token, user } = response.content;
-
-        // Store user in auth store
+        // Store user in auth store (token is in HttpOnly cookie)
+        const { user } = response.content;
         setUser(user);
 
-        // Navigate to create password page with token
-        router.push(
-          `/auth/create-password?email=${encodeURIComponent(email || "")}&token=${encodeURIComponent(access_token)}`,
-        );
+        // Navigate to create password page (no token in URL)
+        router.push("/auth/create-password");
       } else {
         setError(
           response.message || "Email verification failed. Please try again.",

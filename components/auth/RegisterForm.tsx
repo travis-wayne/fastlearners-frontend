@@ -55,81 +55,26 @@ export function RegisterForm({
         setError(response.message || "Registration failed. Please try again.");
       }
     } catch (err: any) {
-      // Enhanced debug logging to understand the error structure
-      console.log("Registration error (full object):", err);
-      console.log("Error response:", err?.response);
-      console.log("Error response data:", err?.response?.data);
-      console.log("Error status:", err?.response?.status);
-
       let errorMessage = "Registration failed. Please try again.";
 
-      if (err && typeof err === "object") {
-        // Check if it's an Axios error with response data
-        if (err.response && err.response.data) {
-          const apiError = err.response.data;
-          console.log("API Error structure:", apiError);
-
-          // Handle API response with error message
-          if (apiError.message) {
-            errorMessage = apiError.message;
+      // Handle API response errors
+      if (err?.message) {
+        errorMessage = err.message;
+      }
+      // Handle validation errors from API
+      else if (err?.errors && typeof err.errors === "object") {
+        const emailErrors = err.errors.email;
+        if (emailErrors && Array.isArray(emailErrors)) {
+          errorMessage = emailErrors[0];
+        } else {
+          // Get the first error from any field
+          const firstError = Object.values(err.errors).flat()[0];
+          if (firstError && typeof firstError === "string") {
+            errorMessage = firstError;
           }
-          // Handle validation errors with specific field errors
-          else if (apiError.errors && typeof apiError.errors === "object") {
-            console.log("API validation errors:", apiError.errors);
-            const emailErrors = apiError.errors.email;
-            if (emailErrors && Array.isArray(emailErrors)) {
-              errorMessage = emailErrors[0];
-            } else {
-              // Get the first error from any field
-              const firstError = Object.values(apiError.errors).flat()[0];
-              if (firstError && typeof firstError === "string") {
-                errorMessage = firstError;
-              }
-            }
-          }
-          // Handle Laravel-style error format
-          else if (apiError.error && typeof apiError.error === "string") {
-            errorMessage = apiError.error;
-          }
-          // Handle specific status codes
-          else if (err.response.status === 422) {
-            errorMessage =
-              "The email address is already registered. Please try logging in instead.";
-          } else if (err.response.status === 400) {
-            errorMessage =
-              "Invalid email format. Please check your email and try again.";
-          } else if (err.response.status === 409) {
-            errorMessage =
-              "This email is already registered. Please try logging in instead.";
-          }
-        }
-        // Handle direct error message
-        else if (
-          err.message &&
-          err.message !== "Request failed with status code 422"
-        ) {
-          errorMessage = err.message;
-        }
-        // Handle validation errors at the top level
-        else if (err.errors && typeof err.errors === "object") {
-          const emailErrors = err.errors.email;
-          if (emailErrors && Array.isArray(emailErrors)) {
-            errorMessage = emailErrors[0];
-          } else {
-            // Get the first error from any field
-            const firstError = Object.values(err.errors).flat()[0];
-            if (firstError && typeof firstError === "string") {
-              errorMessage = firstError;
-            }
-          }
-        }
-        // Handle string errors
-        else if (typeof err === "string") {
-          errorMessage = err;
         }
       }
 
-      console.log("Final error message:", errorMessage);
       setError(errorMessage);
     } finally {
       setIsLoading(false);

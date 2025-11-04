@@ -16,13 +16,36 @@ import {
 import { api } from "./client";
 
 async function postJson<T>(path: string, body?: any): Promise<T> {
-  const r = await fetch(path, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: body ? JSON.stringify(body) : undefined,
-  });
-  const data = await r.json();
-  return data as T;
+  try {
+    const r = await fetch(path, {
+      method: "POST",
+      headers: { 
+        "Accept": "application/json",
+        "Content-Type": "application/json" 
+      },
+      body: body ? JSON.stringify(body) : undefined,
+    });
+    
+    const data = await r.json();
+    
+    // If response is not ok, throw the error data for proper handling
+    if (!r.ok) {
+      throw data;
+    }
+    
+    return data as T;
+  } catch (error: any) {
+    // Re-throw if it's already our API error format
+    if (error.success === false || error.message || error.errors) {
+      throw error;
+    }
+    // Otherwise, wrap in a generic error
+    throw {
+      success: false,
+      message: error.message || "Network error occurred",
+      code: 500,
+    };
+  }
 }
 
 export const authApi = {
