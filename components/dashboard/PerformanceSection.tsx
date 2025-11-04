@@ -30,6 +30,7 @@ export function PerformanceSection({
         <CardDescription className="text-gray-500 dark:text-slate-400">{description}</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
+        <div className="space-y-4">
         {items.map((perf, index) => (
           <div key={`${perf.subject}-${index}`} className="space-y-2">
             <div className="flex items-center justify-between">
@@ -53,6 +54,7 @@ export function PerformanceSection({
             </div>
           </div>
         ))}
+        </div>
       </CardContent>
     </Card>
   );

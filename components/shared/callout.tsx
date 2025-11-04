@@ -20,7 +20,7 @@ const dataCallout = {
   default: {
     icon: Info,
     classes:
-      "border-zinc-200 bg-gray-50 text-zinc-900 dark:bg-zinc-800 dark:text-zinc-200",
+      "border-border bg-muted text-foreground",
   },
   danger: {
     icon: CircleAlert,

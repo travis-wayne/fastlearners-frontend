@@ -87,7 +87,7 @@ export function WelcomeBackCard({ className }: WelcomeBackCardProps) {
     <WobbleCard
       containerClassName={`col-span-1 lg:col-span-2 h-full min-h-[300px] bg-gradient-to-br ${getRoleColor()} ${className}`}
     >
-      <div className="max-w-sm">
+      <div className="max-w-sm sm:max-w-md">
         {/* Header with greeting */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}

@@ -4,8 +4,11 @@ import axios, {
   InternalAxiosRequestConfig,
 } from "axios";
 
-import { getTokenFromCookies } from "@/lib/auth-cookies";
+import { clearAuthCookies, getTokenFromCookies } from "@/lib/auth-cookies";
 import { ApiResponse } from "@/lib/types/auth";
+import { useAuthStore } from "@/store/authStore";
+
+const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH !== "false"; // default to true
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
@@ -18,22 +21,49 @@ const apiClient: AxiosInstance = axios.create({
   },
 });
 
-// Token management - now uses cookies to match auth store
+// Token management - only used when not in HttpOnly mode
 export const tokenManager = {
   getToken: (): string | null => {
+    if (useHttpOnly) return null;
     return getTokenFromCookies();
   },
 
-  setToken: (token: string): void => {
-    // This should be handled by the auth store via setAuthCookies
-    console.warn("Use auth store setUser instead of tokenManager.setToken");
+  setToken: (_token: string): void => {
+    console.warn("tokenManager.setToken is ignored; use server HttpOnly cookies.");
   },
 
   removeToken: (): void => {
-    // This should be handled by the auth store via logout
-    console.warn("Use auth store logout instead of tokenManager.removeToken");
+    console.warn("tokenManager.removeToken is ignored; use server /api/auth/logout.");
   },
 };
+
+// Central 401 handler to avoid loops and manage app state
+let isHandling401 = false;
+export function handleUnauthorized() {
+  if (typeof window === "undefined") return; // SSR: nothing to do
+  if (isHandling401) return; // prevent loops
+  isHandling401 = true;
+
+  try {
+    // Clear auth state
+    useAuthStore.setState({ user: null, isAuthenticated: false, error: null, isLoading: false });
+
+    // Clear legacy client cookies if any
+    try {
+      clearAuthCookies();
+    } catch {}
+
+    const loginPath = "/auth/login";
+    const isOnLogin = window.location.pathname.startsWith(loginPath);
+    const callbackUrl = encodeURIComponent(window.location.href);
+
+    if (!isOnLogin) {
+      window.location.href = `${loginPath}?callbackUrl=${callbackUrl}`;
+    }
+  } finally {
+    // Keep flag set to avoid rapid loops; navigation will replace page
+  }
+}
 
 // Request interceptor
 apiClient.interceptors.request.use(
@@ -42,6 +72,9 @@ apiClient.interceptors.request.use(
 
     if (token && config.headers) {
       config.headers.Authorization = `Bearer ${token}`;
+    } else if (config.headers && useHttpOnly) {
+      // Ensure no Authorization header leaks in HttpOnly mode
+      delete (config.headers as any)["Authorization"];
     }
 
     // Don't set Content-Type for FormData
@@ -69,12 +102,8 @@ apiClient.interceptors.response.use(
         typeof window !== "undefined" &&
         window.location.pathname.includes("/auth/login");
 
-      if (!isLoginAttempt) {
-        tokenManager.removeToken();
-
-        if (typeof window !== "undefined" && !isOnLoginPage) {
-          window.location.href = "/auth/login";
-        }
+      if (!isLoginAttempt && !isOnLoginPage) {
+        handleUnauthorized();
       }
     }
 
@@ -85,6 +114,17 @@ apiClient.interceptors.response.use(
         message: "Network error. Please check your internet connection.",
         code: 0,
         content: null,
+      });
+    }
+
+    // Normalize 422 validation errors
+    if (error.response.status === 422) {
+      const d: any = error.response.data || {};
+      return Promise.reject({
+        success: false,
+        message: d.message || "Validation failed",
+        code: 422,
+        errors: d.errors || null,
       });
     }
 

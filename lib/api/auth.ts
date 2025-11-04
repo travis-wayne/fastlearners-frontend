@@ -13,90 +13,72 @@ import {
   VerifyResetCodeData,
 } from "@/lib/types/auth";
 
-import { api, tokenManager } from "./client";
+import { api } from "./client";
+
+async function postJson<T>(path: string, body?: any): Promise<T> {
+  const r = await fetch(path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  const data = await r.json();
+  return data as T;
+}
 
 export const authApi = {
-  // Registration flow
+  // Registration flow → map to Next server routes
   register: async (data: RegisterData): Promise<ApiResponse> => {
-    const response = await api.post("/register", data);
-    return response.data;
+    return postJson<ApiResponse>("/api/auth/register", data);
   },
 
   verifyEmail: async (
     data: VerifyEmailData,
   ): Promise<ApiResponse<AuthTokens>> => {
-    const response = await api.post<AuthTokens>("/verify-email", data);
-
-    if (response.data.success && response.data.content?.access_token) {
-      tokenManager.setToken(response.data.content.access_token);
-    }
-
-    return response.data;
+    return postJson<ApiResponse<AuthTokens>>("/api/auth/verify-email", data);
   },
 
   createPassword: async (
     data: CreatePasswordData,
   ): Promise<ApiResponse<AuthTokens>> => {
-    const response = await api.post<AuthTokens>("/create-password", data);
-
-    if (response.data.success && response.data.content?.access_token) {
-      tokenManager.setToken(response.data.content.access_token);
-    }
-
-    return response.data;
+    // Prefer using CreatePasswordForm fetch; keep API for compatibility
+    return postJson<ApiResponse<AuthTokens>>("/api/auth/create-password", data);
   },
 
   resendVerificationCode: async (email: string): Promise<ApiResponse> => {
-    const response = await api.post("/resend-verification-code", { email });
-    return response.data;
+    return postJson<ApiResponse>("/api/auth/resend-verification-code", { email });
   },
 
-  // Login/Logout
+  // Login/Logout → map to server routes
   login: async (
     credentials: LoginCredentials,
   ): Promise<ApiResponse<AuthTokens>> => {
-    const response = await api.post<AuthTokens>("/login", credentials);
-
-    if (response.data.success && response.data.content?.access_token) {
-      tokenManager.setToken(response.data.content.access_token);
-    }
-
-    return response.data;
+    return postJson<ApiResponse<AuthTokens>>("/api/auth/login", credentials);
   },
 
   googleRedirect: async (): Promise<ApiResponse> => {
-    const response = await api.get("/google/redirect");
-    return response.data;
+    // Not used; Google flow handled via /api/auth/google/callback
+    return { success: false, message: "Not implemented", code: 501 } as any;
   },
 
   logout: async (): Promise<ApiResponse> => {
-    try {
-      const response = await api.post("/logout");
-      return response.data;
-    } finally {
-      tokenManager.removeToken();
-    }
+    return postJson<ApiResponse>("/api/auth/logout");
   },
 
-  // Password reset flow
+  // Password reset flow → map to server routes
   forgotPassword: async (data: ForgotPasswordData): Promise<ApiResponse> => {
-    const response = await api.post("/forgot-password", data);
-    return response.data;
+    return postJson<ApiResponse>("/api/auth/forgot-password", data);
   },
 
   verifyResetCode: async (data: VerifyResetCodeData): Promise<ApiResponse> => {
-    const response = await api.post("/verify-reset-code", data);
-    return response.data;
+    return postJson<ApiResponse>("/api/auth/verify-reset-code", data);
   },
 
   resendResetCode: async (email: string): Promise<ApiResponse> => {
-    const response = await api.post("/resend-reset-code", { email });
-    return response.data;
+    return postJson<ApiResponse>("/api/auth/resend-reset-code", { email });
   },
 
   resetPassword: async (data: ResetPasswordData): Promise<ApiResponse> => {
-    const response = await api.post("/reset-password", data);
-    return response.data;
+    return postJson<ApiResponse>("/api/auth/reset-password", data);
   },
 };
 
@@ -129,7 +111,8 @@ export const profileApi = {
 
 // Helper functions
 export const isAuthenticated = (): boolean => {
-  return tokenManager.getToken() !== null;
+  // In HttpOnly mode, client cannot directly know; prefer calling /api/auth/session
+  return false;
 };
 
 export const getUserFromStorage = (): any => {
@@ -147,7 +130,6 @@ export const setUserInStorage = (user: any): void => {
 };
 
 export const clearAuthData = (): void => {
-  tokenManager.removeToken();
   if (typeof window !== "undefined") {
     localStorage.removeItem("user");
   }

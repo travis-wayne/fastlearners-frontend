@@ -229,7 +229,7 @@ function FileUploadSection({
               className={cn(
                 "rounded-lg p-2",
                 disabled
-                  ? "bg-gray-100 dark:bg-gray-800"
+                  ? "bg-muted"
                   : success
                     ? "bg-green-100 dark:bg-green-900"
                     : "bg-blue-100 dark:bg-blue-900",
@@ -239,7 +239,7 @@ function FileUploadSection({
                 className={cn(
                   "size-5",
                   disabled
-                    ? "text-gray-500"
+                    ? "text-muted-foreground"
                     : success
                       ? "text-green-600 dark:text-green-400"
                       : "text-blue-600 dark:text-blue-400",
@@ -263,7 +263,7 @@ function FileUploadSection({
               className={cn(
                 "rounded-lg border-2 border-dashed p-8 text-center transition-all duration-200",
                 disabled
-                  ? "cursor-not-allowed border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50"
+                  ? "cursor-not-allowed border-border bg-muted"
                   : isDragOver
                     ? "border-primary bg-primary/5 dark:bg-primary/10"
                     : "cursor-pointer border-muted-foreground/25 hover:border-muted-foreground/50 hover:bg-muted/50",
@@ -276,7 +276,7 @@ function FileUploadSection({
               <CloudUpload
                 className={cn(
                   "mx-auto mb-4 size-12",
-                  disabled ? "text-gray-400" : "text-muted-foreground",
+                  disabled ? "text-muted-foreground" : "text-muted-foreground",
                 )}
               />
               <p className="mb-2 text-base font-medium">
@@ -537,7 +537,7 @@ export function SmartCSVUpload({
       </Card>
 
       <Tabs defaultValue="lessons" className="w-full">
-        <TabsList className="mb-8 grid h-12 w-full grid-cols-7 bg-muted/40 dark:bg-muted/20">
+        <TabsList className="mb-8 flex h-12 w-full gap-1 overflow-x-auto bg-muted/40 md:grid md:grid-cols-7 dark:bg-muted/20">
           {mainConfigs.map((config) => (
             <TabsTrigger
               key={config.key}

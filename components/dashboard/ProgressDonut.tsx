@@ -116,7 +116,7 @@ export function ProgressDonut({
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex items-center justify-center gap-6">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
           <div className="flex items-center gap-2">
             <div className="size-3 rounded-full" style={{ backgroundColor: subjectColor }} />
             <span className="text-sm text-slate-400">Completed</span>

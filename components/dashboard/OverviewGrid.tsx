@@ -36,9 +36,9 @@ export function OverviewGrid({
         <CardDescription className="text-gray-500 dark:text-slate-400">{description}</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-lg bg-muted p-3">
+            <div key={stat.label} className="rounded-lg border border-border bg-muted p-3">
               <div className="mb-2 flex items-center justify-between text-gray-900 dark:text-slate-100">
                 <div className={`rounded-lg bg-muted p-2 ${stat.iconColorClass ?? ""}`}>
                   {stat.icon}

@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { profileApi } from "@/lib/api/auth";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -36,6 +35,8 @@ export function RoleSelectionForm() {
   >(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [childEmail, setChildEmail] = useState("");
+  const [childPhone, setChildPhone] = useState("");
 
   // Ensure auth store is properly hydrated on mount
   useEffect(() => {
@@ -88,34 +89,45 @@ export function RoleSelectionForm() {
       setIsLoading(true);
       setError(null);
 
-      // TODO: Replace with actual API endpoint when ready
-      // Call API to update user role
-      const result = await profileApi.updateRole(selectedRole);
-
-      if (!result.success) {
-        throw new Error(result.message || "Failed to update role");
+      // Call server route to set role
+      const payload: any = { user_role: selectedRole };
+      if (selectedRole === "guardian") {
+        payload.child_email = childEmail || undefined;
+        payload.child_phone = childPhone || undefined;
       }
 
-      // Update user in auth store
-      const updatedUser = {
-        ...user,
-        role: [selectedRole], // Update role array
-      };
-      updateUserProfile(updatedUser);
+      const r = await fetch("/api/auth/set-role", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+      const result = await r.json();
+      if (!r.ok || !result?.success) {
+        throw new Error(result?.message || "Failed to update role");
+      }
+
+      // Update user in auth store from response if available
+      if (result.user) {
+        useAuthStore.getState().setUser(result.user);
+      } else {
+        // Fallback: refresh session
+        const sess = await fetch("/api/auth/session");
+        const sessData = await sess.json();
+        if (sess.ok && sessData?.user) {
+          useAuthStore.getState().setUser(sessData.user);
+        }
+      }
 
       toast.success(`Role selected!`, {
         description: `You are now registered as a ${selectedRole}`,
       });
 
-      // Determine redirect route based on selected role
-      const targetRoute =
-        roleOptions.find((option) => option.value === selectedRole)?.route ||
-        "/dashboard";
-
-      // Add delay to show success message
-      setTimeout(() => {
-        router.push(targetRoute);
-      }, 1000);
+      // Determine redirect route based on role using RBAC utils
+      const nextUser = useAuthStore.getState().user;
+      const targetRoute = require("@/lib/rbac/role-config").RBACUtils.getHomeRoute(
+        nextUser?.role?.[0] || selectedRole,
+      );
+      router.push(targetRoute);
     } catch (err: any) {
       console.error("Role selection error:", err);
       setError(err.message || "Failed to select role. Please try again.");
@@ -142,7 +154,9 @@ export function RoleSelectionForm() {
   // Check if user can change their role (only guests can)
   if (!canChangeRole()) {
     const currentRole = user.role[0];
-    const roleRoute = currentRole === "student" ? "/dashboard" : "/dashboard";
+    const roleRoute = require("@/lib/rbac/role-config").RBACUtils.getHomeRoute(
+      currentRole,
+    );
 
     return (
       <div className="flex flex-col items-center gap-4 text-center">
@@ -178,6 +192,32 @@ export function RoleSelectionForm() {
       )}
 
       <div className="mx-auto max-w-md space-y-4">
+        {selectedRole === "guardian" && (
+          <div className="grid gap-3 rounded-lg border border-gray-200 p-4">
+            <p className="text-sm text-muted-foreground">Provide your child&apos;s details</p>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium" htmlFor="childEmail">Child Email</label>
+              <input
+                id="childEmail"
+                className="h-10 rounded-md border border-gray-300 px-3 text-sm"
+                value={childEmail}
+                onChange={(e) => setChildEmail(e.target.value)}
+                placeholder="child@example.com"
+              />
+            </div>
+            <div className="grid gap-2">
+              <label className="text-sm font-medium" htmlFor="childPhone">Child Phone</label>
+              <input
+                id="childPhone"
+                className="h-10 rounded-md border border-gray-300 px-3 text-sm"
+                value={childPhone}
+                onChange={(e) => setChildPhone(e.target.value)}
+                placeholder="080xxxxxxxx"
+              />
+            </div>
+          </div>
+        )}
+
         {roleOptions.map((option) => {
           const Icon = option.icon;
           const isSelected = selectedRole === option.value;

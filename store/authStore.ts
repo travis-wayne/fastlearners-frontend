@@ -1,15 +1,8 @@
 import { create } from "zustand";
 
 import { authApi } from "@/lib/api/auth";
+import { getUserFromCookies, isAuthenticatedFromCookies } from "@/lib/auth-cookies";
 import {
-  clearAuthCookies,
-  getAuthCookies,
-  getUserFromCookies,
-  isAuthenticatedFromCookies,
-  setAuthCookies,
-} from "@/lib/auth-cookies";
-import {
-  AuthTokens,
   LoginCredentials,
   ProfileStatus,
   User,
@@ -60,13 +53,6 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   // Actions
   setUser: (user: User) => {
-    const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
-    if (!useHttpOnly) {
-      // Legacy client-side cookies path
-      const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-      setAuthCookies({ token: "dummy-token", user, expiresAt });
-    }
-
     set({ user, isAuthenticated: true, error: null });
   },
 
@@ -76,7 +62,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   hydrate: () => {
     if (typeof window !== "undefined") {
-      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
+      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH !== "false"; // default to true
       if (useHttpOnly) {
         // Fetch session from server (HttpOnly cookies)
         fetch("/api/auth/session")
@@ -105,62 +91,18 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
-      if (useHttpOnly) {
-        const r = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(credentials),
-        });
-        const data = await r.json();
-        if (r.ok && data?.user) {
-          set({ user: data.user, isAuthenticated: true, error: null });
-        } else {
-          const errorMessage = data?.message || "Login failed";
-          set({ error: errorMessage, isAuthenticated: false, user: null });
-          throw new Error(errorMessage);
-        }
-        return;
-      }
-
-      const response = await authApi.login(credentials);
-
-      if (response.success && response.content) {
-        const { user, access_token } = response.content;
-
-        // DEBUG: Log user data from API response
-        console.log("🔍 [AUTH DEBUG] Login API Response:");
-        console.log("📧 User Email:", user.email);
-        console.log("👤 User Role:", user.role);
-        console.log("📋 Full User Object:", JSON.stringify(user, null, 2));
-        console.log("🔑 Access Token:", access_token ? "Present" : "Missing");
-
-        // Set cookies with token and user data
-        const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-        setAuthCookies({
-          token: access_token,
-          user,
-          expiresAt,
-        });
-
-        // DEBUG: Log what we're storing in the auth state
-        console.log("💾 [AUTH DEBUG] Storing in Auth State:");
-        console.log("📧 Email:", user.email);
-        console.log("👤 Roles:", user.role);
-        console.log("🎯 Primary Role:", user.role[0]);
-
-        set({
-          user,
-          isAuthenticated: true,
-          error: null,
-        });
+      // Always use server route to set HttpOnly cookies
+      const r = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(credentials),
+      });
+      const data = await r.json();
+      if (r.ok && data?.user) {
+        set({ user: data.user, isAuthenticated: true, error: null });
       } else {
-        const errorMessage = response.message || "Login failed";
-        set({
-          error: errorMessage,
-          isAuthenticated: false,
-          user: null,
-        });
+        const errorMessage = data?.message || "Login failed";
+        set({ error: errorMessage, isAuthenticated: false, user: null });
         throw new Error(errorMessage);
       }
     } catch (error: any) {
@@ -188,44 +130,17 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
-      if (useHttpOnly) {
-        // If Google auth is handled server-side, we would hit a callback route that sets cookies.
-        // For now, emulate standard login by setting the cookies via server route not implemented here.
-        const r = await fetch("/api/auth/login", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email_phone: data.user.email, password: "google-oauth" }),
-        });
-        if (!r.ok) throw new Error("Google auth (server) failed");
-      }
-
-      // DEBUG: Log Google auth user data
-      console.log("🔍 [AUTH DEBUG] Google Login Data:");
-      console.log("📧 User Email:", data.user.email);
-      console.log("👤 User Role:", data.user.role);
-      console.log("📋 Full User Object:", JSON.stringify(data.user, null, 2));
-      console.log(
-        "🔑 Access Token:",
-        data.access_token ? "Present" : "Missing",
-      );
-
-      // Set cookies with token and user data
-      const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-      setAuthCookies({
-        token: data.access_token,
-        user: data.user,
-        expiresAt,
+      // Call server login to set HttpOnly cookies (adjust payload as per backend support)
+      const r = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email_phone: data.user.email, password: "google-oauth" }),
       });
-
-      // DEBUG: Log what we're storing in the auth state
-      console.log("💾 [AUTH DEBUG] Storing Google User in Auth State:");
-      console.log("📧 Email:", data.user.email);
-      console.log("👤 Roles:", data.user.role);
-      console.log("🎯 Primary Role:", data.user.role[0]);
+      if (!r.ok) throw new Error("Google auth (server) failed");
+      const payload = await r.json();
 
       set({
-        user: data.user,
+        user: payload?.user || data.user,
         isAuthenticated: true,
         error: null,
       });
@@ -247,17 +162,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   logout: async () => {
     try {
       set({ isLoading: true });
-      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH === "true";
-      if (useHttpOnly) {
-        await fetch("/api/auth/logout", { method: "POST" });
-      } else {
-        await authApi.logout();
-      }
+      await fetch("/api/auth/logout", { method: "POST" });
     } catch (error) {
       console.error("Logout API error:", error);
     } finally {
-      // Clear client-side cookies if used
-      clearAuthCookies();
       set({
         user: null,
         isAuthenticated: false,

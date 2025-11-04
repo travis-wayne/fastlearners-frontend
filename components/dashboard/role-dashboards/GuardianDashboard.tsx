@@ -131,7 +131,7 @@ export function GuardianDashboard() {
   );
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 p-4 md:p-6">
       {/* Header banner */}
       <div className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}>
         <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
@@ -244,15 +244,15 @@ export function GuardianDashboard() {
           <CardTitle className="text-lg">View Performance</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <div className="grid grid-cols-[220px_1fr] items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground">
+            <div className="rounded-md border">
+              <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground">
               <span>Performance</span>
               <span>Lesson’s Progress</span>
             </div>
             <Separator />
             <div className="divide-y">
               {performance.map((row) => (
-                <div key={row.subject} className="grid grid-cols-[220px_1fr] items-center gap-4 px-4 py-3">
+                <div key={row.subject} className="grid grid-cols-1 md:grid-cols-[220px_1fr] items-center gap-4 px-4 py-3">
                   <span className="text-sm">{row.subject}</span>
                   <div className="flex items-center gap-3">
                     <div className="h-2 w-full rounded bg-muted">

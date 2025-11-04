@@ -43,7 +43,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
 
   if (compact) {
     return (
-      <Card className="group cursor-pointer border-slate-200 bg-white transition-all duration-200 hover:shadow-md dark:border-slate-700 dark:bg-slate-900"
+<Card className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-md"
             onClick={handleClick}>
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
@@ -71,7 +71,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
   }
 
   return (
-    <Card className="group cursor-pointer border-slate-200 bg-white transition-all duration-200 hover:shadow-lg dark:border-slate-700 dark:bg-slate-900"
+<Card className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-lg"
           onClick={handleClick}>
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
@@ -132,7 +132,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
 function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   if (compact) {
     return (
-      <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
         <CardContent className="p-4">
           <div className="space-y-3">
             <Skeleton className="h-5 w-3/4" />
@@ -148,7 +148,7 @@ function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-    <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
       <CardHeader className="pb-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2">

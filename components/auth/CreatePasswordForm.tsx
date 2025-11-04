@@ -6,19 +6,12 @@ import { useAuthStore } from "@/store/authStore";
 import { AlertCircle, CheckCircle2, Eye, EyeOff, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { authApi } from "@/lib/api/auth";
-import { setAuthCookies } from "@/lib/auth-cookies";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-interface CreatePasswordFormProps {
-  email?: string;
-  token?: string;
-}
-
-export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
+export function CreatePasswordForm() {
   const router = useRouter();
   const { setUser } = useAuthStore();
 
@@ -49,86 +42,34 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    console.log("=== CREATE PASSWORD FORM SUBMISSION ===");
-    console.log("Form data:", {
-      email,
-      token,
-      passwordLength: password.length,
-    });
-    console.log("Validation:", {
-      isPasswordValid,
-      doPasswordsMatch,
-      canSubmit,
-    });
-
     if (!canSubmit) {
-      console.log("Form submission blocked - validation failed");
-      return;
-    }
-
-    if (!email || !token) {
-      setError(
-        "Missing email or token. Please try the registration process again.",
-      );
       return;
     }
 
     try {
       setIsLoading(true);
       setError(null);
-      console.log("Making API call to create password...");
 
-      const response = await authApi.createPassword({
-        email,
-        password,
-        password_confirmation: confirmPassword,
-        token,
+      const r = await fetch("/api/auth/create-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, password_confirmation: confirmPassword }),
       });
+      const response = await r.json();
 
-      console.log("API Response:", response);
-
-      if (response.success) {
-        console.log("Password created successfully!");
+      if (r.ok && response?.success) {
         setSuccess(true);
-
         toast.success("Password created!", {
-          description: "Redirecting to your dashboard...",
+          description: "Continue by selecting your role",
         });
 
-        // Handle auth tokens if present
-        if (response.content?.access_token && response.content?.user) {
-          console.log("Setting auth cookies and user data");
-          const { access_token, user } = response.content;
-
-          const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000;
-          setAuthCookies({ token: access_token, user, expiresAt });
-          setUser(user);
-        }
-
-        // Redirect to role selection page
-        console.log("Redirecting to /role...");
-
-        // Try multiple redirect methods
         setTimeout(() => {
-          console.log("Attempting router.push to /role");
-          router.push("/role");
-
-          // Fallback after 1 second
-          setTimeout(() => {
-            if (window.location.pathname.includes("create-password")) {
-              console.log("Router.push failed, using window.location.href");
-              window.location.href = "/role";
-            }
-          }, 1000);
+          router.push("/auth/set-role");
         }, 200);
       } else {
-        console.log("API returned error:", response.message);
-        setError(
-          response.message || "Failed to create password. Please try again.",
-        );
+        setError(response?.message || "Failed to create password. Please try again.");
       }
     } catch (err: any) {
-      console.error("Create password error:", err);
       setError("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);
@@ -136,8 +77,7 @@ export function CreatePasswordForm({ email, token }: CreatePasswordFormProps) {
   };
 
   const handleManualRedirect = () => {
-    console.log("Manual redirect button clicked");
-    window.location.href = "/role";
+    window.location.href = "/auth/set-role";
   };
 
   if (success) {

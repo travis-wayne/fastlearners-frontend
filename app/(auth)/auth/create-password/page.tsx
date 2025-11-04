@@ -9,12 +9,10 @@ import { CreatePasswordForm } from "@/components/auth/CreatePasswordForm";
 
 function CreatePasswordContent() {
   const searchParams = useSearchParams();
-  const email = searchParams.get("email") || "";
-  const token = searchParams.get("token") || "";
-
+  // Email/token are no longer read from query; server uses HttpOnly cookie
   return (
     <AuthLayout subtitle="Set up your secure password">
-      <CreatePasswordForm email={email} token={token} />
+      <CreatePasswordForm />
     </AuthLayout>
   );
 }

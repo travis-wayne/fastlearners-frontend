@@ -55,7 +55,7 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-    <Card className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+<Card className="border-border bg-card">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -105,7 +105,7 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
                   </ul>
                 )}
                 {desc.image_path && (
-                  <div className="rounded-lg bg-slate-50 p-4 text-center dark:bg-slate-800">
+<div className="rounded-lg bg-muted p-4 text-center">
                     <FileText className="mx-auto mb-2 size-8 text-slate-400" />
                     <p className="text-sm text-slate-500">Image: {desc.image_path}</p>
                   </div>
@@ -140,7 +140,7 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
             )}
 
             {/* Mark as completed button */}
-            <div className="border-t border-slate-200 pt-4 dark:border-slate-700">
+<div className="border-t border-border pt-4">
               <Button
                 onClick={() => onMarkCompleted(`concept_${concept.order_index - 1}`)}
                 disabled={isCompleted}
@@ -316,7 +316,7 @@ function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 function LoadingSkeleton() {
   return (
     <div className="space-y-6">
-      <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
         <CardHeader>
           <div className="space-y-3">
             <Skeleton className="h-8 w-3/4" />
@@ -337,7 +337,7 @@ function LoadingSkeleton() {
       </Card>
       
       {Array.from({ length: 3 }).map((_, index) => (
-        <Card key={index} className="bg-white dark:bg-slate-900">
+<Card key={index} className="bg-card">
           <CardHeader>
             <Skeleton className="h-6 w-1/2" />
           </CardHeader>
@@ -423,7 +423,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
 
   if (!selectedLesson) {
     return (
-      <Card className="border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
+<Card className="border-dashed border-border bg-muted">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <BookOpen className="mb-4 size-12 text-slate-400" />
           <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
@@ -525,7 +525,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
 
         <TabsContent value="overview" className="space-y-6">
           {/* Overview */}
-          <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="size-5 text-blue-600" />
@@ -559,7 +559,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
 
           {/* Objectives */}
           {lesson.objectives.length > 0 && (
-            <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="size-5 text-emerald-600" />
@@ -605,7 +605,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
 
           {/* Key Concepts Summary */}
           {Object.keys(lesson.key_concepts).length > 0 && (
-            <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lightbulb className="size-5 text-yellow-600" />
@@ -631,7 +631,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
 
           {/* Summary and Application */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Summary</CardTitle>
               </CardHeader>
@@ -651,7 +651,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
               </CardContent>
             </Card>
 
-            <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Application</CardTitle>
               </CardHeader>
@@ -684,7 +684,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
               />
             ))
           ) : (
-            <Card className="border-dashed bg-slate-50 dark:bg-slate-900">
+<Card className="border-dashed bg-muted">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Brain className="mb-4 size-12 text-slate-400" />
                 <p className="text-slate-600 dark:text-slate-400">
@@ -698,7 +698,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
         <TabsContent value="exercises" className="space-y-6">
           {lesson.general_exercises.length > 0 ? (
             <>
-              <Card className="bg-white dark:bg-slate-900">
+<Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Trophy className="size-5 text-orange-600" />
@@ -741,7 +741,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
               </Card>
             </>
           ) : (
-            <Card className="border-dashed bg-slate-50 dark:bg-slate-900">
+<Card className="border-dashed bg-muted">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Trophy className="mb-4 size-12 text-slate-400" />
                 <p className="text-slate-600 dark:text-slate-400">

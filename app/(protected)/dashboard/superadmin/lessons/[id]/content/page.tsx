@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getLessonContent, LessonsApiError } from "@/lib/api/lessons";
+import { getLessonContent as getContent, getErrorMessage } from "@/lib/api/lessons-api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -26,11 +26,13 @@ export default function LessonContentPage() {
       setLoading(true);
       setError(null);
       try {
-        const data = await getLessonContent(id);
-        if (mounted) setContent(data);
+        const res = await getContent(id);
+        if (mounted) {
+          if (res.success) setContent(res.content);
+          else setError(res.message || "Failed to load content");
+        }
       } catch (e: any) {
-        const message = e instanceof LessonsApiError ? e.message : (e?.message || "Failed to load content");
-        if (mounted) setError(message);
+        if (mounted) setError(getErrorMessage(e));
       } finally {
         if (mounted) setLoading(false);
       }
@@ -40,7 +42,7 @@ export default function LessonContentPage() {
   }, [id]);
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Lesson Content</h1>
         <div className="flex gap-2">

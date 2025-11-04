@@ -120,7 +120,7 @@ export default function BrowseLessonsPage() {
   const itemVariants = { hidden: { y: 12, opacity: 0 }, visible: { y: 0, opacity: 1 } };
 
   return (
-    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="space-y-6 p-2 md:p-0">
+    <motion.div variants={containerVariants} initial="hidden" animate="visible" className="container mx-auto space-y-6 p-4 md:p-6">
       <motion.div variants={itemVariants} className="flex items-center gap-4">
         <Link href="/dashboard/superadmin">
           <Button variant="ghost" size="sm">

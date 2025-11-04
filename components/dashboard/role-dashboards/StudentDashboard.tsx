@@ -263,7 +263,7 @@ export function StudentDashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8 p-6"
+      className="container mx-auto space-y-8 p-4 md:p-6"
     >
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
@@ -501,7 +501,8 @@ export function StudentDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Table>
+            <div className="w-full overflow-x-auto">
+              <Table className="min-w-[680px]">
               <TableHeader>
                 <TableRow>
                   <TableHead>Subject</TableHead>
@@ -543,6 +544,7 @@ export function StudentDashboard() {
                 ))}
               </TableBody>
             </Table>
+            </div>
           </CardContent>
         </Card>
       </motion.div>
