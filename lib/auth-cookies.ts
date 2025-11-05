@@ -1,15 +1,8 @@
 import Cookies from "js-cookie";
-
-import { User } from "@/lib/types/auth";
-
-// Cookie names (for transitional read-only mode)
-const AUTH_TOKEN_COOKIE = "auth_token";
-const AUTH_USER_COOKIE = "auth_user";
-const AUTH_EXPIRES_COOKIE = "auth_expires";
+import { AUTH_TOKEN_COOKIE, AUTH_EXPIRES_COOKIE } from "@/lib/server/cookie-constants";
 
 export interface AuthCookieData {
   token: string;
-  user: User;
   expiresAt: number;
 }
 
@@ -33,14 +26,11 @@ export function setAuthCookies(_data: AuthCookieData): void {
 export function getAuthCookies(): AuthCookieData | null {
   try {
     const token = Cookies.get(AUTH_TOKEN_COOKIE);
-    const userStr = Cookies.get(AUTH_USER_COOKIE);
     const expiresStr = Cookies.get(AUTH_EXPIRES_COOKIE);
 
-    if (!token || !userStr || !expiresStr) {
+    if (!token || !expiresStr) {
       return null;
     }
-
-    const user = JSON.parse(userStr) as User;
     const expiresAt = parseInt(expiresStr);
 
     // Check if token is expired
@@ -49,7 +39,7 @@ export function getAuthCookies(): AuthCookieData | null {
       return null;
     }
 
-    return { token, user, expiresAt };
+    return { token, expiresAt };
   } catch {
     clearAuthCookies(); // Clear corrupted cookies
     return null;
@@ -62,7 +52,6 @@ export function getAuthCookies(): AuthCookieData | null {
 export function clearAuthCookies(): void {
   try {
     Cookies.remove(AUTH_TOKEN_COOKIE);
-    Cookies.remove(AUTH_USER_COOKIE);
     Cookies.remove(AUTH_EXPIRES_COOKIE);
   } catch {
     // ignore
@@ -71,10 +60,6 @@ export function clearAuthCookies(): void {
 
 export function isAuthenticatedFromCookies(): boolean {
   return getAuthCookies() !== null;
-}
-
-export function getUserFromCookies(): User | null {
-  return getAuthCookies()?.user || null;
 }
 
 export function getTokenFromCookies(): string | null {
@@ -98,16 +83,13 @@ export function parseServerCookies(cookieString?: string): AuthCookieData | null
     );
 
     const token = cookies[AUTH_TOKEN_COOKIE];
-    const userStr = cookies[AUTH_USER_COOKIE];
     const expiresStr = cookies[AUTH_EXPIRES_COOKIE];
 
-    if (!token || !userStr || !expiresStr) return null;
-
-    const user = JSON.parse(userStr) as User;
+    if (!token || !expiresStr) return null;
     const expiresAt = parseInt(expiresStr);
     if (Number.isNaN(expiresAt) || Date.now() >= expiresAt) return null;
 
-    return { token, user, expiresAt };
+    return { token, expiresAt };
   } catch {
     return null;
   }

@@ -22,8 +22,8 @@ import { Icons } from "@/components/shared/icons";
 
 interface NavUserProps {
   user: {
-    name: string;
-    email: string;
+    name?: string | null;
+    email?: string | null;
     image?: string | null;
     role?: string[];
   };
@@ -40,13 +40,15 @@ export function NavUser({ user }: NavUserProps) {
     router.push("/auth/signin");
   };
 
-  const getInitials = (name: string) => {
-    return name
-      .split(" ")
-      .map((word) => word[0])
-      .join("")
-      .toUpperCase()
-      .slice(0, 2);
+  const getInitials = (name?: string | null, email?: string | null) => {
+    const safeName = (name || "").trim();
+    const source = safeName || (email || "").trim();
+    if (!source) return "?";
+    const parts = source.split(" ").filter(Boolean);
+    const first = parts[0] || source;
+    const second = parts[1];
+    const initials = (first[0] || "").toUpperCase() + ((second && second[0]) ? second[0].toUpperCase() : "");
+    return initials || "?";
   };
 
   const getUserRole = () => {
@@ -77,15 +79,15 @@ export function NavUser({ user }: NavUserProps) {
             className="w-full justify-start gap-2 p-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
           >
             <Avatar className="size-8 rounded-lg grayscale">
-              <AvatarImage src={user.image || ""} alt={user.name} />
+              <AvatarImage src={user.image || ""} alt={user?.name || "User"} />
               <AvatarFallback className="rounded-lg">
-                {getInitials(user.name)}
+                {getInitials(user?.name, user?.email)}
               </AvatarFallback>
             </Avatar>
             <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
-              <span className="truncate font-medium">{user.name}</span>
+              <span className="truncate font-medium">{user?.name || "User"}</span>
               <span className="truncate text-xs text-muted-foreground">
-                {user.email}
+                {user?.email || ""}
               </span>
             </div>
             <Icons.ellipsis className="ml-auto size-4" />
@@ -100,15 +102,15 @@ export function NavUser({ user }: NavUserProps) {
           <DropdownMenuLabel className="p-0 font-normal">
             <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
               <Avatar className="size-8 rounded-lg">
-                <AvatarImage src={user.image || ""} alt={user.name} />
+                <AvatarImage src={user.image || ""} alt={user?.name || "User"} />
                 <AvatarFallback className="rounded-lg">
-                  {getInitials(user.name)}
+                  {getInitials(user?.name, user?.email)}
                 </AvatarFallback>
               </Avatar>
               <div className="grid min-w-0 flex-1 text-left text-sm leading-tight">
-                <span className="truncate font-medium">{user.name}</span>
+                <span className="truncate font-medium">{user?.name || "User"}</span>
                 <span className="truncate text-xs text-muted-foreground">
-                  {user.email}
+                  {user?.email || ""}
                 </span>
               </div>
             </div>

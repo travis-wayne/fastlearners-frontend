@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { cookies } from "next/headers";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
 
 async function forward(req: NextRequest, path: string[]) {
-  const token = cookies().get("auth_token")?.value;
+  const auth = parseAuthCookiesServer(req);
   const url = `${UPSTREAM_BASE}/${path.join("/")}`;
 
   const headers: HeadersInit = {
     Accept: "application/json",
   };
-  if (token) headers["Authorization"] = `Bearer ${token}`;
+  if (auth?.token) headers["Authorization"] = `Bearer ${auth.token}`;
 
   try {
     if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {

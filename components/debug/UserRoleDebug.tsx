@@ -123,17 +123,13 @@ export function UserRoleDebug() {
 
         <Separator />
 
-        {/* Cookie Information */}
+        {/* Cookie Information (note: HttpOnly cookies won't appear in document.cookie) */}
         <div>
           <h4 className="mb-2 text-sm font-medium">Cookie Data:</h4>
           <div className="space-y-1 text-xs">
             <div>
               Token:{" "}
               {document.cookie.includes("auth_token") ? "Present" : "Missing"}
-            </div>
-            <div>
-              User:{" "}
-              {document.cookie.includes("auth_user") ? "Present" : "Missing"}
             </div>
             <div>
               Expires:{" "}

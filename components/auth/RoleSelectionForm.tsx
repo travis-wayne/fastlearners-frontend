@@ -2,13 +2,17 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { GraduationCap, Shield } from "lucide-react";
+import { GraduationCap, Shield, Globe, User as UserIcon, Phone } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button";
+import { useAuthStore } from "@/store/authStore";
 
-type UserRole = "student" | "guardian";
+type UserRole = "student" | "guardian" | "guest";
 
 interface RoleOption {
   value: UserRole;
@@ -39,14 +43,58 @@ const roleOptions: RoleOption[] = [
     iconBg: "bg-emerald-500/10",
     iconColor: "text-emerald-600",
   },
+  {
+    value: "guest",
+    title: "Guest",
+    description: "Explore the platform with limited access",
+    icon: Globe as any,
+    dashboardRoute: "/dashboard",
+    iconBg: "bg-slate-500/10",
+    iconColor: "text-slate-600",
+  },
 ];
 
 export function RoleSelectionForm() {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const setUser = useAuthStore((s) => s.setUser);
+
+  // Guardian expanded form state
+  const [expandedRole, setExpandedRole] = useState<UserRole | null>(null);
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    email: "",
+    child_email: "",
+    child_phone: "",
+    address: "",
+    city: "",
+    state: "",
+    country: "",
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateGuardian = () => {
+    const e: Record<string, string> = {};
+    const emailRe = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.name.trim()) e.name = "Full name is required";
+    if (!formData.phone.trim() || formData.phone.trim().length < 10)
+      e.phone = "Valid phone is required";
+    if (!emailRe.test(formData.email.trim())) e.email = "Valid email required";
+    if (!emailRe.test(formData.child_email.trim())) e.child_email = "Valid child email required";
+    if (!formData.child_phone.trim() || formData.child_phone.trim().length < 10)
+      e.child_phone = "Valid child phone required";
+    setErrors(e);
+    return Object.keys(e).length === 0;
+  };
 
   const handleRoleSelect = async (role: UserRole) => {
     try {
+      if (role === "guardian") {
+        setExpandedRole("guardian");
+        return;
+      }
+
       setIsSubmitting(true);
 
       // Show loading toast
@@ -66,6 +114,10 @@ export function RoleSelectionForm() {
 
       if (!response.ok || !data?.success) {
         throw new Error(data?.message || "Failed to set role");
+      }
+
+      if (data?.user) {
+        setUser(data.user);
       }
 
       // Success - dismiss loading and redirect immediately
@@ -100,7 +152,7 @@ export function RoleSelectionForm() {
       </div>
 
       {/* Role Cards */}
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-4 sm:grid-cols-3">
         {roleOptions.map((option) => {
           const Icon = option.icon;
 
@@ -152,6 +204,123 @@ export function RoleSelectionForm() {
           );
         })}
       </div>
+
+      {/* Guardian Expanded Form */}
+      {expandedRole === "guardian" && (
+        <Card className="border-2">
+          <CardContent className="p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Guardian Information</h3>
+              <p className="text-sm text-muted-foreground">Provide details to continue as a guardian.</p>
+            </div>
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div>
+                <Label htmlFor="name">Full Name</Label>
+                <Input id="name" placeholder="Parent User" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                {errors.name && <p className="mt-1 text-xs text-red-500">{errors.name}</p>}
+              </div>
+              <div>
+                <Label htmlFor="phone">Phone</Label>
+                <Input id="phone" placeholder="01234567890" value={formData.phone} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} />
+                {errors.phone && <p className="mt-1 text-xs text-red-500">{errors.phone}</p>}
+              </div>
+              <div>
+                <Label htmlFor="email">Email</Label>
+                <Input id="email" type="email" placeholder="parent@fastlearnersapp.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
+              </div>
+              <div>
+                <Label htmlFor="child_email">Child's Email</Label>
+                <Input id="child_email" type="email" placeholder="child@example.com" value={formData.child_email} onChange={(e) => setFormData({ ...formData, child_email: e.target.value })} />
+                {errors.child_email && <p className="mt-1 text-xs text-red-500">{errors.child_email}</p>}
+              </div>
+              <div>
+                <Label htmlFor="child_phone">Child's Phone</Label>
+                <Input id="child_phone" placeholder="08098765432" value={formData.child_phone} onChange={(e) => setFormData({ ...formData, child_phone: e.target.value })} />
+                {errors.child_phone && <p className="mt-1 text-xs text-red-500">{errors.child_phone}</p>}
+              </div>
+              <div>
+                <Label htmlFor="address">Address (optional)</Label>
+                <Input id="address" placeholder="No. 12, Abuja Road" value={formData.address} onChange={(e) => setFormData({ ...formData, address: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="city">City (optional)</Label>
+                <Input id="city" placeholder="Kaduna" value={formData.city} onChange={(e) => setFormData({ ...formData, city: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="state">State (optional)</Label>
+                <Input id="state" placeholder="Kaduna State" value={formData.state} onChange={(e) => setFormData({ ...formData, state: e.target.value })} />
+              </div>
+              <div>
+                <Label htmlFor="country">Country (optional)</Label>
+                <Input id="country" placeholder="Nigeria" value={formData.country} onChange={(e) => setFormData({ ...formData, country: e.target.value })} />
+              </div>
+            </div>
+            <div className="mt-6 flex items-center justify-end gap-3">
+              <Button variant="outline" onClick={() => setExpandedRole(null)} disabled={isSubmitting}>
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  if (!validateGuardian()) return;
+                  try {
+                    setIsSubmitting(true);
+                    toast.loading("Submitting guardian details...", { id: "guardian" });
+                    const payload: any = {
+                      user_role: "guardian",
+                      name: formData.name.trim(),
+                      phone: formData.phone.trim(),
+                      email: formData.email.trim(),
+                      child_email: formData.child_email.trim(),
+                      child_phone: formData.child_phone.trim(),
+                    };
+                    if (formData.address.trim()) payload.address = formData.address.trim();
+                    if (formData.city.trim()) payload.city = formData.city.trim();
+                    if (formData.state.trim()) payload.state = formData.state.trim();
+                    if (formData.country.trim()) payload.country = formData.country.trim();
+
+                    const response = await fetch("/api/auth/set-role", {
+                      method: "POST",
+                      headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                      },
+                      body: JSON.stringify(payload),
+                    });
+                    const data = await response.json();
+                    if (response.status === 200) {
+                      toast.dismiss("guardian");
+                      toast.success(data?.message || "Role set successfully!");
+                      if (data?.user) setUser(data.user);
+                      router.replace("/dashboard");
+                    } else if (response.status === 422) {
+                      // Show inline validation errors if provided
+                      const fieldErrors = (data?.errors || {}) as Record<string, string[]>;
+                      const e: Record<string, string> = {};
+                      Object.entries(fieldErrors).forEach(([k, v]) => {
+                        if (v && v.length) e[k] = v[0];
+                      });
+                      setErrors(e);
+                      toast.error(data?.message || "Validation failed");
+                    } else {
+                      toast.dismiss("guardian");
+                      toast.error(data?.message || "Failed to set role");
+                    }
+                  } catch (err: any) {
+                    toast.dismiss("guardian");
+                    toast.error(err?.message || "Failed to set role");
+                  } finally {
+                    setIsSubmitting(false);
+                  }
+                }}
+                disabled={isSubmitting}
+              >
+                Continue
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Info text */}
       <p className="text-center text-xs text-muted-foreground">

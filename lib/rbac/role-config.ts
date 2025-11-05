@@ -32,7 +32,17 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
 
   student: {
     homeRoute: "/dashboard",
-    allowedRoutes: ["/dashboard", "/lessons", "/exercises", "/profile"],
+    allowedRoutes: [
+      "/dashboard",
+      "/dashboard/settings",
+      "/dashboard/lessons",
+      "/dashboard/quizzes",
+      "/dashboard/past-questions",
+      "/dashboard/records",
+      "/lessons",
+      "/exercises",
+      "/profile",
+    ],
     restrictedRoutes: [
       "/superadmin",
       "/admin",
@@ -47,6 +57,8 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
     homeRoute: "/dashboard",
     allowedRoutes: [
       "/dashboard",
+      "/dashboard/settings",
+      "/dashboard/records",
       "/progress", // View children's progress
       "/profile",
       "/guardian-tools",
@@ -82,6 +94,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
     allowedRoutes: [
       "/dashboard/admin",
       "/dashboard",
+      "/dashboard/settings",
       "/admin",
       "/users",
       "/reports",
@@ -103,6 +116,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
     allowedRoutes: [
       "/dashboard/superadmin",
       "/dashboard",
+      "/dashboard/settings",
       "/superadmin",
       "/users",
       "/lessons",
@@ -176,7 +190,15 @@ export const PUBLIC_ROUTES = [
 /**
  * Routes that should redirect authenticated users
  */
-export const AUTH_ROUTES = ["/auth/login", "/auth/register"];
+export const AUTH_ROUTES = [
+  "/auth/login",
+  "/auth/register",
+  "/auth/verify-email",
+  "/auth/forgot-password",
+  "/auth/reset-password",
+  "/auth/create-password",
+  // role selection is allowed for guest only; middleware handles guest exception
+];
 
 /**
  * Utility functions for role-based access control
