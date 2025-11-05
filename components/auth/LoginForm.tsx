@@ -53,51 +53,52 @@ export function LoginForm({
 
   const onSubmit = async (data: LoginFormData) => {
     try {
+      // Call login - this sets the cookie and stores user in auth store
       await login(data);
+
+      // Get user from auth store (returned from login response)
+      const user = useAuthStore.getState().user;
+
+      if (!user) {
+        toast.error("Login failed - no user data received");
+        return;
+      }
+
+      // Check user role and determine redirect path
+      const userRole = user.role?.[0]; // Primary role
+      let redirectPath = "/dashboard"; // Default
+
+      if (!userRole || userRole === "guest") {
+        // No role or guest role → redirect to role selection
+        redirectPath = "/auth/set-role";
+      }
+      // Note: Both student and guardian go to /dashboard
+      // The dashboard page will render the appropriate component based on role
 
       // Show success message
       toast.success("Welcome back!", {
-        description: "You have successfully logged in.",
+        description: "Redirecting to your dashboard...",
+        duration: 2000,
       });
 
-      // Get user and redirect based on role using the helper function
-      const user = useAuthStore.getState().user;
-      const redirectPath = getRoleBasedRoute(user);
-
-      console.log("Login successful! Redirecting user:", {
-        user: user,
-        primaryRole: user?.role[0],
-        allRoles: user?.role,
-        redirectPath: redirectPath,
-        isAuthenticated: useAuthStore.getState().isAuthenticated,
-        isLoading: useAuthStore.getState().isLoading,
-        authStoreState: {
-          user: useAuthStore.getState().user,
-          isAuthenticated: useAuthStore.getState().isAuthenticated,
-          isLoading: useAuthStore.getState().isLoading,
-          error: useAuthStore.getState().error,
-        },
-      });
-
-      // Check if the auth data is in localStorage
-      const storedAuth = localStorage.getItem("auth-storage");
-      console.log(
-        "Stored auth data:",
-        storedAuth ? JSON.parse(storedAuth) : "No stored auth data",
-      );
-
-      // Add a small delay to ensure the success message is visible before redirect
+      // Use window.location for hard navigation to ensure cookies are read
+      // This prevents hydration issues
       setTimeout(() => {
-        console.log("About to redirect to:", redirectPath);
-        router.push(redirectPath);
-      }, 1000);
+        window.location.href = redirectPath;
+      }, 500);
     } catch (err: any) {
-      // Error handling is done in the auth store
-      // Just show the error message if available
-      const currentError = useAuthStore.getState().error;
-      if (currentError) {
-        toast.error(currentError);
+      // Check if we need to redirect to verify-email (inactive user)
+      if (err?.redirect) {
+        toast.info("Please verify your email first");
+        setTimeout(() => {
+          window.location.href = err.redirect;
+        }, 1000);
+        return;
       }
+
+      // Show error message (already set in auth store)
+      const errorMessage = useAuthStore.getState().error || "Login failed";
+      toast.error(errorMessage);
     }
   };
 

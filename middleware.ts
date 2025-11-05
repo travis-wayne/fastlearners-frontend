@@ -87,11 +87,11 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL(homeRoute, request.url));
   }
 
-  // 4. Handle guest users who need onboarding
+  // 4. Handle guest users who need role selection
   if (userRole === "guest") {
-    if (!pathname.startsWith("/onboarding") && !pathname.startsWith("/guest")) {
-      console.log(`📋 Redirecting guest from ${pathname} to onboarding`);
-      return NextResponse.redirect(new URL("/onboarding", request.url));
+    if (!pathname.startsWith("/auth/set-role") && !pathname.startsWith("/guest")) {
+      console.log(`📋 Redirecting guest from ${pathname} to role selection`);
+      return NextResponse.redirect(new URL("/auth/set-role", request.url));
     }
     return NextResponse.next();
   }

@@ -98,19 +98,33 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         body: JSON.stringify(credentials),
       });
       const data = await r.json();
+      
       if (r.ok && data?.user) {
         set({ user: data.user, isAuthenticated: true, error: null });
-      } else {
-        const errorMessage = data?.message || "Login failed";
-        set({ error: errorMessage, isAuthenticated: false, user: null });
-        throw new Error(errorMessage);
+        return;
       }
+      
+      // Handle error responses
+      const errorMessage = data?.message || "Login failed";
+      set({ error: errorMessage, isAuthenticated: false, user: null });
+      
+      // Throw error with redirect info if present (for unverified users)
+      if (data?.redirect) {
+        throw { message: errorMessage, redirect: data.redirect };
+      }
+      
+      throw new Error(errorMessage);
     } catch (error: any) {
       let errorMessage = "An error occurred during login";
 
       if (error && typeof error === "object") {
         if (error.message) {
           errorMessage = error.message;
+        }
+        // Preserve redirect info if present
+        if (error.redirect) {
+          set({ error: errorMessage, isAuthenticated: false, user: null });
+          throw error; // Throw the full error object with redirect
         }
       }
 

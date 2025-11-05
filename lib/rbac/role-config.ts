@@ -15,14 +15,15 @@ export interface RoleConfig {
 
 export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
   guest: {
-    homeRoute: "/onboarding",
+    homeRoute: "/auth/set-role",
     allowedRoutes: [
       "/auth/login",
       "/auth/register",
+      "/auth/set-role",
       "/onboarding",
       "/auth",
-      "/auth/role", // Role selection during onboarding
-      "/role", // Role selection during onboarding
+      "/auth/role", // Role selection during onboarding (legacy)
+      "/role", // Role selection during onboarding (legacy)
     ],
     restrictedRoutes: ["/dashboard", "/superadmin", "/admin", "/teacher"],
     requiresOnboarding: true,
@@ -166,7 +167,10 @@ export const PUBLIC_ROUTES = [
   "/auth/register",
   "/auth/forgot-password",
   "/auth/reset-password",
-  "/auth/role",
+  "/auth/verify-email",
+  "/auth/create-password",
+  "/auth/set-role",
+  "/auth/role", // Legacy
 ];
 
 /**
@@ -253,7 +257,18 @@ export class RBACUtils {
   /**
    * Get the correct home route for a user role
    */
-  static getHomeRoute(userRole: UserRole): string {
+  static getHomeRoute(userRole: UserRole | undefined | null): string {
+    // Default to guest if role is undefined or null
+    if (!userRole) {
+      return ROLE_CONFIGURATIONS.guest.homeRoute;
+    }
+    
+    // Check if the role exists in configurations
+    if (!ROLE_CONFIGURATIONS[userRole]) {
+      console.warn(`Unknown role "${userRole}", defaulting to guest route`);
+      return ROLE_CONFIGURATIONS.guest.homeRoute;
+    }
+    
     return ROLE_CONFIGURATIONS[userRole].homeRoute;
   }
 

@@ -1,311 +1,162 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useAuthStore } from "@/store/authStore";
-import {
-  AlertCircle,
-  CheckCircle2,
-  GraduationCap,
-  Loader2,
-  Shield,
-  Users,
-} from "lucide-react";
+import { GraduationCap, Shield } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+
+type UserRole = "student" | "guardian";
+
+interface RoleOption {
+  value: UserRole;
+  title: string;
+  description: string;
+  icon: typeof GraduationCap;
+  dashboardRoute: string;
+  iconBg: string;
+  iconColor: string;
+}
+
+const roleOptions: RoleOption[] = [
+  {
+    value: "student",
+    title: "Student",
+    description: "Access lessons, quizzes, and track your progress",
+    icon: GraduationCap,
+    dashboardRoute: "/dashboard",
+    iconBg: "bg-blue-500/10",
+    iconColor: "text-blue-600",
+  },
+  {
+    value: "guardian",
+    title: "Guardian",
+    description: "Monitor and support your child's learning journey",
+    icon: Shield,
+    dashboardRoute: "/dashboard",
+    iconBg: "bg-emerald-500/10",
+    iconColor: "text-emerald-600",
+  },
+];
 
 export function RoleSelectionForm() {
   const router = useRouter();
-  const { user, updateUserProfile, canChangeRole, hydrate, isHydrated } =
-    useAuthStore();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Form state
-  const [selectedRole, setSelectedRole] = useState<
-    "student" | "guardian" | null
-  >(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [childEmail, setChildEmail] = useState("");
-  const [childPhone, setChildPhone] = useState("");
-
-  // Ensure auth store is properly hydrated on mount
-  useEffect(() => {
-    if (!isHydrated) {
-      hydrate();
-    }
-  }, [hydrate, isHydrated]);
-
-  const roleOptions = [
-    {
-      value: "student" as const,
-      title: "Student",
-      description: "Learning and accessing educational content",
-      icon: GraduationCap,
-      route: "/dashboard",
-      color: "blue",
-    },
-    {
-      value: "guardian" as const,
-      title: "Guardian",
-      description: "Monitoring and supporting child's learning",
-      icon: Shield,
-      route: "/dashboard",
-      color: "green",
-    },
-  ];
-
-  const handleRoleSelect = (role: "student" | "guardian") => {
-    // Allow deselection if the same role is clicked
-    if (selectedRole === role) {
-      setSelectedRole(null);
-    } else {
-      setSelectedRole(role);
-    }
-    setError(null);
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedRole) {
-      setError("Please select a role to continue");
-      return;
-    }
-
-    if (!user) {
-      setError("User information not found. Please try logging in again.");
-      return;
-    }
-
+  const handleRoleSelect = async (role: UserRole) => {
     try {
-      setIsLoading(true);
-      setError(null);
+      setIsSubmitting(true);
 
-      // Call server route to set role
-      const payload: any = { user_role: selectedRole };
-      if (selectedRole === "guardian") {
-        payload.child_email = childEmail || undefined;
-        payload.child_phone = childPhone || undefined;
-      }
+      // Show loading toast
+      toast.loading("Setting up your account...", { id: "role-setup" });
 
-      const r = await fetch("/api/auth/set-role", {
+      // Send role selection to backend
+      const response = await fetch("/api/auth/set-role", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-      const result = await r.json();
-      if (!r.ok || !result?.success) {
-        throw new Error(result?.message || "Failed to update role");
-      }
-
-      // Update user in auth store from response if available
-      if (result.user) {
-        useAuthStore.getState().setUser(result.user);
-      } else {
-        // Fallback: refresh session
-        const sess = await fetch("/api/auth/session");
-        const sessData = await sess.json();
-        if (sess.ok && sessData?.user) {
-          useAuthStore.getState().setUser(sessData.user);
-        }
-      }
-
-      toast.success(`Role selected!`, {
-        description: `You are now registered as a ${selectedRole}`,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ user_role: role }),
       });
 
-      // Determine redirect route based on role using RBAC utils
-      const nextUser = useAuthStore.getState().user;
-      const targetRoute = require("@/lib/rbac/role-config").RBACUtils.getHomeRoute(
-        nextUser?.role?.[0] || selectedRole,
-      );
-      router.push(targetRoute);
-    } catch (err: any) {
-      console.error("Role selection error:", err);
-      setError(err.message || "Failed to select role. Please try again.");
-    } finally {
-      setIsLoading(false);
+      const data = await response.json();
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.message || "Failed to set role");
+      }
+
+      // Success - dismiss loading and redirect immediately
+      toast.dismiss("role-setup");
+      toast.success("Redirecting to your dashboard...", {
+        duration: 1000,
+      });
+
+      // Get the appropriate dashboard route for the role
+      const selectedOption = roleOptions.find((opt) => opt.value === role);
+      const dashboardRoute = selectedOption?.dashboardRoute || "/dashboard";
+
+      // Use replace to prevent back navigation to onboarding
+      setTimeout(() => {
+        router.replace(dashboardRoute);
+      }, 500);
+    } catch (error: any) {
+      toast.dismiss("role-setup");
+      toast.error(error?.message || "Failed to set role. Please try again.");
+      setIsSubmitting(false);
     }
   };
-
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center gap-4 text-center">
-        <AlertCircle className="size-16 text-orange-500" />
-        <div>
-          <h1 className="text-2xl font-bold text-orange-800">Session Error</h1>
-          <p className="mt-2 text-sm text-orange-600">
-            Your session has expired. Please log in again.
-          </p>
-        </div>
-        <Button onClick={() => router.push("/auth/login")}>Go to Login</Button>
-      </div>
-    );
-  }
-
-  // Check if user can change their role (only guests can)
-  if (!canChangeRole()) {
-    const currentRole = user.role[0];
-    const roleRoute = require("@/lib/rbac/role-config").RBACUtils.getHomeRoute(
-      currentRole,
-    );
-
-    return (
-      <div className="flex flex-col items-center gap-4 text-center">
-        <CheckCircle2 className="size-16 text-green-500" />
-        <div>
-          <h1 className="text-2xl font-bold text-green-800">
-            Role Already Selected
-          </h1>
-          <p className="mt-2 text-sm text-green-600">
-            You are already registered as a {currentRole}. Role changes are not
-            allowed.
-          </p>
-        </div>
-        <Button onClick={() => router.push(roleRoute)}>Go to Dashboard</Button>
-      </div>
-    );
-  }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-8">
+      {/* Header */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Choose Your Role</h1>
+        <h1 className="text-3xl font-bold tracking-tight">Select your role</h1>
         <p className="text-muted-foreground">
-          Select your primary role to get started. Click again to deselect.
+          Choose how you'll be using Fast Learners
         </p>
       </div>
 
-      {error && (
-        <Alert variant="destructive">
-          <AlertCircle className="size-4" />
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="mx-auto max-w-md space-y-4">
-        {selectedRole === "guardian" && (
-          <div className="grid gap-3 rounded-lg border border-gray-200 p-4">
-            <p className="text-sm text-muted-foreground">Provide your child&apos;s details</p>
-            <div className="grid gap-2">
-              <label className="text-sm font-medium" htmlFor="childEmail">Child Email</label>
-              <input
-                id="childEmail"
-                className="h-10 rounded-md border border-gray-300 px-3 text-sm"
-                value={childEmail}
-                onChange={(e) => setChildEmail(e.target.value)}
-                placeholder="child@example.com"
-              />
-            </div>
-            <div className="grid gap-2">
-              <label className="text-sm font-medium" htmlFor="childPhone">Child Phone</label>
-              <input
-                id="childPhone"
-                className="h-10 rounded-md border border-gray-300 px-3 text-sm"
-                value={childPhone}
-                onChange={(e) => setChildPhone(e.target.value)}
-                placeholder="080xxxxxxxx"
-              />
-            </div>
-          </div>
-        )}
-
+      {/* Role Cards */}
+      <div className="grid gap-4 sm:grid-cols-2">
         {roleOptions.map((option) => {
           const Icon = option.icon;
-          const isSelected = selectedRole === option.value;
 
           return (
             <Card
               key={option.value}
               className={cn(
-                "group relative cursor-pointer p-4 transition-all duration-200",
-                "rounded-lg border border-gray-200",
-                isSelected
-                  ? "border-primary bg-primary/5 hover:border-primary/80 hover:bg-primary/10"
-                  : "hover:border-gray-300 hover:bg-gray-50/50",
+                "group relative cursor-pointer transition-all duration-200",
+                "border-2 hover:border-primary hover:shadow-lg",
+                isSubmitting && "pointer-events-none opacity-60"
               )}
-              onClick={() => handleRoleSelect(option.value)}
+              onClick={() => !isSubmitting && handleRoleSelect(option.value)}
+              role="button"
+              tabIndex={isSubmitting ? -1 : 0}
+              aria-label={`Select ${option.title} role`}
+              onKeyDown={(e) => {
+                if ((e.key === "Enter" || e.key === " ") && !isSubmitting) {
+                  e.preventDefault();
+                  handleRoleSelect(option.value);
+                }
+              }}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div
-                    className={cn(
-                      "shrink-0 rounded-lg p-2",
-                      option.color === "blue" ? "bg-blue-100" : "bg-green-100",
-                    )}
-                  >
-                    <Icon
-                      className={cn(
-                        "size-5",
-                        option.color === "blue"
-                          ? "text-blue-600"
-                          : "text-green-600",
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-600">
-                      {option.title.toUpperCase()}
-                    </h3>
-                    <p className="mt-0.5 text-sm text-muted-foreground">
-                      {option.description}
-                    </p>
-                  </div>
+              <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
+                {/* Icon */}
+                <div
+                  className={cn(
+                    "flex size-16 items-center justify-center rounded-full transition-transform duration-200",
+                    "group-hover:scale-110",
+                    option.iconBg
+                  )}
+                >
+                  <Icon className={cn("size-8", option.iconColor)} />
                 </div>
 
-                <div className="shrink-0">
-                  {isSelected ? (
-                    <CheckCircle2 className="size-5 text-primary transition-colors" />
-                  ) : (
-                    <div className="size-5 rounded-full border-2 border-gray-300 transition-colors group-hover:border-gray-400" />
-                  )}
+                {/* Title */}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-semibold">{option.title}</h3>
+                  <p className="text-sm text-muted-foreground">
+                    {option.description}
+                  </p>
                 </div>
-              </div>
+
+                {/* Hover indicator */}
+                <div className="mt-2 text-xs font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  Click to continue →
+                </div>
+              </CardContent>
             </Card>
           );
         })}
       </div>
 
-      <div className="mx-auto max-w-md space-y-4">
-        <Button
-          onClick={handleSubmit}
-          disabled={!selectedRole || isLoading}
-          className={cn(
-            "h-12 w-full text-base font-medium transition-all duration-200",
-            selectedRole && "shadow-lg hover:shadow-xl",
-            !selectedRole && "opacity-60",
-          )}
-          size="lg"
-        >
-          {isLoading ? (
-            <>
-              <Loader2 className="mr-2 size-5 animate-spin" />
-              Setting up your account...
-            </>
-          ) : selectedRole ? (
-            `Continue as ${selectedRole.charAt(0).toUpperCase() + selectedRole.slice(1)}`
-          ) : (
-            "Select a role to continue"
-          )}
-        </Button>
-
-        <div className="space-y-2 text-center">
-          <p className="text-sm text-muted-foreground">
-            Your role selection helps us customize your learning experience
-          </p>
-          <p className="text-xs text-muted-foreground">
-            You can change this later in your profile settings if needed
-          </p>
-        </div>
-      </div>
+      {/* Info text */}
+      <p className="text-center text-xs text-muted-foreground">
+        Your selection will personalize your learning experience
+      </p>
     </div>
   );
 }

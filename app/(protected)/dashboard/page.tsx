@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
 
@@ -83,7 +84,14 @@ function RoleDashboard({ userRole }: { userRole: string }) {
 }
 
 export default function UnifiedDashboardPage() {
-  const { user, isHydrated } = useAuthStore();
+  const { user, isHydrated, hydrate } = useAuthStore();
+
+  // Hydrate auth store on mount
+  useEffect(() => {
+    if (!isHydrated) {
+      hydrate();
+    }
+  }, [isHydrated, hydrate]);
 
   // Show loading state while user data is being fetched
   if (!isHydrated || !user) {
