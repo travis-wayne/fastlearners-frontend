@@ -19,6 +19,7 @@ export function setAuthCookiesServer(
     ...defaultCookieOptions,
     maxAge: Math.floor((data.expiresAt - Date.now()) / 1000),
   });
+  // Note: User data is not stored in cookies. User info is fetched via /api/auth/session
 }
 
 export function clearAuthCookiesServer(res: NextResponse): void {

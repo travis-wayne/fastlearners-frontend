@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
 import { authApi } from "@/lib/api/auth";
-import { getUserFromCookies, isAuthenticatedFromCookies } from "@/lib/auth-cookies";
 import {
   LoginCredentials,
   ProfileStatus,
@@ -62,28 +61,21 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
 
   hydrate: () => {
     if (typeof window !== "undefined") {
-      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH !== "false"; // default to true
-      if (useHttpOnly) {
-        // Fetch session from server (HttpOnly cookies)
-        fetch("/api/auth/session")
-          .then(async (r) => {
-            if (!r.ok) throw new Error("No session");
-            const data = await r.json();
-            set({
-              user: data.user || null,
-              isAuthenticated: Boolean(data.user),
-              isLoading: false,
-              isHydrated: true,
-            });
-          })
-          .catch(() => {
-            set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
+      // Always fetch session from server (HttpOnly cookies)
+      fetch("/api/auth/session")
+        .then(async (r) => {
+          if (!r.ok) throw new Error("No session");
+          const data = await r.json();
+          set({
+            user: data.user || null,
+            isAuthenticated: Boolean(data.user),
+            isLoading: false,
+            isHydrated: true,
           });
-      } else {
-        const user = getUserFromCookies();
-        const isAuthenticated = isAuthenticatedFromCookies();
-        set({ user, isAuthenticated, isLoading: false, isHydrated: true });
-      }
+        })
+        .catch(() => {
+          set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
+        });
     }
   },
 
@@ -144,20 +136,33 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     try {
       set({ isLoading: true, error: null });
 
-      // Call server login to set HttpOnly cookies (adjust payload as per backend support)
-      const r = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email_phone: data.user.email, password: "google-oauth" }),
+      // Cookies are already set by /api/auth/google/callback, so fetch session to hydrate store
+      const r = await fetch("/api/auth/session", {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        credentials: "include",
       });
-      if (!r.ok) throw new Error("Google auth (server) failed");
-      const payload = await r.json();
-
-      set({
-        user: payload?.user || data.user,
-        isAuthenticated: true,
-        error: null,
-      });
+      
+      if (!r.ok) {
+        throw new Error("Failed to fetch session after OAuth");
+      }
+      
+      const sessionData = await r.json();
+      
+      if (sessionData.success && sessionData.user) {
+        set({
+          user: sessionData.user,
+          isAuthenticated: true,
+          error: null,
+        });
+      } else {
+        // Fallback to provided user data if session doesn't return user (shouldn't happen)
+        set({
+          user: data.user,
+          isAuthenticated: true,
+          error: null,
+        });
+      }
     } catch (error: any) {
       const errorMessage = error.message || "Google authentication failed";
 

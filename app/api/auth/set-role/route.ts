@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
     const res = NextResponse.json({ ...data, user: profData?.content?.user }, { status: 200 });
     if (profData?.content?.user) {
       const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
-      setAuthCookiesServer(res, { token, user: profData.content.user, expiresAt });
+      setAuthCookiesServer(res, { token, expiresAt });
       clearRegTokenServer(res);
     }
     return res;

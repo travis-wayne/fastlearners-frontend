@@ -3,8 +3,6 @@
  * Handles user profile operations including view, edit, and password change
  */
 
-import { apiClient } from "./client";
-
 // Profile data interfaces
 export interface UserProfile {
   id: number;
@@ -61,84 +59,120 @@ export interface ApiError {
 
 /**
  * Get current user's profile information
+ * Uses internal /api/auth/session route which reads HttpOnly cookies
  */
 export const getProfile = async (): Promise<UserProfile> => {
   try {
-    const response = await apiClient.get<ProfileResponse>("/profile");
+    const response = await fetch("/api/auth/session", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+    });
 
-    if (!response.data.success) {
-      throw new Error(response.data.message || "Failed to fetch profile");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to fetch profile");
     }
 
-    return response.data.content.user;
+    const data = await response.json();
+    
+    if (!data.success || !data.user) {
+      throw new Error(data.message || "Failed to fetch profile");
+    }
+
+    return data.user as UserProfile;
   } catch (error: any) {
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("Failed to fetch profile information");
+    throw new Error(error.message || "Failed to fetch profile information");
   }
 };
 
 /**
  * Update user profile information
+ * Uses internal /api/profile/edit route which reads HttpOnly cookies
  */
 export const updateProfile = async (
   profileData: ProfileEditData,
 ): Promise<UserProfile> => {
   try {
-    const response = await apiClient.post<ProfileResponse>(
-      "/profile/edit",
-      profileData,
-    );
+    const response = await fetch("/api/profile/edit", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(profileData),
+    });
 
-    if (!response.data.success) {
-      throw new Error(response.data.message || "Failed to update profile");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (errorData.errors) {
+        // Handle validation errors
+        const errors = errorData.errors;
+        const firstError = Object.values(errors)[0] as string[];
+        throw new Error(firstError[0] || "Validation failed");
+      }
+      
+      throw new Error(errorData.message || "Failed to update profile");
     }
 
-    return response.data.content.user;
+    const data = await response.json();
+    
+    if (!data.success || !data.user) {
+      throw new Error(data.message || "Failed to update profile");
+    }
+
+    return data.user as UserProfile;
   } catch (error: any) {
-    if (error.response?.data?.errors) {
-      // Handle validation errors
-      const errors = error.response.data.errors;
-      const firstError = Object.values(errors)[0] as string[];
-      throw new Error(firstError[0] || "Validation failed");
-    }
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("Failed to update profile");
+    throw new Error(error.message || "Failed to update profile");
   }
 };
 
 /**
  * Change user password
  * Note: This should be called after email verification for security
+ * Uses internal /api/profile/edit/password route which reads HttpOnly cookies
  */
 export const changePassword = async (
   passwordData: ChangePasswordData,
 ): Promise<UserProfile> => {
   try {
-    const response = await apiClient.post<ChangePasswordResponse>(
-      "/profile/edit/password",
-      passwordData,
-    );
+    const response = await fetch("/api/profile/edit/password", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(passwordData),
+    });
 
-    if (!response.data.success) {
-      throw new Error(response.data.message || "Failed to change password");
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      
+      if (errorData.errors) {
+        // Handle validation errors
+        const errors = errorData.errors;
+        const firstError = Object.values(errors)[0] as string[];
+        throw new Error(firstError[0] || "Validation failed");
+      }
+      
+      throw new Error(errorData.message || "Failed to change password");
     }
 
-    return response.data.content.user;
+    const data = await response.json();
+    
+    if (!data.success || !data.user) {
+      throw new Error(data.message || "Failed to change password");
+    }
+
+    return data.user as UserProfile;
   } catch (error: any) {
-    if (error.response?.data?.errors) {
-      // Handle validation errors
-      const errors = error.response.data.errors;
-      const firstError = Object.values(errors)[0] as string[];
-      throw new Error(firstError[0] || "Validation failed");
-    }
-    if (error.response?.data?.message) {
-      throw new Error(error.response.data.message);
-    }
-    throw new Error("Failed to change password");
+    throw new Error(error.message || "Failed to change password");
   }
 };
 
