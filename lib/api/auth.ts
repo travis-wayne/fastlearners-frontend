@@ -105,30 +105,87 @@ export const authApi = {
   },
 };
 
-// User Profile Management APIs
+/**
+ * DEPRECATED: profileApi should not be used.
+ * 
+ * Use the functions from `lib/api/profile.ts` instead, which use internal
+ * /api/* routes that read HttpOnly cookies server-side.
+ * 
+ * This API is kept for backward compatibility but should be migrated.
+ */
 export const profileApi = {
   getProfile: async (): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.get<{ user: User }>("/profile");
-    return response.data;
+    console.warn("profileApi.getProfile is deprecated. Use getProfile() from lib/api/profile.ts");
+    // Redirect to internal route
+    const response = await fetch("/api/auth/session", {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "include",
+    });
+    const data = await response.json();
+    if (!response.ok || !data.success) {
+      throw { success: false, message: data.message || "Failed to fetch profile", code: response.status };
+    }
+    return { success: true, content: { user: data.user }, message: "", code: 200 };
   },
 
   updateProfile: async (
     data: ProfileUpdateData,
   ): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.post<{ user: User }>("/profile/edit", data);
-    return response.data;
+    console.warn("profileApi.updateProfile is deprecated. Use updateProfile() from lib/api/profile.ts");
+    // Redirect to internal route
+    const response = await fetch("/api/profile/edit", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw { success: false, message: result.message || "Failed to update profile", code: response.status, errors: result.errors };
+    }
+    return { success: true, content: { user: result.user }, message: result.message || "", code: 200 };
   },
 
   changePassword: async (data: ChangePasswordData): Promise<ApiResponse> => {
-    const response = await api.post("/profile/edit/password", data);
-    return response.data;
+    console.warn("profileApi.changePassword is deprecated. Use changePassword() from lib/api/profile.ts");
+    // Redirect to internal route
+    const response = await fetch("/api/profile/edit/password", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify(data),
+    });
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw { success: false, message: result.message || "Failed to change password", code: response.status, errors: result.errors };
+    }
+    return { success: true, content: { user: result.user }, message: result.message || "", code: 200 };
   },
 
   updateRole: async (role: string): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.post<{ user: User }>("/profile/update-role", {
-      role,
+    console.warn("profileApi.updateRole is deprecated. Use /api/auth/set-role route instead");
+    // Redirect to internal route
+    const response = await fetch("/api/auth/set-role", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      body: JSON.stringify({ user_role: role }),
     });
-    return response.data;
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw { success: false, message: result.message || "Failed to update role", code: response.status };
+    }
+    return { success: true, content: { user: result.user }, message: result.message || "", code: 200 };
   },
 };
 

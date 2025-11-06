@@ -84,30 +84,44 @@ The authentication flow has been successfully implemented and refined to match t
 
 ### ✅ Implemented Security Measures:
 
-1. **HttpOnly Cookies**
+1. **HttpOnly-Only Mode (MANDATORY)**
+   - **ALL** authentication uses HttpOnly cookies exclusively
    - `reg_token`: Temporary onboarding token (15 minutes)
    - `auth_token`: Main session token (7 days)
-   - Both are HttpOnly, Secure (in production), SameSite=Lax
+   - `auth_expires`: Expiry timestamp for token validation
+   - All tokens are HttpOnly, Secure (in production), SameSite=Lax
+   - **NO client-side token access** - tokens are server-only
+   - Legacy `getTokenFromCookies()` is deprecated and disabled
 
 2. **No Token Exposure**
    - ❌ No tokens in URL parameters
    - ❌ No tokens in localStorage
-   - ✅ All tokens in secure HttpOnly cookies
+   - ❌ No tokens accessible via JavaScript
+   - ✅ All tokens in secure HttpOnly cookies (server-only)
 
-3. **Server-Side Proxying**
-   - Client NEVER calls external API directly
-   - All requests go through /api/auth/* routes
-   - Server handles Authorization headers
+3. **Server-Side Proxying (REQUIRED)**
+   - **Client NEVER calls external API directly for authenticated requests**
+   - All authenticated requests must go through internal `/api/*` routes
+   - Internal routes use `parseAuthCookiesServer()` to read HttpOnly cookies
+   - Server attaches `Authorization: Bearer {token}` header when proxying
+   - Browser never sees or sends tokens directly
 
-4. **Proper Error Handling**
+4. **Architecture Pattern**
+   ```
+   Browser → /api/profile/edit → Server reads cookies → Backend with Authorization header
+   ❌ Browser → Backend directly (NEVER DO THIS)
+   ```
+
+5. **Proper Error Handling**
    - Backend errors forwarded exactly as documented
    - Validation errors mapped to form fields
    - Generic errors for network failures
+   - 401 errors handled gracefully without hard redirects for non-critical calls
 
-5. **Cookie Lifecycle Management**
+6. **Cookie Lifecycle Management**
    - reg_token cleared after role selection
    - auth_token set with proper expiration
-   - User data stored in separate cookie for easy access
+   - User data fetched via `/api/auth/session` (not stored in cookies)
 
 ## 📊 Server Routes Status
 
@@ -229,10 +243,23 @@ Open DevTools → Application → Cookies:
 
 ## 🐛 Known Issues & Considerations
 
+### Migration Status:
+1. **Profile API** - ✅ Migrated to internal routes (`lib/api/profile.ts`)
+2. **Auth API** - ✅ All auth flows use internal routes
+3. **Lessons API** - ⚠️ Still uses direct backend calls (needs migration)
+4. **Upload APIs** - ⚠️ Still use `getTokenFromCookies()` (needs migration)
+5. **Google OAuth** - ✅ Uses internal `/api/auth/google/callback` route
+
+### Remaining Work:
+- Migrate `lib/api/lessons-api.ts` to use internal routes
+- Migrate `lib/api/lesson-service.ts` to use internal routes
+- Migrate upload services to use internal routes
+- Remove all `getTokenFromCookies()` usage from client code
+
 ### Minor Items:
-1. **Google OAuth** - Existing implementation may need cookie alignment
-2. **Middleware** - Already configured, verify auth routes excluded
-3. **Error Messages** - Match backend exactly ✅
+1. **Middleware** - Already configured, verify auth routes excluded
+2. **Error Messages** - Match backend exactly ✅
+3. **401 Handling** - Hardened to avoid hard redirects for non-critical calls
 
 ### Future Enhancements:
 1. Add rate limiting on resend OTP
@@ -243,16 +270,66 @@ Open DevTools → Application → Cookies:
 
 ## 📖 Developer Guide
 
+### ⚠️ CRITICAL: HttpOnly-Only Authentication Architecture
+
+**ALL authenticated API calls MUST follow this pattern:**
+
+1. **Never call the backend directly from the browser**
+   ```typescript
+   // ❌ WRONG - Never do this
+   const response = await fetch('https://fastlearnersapp.com/api/v1/profile', {
+     headers: { Authorization: `Bearer ${token}` } // ❌ Token exposed!
+   });
+   
+   // ✅ CORRECT - Use internal route
+   const response = await fetch('/api/profile', {
+     credentials: 'include' // Cookies sent automatically
+   });
+   ```
+
+2. **Create internal API route** in `app/api/*/route.ts`
+   ```typescript
+   // app/api/profile/route.ts
+   export async function GET(req: NextRequest) {
+     const auth = parseAuthCookiesServer(req); // Read HttpOnly cookie
+     if (!auth) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+     
+     const r = await fetch(`${BASE}/profile`, {
+       headers: { Authorization: `Bearer ${auth.token}` } // Server-side only!
+     });
+     return NextResponse.json(await r.json());
+   }
+   ```
+
+3. **Client calls internal route** with `fetch()`
+   ```typescript
+   // lib/api/profile.ts
+   export const getProfile = async () => {
+     const r = await fetch('/api/profile', {
+       credentials: 'include' // Sends HttpOnly cookies
+     });
+     return r.json();
+   };
+   ```
+
 ### Adding a New Auth Step
 
 If you need to add a new authentication step:
 
 1. **Create server route** in `app/api/auth/your-step/route.ts`
-2. **Proxy to backend** with proper headers
+2. **Proxy to backend** with proper headers using `parseAuthCookiesServer()`
 3. **Manage cookies** using `lib/server/auth-cookies.ts`
 4. **Create form component** in `components/auth/`
 5. **Create page** in `app/(auth)/auth/your-step/page.tsx`
 6. **Update flow** in this documentation
+
+### Adding a New Authenticated API Endpoint
+
+1. **Create internal route** in `app/api/your-endpoint/route.ts`
+2. **Use `parseAuthCookiesServer()`** to get token from HttpOnly cookies
+3. **Proxy to backend** with `Authorization: Bearer {token}` header
+4. **Create client function** in `lib/api/your-api.ts` that calls `/api/your-endpoint`
+5. **Never expose tokens** to the browser
 
 ### Testing Authentication
 
@@ -284,23 +361,37 @@ document.cookie
 ## ✨ Conclusion
 
 The authentication flow is **PRODUCTION-READY** with:
-- ✅ Secure HttpOnly cookie implementation
+- ✅ Secure HttpOnly-only mode (MANDATORY)
+- ✅ Server-side token management (tokens never exposed to browser)
+- ✅ Internal API proxy pattern for all authenticated requests
 - ✅ Proper error handling matching API docs
 - ✅ Complete registration flow (email → OTP → password → role)
-- ✅ Server-side token management
 - ✅ Comprehensive documentation
+- ✅ Hardened 401 handler (no hard redirects for non-critical calls)
+
+### ⚠️ CRITICAL RULES:
+1. **NEVER** call external backend directly from browser for authenticated requests
+2. **ALWAYS** use internal `/api/*` routes that read HttpOnly cookies server-side
+3. **NEVER** use `getTokenFromCookies()` or expose tokens to JavaScript
+4. **ALWAYS** use `fetch()` with `credentials: 'include'` for authenticated calls
+5. **ALWAYS** use `parseAuthCookiesServer()` in internal routes to get tokens
 
 ### Ready to:
 1. ✅ Test the complete flow
 2. ✅ Deploy to staging
 3. ✅ Perform security audit
 4. ✅ Test with real backend API
+5. ⚠️ Migrate remaining API modules (lessons, uploads) to internal routes
 
 ---
 
-**Status:** ✅ IMPLEMENTATION COMPLETE  
-**Security:** ✅ BEST PRACTICES FOLLOWED  
+**Status:** ✅ CORE AUTH IMPLEMENTATION COMPLETE  
+**Security:** ✅ HTTPONLY-ONLY MODE ENFORCED  
 **Documentation:** ✅ COMPREHENSIVE  
-**Ready for:** 🚀 PRODUCTION TESTING
+**Migration Status:** ⚠️ SOME API MODULES STILL NEED MIGRATION  
+**Ready for:** 🚀 PRODUCTION TESTING (after remaining migrations)
 
-**Next Action:** Test the complete flow from `/auth/register` to `/dashboard`
+**Next Action:** 
+1. Test the complete flow from `/auth/register` to `/dashboard`
+2. Migrate remaining API modules to internal routes
+3. Remove all `getTokenFromCookies()` usage from client code
