@@ -245,14 +245,14 @@ export function GuardianDashboard() {
         </CardHeader>
         <CardContent>
             <div className="rounded-md border">
-              <div className="grid grid-cols-1 items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground md:grid-cols-[220px_1fr]">
+              <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground">
               <span>Performance</span>
               <span>Lesson’s Progress</span>
             </div>
             <Separator />
             <div className="divide-y">
               {performance.map((row) => (
-                <div key={row.subject} className="grid grid-cols-1 items-center gap-4 px-4 py-3 md:grid-cols-[220px_1fr]">
+                <div key={row.subject} className="grid grid-cols-1 md:grid-cols-[220px_1fr] items-center gap-4 px-4 py-3">
                   <span className="text-sm">{row.subject}</span>
                   <div className="flex items-center gap-3">
                     <div className="h-2 w-full rounded bg-muted">

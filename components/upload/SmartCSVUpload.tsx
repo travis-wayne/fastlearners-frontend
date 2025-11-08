@@ -537,7 +537,7 @@ export function SmartCSVUpload({
       </Card>
 
       <Tabs defaultValue="lessons" className="w-full">
-        <TabsList className="mb-8 flex h-12 w-full gap-1 overflow-x-auto bg-muted/40 dark:bg-muted/20 md:grid md:grid-cols-7">
+        <TabsList className="mb-8 flex h-12 w-full gap-1 overflow-x-auto bg-muted/40 md:grid md:grid-cols-7 dark:bg-muted/20">
           {mainConfigs.map((config) => (
             <TabsTrigger
               key={config.key}

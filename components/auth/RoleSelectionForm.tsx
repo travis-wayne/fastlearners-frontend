@@ -147,7 +147,7 @@ export function RoleSelectionForm() {
       <div className="flex flex-col items-center gap-2 text-center">
         <h1 className="text-3xl font-bold tracking-tight">Select your role</h1>
         <p className="text-muted-foreground">
-          Choose how you&apos;ll be using Fast Learners
+          Choose how you'll be using Fast Learners
         </p>
       </div>
 
@@ -230,12 +230,12 @@ export function RoleSelectionForm() {
                 {errors.email && <p className="mt-1 text-xs text-red-500">{errors.email}</p>}
               </div>
               <div>
-                <Label htmlFor="child_email">Child&apos;s Email</Label>
+                <Label htmlFor="child_email">Child's Email</Label>
                 <Input id="child_email" type="email" placeholder="child@example.com" value={formData.child_email} onChange={(e) => setFormData({ ...formData, child_email: e.target.value })} />
                 {errors.child_email && <p className="mt-1 text-xs text-red-500">{errors.child_email}</p>}
               </div>
               <div>
-                <Label htmlFor="child_phone">Child&apos;s Phone</Label>
+                <Label htmlFor="child_phone">Child's Phone</Label>
                 <Input id="child_phone" placeholder="08098765432" value={formData.child_phone} onChange={(e) => setFormData({ ...formData, child_phone: e.target.value })} />
                 {errors.child_phone && <p className="mt-1 text-xs text-red-500">{errors.child_phone}</p>}
               </div>
