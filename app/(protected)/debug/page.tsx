@@ -4,7 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 
-import { getAuthCookies } from "@/lib/auth-cookies";
+import { getAuthCookies, getUserFromCookies } from "@/lib/auth-cookies";
 import { RBACUtils } from "@/lib/rbac/role-config";
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
 import { Badge } from "@/components/ui/badge";
@@ -79,12 +79,12 @@ export default function AuthDebugPage() {
       hasPermission("view_admin_panel"),
     );
 
-    if (process.env.NODE_ENV === "development") {
-      console.log("\n🍪 Cookie Data (token metadata only):");
-      const authCookies = getAuthCookies();
-      console.log("  Auth Cookies:", authCookies);
-      setCookieData({ authCookies });
-    }
+    console.log("\n🍪 Cookie Data:");
+    const cookieUser = getUserFromCookies();
+    const authCookies = getAuthCookies();
+    console.log("  Cookie User:", cookieUser);
+    console.log("  Auth Cookies:", authCookies);
+    setCookieData({ cookieUser, authCookies });
   };
 
   const testApiProfile = async () => {

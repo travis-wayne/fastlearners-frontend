@@ -18,6 +18,7 @@ export async function GET(req: NextRequest) {
       const res = NextResponse.json({ success: true, user: data.content.user });
       setAuthCookiesServer(res, {
         token: data.content.access_token,
+        user: data.content.user,
         expiresAt,
       });
       return res;

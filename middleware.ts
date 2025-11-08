@@ -38,26 +38,10 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const authData = getAuthData(request);
   const isAuthenticated = !!authData;
+  const userRole = undefined as unknown as UserRole;
   const debug = process.env.NODE_ENV !== "production" && process.env.NEXT_PUBLIC_DEBUG_AUTH === "true";
-  
   if (debug) {
-    const authToken = request.cookies.get(AUTH_TOKEN_COOKIE);
-    const authExpires = request.cookies.get(AUTH_EXPIRES_COOKIE);
-    const tokenPresent = !!authToken?.value;
-    const expiresPresent = !!authExpires?.value;
-    const expiresAt = expiresPresent ? parseInt(authExpires.value) : null;
-    const isExpired = expiresAt ? Date.now() >= expiresAt : null;
-    const redirectTarget = !isAuthenticated ? "/auth/login" : pathname;
-    
-    console.log(`RBAC Middleware: ${pathname}`, {
-      authenticated: isAuthenticated,
-      tokenPresent,
-      expiresPresent,
-      expiresAt: expiresAt ? new Date(expiresAt).toISOString() : null,
-      isExpired,
-      redirectTarget,
-      requestUrl: request.url,
-    });
+    console.log(`RBAC Middleware: ${pathname}`, { authenticated: isAuthenticated });
   }
 
   // 1. Allow public routes
@@ -76,15 +60,24 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
-  // 3. Redirect authenticated users away from auth pages (except set-role)
-  // Note: This block is commented out since the matcher excludes /auth/* paths.
-  // If you want middleware to handle /auth routing, update config.matcher to include /auth/* paths explicitly.
-  // if (AUTH_ROUTES.some((route) => pathname.startsWith(route)) && !pathname.startsWith("/auth/set-role")) {
-  //   // Redirect to a default route - client will handle role-based routing after hydration
-  //   return NextResponse.redirect(new URL("/", request.url));
-  // }
+  // 3. Redirect authenticated users away from auth pages
+  if (AUTH_ROUTES.some((route) => pathname.startsWith(route))) {
+    const homeRoute = RBACUtils.getHomeRoute(userRole);
+    return NextResponse.redirect(new URL(homeRoute, request.url));
+  }
 
-  // 4. Allow access - fine-grained RBAC is handled client-side after session hydration
+  // 4. Handle guest users who need role selection
+  if (userRole === "guest") {
+    if (!pathname.startsWith("/auth/set-role") && !pathname.startsWith("/guest")) {
+      return NextResponse.redirect(new URL("/auth/set-role", request.url));
+    }
+    return NextResponse.next();
+  }
+
+  // 5. Check role-based route access
+  // Skip fine-grained RBAC here; role is not derived from cookies
+
+  // 6. Allow access - user has proper role permissions
   return NextResponse.next();
 }
 

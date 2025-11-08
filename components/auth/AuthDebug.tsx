@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 
-import { getAuthCookies } from "@/lib/auth-cookies";
+import { getAuthCookies, getUserFromCookies } from "@/lib/auth-cookies";
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
 
 export function AuthDebug() {
@@ -21,9 +21,10 @@ export function AuthDebug() {
   const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    // Get cookie data (token metadata only - user info comes from auth store)
+    // Get cookie data
+    const cookieUser = getUserFromCookies();
     const authCookies = getAuthCookies();
-    setCookieData({ authCookies });
+    setCookieData({ cookieUser, authCookies });
 
     console.log("🔍 [AUTH DEBUG] Complete Auth State Analysis:");
     console.log("📊 Auth Store State:", {
@@ -42,11 +43,10 @@ export function AuthDebug() {
       error,
     });
 
-    if (process.env.NODE_ENV === "development") {
-      console.log("🍪 Cookie Data (token metadata only):", {
-        authCookies,
-      });
-    }
+    console.log("🍪 Cookie Data:", {
+      cookieUser,
+      authCookies,
+    });
 
     console.log("🛡️ RBAC Permission Check:", {
       userRole,

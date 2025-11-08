@@ -42,8 +42,9 @@ function GoogleCallbackContent() {
           return;
         }
 
-        // Call internal Next.js route to set HttpOnly cookies
-        const callbackUrl = new URL("/api/auth/google/callback", window.location.origin);
+        const callbackUrl = new URL(
+          "https://fastlearnersapp.com/api/v1/google/callback",
+        );
         callbackUrl.searchParams.set("code", code);
         if (scope) callbackUrl.searchParams.set("scope", scope);
         if (authuser) callbackUrl.searchParams.set("authuser", authuser);
@@ -55,25 +56,18 @@ function GoogleCallbackContent() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          credentials: "include", // Ensure cookies are included
         });
 
         if (!response.ok) {
-          const errorData = await response.json().catch(() => ({}));
-          throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
 
-        if (data.success && data.user) {
-          // Cookies are now set by the server route (HttpOnly cookies set in response headers).
-          // Wait for loginWithGoogle to fetch /api/auth/session to verify cookies are present
-          // before navigating. This ensures cookies exist on our domain (localhost:3000) before navigation.
-          await loginWithGoogle({ user: data.user, access_token: "" });
-          
-          // Only navigate after cookies are verified via session fetch
+        if (data.success && data.content) {
+          await loginWithGoogle(data.content);
           const isNewUser =
-            data.user.role.includes("guest") || !data.user.name;
+            data.content.user.role.includes("guest") || !data.content.user.name;
           if (isNewUser) {
             toast.success("Welcome to Fast Learners!", {
               description:
