@@ -60,7 +60,7 @@ export function BlogCard({
             </p>
           )}
         </div>
-        <div className="mt-4 flex items-center space-x-3">
+        {/* <div className="mt-4 flex items-center space-x-3">
           <div className="flex items-center -space-x-2">
             {data.authors.map((author) => (
               <Author username={author} key={data._id + author} imageOnly />
@@ -72,7 +72,7 @@ export function BlogCard({
               {formatDate(data.date)}
             </p>
           )}
-        </div>
+        </div> */}
       </div>
       <Link href={data.slug} className="absolute inset-0">
         <span className="sr-only">View Article</span>

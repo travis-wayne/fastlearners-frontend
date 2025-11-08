@@ -24,6 +24,7 @@ import ProjectSwitcher from "@/components/dashboard/project-switcher";
 import { UpgradeCard } from "@/components/dashboard/upgrade-card";
 import { NavUser } from "@/components/nav-user";
 import { Icons } from "@/components/shared/icons";
+import { useSubjectStatus } from "@/hooks/use-subject-status";
 
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
@@ -35,6 +36,47 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
 
   // Determine if user is a guest
   const isGuest = user?.role[0] === "guest" || !isAuthenticated;
+
+  // Fetch subject status using shared hook
+  const subjectStatus = useSubjectStatus();
+
+  // Determine if user is SSS: user.class starts with 'SSS' or compulsory_selective is undefined/empty
+  const isSSS = user?.class?.startsWith('SSS') || 
+    (subjectStatus?.content && (!subjectStatus.content.compulsory_selective || subjectStatus.content.compulsory_selective.length === 0));
+  
+  // Show subject selection:
+  // For SSS: show only when selective_status !== 'selected'
+  // For JSS: show when either status is not 'selected'
+  const showSubjectSelection =
+    (user?.role?.includes("student") || user?.role?.includes("guardian")) &&
+    subjectStatus?.content &&
+    (isSSS
+      ? subjectStatus.content.selective_status !== "selected"
+      : (subjectStatus.content.compulsory_selective_status !== "selected" ||
+         subjectStatus.content.selective_status !== "selected"));
+
+  // Modify links to add subject selection item to "Learning" section if applicable
+  const updatedLinks = links.map((section) => {
+    if (section.title === "Learning" && showSubjectSelection) {
+      // Check if item with href "/dashboard/subject" already exists
+      const hasSubjectSelection = section.items.some(item => item.href === "/dashboard/subject");
+      if (!hasSubjectSelection) {
+        return {
+          ...section,
+          items: [
+            ...section.items,
+            {
+              title: "Subject Selection",
+              href: "/dashboard/subject",
+              icon: "book",
+              disabled: false,
+            },
+          ],
+        };
+      }
+    }
+    return section;
+  });
 
   // NOTE: Use this if you want save in local storage -- Credits: Hosna Qasmei
   //
@@ -102,7 +144,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
               </div>
 
               <nav className="flex flex-1 flex-col gap-8 px-4 pt-4">
-                {links.map((section) => (
+                {updatedLinks.map((section) => (
                   <section
                     key={section.title}
                     className="flex flex-col gap-0.5"
@@ -261,6 +303,47 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
   // Determine if user is a guest
   const isGuest = user?.role[0] === "guest" || !isAuthenticated;
 
+  // Fetch subject status using shared hook
+  const subjectStatus = useSubjectStatus();
+
+  // Determine if user is SSS: user.class starts with 'SSS' or compulsory_selective is undefined/empty
+  const isSSS = user?.class?.startsWith('SSS') || 
+    (subjectStatus?.content && (!subjectStatus.content.compulsory_selective || subjectStatus.content.compulsory_selective.length === 0));
+  
+  // Show subject selection:
+  // For SSS: show only when selective_status !== 'selected'
+  // For JSS: show when either status is not 'selected'
+  const showSubjectSelection =
+    (user?.role?.includes("student") || user?.role?.includes("guardian")) &&
+    subjectStatus?.content &&
+    (isSSS
+      ? subjectStatus.content.selective_status !== "selected"
+      : (subjectStatus.content.compulsory_selective_status !== "selected" ||
+         subjectStatus.content.selective_status !== "selected"));
+
+  // Modify links to add subject selection item to "Learning" section if applicable
+  const updatedLinks = links.map((section) => {
+    if (section.title === "Learning" && showSubjectSelection) {
+      // Check if item with href "/dashboard/subject" already exists
+      const hasSubjectSelection = section.items.some(item => item.href === "/dashboard/subject");
+      if (!hasSubjectSelection) {
+        return {
+          ...section,
+          items: [
+            ...section.items,
+            {
+              title: "Subject Selection",
+              href: "/dashboard/subject",
+              icon: "book",
+              disabled: false,
+            },
+          ],
+        };
+      }
+    }
+    return section;
+  });
+
   if (isSm || isMobile) {
     return (
       <Sheet open={open} onOpenChange={setOpen}>
@@ -290,7 +373,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
 
                 <ProjectSwitcher large />
 
-                {links.map((section) => (
+                {updatedLinks.map((section) => (
                   <section
                     key={section.title}
                     className="flex flex-col gap-0.5"

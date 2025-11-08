@@ -191,7 +191,7 @@ export function CompactWelcomeCard({ className }: WelcomeBackCardProps) {
 
   return (
     <WobbleCard
-      containerClassName={`col-span-1 h-full min-h-[200px] bg-gradient-to-br from-indigo-500 to-indigo-700 ${className}`}
+      // containerClassName={`col-span-1 h-full min-h-[200px] bg-gradient-to-br from-indigo-500 to-indigo-700 ${className}`}
     >
       <div className="text-center">
         <motion.div

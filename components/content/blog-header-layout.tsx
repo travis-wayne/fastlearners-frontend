@@ -10,7 +10,7 @@ import { BLOG_CATEGORIES } from "@/config/blog";
 import { cn } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
-export function BlogHeaderLayout() {
+export function BlogHeaderLayout({ hideCategories = false }: { hideCategories?: boolean } = {}) {
   const [open, setOpen] = useState(false);
   const { slug } = useParams() as { slug?: string };
   const data = BLOG_CATEGORIES.find((category) => category.slug === slug);
@@ -32,71 +32,75 @@ export function BlogHeaderLayout() {
           </p>
         </div>
 
-        <nav className="mt-8 hidden w-full md:flex">
-          <ul
-            role="list"
-            className="flex w-full flex-1 gap-x-2 border-b text-[15px] text-muted-foreground"
-          >
-            <CategoryLink title="All" href="/blog" active={!slug} />
-            {BLOG_CATEGORIES.map((category) => (
-              <CategoryLink
-                key={category.slug}
-                title={category.title}
-                href={`/blog/category/${category.slug}`}
-                active={category.slug === slug}
-              />
-            ))}
-            <CategoryLink title="Guides" href="/guides" active={false} />
-          </ul>
-        </nav>
-      </MaxWidthWrapper>
-
-      <Drawer.Root open={open} onClose={closeDrawer}>
-        <Drawer.Trigger
-          onClick={() => setOpen(true)}
-          className="mb-8 flex w-full items-center border-y p-3 text-foreground/90 md:hidden"
-        >
-          <List className="size-[18px]" />
-          <p className="ml-2.5 text-sm font-medium">Categories</p>
-        </Drawer.Trigger>
-        <Drawer.Overlay
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
-          onClick={closeDrawer}
-        />
-        <Drawer.Portal>
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background">
-            <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
-              <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
-            </div>
-            <ul role="list" className="mb-14 w-full p-3 text-muted-foreground">
-              <CategoryLink
-                title="All"
-                href="/blog"
-                active={!slug}
-                clickAction={closeDrawer}
-                mobile
-              />
+        {!hideCategories && (
+          <nav className="mt-8 hidden w-full md:flex">
+            <ul
+              role="list"
+              className="flex w-full flex-1 gap-x-2 border-b text-[15px] text-muted-foreground"
+            >
+              <CategoryLink title="All" href="/blog" active={!slug} />
               {BLOG_CATEGORIES.map((category) => (
                 <CategoryLink
                   key={category.slug}
                   title={category.title}
                   href={`/blog/category/${category.slug}`}
                   active={category.slug === slug}
+                />
+              ))}
+              <CategoryLink title="Guides" href="/guides" active={false} />
+            </ul>
+          </nav>
+        )}
+      </MaxWidthWrapper>
+
+      {!hideCategories && (
+        <Drawer.Root open={open} onClose={closeDrawer}>
+          <Drawer.Trigger
+            onClick={() => setOpen(true)}
+            className="mb-8 flex w-full items-center border-y p-3 text-foreground/90 md:hidden"
+          >
+            <List className="size-[18px]" />
+            <p className="ml-2.5 text-sm font-medium">Categories</p>
+          </Drawer.Trigger>
+          <Drawer.Overlay
+            className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
+            onClick={closeDrawer}
+          />
+          <Drawer.Portal>
+            <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background">
+              <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
+                <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+              </div>
+              <ul role="list" className="mb-14 w-full p-3 text-muted-foreground">
+                <CategoryLink
+                  title="All"
+                  href="/blog"
+                  active={!slug}
                   clickAction={closeDrawer}
                   mobile
                 />
-              ))}
-              <CategoryLink
-                title="Guides"
-                href="/guides"
-                active={false}
-                mobile
-              />
-            </ul>
-          </Drawer.Content>
-          <Drawer.Overlay />
-        </Drawer.Portal>
-      </Drawer.Root>
+                {BLOG_CATEGORIES.map((category) => (
+                  <CategoryLink
+                    key={category.slug}
+                    title={category.title}
+                    href={`/blog/category/${category.slug}`}
+                    active={category.slug === slug}
+                    clickAction={closeDrawer}
+                    mobile
+                  />
+                ))}
+                <CategoryLink
+                  title="Guides"
+                  href="/guides"
+                  active={false}
+                  mobile
+                />
+              </ul>
+            </Drawer.Content>
+            <Drawer.Overlay />
+          </Drawer.Portal>
+        </Drawer.Root>
+      )}
     </>
   );
 }
