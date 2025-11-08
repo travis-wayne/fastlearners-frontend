@@ -22,16 +22,6 @@ const nextConfig = {
       },
     ],
   },
-  // TODO: Uncomment this rewrite after removing app/(protected)/dashboard/blog/page.tsx
-  // once analytics show negligible traffic to /dashboard/blog (monitor for 2-3 months)
-  // async rewrites() {
-  //   return [
-  //     {
-  //       source: '/dashboard/blog',
-  //       destination: '/dashboard/subject',
-  //     },
-  //   ];
-  // },
 };
 
 module.exports = withContentlayer(nextConfig);
