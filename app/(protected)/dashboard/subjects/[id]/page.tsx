@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { mockSchemeOfWork } from "@/data/mock-scheme-of-work";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -18,7 +17,6 @@ import {
   Share2,
   Target,
   TrendingUp,
-  Users,
 } from "lucide-react";
 
 import { getSubjectById } from "@/config/education";
@@ -59,6 +57,57 @@ const mockSubjectProgress = {
   caScore: 82,
 };
 
+// Mock scheme of work data
+const mockSchemeOfWork = {
+  weeks: [
+    {
+      week: 1,
+      topics: ["Introduction to Subject", "Basic Concepts"],
+      objectives: [
+        "Understand the fundamentals",
+        "Learn key terminology",
+        "Identify main concepts",
+      ],
+      activities: ["Class discussion", "Group work", "Practical exercise"],
+      resources: ["Textbook Chapter 1", "Video tutorial", "Worksheet"],
+      assessment: "Weekly quiz on basic concepts",
+    },
+    {
+      week: 2,
+      topics: ["Advanced Concepts", "Problem Solving"],
+      objectives: [
+        "Apply concepts to problems",
+        "Develop analytical skills",
+        "Practice problem-solving techniques",
+      ],
+      activities: ["Problem-solving session", "Case studies", "Group project"],
+      resources: ["Textbook Chapter 2", "Practice problems", "Online resources"],
+      assessment: "Assignment submission",
+    },
+    // Add more weeks as needed
+    ...Array.from({ length: 9 }, (_, i) => ({
+      week: i + 3,
+      topics: [`Topic ${i + 3}A`, `Topic ${i + 3}B`],
+      objectives: [
+        `Objective ${i + 3}1`,
+        `Objective ${i + 3}2`,
+        `Objective ${i + 3}3`,
+      ],
+      activities: [
+        `Activity ${i + 3}1`,
+        `Activity ${i + 3}2`,
+        `Activity ${i + 3}3`,
+      ],
+      resources: [
+        `Resource ${i + 3}1`,
+        `Resource ${i + 3}2`,
+        `Resource ${i + 3}3`,
+      ],
+      assessment: `Assessment for week ${i + 3}`,
+    })),
+  ],
+};
+
 export default function SubjectDetailPage() {
   const params = useParams();
   const router = useRouter();
@@ -68,22 +117,6 @@ export default function SubjectDetailPage() {
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
   const subject = getSubjectById(subjectId);
-
-  // Get scheme of work for current subject, class, and term
-  const getSchemeOfWork = () => {
-    const key = `${subjectId}${currentClass?.stage?.toUpperCase()}${currentClass?.level}Term${currentTerm?.order}`;
-    // For demo, we'll use the JSS1 Term1 schemes we have
-    if (subjectId === "mathematics")
-      return mockSchemeOfWork.mathematicsJSS1Term1;
-    if (subjectId === "english") return mockSchemeOfWork.englishJSS1Term1;
-    if (subjectId === "basic-science")
-      return mockSchemeOfWork.basicScienceJSS1Term1;
-
-    // Return null if no scheme found
-    return null;
-  };
-
-  const schemeOfWork = getSchemeOfWork();
 
   if (!subject) {
     return (
@@ -268,190 +301,185 @@ export default function SubjectDetailPage() {
           </TabsList>
 
           <TabsContent value="scheme" className="space-y-4">
-            {schemeOfWork ? (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Scheme of Work</CardTitle>
-                      <CardDescription>
-                        {subject.name} for {classDisplay} - {termDisplay}
-                      </CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      <Download className="mr-2 size-4" />
-                      Download PDF
-                    </Button>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Scheme of Work</CardTitle>
+                    <CardDescription>
+                      {subject.name} for {classDisplay} - {termDisplay}
+                    </CardDescription>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <Accordion type="single" collapsible className="space-y-2">
-                    {schemeOfWork.weeks.map((week, index) => (
-                      <AccordionItem
-                        key={week.week}
-                        value={`week-${week.week}`}
-                      >
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex flex-1 items-center gap-4">
-                            <div className="flex items-center gap-2">
-                              {week.week <= mockSubjectProgress.currentWeek ? (
-                                <CheckCircle className="size-5 text-green-600" />
-                              ) : (
-                                <Circle className="size-5 text-muted-foreground" />
-                              )}
-                              <span className="font-semibold">
-                                Week {week.week}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span>{week.topics.join(", ")}</span>
-                            </div>
-                            {week.week === mockSubjectProgress.currentWeek && (
-                              <Badge variant="default" className="ml-auto">
-                                Current
-                              </Badge>
+                  <Button variant="outline" size="sm">
+                    <Download className="mr-2 size-4" />
+                    Download PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <Accordion type="single" collapsible className="space-y-2">
+                  {mockSchemeOfWork.weeks.map((week, index) => (
+                    <AccordionItem
+                      key={week.week}
+                      value={`week-${week.week}`}
+                    >
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex flex-1 items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            {week.week <= mockSubjectProgress.currentWeek ? (
+                              <CheckCircle className="size-5 text-green-600" />
+                            ) : (
+                              <Circle className="size-5 text-muted-foreground" />
                             )}
+                            <span className="font-semibold">
+                              Week {week.week}
+                            </span>
                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-4">
-                          <div className="grid gap-6 md:grid-cols-2">
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <BookOpen className="size-4" />
-                                  Topics
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.topics.map((topic, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {topic}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <Target className="size-4" />
-                                  Learning Objectives
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.objectives.map((objective, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {objective}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            </div>
-
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <PlayCircle className="size-4" />
-                                  Activities
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.activities.map((activity, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {activity}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <FileText className="size-4" />
-                                  Resources
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.resources.map((resource, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {resource}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <Award className="size-4" />
-                                  Assessment
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {week.assessment}
-                                </p>
-                              </div>
-                            </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{week.topics.join(", ")}</span>
                           </div>
-
-                          {week.week <= mockSubjectProgress.currentWeek && (
-                            <div className="mt-6 border-t pt-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-sm text-green-600">
-                                  <CheckCircle className="size-4" />
-                                  <span>Week completed</span>
-                                </div>
-                                <Button size="sm" variant="outline">
-                                  View Lessons
-                                </Button>
-                              </div>
-                            </div>
-                          )}
-
                           {week.week === mockSubjectProgress.currentWeek && (
-                            <div className="mt-6 border-t pt-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-sm text-blue-600">
-                                  <Clock className="size-4" />
-                                  <span>Currently studying this week</span>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button size="sm" variant="outline">
-                                    Continue Lesson
-                                  </Button>
-                                  <Button size="sm">Take Quiz</Button>
-                                </div>
+                            <Badge variant="default" className="ml-auto">
+                              Current
+                            </Badge>
+                          )}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-4">
+                        <div className="grid gap-6 md:grid-cols-2">
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <BookOpen className="size-4" />
+                                Topics
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.topics.map((topic, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {topic}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <Target className="size-4" />
+                                Learning Objectives
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.objectives.map((objective, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {objective}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          </div>
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <PlayCircle className="size-4" />
+                                Activities
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.activities.map((activity, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {activity}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <FileText className="size-4" />
+                                Resources
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.resources.map((resource, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {resource}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <Award className="size-4" />
+                                Assessment
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {week.assessment}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        {week.week <= mockSubjectProgress.currentWeek && (
+                          <div className="mt-6 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-green-600">
+                                <CheckCircle className="size-4" />
+                                <span>Week completed</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  router.push(
+                                    `/dashboard/lessons?subjectId=${subjectId}`
+                                  )
+                                }
+                              >
+                                View Lessons
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        {week.week === mockSubjectProgress.currentWeek && (
+                          <div className="mt-6 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-blue-600">
+                                <Clock className="size-4" />
+                                <span>Currently studying this week</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/lessons?subjectId=${subjectId}`
+                                    )
+                                  }
+                                >
+                                  Continue Lesson
+                                </Button>
+                                <Button size="sm">Take Quiz</Button>
                               </div>
                             </div>
-                          )}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <FileText className="mx-auto mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-semibold">
-                    No Scheme of Work Available
-                  </h3>
-                  <p className="text-muted-foreground">
-                    The scheme of work for {subject.name} in {classDisplay} -{" "}
-                    {termDisplay} is not yet available.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
+                  ))}
+                </Accordion>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="lessons" className="space-y-4">
@@ -461,9 +489,16 @@ export default function SubjectDetailPage() {
                 <h3 className="mb-2 text-lg font-semibold">
                   Lessons Coming Soon
                 </h3>
-                <p className="text-muted-foreground">
+                <p className="mb-4 text-muted-foreground">
                   Interactive lessons for {subject.name} will be available soon.
                 </p>
+                <Button
+                  onClick={() =>
+                    router.push(`/dashboard/lessons?subjectId=${subjectId}`)
+                  }
+                >
+                  View Available Lessons
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -502,3 +537,4 @@ export default function SubjectDetailPage() {
     </motion.div>
   );
 }
+

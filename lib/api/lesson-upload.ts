@@ -1,8 +1,4 @@
-import axios from "axios";
-
-import { getTokenFromCookies } from "@/lib/auth-cookies";
-
-const BASE_URL = "https://fastlearnersapp.com/api/v1";
+// Client-side lesson upload service - uses internal API routes for security
 
 // Types
 export interface ApiResponse {
@@ -19,16 +15,6 @@ export interface UploadResult {
   error?: string;
 }
 
-// Get auth token from cookies (matching your auth store)
-const getAuthToken = (): string | null => {
-  return getTokenFromCookies();
-};
-
-// Create axios instance with auth headers
-const createAuthHeaders = () => {
-  const token = getAuthToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 // Generic upload function
 const uploadFile = async (
@@ -47,80 +33,74 @@ const uploadFile = async (
       type: file.type,
     });
 
-    const response = await axios.post(`${BASE_URL}${endpoint}`, formData, {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        // Don't set Content-Type - let axios set it with boundary
-      },
+    const response = await fetch(endpoint, {
+      method: "POST",
+      credentials: "include",
+      body: formData,
     });
 
-    return {
-      success: true,
-      message: response.data.message || "Upload successful",
-    };
-  } catch (error: any) {
-    let errorMessage = "Upload failed";
+    const data = await response.json();
 
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
+    if (!response.ok) {
+      let errorMessage = "Upload failed";
 
-      // Add specific error details if available
-      if (error.response?.data?.errors) {
-        const errorDetails = error.response.data.errors;
-        if (typeof errorDetails === "object" && errorDetails !== null) {
-          const detailsArray = Object.entries(errorDetails).map(
-            ([key, value]) =>
-              `${key}: ${Array.isArray(value) ? value.join(", ") : value}`,
-          );
-          errorMessage += ` - ${detailsArray.join("; ")}`;
+      if (data?.message) {
+        errorMessage = data.message;
+
+        // Add specific error details if available
+        if (data?.errors) {
+          const errorDetails = data.errors;
+          if (typeof errorDetails === "object" && errorDetails !== null) {
+            const detailsArray = Object.entries(errorDetails).map(
+              ([key, value]) =>
+                `${key}: ${Array.isArray(value) ? value.join(", ") : value}`,
+            );
+            errorMessage += ` - ${detailsArray.join("; ")}`;
+          }
         }
       }
-    } else if (error.message) {
-      errorMessage = error.message;
+
+      return {
+        success: false,
+        message: "Upload failed",
+        error: errorMessage,
+      };
     }
 
     return {
+      success: true,
+      message: data.message || "Upload successful",
+    };
+  } catch (error: any) {
+    return {
       success: false,
       message: "Upload failed",
-      error: errorMessage,
+      error: error.message || "Unknown error occurred",
     };
   }
 };
 
 // Individual upload functions
 export const uploadLessons = (file: File): Promise<UploadResult> =>
-  uploadFile("/superadmin/lessons/uploads/lessons", file, "lessons_file");
+  uploadFile("/api/uploads/lessons", file, "lessons_file");
 
 export const uploadConcepts = (file: File): Promise<UploadResult> =>
-  uploadFile("/superadmin/lessons/uploads/concepts", file, "concepts_file");
+  uploadFile("/api/uploads/concepts", file, "concepts_file");
 
 export const uploadExamples = (file: File): Promise<UploadResult> =>
-  uploadFile("/superadmin/lessons/uploads/examples", file, "examples_file");
+  uploadFile("/api/uploads/examples", file, "examples_file");
 
 export const uploadExercises = (file: File): Promise<UploadResult> =>
-  uploadFile("/superadmin/lessons/uploads/exercises", file, "exercises_file");
+  uploadFile("/api/uploads/exercises", file, "exercises_file");
 
 export const uploadGeneralExercises = (file: File): Promise<UploadResult> =>
-  uploadFile(
-    "/superadmin/lessons/uploads/general-exercises",
-    file,
-    "general_exercises_file",
-  );
+  uploadFile("/api/uploads/general-exercises", file, "general_exercises_file");
 
 export const uploadCheckMarkers = (file: File): Promise<UploadResult> =>
-  uploadFile(
-    "/superadmin/lessons/uploads/check-markers",
-    file,
-    "check_markers_file",
-  );
+  uploadFile("/api/uploads/check-markers", file, "check_markers_file");
 
 export const uploadSchemeOfWork = (file: File): Promise<UploadResult> =>
-  uploadFile(
-    "/superadmin/lessons/uploads/scheme-of-work",
-    file,
-    "scheme_of_work_file",
-  );
+  uploadFile("/api/uploads/scheme-of-work", file, "scheme_of_work_file");
 
 // Bulk upload function
 export const uploadAllLessonFiles = async (files: {
@@ -138,35 +118,31 @@ export const uploadAllLessonFiles = async (files: {
       formData.append(key, file);
     });
 
-    const response = await axios.post(
-      `${BASE_URL}/superadmin/lessons/uploads/all-lesson-files`,
-      formData,
-      {
-        headers: {
-          ...createAuthHeaders(),
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-        },
-      },
-    );
+    const response = await fetch("/api/uploads/all-lesson-files", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
 
-    return {
-      success: true,
-      message: response.data.message || "All files uploaded successfully",
-    };
-  } catch (error: any) {
-    let errorMessage = "Bulk upload failed";
+    const data = await response.json();
 
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
-    } else if (error.message) {
-      errorMessage = error.message;
+    if (!response.ok) {
+      return {
+        success: false,
+        message: "Bulk upload failed",
+        error: data?.message || "Unknown error occurred",
+      };
     }
 
     return {
+      success: true,
+      message: data.message || "All files uploaded successfully",
+    };
+  } catch (error: any) {
+    return {
       success: false,
       message: "Bulk upload failed",
-      error: errorMessage,
+      error: error.message || "Unknown error occurred",
     };
   }
 };

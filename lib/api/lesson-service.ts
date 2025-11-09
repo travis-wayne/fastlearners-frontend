@@ -1,6 +1,4 @@
-import axios from "axios";
-
-import { getTokenFromCookies } from "@/lib/auth-cookies";
+// Client-side lesson service - uses internal API routes for security
 import {
   CHECK_MARKER_REQUIRED_COLUMNS,
   CONCEPT_REQUIRED_COLUMNS,
@@ -16,8 +14,6 @@ import {
   validateCSVFile,
   type CSVValidationResult,
 } from "@/lib/utils/csv-upload-helper";
-
-const BASE_URL = "https://fastlearnersapp.com/api/v1";
 
 // Types based on API documentation
 export interface ApiResponse<T = any> {
@@ -129,92 +125,58 @@ export interface GetLessonsResponse {
   lessons?: Lesson[];
 }
 
-// Get auth token from cookies (matching your auth store)
-const getAuthToken = (): string | null => {
-  return getTokenFromCookies();
-};
-
-// Create axios instance with auth header
-const createAuthHeaders = () => {
-  const token = getAuthToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 // Upload functions
 export const uploadLessonsFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append("lessons_file", file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/lessons`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/lessons", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadConceptsFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append("concepts_file", file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/concepts`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/concepts", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadExamplesFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append("examples_file", file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/examples`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/examples", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadExercisesFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append("exercises_file", file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/exercises`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/exercises", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadGeneralExercisesFile = async (
@@ -223,19 +185,13 @@ export const uploadGeneralExercisesFile = async (
   const formData = new FormData();
   formData.append("general_exercises_file", file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/general-exercises`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/general-exercises", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadCheckMarkersFile = async (
@@ -251,19 +207,13 @@ export const uploadCheckMarkersFile = async (
     type: file.type,
   });
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/check-markers`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        // Don't set Content-Type - let axios set it with boundary
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/check-markers", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadSchemeOfWorkFile = async (
@@ -272,19 +222,13 @@ export const uploadSchemeOfWorkFile = async (
   const formData = new FormData();
   formData.append("scheme_of_work_file", file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/scheme-of-work`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/scheme-of-work", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 export const uploadAllLessonFiles = async (files: {
@@ -303,19 +247,13 @@ export const uploadAllLessonFiles = async (files: {
   formData.append("general_exercises_file", files.general_exercises_file);
   formData.append("check_markers_file", files.check_markers_file);
 
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/uploads/all-lesson-files`,
-    formData,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-        "Content-Type": "multipart/form-data",
-      },
-    },
-  );
+  const response = await fetch("/api/uploads/all-lesson-files", {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 // Get lessons data
@@ -323,71 +261,60 @@ export const getLessons = async (
   classId?: number,
   subjectId?: number,
 ): Promise<ApiResponse<GetLessonsResponse>> => {
-  let url = `${BASE_URL}/superadmin/lessons`;
-  const params = new URLSearchParams();
+  const body: any = {};
+  if (classId) body.class_id = classId;
+  if (subjectId) body.subject_id = subjectId;
 
-  if (classId) params.append("class_id", classId.toString());
-  if (subjectId) params.append("subject_id", subjectId.toString());
-
-  if (params.toString()) {
-    url += `?${params.toString()}`;
-  }
-
-  const response = await axios.get(url, {
+  const response = await fetch("/api/lessons/list", {
+    method: "POST",
+    credentials: "include",
     headers: {
-      ...createAuthHeaders(),
       Accept: "application/json",
+      "Content-Type": "application/json",
     },
+    body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined,
   });
 
-  return response.data;
+  return await response.json();
 };
 
 export const getLessonContent = async (
   lessonId: number,
 ): Promise<ApiResponse<Lesson>> => {
-  const response = await axios.get(
-    `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/`,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-      },
+  const response = await fetch(`/api/lessons/${lessonId}`, {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
     },
-  );
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 // Delete/Trash functions
 export const trashLesson = async (lessonId: number): Promise<ApiResponse> => {
-  const response = await axios.delete(
-    `${BASE_URL}/superadmin/lessons/lessons/${lessonId}/trash`,
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-      },
+  const response = await fetch(`/api/lessons/${lessonId}/trash`, {
+    method: "DELETE",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
     },
-  );
+  });
 
-  return response.data;
+  return await response.json();
 };
 
-// Note: View trashed lessons endpoint URL is not specified in the documentation
-// This is a placeholder - update when the actual endpoint is available
 export const getTrashedLessons = async (): Promise<ApiResponse<Lesson[]>> => {
-  const response = await axios.get(
-    `${BASE_URL}/superadmin/lessons/trashed`, // Placeholder URL
-    {
-      headers: {
-        ...createAuthHeaders(),
-        Accept: "application/json",
-      },
+  const response = await fetch("/api/lessons/trashed", {
+    method: "GET",
+    credentials: "include",
+    headers: {
+      Accept: "application/json",
     },
-  );
+  });
 
-  return response.data;
+  return await response.json();
 };
 
 // CSV validation helpers

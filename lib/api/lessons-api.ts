@@ -1,9 +1,4 @@
-// New lesson service matching the exact API structure
-import axios from 'axios';
-import { getTokenFromCookies } from '@/lib/auth-cookies';
-
-// Use server-side direct base in SSR, proxy in browser to avoid CORS
-const BASE_URL = typeof window === 'undefined' ? 'https://fastlearnersapp.com/api/v1' : '/api/proxy';
+// Client-side lesson service - uses internal API routes for security
 
 // Base API response interface
 export interface ApiResponse<T = any> {
@@ -178,58 +173,58 @@ export interface LessonFilters {
   week: string;
 }
 
-// Auth helper
-const getAuthHeaders = () => {
-  const token = getTokenFromCookies();
-  return {
-    'Authorization': `Bearer ${token}`,
-    'Accept': 'application/json',
-  };
-};
 
 // API functions
 export const getLessonsMetadata = async (): Promise<ApiResponse<MetadataResponse>> => {
-  const response = await axios.get(
-    `${BASE_URL}/superadmin/lessons/get-classes-subjects-terms-weeks`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch('/api/lessons/meta', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 export const getLessons = async (
   filters: LessonFilters
 ): Promise<ApiResponse<LessonsListResponse>> => {
-  const response = await axios.post(
-    `${BASE_URL}/superadmin/lessons/lessons/`,
-    filters,
-    { 
-      headers: {
-        ...getAuthHeaders(),
-        'Content-Type': 'application/json'
-      }
-    }
-  );
-  return response.data;
+  const response = await fetch('/api/lessons/list', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(filters),
+  });
+  return await response.json();
 };
 
 export const getLesson = async (
   lessonId: number
 ): Promise<ApiResponse<LessonDetail>> => {
-  const response = await axios.get(
-    `${BASE_URL}/superadmin/lessons/lesson/${lessonId}`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch(`/api/lessons/${lessonId}`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 export const getLessonContent = async (
   lessonId: number
 ): Promise<ApiResponse<LessonContent>> => {
-  const response = await axios.get(
-    `${BASE_URL}/superadmin/lessons/lesson/${lessonId}/content`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch(`/api/lessons/${lessonId}/content`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 // Student/Guardian/Guest Dashboard APIs
@@ -264,51 +259,62 @@ export interface StudentSubjectsData {
 }
 
 export const getStudentDashboard = async (): Promise<ApiResponse<StudentDashboardData>> => {
-  const response = await axios.get(
-    `${BASE_URL}/dashboard`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch('/api/proxy/dashboard', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 export const getGuardianDashboard = async (): Promise<ApiResponse<GuardianDashboardData>> => {
-  const response = await axios.get(
-    `${BASE_URL}/guardian`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch('/api/proxy/guardian', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 export const getGuestDashboard = async (): Promise<ApiResponse<GuestDashboardData>> => {
-  const response = await axios.get(
-    `${BASE_URL}/guest`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch('/api/proxy/guest', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 export const getStudentSubjects = async (): Promise<ApiResponse<StudentSubjectsData>> => {
-  const response = await axios.get(
-    `${BASE_URL}/subjects`,
-    { headers: getAuthHeaders() }
-  );
-  return response.data;
+  const response = await fetch('/api/subjects', {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+    },
+  });
+  return await response.json();
 };
 
 export const updateCompulsorySelectiveSubject = async (
   subjectId: number
 ): Promise<ApiResponse<null>> => {
-  const response = await axios.post(
-    `${BASE_URL}/subjects/update-compulsory-selective`,
-    { subject: subjectId },
-    { 
-      headers: {
-        ...getAuthHeaders(),
-        'Content-Type': 'application/json'
-      }
-    }
-  );
-  return response.data;
+  const response = await fetch('/api/subjects/update-compulsory-selective', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ subject: subjectId }),
+  });
+  return await response.json();
 };
 
 export const updateSelectiveSubjects = async (
@@ -320,17 +326,12 @@ export const updateSelectiveSubjects = async (
     formData.append('subjects[]', id.toString());
   });
 
-  const response = await axios.post(
-    `${BASE_URL}/subjects/update-selective`,
-    formData,
-    { 
-      headers: {
-        ...getAuthHeaders(),
-        'Content-Type': 'multipart/form-data'
-      }
-    }
-  );
-  return response.data;
+  const response = await fetch('/api/subjects/update-selective', {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+  return await response.json();
 };
 
 // Error handling helper

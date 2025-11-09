@@ -16,7 +16,35 @@
     "tailwindcss/enforces-shorthand": "error",
     "tailwindcss/migration-from-tailwind-2": "error",
     "react/no-unescaped-entities": "error",
-    "react-hooks/exhaustive-deps": "warn"
+    "react-hooks/exhaustive-deps": "warn",
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@/lib/auth-cookies",
+            "message": "Do not import from @/lib/auth-cookies. Use internal API routes (/api/*) instead. Client-side code must NOT read tokens from cookies (XSS exposure)."
+          }
+        ],
+        "patterns": [
+          {
+            "group": ["**/auth-cookies"],
+            "message": "Do not import auth-cookies. Use internal API routes (/api/*) instead."
+          }
+        ]
+      }
+    ],
+    "no-restricted-syntax": [
+      "error",
+      {
+        "selector": "CallExpression[callee.name='getTokenFromCookies']",
+        "message": "getTokenFromCookies() is not allowed. Use internal API routes (/api/*) instead. Client-side code must NOT read tokens from cookies (XSS exposure)."
+      },
+      {
+        "selector": "MemberExpression[object.name='getTokenFromCookies']",
+        "message": "getTokenFromCookies is not allowed. Use internal API routes (/api/*) instead."
+      }
+    ]
   },
   "settings": {
     "tailwindcss": {
