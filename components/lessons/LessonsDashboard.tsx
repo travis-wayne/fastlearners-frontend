@@ -483,14 +483,14 @@ export function LessonsDashboard() {
 
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div>
+        {/* <div>
           <h1 className="text-3xl font-bold">Lessons</h1>
           <p className="text-muted-foreground">
             {selectedSubject
               ? `Lessons for ${selectedSubject.name} - ${classDisplay} - ${termDisplay}`
               : `All lessons for ${classDisplay} - ${termDisplay}`}
           </p>
-        </div>
+        </div> */}
         <Select
           value={selectedSubjectId}
           onValueChange={(value) => {
@@ -739,7 +739,7 @@ export function LessonsDashboard() {
 
       {/* Pagination Controls */}
       {!isLoading && totalPages > 1 && (
-        <Card>
+        <Card className="border border-border">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-muted-foreground">
@@ -751,6 +751,7 @@ export function LessonsDashboard() {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
                   disabled={currentPage === 1}
+                  className="border-border"
                 >
                   <ChevronLeft className="size-4" />
                   Previous
@@ -760,6 +761,7 @@ export function LessonsDashboard() {
                   size="sm"
                   onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
                   disabled={currentPage === totalPages}
+                  className="border-border"
                 >
                   Next
                   <ChevronRight className="size-4" />

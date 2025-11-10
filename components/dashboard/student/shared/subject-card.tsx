@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
 import {
   BookOpen,
   Calendar,
-  ChevronRight,
   Clock,
   Target,
   Trophy,
@@ -14,9 +12,8 @@ import * as Icons from "lucide-react";
 
 import { Subject } from "@/config/education";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 
 interface SubjectProgress {
   totalTopics: number;
@@ -64,109 +61,114 @@ export function SubjectCard({
 
   if (variant === "compact") {
     return (
-      <Card
-        className={`transition-all duration-300 hover:shadow-md ${className}`}
+      <article
+        className={cn(
+          "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:shadow-md sm:p-4 md:p-5",
+          className
+        )}
       >
-        <CardContent className="p-4">
-          <div className="flex items-center gap-3">
-            <div
-              className="flex items-center justify-center rounded-lg p-2"
-              style={{ backgroundColor: `${subject.color}20` }}
-            >
-              <IconComponent
-                className="size-4"
-                style={{ color: subject.color }}
-              />
-            </div>
-            <div className="min-w-0 flex-1">
-              <div className="flex items-center gap-2">
-                <span className="truncate text-sm font-medium">
-                  {subject.name}
-                </span>
-                {subject.compulsory && (
-                  <Badge variant="outline" className="text-xs">
-                    Core
-                  </Badge>
-                )}
-                {progress.grade && (
-                  <Badge
-                    className={`text-xs ${gradeColors[progress.grade] || "bg-gray-100 text-gray-800"}`}
-                  >
-                    {progress.grade}
-                  </Badge>
-                )}
-              </div>
-              <div className="truncate text-xs text-muted-foreground">
-                Week {progress.currentWeek}/{progress.totalWeeks} •{" "}
-                {progress.termProgress}% complete
-              </div>
-            </div>
-            <ChevronRight className="size-4 text-muted-foreground" />
+        <div className="w-full overflow-hidden rounded-xl border border-border">
+          <div
+            className="flex items-center justify-center p-6 sm:p-8"
+            style={{ backgroundColor: `${subject.color}10` }}
+          >
+            <IconComponent
+              className="size-10 sm:size-12"
+              style={{ color: subject.color }}
+            />
           </div>
-        </CardContent>
-      </Card>
+        </div>
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="w-full">
+            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+              <h2 className="line-clamp-1 font-heading text-base sm:text-lg">
+                {subject.name}
+              </h2>
+              {subject.compulsory && (
+                <Badge variant="outline" className="text-xs">
+                  Core
+                </Badge>
+              )}
+              {progress.grade && (
+                <Badge
+                  className={cn(
+                    "text-xs",
+                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800"
+                  )}
+                >
+                  {progress.grade}
+                </Badge>
+              )}
+            </div>
+            <p className="line-clamp-1 text-sm text-muted-foreground">
+              Week {progress.currentWeek}/{progress.totalWeeks} •{" "}
+              {progress.termProgress}% complete
+            </p>
+          </div>
+        </div>
+        <Link
+          href={`/dashboard/subjects/${subject.id}`}
+          className="absolute inset-0"
+        >
+          <span className="sr-only">View {subject.name}</span>
+        </Link>
+      </article>
     );
   }
 
   if (variant === "detailed") {
     return (
-      <motion.div
-        whileHover={{ scale: 1.01, y: -2 }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
-        className={className}
+      <article
+        className={cn(
+          "group relative flex h-full flex-col space-y-2 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg sm:p-5 md:p-6",
+          className
+        )}
       >
-        <Card
-          className="h-full border-l-4 transition-all duration-300 hover:shadow-lg"
-          style={{ borderLeftColor: subject.color }}
-        >
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex items-center justify-center rounded-lg p-3"
-                  style={{ backgroundColor: `${subject.color}20` }}
+        <div className="w-full overflow-hidden rounded-xl border border-border">
+          <div
+            className="flex items-center justify-center p-8 sm:p-10 md:p-12"
+            style={{ backgroundColor: `${subject.color}10` }}
+          >
+            <IconComponent
+              className="size-12 sm:size-14 md:size-16"
+              style={{ color: subject.color }}
+            />
+          </div>
+        </div>
+        <div className="flex flex-1 flex-col justify-between">
+          <div className="w-full">
+            <div className="mb-1.5 flex flex-wrap items-center gap-2">
+              <h2 className="line-clamp-2 font-heading text-xl sm:text-2xl">
+                {subject.name}
+              </h2>
+              {subject.compulsory ? (
+                <Badge variant="default" className="text-xs">
+                  Core Subject
+                </Badge>
+              ) : (
+                <Badge variant="outline" className="text-xs">
+                  Elective
+                </Badge>
+              )}
+              {progress.grade && (
+                <Badge
+                  className={cn(
+                    "text-xs",
+                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800"
+                  )}
                 >
-                  <IconComponent
-                    className="size-6"
-                    style={{ color: subject.color }}
-                  />
-                </div>
-                <div>
-                  <CardTitle className="flex items-center gap-2 text-lg font-semibold">
-                    {subject.name}
-                    <span className="text-xs text-muted-foreground">
-                      ({subject.code})
-                    </span>
-                  </CardTitle>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {subject.description}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-2">
-                {subject.compulsory ? (
-                  <Badge variant="default" className="text-xs">
-                    Core Subject
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-xs">
-                    Elective
-                  </Badge>
-                )}
-                {progress.grade && (
-                  <Badge
-                    className={`text-xs ${gradeColors[progress.grade] || "bg-gray-100 text-gray-800"}`}
-                  >
-                    Grade: {progress.grade}
-                  </Badge>
-                )}
-              </div>
+                  Grade: {progress.grade}
+                </Badge>
+              )}
             </div>
-          </CardHeader>
+            {subject.description && (
+              <p className="line-clamp-2 text-muted-foreground">
+                {subject.description}
+              </p>
+            )}
 
-          <CardContent className="space-y-4">
             {/* Term Progress Section */}
-            <div className="space-y-2">
+            <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Term Progress</span>
                 <span className="font-medium">{progress.termProgress}%</span>
@@ -191,147 +193,141 @@ export function SubjectCard({
             </div>
 
             {/* Academic Stats */}
-            <div className="grid grid-cols-2 gap-4 pt-2">
+            <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-sm">
-                  <Target className="size-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Target className="size-3 sm:size-4 text-muted-foreground" />
                   <span className="text-muted-foreground">CA Score</span>
                 </div>
-                <div className="text-lg font-semibold">
+                <div className="text-base sm:text-lg font-semibold">
                   {progress.caScore ? `${progress.caScore}%` : "N/A"}
                 </div>
               </div>
               <div className="space-y-1">
-                <div className="flex items-center gap-2 text-sm">
-                  <Calendar className="size-4 text-muted-foreground" />
+                <div className="flex items-center gap-2 text-xs sm:text-sm">
+                  <Calendar className="size-3 sm:size-4 text-muted-foreground" />
                   <span className="text-muted-foreground">Assessments</span>
                 </div>
-                <div className="text-lg font-semibold">
+                <div className="text-base sm:text-lg font-semibold">
                   {progress.upcomingAssessments}
                 </div>
               </div>
             </div>
+          </div>
 
+          <div className="mt-4 flex items-center space-x-3">
             {progress.lastAccessed && (
-              <div className="flex items-center gap-2 border-t pt-2 text-sm">
-                <Clock className="size-4 text-muted-foreground" />
-                <span className="text-muted-foreground">
-                  Last accessed:{" "}
-                  <span className="font-medium text-foreground">
-                    {progress.lastAccessed}
-                  </span>
-                </span>
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="size-4" />
+                <span>Last accessed: {progress.lastAccessed}</span>
               </div>
             )}
-
-            {/* Action Button */}
-            <Link
-              href={`/dashboard/subjects/${subject.id}`}
-              className="block pt-2"
-            >
-              <Button className="group w-full">
-                {progress.termProgress > 0
-                  ? "Continue Learning"
-                  : "Start Subject"}
-                <ChevronRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </motion.div>
+            {!progress.lastAccessed && (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Calendar className="size-4" />
+                <span>Week {progress.currentWeek} of {progress.totalWeeks}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        <Link
+          href={`/dashboard/subjects/${subject.id}`}
+          className="absolute inset-0"
+        >
+          <span className="sr-only">View {subject.name}</span>
+        </Link>
+      </article>
     );
   }
 
   // Default variant
   return (
-    <motion.div
-      whileHover={{ scale: 1.02, y: -4 }}
-      transition={{ type: "spring", stiffness: 300, damping: 30 }}
-      className={className}
+    <article
+      className={cn(
+        "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg sm:p-5 md:p-6",
+        className
+      )}
     >
-      <Link href={`/dashboard/subjects/${subject.id}`} className="block">
-        <Card
-          className="h-full cursor-pointer border-l-4 transition-all duration-300 hover:shadow-lg"
-          style={{ borderLeftColor: subject.color }}
+      <div className="w-full overflow-hidden rounded-xl border border-border">
+        <div
+          className="flex items-center justify-center p-8 sm:p-10"
+          style={{ backgroundColor: `${subject.color}10` }}
         >
-          <CardHeader className="pb-3">
-            <div className="flex items-start justify-between">
-              <div className="flex items-center gap-3">
-                <div
-                  className="flex items-center justify-center rounded-lg p-2"
-                  style={{ backgroundColor: `${subject.color}20` }}
-                >
-                  <IconComponent
-                    className="size-5"
-                    style={{ color: subject.color }}
-                  />
-                </div>
-                <div>
-                  <CardTitle className="text-lg font-semibold">
-                    {subject.name}
-                  </CardTitle>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    {subject.description}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-col items-end gap-1">
-                {subject.compulsory ? (
-                  <Badge variant="default" className="text-xs">
-                    Core
-                  </Badge>
-                ) : (
-                  <Badge variant="outline" className="text-xs">
-                    Elective
-                  </Badge>
+          <IconComponent
+            className="size-12 sm:size-14"
+            style={{ color: subject.color }}
+          />
+        </div>
+      </div>
+      <div className="flex flex-1 flex-col justify-between">
+        <div className="w-full">
+          <div className="mb-1.5 flex flex-wrap items-center gap-2">
+            <h2 className="line-clamp-2 font-heading text-xl sm:text-2xl">
+              {subject.name}
+            </h2>
+            {subject.compulsory ? (
+              <Badge variant="default" className="text-xs">
+                Core
+              </Badge>
+            ) : (
+              <Badge variant="outline" className="text-xs">
+                Elective
+              </Badge>
+            )}
+            {progress.grade && (
+              <Badge
+                className={cn(
+                  "text-xs",
+                  gradeColors[progress.grade] || "bg-gray-100 text-gray-800"
                 )}
-                {progress.grade && (
-                  <Badge
-                    className={`text-xs ${gradeColors[progress.grade] || "bg-gray-100 text-gray-800"}`}
-                  >
-                    {progress.grade}
-                  </Badge>
-                )}
-              </div>
-            </div>
-          </CardHeader>
+              >
+                {progress.grade}
+              </Badge>
+            )}
+          </div>
+          {subject.description && (
+            <p className="line-clamp-2 text-muted-foreground">
+              {subject.description}
+            </p>
+          )}
 
-          <CardContent className="space-y-4">
-            {/* Progress Section */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">Term Progress</span>
-                <span className="font-medium">{progress.termProgress}%</span>
-              </div>
-              <Progress value={progress.termProgress} className="h-2" />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>
-                  Week {progress.currentWeek} of {progress.totalWeeks}
-                </span>
-                <span>
-                  {progress.completedTopics}/{progress.totalTopics} topics
-                </span>
-              </div>
+          {/* Progress Section */}
+          <div className="mt-3 space-y-2 sm:mt-4">
+            <div className="flex items-center justify-between text-xs sm:text-sm">
+              <span className="text-muted-foreground">Term Progress</span>
+              <span className="font-medium">{progress.termProgress}%</span>
             </div>
+            <Progress value={progress.termProgress} className="h-2" />
+            <div className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+              <span>
+                Week {progress.currentWeek} of {progress.totalWeeks}
+              </span>
+              <span>
+                {progress.completedTopics}/{progress.totalTopics} topics
+              </span>
+            </div>
+          </div>
+        </div>
 
-            {/* Quick Stats */}
-            <div className="flex items-center justify-between pt-2 text-sm">
-              <div className="flex items-center gap-2">
-                <Target className="size-4 text-muted-foreground" />
-                <span className="text-muted-foreground">
-                  CA: {progress.caScore ? `${progress.caScore}%` : "N/A"}
-                </span>
-              </div>
-              {progress.upcomingAssessments > 0 && (
-                <Badge variant="outline" className="text-xs">
-                  {progress.upcomingAssessments} assessment
-                  {progress.upcomingAssessments > 1 ? "s" : ""}
-                </Badge>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:space-x-3">
+          <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
+            <Target className="size-3 sm:size-4" />
+            <span>CA: {progress.caScore ? `${progress.caScore}%` : "N/A"}</span>
+          </div>
+          {progress.upcomingAssessments > 0 && (
+            <Badge variant="outline" className="text-xs">
+              {progress.upcomingAssessments} assessment
+              {progress.upcomingAssessments > 1 ? "s" : ""}
+            </Badge>
+          )}
+        </div>
+      </div>
+      <Link
+        href={`/dashboard/subjects/${subject.id}`}
+        className="absolute inset-0"
+      >
+        <span className="sr-only">View {subject.name}</span>
       </Link>
-    </motion.div>
+    </article>
   );
 }

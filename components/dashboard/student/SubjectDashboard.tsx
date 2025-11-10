@@ -374,6 +374,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   }
 
   return (
+    
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -383,14 +384,14 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       {/* Header */}
       <motion.div variants={itemVariants}>
         <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          <div>
+          {/* <div>
             <h1 className="text-3xl font-bold">Subjects</h1>
             <p className="text-muted-foreground">
               Your subjects for {classDisplay} - {termDisplay}
             </p>
-          </div>
-          <div className="flex items-center gap-2">
             <AcademicSelector variant="compact" />
+          </div> */}
+          <div className="flex items-center gap-2">
             <Link href="/dashboard/subjects/manage">
               <Button variant="outline">
                 <Settings className="mr-2 h-4 w-4" />

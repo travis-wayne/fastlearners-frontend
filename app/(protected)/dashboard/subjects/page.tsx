@@ -42,7 +42,7 @@ export default async function SubjectsPage() {
   const hasRegisteredSubjects = hasSubjects && hasSubjects.subjects && hasSubjects.subjects.length > 0;
 
   return (
-    <div className="container max-w-5xl mx-auto py-8">
+    <div className="container max-w-screen-2xl mx-auto">
       {!hasClass ? (
         // Step 1: Academic Setup
         <div className="space-y-6">

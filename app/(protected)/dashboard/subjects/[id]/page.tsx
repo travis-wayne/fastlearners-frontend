@@ -337,10 +337,10 @@ export default function SubjectDetailPage() {
               </div>
               <div className="space-y-2">
                 <p className="text-2xl font-bold">
-                  {mockSubjectProgress.termProgress}%
+                  {subjectProgress.termProgress}%
                 </p>
                 <Progress
-                  value={mockSubjectProgress.termProgress}
+                  value={subjectProgress.termProgress}
                   className="h-2"
                 />
               </div>
@@ -355,9 +355,9 @@ export default function SubjectDetailPage() {
                   Current Grade
                 </span>
               </div>
-              <p className="text-2xl font-bold">{mockSubjectProgress.grade}</p>
+              <p className="text-2xl font-bold">{subjectProgress.grade}</p>
               <p className="text-sm text-muted-foreground">
-                CA: {mockSubjectProgress.caScore}%
+                CA: {subjectProgress.caScore}%
               </p>
             </CardContent>
           </Card>
@@ -371,10 +371,10 @@ export default function SubjectDetailPage() {
                 </span>
               </div>
               <p className="text-2xl font-bold">
-                {mockSubjectProgress.currentWeek}
+                {subjectProgress.currentWeek}
               </p>
               <p className="text-sm text-muted-foreground">
-                of {mockSubjectProgress.totalWeeks} weeks
+                of {subjectProgress.totalWeeks} weeks
               </p>
             </CardContent>
           </Card>
@@ -388,7 +388,7 @@ export default function SubjectDetailPage() {
                 </span>
               </div>
               <p className="text-2xl font-bold">
-                {mockSubjectProgress.upcomingAssessments}
+                {subjectProgress.upcomingAssessments}
               </p>
               <p className="text-sm text-muted-foreground">upcoming</p>
             </CardContent>
@@ -437,7 +437,7 @@ export default function SubjectDetailPage() {
                       <AccordionTrigger className="hover:no-underline">
                         <div className="flex flex-1 items-center gap-4">
                           <div className="flex items-center gap-2">
-                            {week.week <= mockSubjectProgress.currentWeek ? (
+                            {week.week <= subjectProgress.currentWeek ? (
                               <CheckCircle className="size-5 text-green-600" />
                             ) : (
                               <Circle className="size-5 text-muted-foreground" />
@@ -449,7 +449,7 @@ export default function SubjectDetailPage() {
                           <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <span>{week.topics.join(", ")}</span>
                           </div>
-                          {week.week === mockSubjectProgress.currentWeek && (
+                          {week.week === subjectProgress.currentWeek && (
                             <Badge variant="default" className="ml-auto">
                               Current
                             </Badge>
@@ -540,7 +540,7 @@ export default function SubjectDetailPage() {
                             </div>
                           </div>
                         </div>
-                        {week.week <= mockSubjectProgress.currentWeek && (
+                        {week.week <= subjectProgress.currentWeek && (
                           <div className="mt-6 border-t pt-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 text-sm text-green-600">
@@ -561,7 +561,7 @@ export default function SubjectDetailPage() {
                             </div>
                           </div>
                         )}
-                        {week.week === mockSubjectProgress.currentWeek && (
+                        {week.week === subjectProgress.currentWeek && (
                           <div className="mt-6 border-t pt-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2 text-sm text-blue-600">
