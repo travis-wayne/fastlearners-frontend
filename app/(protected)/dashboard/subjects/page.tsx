@@ -1,80 +1,74 @@
-import { Suspense } from "react";
-import { SubjectSetupShell } from "@/components/dashboard/student/SubjectSetupShell";
+import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
+import { AcademicSetupClient } from "@/components/dashboard/subjects/AcademicSetupClient";
+import { SubjectSelectionForm } from "@/components/dashboard/subjects/SubjectSelectionForm";
 import { SubjectDashboardShell } from "@/components/dashboard/student/SubjectDashboardShell";
-import { CardSkeleton } from "@/components/shared/card-skeleton";
+import { getUserProfile, getSubjects } from "@/lib/api/subjects";
 
-async function getSubjectStatus() {
+async function getUserProfileData() {
   try {
-    // Call internal API route (server-side)
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-    const res = await fetch(`${baseUrl}/api/subjects`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-      cache: "no-store",
-    });
-
-    if (!res.ok) {
-      return { needsSetup: true };
-    }
-
-    const data = await res.json();
-
-    if (!data.success || !data.content) {
-      return { needsSetup: true };
-    }
-
-    // Derive class level explicitly from API response
-    // The API should include stage (jss/sss) in the response
-    // If not available, check for compulsory_selective list as fallback
-    const { compulsory_selective_status, selective_status, stage } = data.content;
-    
-    // Prefer explicit stage from API, fallback to compulsory_selective list
-    let isJSS: boolean;
-    if (stage) {
-      isJSS = stage.toLowerCase() === "jss";
-    } else {
-      // Fallback: Check if compulsory_selective list exists (indicates JSS)
-      const hasCompulsorySelectiveList = 
-        data.content.compulsory_selective && 
-        data.content.compulsory_selective.length > 0;
-      isJSS = hasCompulsorySelectiveList;
-    }
-    
-    const needsSetup =
-      (isJSS && compulsory_selective_status === "pending") ||
-      selective_status === "pending";
-
-    return {
-      needsSetup,
-      subjectsData: data.content,
-      stage: stage || (isJSS ? "jss" : "sss"),
-    };
+    const cookieStore = cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    if (!token) return null;
+    return await getUserProfile(token);
   } catch (error) {
-    // On error, assume setup is needed
-    return { needsSetup: true };
+    return null;
+  }
+}
+
+async function getSubjectsData() {
+  try {
+    const cookieStore = cookies();
+    const token = cookieStore.get("auth_token")?.value;
+    if (!token) return null;
+    return await getSubjects(token);
+  } catch (error) {
+    return null;
   }
 }
 
 export default async function SubjectsPage() {
-  const status = await getSubjectStatus();
+  // Verify session validity server-side
+  // Middleware already protects this route, but we verify token by fetching profile
+  const profile = await getUserProfileData();
+
+  if (!profile) {
+    redirect("/auth/login");
+  }
+
+  // Check registration status
+  const hasClass = !!profile.class;
+  const hasSubjects = hasClass ? await getSubjectsData() : null;
+  const hasRegisteredSubjects = hasSubjects && hasSubjects.subjects && hasSubjects.subjects.length > 0;
 
   return (
-    <Suspense
-      fallback={
-        <div className="grid gap-8 md:grid-cols-2 md:gap-x-6 md:gap-y-10 xl:grid-cols-3">
-          {Array.from({ length: 9 }).map((_, i) => (
-            <CardSkeleton key={i} />
-          ))}
+    <div className="container max-w-5xl mx-auto py-8">
+      {!hasClass ? (
+        // Step 1: Academic Setup
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold">Welcome! Let's Get Started</h1>
+            <p className="text-muted-foreground mt-2">
+              Set up your academic profile to begin learning
+            </p>
+          </div>
+          <AcademicSetupClient />
         </div>
-      }
-    >
-      {status.needsSetup ? (
-        <SubjectSetupShell />
+      ) : !hasRegisteredSubjects ? (
+        // Step 2-3: Subject Selection
+        <div className="space-y-6">
+          <div>
+            <h1 className="text-3xl font-bold">Subject Registration</h1>
+            <p className="text-muted-foreground mt-2">
+              Select your subjects for {profile.class}
+            </p>
+          </div>
+          <SubjectSelectionForm classLevel={profile.class!} />
+        </div>
       ) : (
-        <SubjectDashboardShell subjectsData={status.subjectsData} />
+        // Step 4: Dashboard
+        <SubjectDashboardShell subjectsData={hasSubjects} />
       )}
-    </Suspense>
+    </div>
   );
 }

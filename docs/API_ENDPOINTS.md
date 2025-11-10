@@ -1,111 +1,22 @@
 # API Endpoints Documentation
 
-Base URL: `https://fastlearnersapp.com`
+This document describes the internal API endpoints that require backend implementation. Currently, these endpoints use mock data from `data/mock-lesson-data.ts`.
 
-## Authentication Headers
-All authenticated endpoints require:
-```
-Authorization: Bearer {access_token}
-Accept: application/json
-```
+## Endpoints Requiring Backend Implementation
 
-## Common Response Codes
-- `200` - Success
-- `401` - Unauthorized
-- `404` - Not Found
-- `422` - Validation Error
-- `500` - Server Error
+### 1. Batch Lessons List Endpoint
 
----
+**Route:** `POST /api/lessons/list/batch`
 
-## Lessons Management (Superadmin)
-
-### Get Classes, Subjects, Terms and Weeks
-**Endpoint:** `GET /api/v1/superadmin/lessons/get-classes-subjects-terms-weeks`
-
-**Description:** Get metadata required to query lessons by class, subject, term, and week.
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "classes": [
-      { "id": 1, "name": "JSS1" },
-      { "id": 2, "name": "JSS2" },
-      { "id": 3, "name": "JSS3" },
-      { "id": 4, "name": "SSS1" },
-      { "id": 5, "name": "SSS2" },
-      { "id": 6, "name": "SSS3" }
-    ],
-    "subjects": [
-      { "id": 1, "name": "General Mathematics" },
-      { "id": 2, "name": "English Language" },
-      { "id": 3, "name": "Agricultural Science" },
-      { "id": 4, "name": "Biology" },
-      { "id": 5, "name": "Physics" },
-      { "id": 6, "name": "Chemistry" },
-      { "id": 7, "name": "Further Mathematics" },
-      { "id": 8, "name": "Economics" },
-      { "id": 9, "name": "Geography" },
-      { "id": 10, "name": "Literature in English" },
-      { "id": 11, "name": "History" },
-      { "id": 12, "name": "Commerce" },
-      { "id": 13, "name": "Government" },
-      { "id": 14, "name": "Social Studies" },
-      { "id": 15, "name": "Business Studies" },
-      { "id": 16, "name": "Basic Science" },
-      { "id": 17, "name": "Basic Technology" },
-      { "id": 18, "name": "Civic Education" },
-      { "id": 19, "name": "Information and Communication Technology (ICT)" },
-      { "id": 20, "name": "Physical and Health Education" },
-      { "id": 21, "name": "Home Economics" },
-      { "id": 22, "name": "Christian Religious Studies" },
-      { "id": 23, "name": "Islamic Religious Studies" },
-      { "id": 24, "name": "Religious and Moral Education" },
-      { "id": 25, "name": "Visual/Fine Arts" },
-      { "id": 26, "name": "Music" },
-      { "id": 27, "name": "Yoruba" },
-      { "id": 28, "name": "Hausa" },
-      { "id": 29, "name": "Igbo" },
-      { "id": 30, "name": "Ibibio" },
-      { "id": 31, "name": "Efik" },
-      { "id": 32, "name": "Obolo" },
-      { "id": 33, "name": "French" },
-      { "id": 34, "name": "Arabic" },
-      { "id": 35, "name": "Technical Drawing" },
-      { "id": 36, "name": "Computer Studies" },
-      { "id": 37, "name": "Financial Accounting" },
-      { "id": 38, "name": "Marketing" },
-      { "id": 39, "name": "Office Practice" }
-    ],
-    "terms": [
-      { "id": 1, "name": "First" },
-      { "id": 2, "name": "Second" },
-      { "id": 3, "name": "Third" }
-    ],
-    "weeks": [
-      { "id": 1, "name": 1 },
-      { "id": 2, "name": 2 }
-    ]
-  },
-  "code": 200
-}
-```
-
-### Get Lessons
-**Endpoint:** `POST /api/v1/superadmin/lessons/lessons/`
-
-**Description:** Get lessons filtered by class, subject, term, and week.
+**Purpose:** Fetch lessons for multiple subjects in a single request to avoid N+1 queries.
 
 **Request Body:**
 ```json
 {
-  "class": "4",
-  "subject": "1",
-  "term": "1",
-  "week": "1"
+  "class": "string (class ID)",
+  "subject_ids": [1, 2, 3],
+  "term": "string (term ID)",
+  "week": "string | 'all'"
 }
 ```
 
@@ -113,339 +24,208 @@ Accept: application/json
 ```json
 {
   "success": true,
-  "message": "Success",
+  "message": "Lessons fetched successfully",
   "content": {
-    "lessons": [
+    "data": [
       {
-        "id": 2,
-        "class": "SSS1",
-        "subject": "General Mathematics",
-        "term": "First",
-        "week": 1,
-        "topic": "Number Bases System",
-        "status": "active",
-        "created_at": "22-08-2025",
-        "updated_at": "22-08-2025"
+        "id": 1,
+        "title": "Lesson Title",
+        "subject_id": 1,
+        "class_id": 1,
+        "term_id": 1,
+        "week_id": 1,
+        "status": "not_started | in_progress | completed",
+        "progress": 0
       }
     ],
-    "links": {
-      "first": "http://fastleanersapp.com/api/v1/superadmin/lessons/lessons?page=1",
-      "last": "http://fastleanersapp.com/api/v1/superadmin/lessons/lessons?page=1",
-      "prev": null,
-      "next": null
-    },
     "meta": {
       "current_page": 1,
       "last_page": 1,
       "per_page": 20,
-      "total": 1
+      "total": 10
     }
   },
   "code": 200
 }
 ```
 
-### Get Specific Lesson
-**Endpoint:** `GET /api/v1/superadmin/lessons/lesson/{id}`
+**Backend Implementation:**
+- Create endpoint: `POST /api/v1/lessons/list/batch`
+- Accept array of `subject_ids` in request body
+- Return aggregated lessons across all specified subjects
+- Support pagination via `page` parameter
+- Filter by class, term, and week as specified
 
-**Description:** Get specific lesson details by ID.
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "id": 2,
-    "class": "SSS1",
-    "subject": "General Mathematics",
-    "term": "First",
-    "week": 1,
-    "topic": "Number Bases System",
-    "overview": "A number base system is a way of representing numbers using a set of digits or symbols.",
-    "objectives": [
-      {
-        "description": "At the end of the lesson, students should understand the following concepts:",
-        "points": [
-          "Convert from base 10 to other bases",
-          "Convert from other bases to base 10"
-        ]
-      }
-    ],
-    "key_concepts": {
-      "Conversion of number bases": "Changing numbers between different base systems using division or expansion methods.",
-      "Operations in number bases": "Performing arithmetic such as addition, subtraction, multiplication, and division under specific base rules."
-    },
-    "summary": "Summary",
-    "application": "Application",
-    "video_path": null,
-    "status": "active",
-    "created_at": "22-08-2025",
-    "updated_at": "22-08-2025"
-  },
-  "code": 200
-}
-```
-
-### Get Specific Lesson Content
-**Endpoint:** `GET /api/v1/superadmin/lessons/lesson/{id}/content`
-
-**Description:** Get complete lesson content including concepts, examples, exercises, and check markers.
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "id": 2,
-    "class": "SSS1",
-    "subject": "General Mathematics",
-    "term": "First",
-    "week": 1,
-    "topic": "Number Bases System",
-    "overview": "A number base system is a way of representing numbers using a set of digits or symbols.",
-    "objectives": [...],
-    "key_concepts": {...},
-    "summary": "Summary",
-    "application": "Application",
-    "video_path": null,
-    "status": "active",
-    "created_at": "22-08-2025",
-    "updated_at": "22-08-2025",
-    "concepts": [
-      {
-        "id": 4,
-        "order_index": 1,
-        "lesson_topic": "Number Bases System",
-        "title": "Conversion from Base 10 to Other Bases",
-        "description": [
-          {
-            "heading": null,
-            "description": "The Modal Arithmetic that you will learn later in the session is useful in this problem.",
-            "image_path": null,
-            "points": [
-              "Divide the given number repeatedly by the required base",
-              "Write down the remainders by the right side."
-            ]
-          }
-        ],
-        "examples": [...],
-        "exercises": [...]
-      }
-    ],
-    "general_exercises": [...],
-    "check_markers": [...]
-  },
-  "code": 200
-}
-```
+**Current Status:** Uses mock data from `data/mock-lesson-data.ts`
 
 ---
 
-## Student Management
+### 2. Mark Lesson as Complete
 
-### Student Dashboard
-**Endpoint:** `GET /api/v1/dashboard`
+**Route:** `POST /api/lessons/[id]/complete`
 
-**Description:** Get student dashboard overview and reports.
+**Purpose:** Mark a lesson as completed and update all check markers.
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Student information",
-  "content": {
-    "name": "Student User",
-    "subjects": "",
-    "lessons": "",
-    "progress": {
-      "subject": "Mathematics",
-      "covered": 22,
-      "left": 120
-    },
-    "quizzes": "",
-    "subscription_status": "trial"
-  },
-  "code": 200
-}
-```
-
-### List Student's Subjects
-**Endpoint:** `GET /api/v1/subjects`
-
-**Description:** Get the list of student's subjects, compulsory selective subjects, and selective subjects.
+**Request Body:** None (lesson ID in URL)
 
 **Response:**
 ```json
 {
   "success": true,
-  "message": "Success",
+  "message": "Lesson marked as complete",
   "content": {
-    "subjects": [
-      { "id": 1, "name": "General Mathematics" },
-      { "id": 2, "name": "English Language" }
-    ],
-    "compulsory_selective_status": "selected",
-    "compulsory_selective": [
-      { "id": 22, "name": "Christian Religious Studies" },
-      { "id": 23, "name": "Islamic Religious Studies" }
-    ],
-    "selective_status": "selected",
-    "selective": [
-      { "id": 3, "name": "Agricultural Science" },
-      { "id": 7, "name": "Further Mathematics" }
+    "id": 1,
+    "title": "Lesson Title",
+    "check_markers": [
+      {
+        "id": 1,
+        "concept_id": 1,
+        "completed": true
+      }
     ]
   },
   "code": 200
 }
 ```
 
-### Update Compulsory Selective Subject
-**Endpoint:** `POST /api/v1/subjects/update-compulsory-selective`
+**Backend Implementation:**
+- Create endpoint: `POST /api/v1/lessons/{id}/complete`
+- Mark all check markers for the lesson as completed
+- Update lesson progress to 100%
+- Ensure idempotency (multiple calls should not cause issues)
+- Return updated lesson content with completed markers
 
-**Description:** Update student's compulsory selective subject (one religious studies subject).
+**Current Status:** Uses mock data from `data/mock-lesson-data.ts`
+
+---
+
+### 3. Subject Detail Endpoint
+
+**Route:** `GET /api/subjects/[id]`
+
+**Purpose:** Fetch detailed information about a subject including scheme of work and progress.
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Subject detail fetched successfully",
+  "content": {
+    "id": 1,
+    "name": "Mathematics",
+    "progress": 75,
+    "grade": "B2",
+    "caScore": 82,
+    "currentWeek": 9,
+    "totalWeeks": 11,
+    "upcomingAssessments": 2,
+    "schemeOfWork": [
+      {
+        "week": 1,
+        "topics": ["Topic 1", "Topic 2"],
+        "objectives": ["Objective 1", "Objective 2"],
+        "activities": ["Activity 1"],
+        "resources": ["Resource 1"],
+        "assessment": "Assessment description"
+      }
+    ]
+  },
+  "code": 200
+}
+```
+
+**Backend Implementation:**
+- Create endpoint: `GET /api/v1/subjects/{id}`
+- Validate that the subject is registered for the authenticated user
+- Return 403 if subject is not registered
+- Include scheme of work, progress metrics, and assessment information
+- Filter by current class and term context
+
+**Current Status:** Uses mock data from `data/mock-lesson-data.ts`
+
+---
+
+### 4. Profile Update with Term Support
+
+**Route:** `POST /api/profile/edit`
+
+**Purpose:** Update user profile including class, discipline, and term.
 
 **Request Body:**
 ```json
 {
-  "subject": 22
+  "class": "JSS1",
+  "discipline": "science",
+  "term": "term1"
 }
 ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Compulsory Selective subject Updated successfully!",
-  "content": null,
-  "code": 200
-}
-```
+**Backend Implementation:**
+- Extend existing `/api/v1/profile/edit` endpoint to accept `term` field
+- Store term in user profile if backend supports it
+- If backend doesn't support term storage, document that term is client-side only
+- Return updated user profile
 
-### Update Selective Subjects
-**Endpoint:** `POST /api/v1/subjects/update-selective`
-
-**Description:** Update student's selective/discipline selective subjects (four subjects).
-
-**Request Body:**
-```json
-{
-  "subjects[]": 31,
-  "subjects[]": 7,
-  "subjects[]": 8,
-  "subjects[]": 36
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Selective subjects Updated successfully!",
-  "content": null,
-  "code": 200
-}
-```
+**Current Status:** Endpoint exists but term may not be persisted by backend
 
 ---
 
-## Guardian Management
+## Cookie Forwarding
 
-### Guardian Dashboard
-**Endpoint:** `GET /api/v1/guardian`
+**Current Implementation:**
+- All API routes use `Authorization: Bearer {token}` header from `parseAuthCookiesServer()`
+- Only the auth token is forwarded to upstream APIs
+- No additional cookies are currently forwarded
 
-**Description:** Guardian's dashboard overview and children's reports.
+**If Backend Requires Additional Cookies:**
+1. Extract required cookies from request in API route
+2. Forward them in the `Cookie` header to upstream:
+   ```typescript
+   const cookieHeader = req.headers.get('cookie');
+   // Forward to upstream
+   headers: {
+     'Cookie': cookieHeader,
+     'Authorization': `Bearer ${auth.token}`
+   }
+   ```
 
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Your children's report and statistics",
-  "content": {
-    "children": 1,
-    "report": null
-  },
-  "code": 200
-}
-```
-
----
-
-## Guest Management
-
-### Guest Dashboard
-**Endpoint:** `GET /api/v1/guest`
-
-**Description:** Guest's dashboard overview.
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Your dashboard!",
-  "content": {
-    "data": ""
-  },
-  "code": 200
-}
-```
+**Documentation:** The current implementation relies on bearer token authentication only. If the backend requires additional cookies, update the API routes accordingly and document the requirements.
 
 ---
 
-## Error Responses
+## Error Handling
 
-### Unauthorized Access (401)
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
+All endpoints use standardized error handling from `lib/api/error-handler.ts`:
 
-### Not Found (404)
-```json
-{
-  "success": false,
-  "message": "Lesson not found!",
-  "errors": null,
-  "code": 404
-}
-```
+- **401 Unauthorized:** Missing or invalid auth token
+- **400 Bad Request:** Invalid request parameters
+- **403 Forbidden:** Resource not accessible to user
+- **404 Not Found:** Resource doesn't exist
+- **500 Internal Server Error:** Server-side error
 
-### Validation Error (422)
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "class": ["The class field is required."],
-    "subject": ["The subject field is required."]
-  },
-  "code": 422
-}
-```
-
-### Server Error (500)
-```json
-{
-  "success": false,
-  "message": "An error occurred while fetching lessons: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
+All error responses include:
+- `success: false`
+- `message`: Error message
+- `code`: HTTP status code
+- `requestId`: Unique request identifier for tracing
 
 ---
 
-## Notes
+## Timeouts and Retries
 
-1. **Authentication**: All endpoints require Bearer token authentication except guest endpoints.
-2. **Content-Type**: Use `application/json` for request bodies.
-3. **Pagination**: Lesson lists include pagination metadata with `links` and `meta` objects.
-4. **Subject Selection**: 
-   - Compulsory selective: Choose 1 religious studies subject
-   - Selective: Choose 4 subjects from available options
-5. **Lesson Filtering**: All four parameters (class, subject, term, week) are required to fetch lessons.
+All endpoints implement:
+- **15-second timeout** using AbortController
+- **Single retry** on network errors (AbortError or fetch failures)
+- **Idempotent operations** for safe retries
+
+---
+
+## Migration from Mock Data
+
+To migrate from mock data to real backend:
+
+1. Set `USE_MOCK_DATA = false` in the respective route file
+2. Ensure backend endpoints match the documented structure
+3. Test with real authentication tokens
+4. Verify error handling and edge cases
+5. Update response types if backend structure differs

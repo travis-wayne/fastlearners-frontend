@@ -1,9 +1,18 @@
+// app/api/lessons/[id]/complete/route.ts - Mark lesson as complete
+// Currently uses mock data. See docs/API_ENDPOINTS.md for backend implementation guide.
+
 import { NextRequest, NextResponse } from "next/server";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import { UPSTREAM_BASE } from "@/lib/api/client";
 import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
-export async function GET(req: NextRequest) {
+// Use mock data flag (set to false when backend is ready)
+const USE_MOCK_DATA = false;
+
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { id: string } }
+) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
     return createErrorResponse("Unauthorized", 401);
@@ -12,14 +21,22 @@ export async function GET(req: NextRequest) {
   const requestId = crypto.randomUUID();
 
   try {
+    const lessonId = params.id;
+
+    if (!lessonId) {
+      return createErrorResponse("Invalid request: lesson ID is required", 400, undefined, requestId);
+    }
+
+    // Backend implementation
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
-      const upstream = await fetch(`${UPSTREAM_BASE}/subjects`, {
-        method: "GET",
+      const upstream = await fetch(`${UPSTREAM_BASE}/lessons/${lessonId}/complete`, {
+        method: "POST",
         headers: {
           Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${auth.token}`,
         },
         cache: "no-store",
@@ -33,18 +50,17 @@ export async function GET(req: NextRequest) {
         return handleUpstreamError(upstream, data, requestId);
       }
 
-      // Forward successful response
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
       
-      // Retry on network errors
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
-          const retryUpstream = await fetch(`${UPSTREAM_BASE}/subjects`, {
-            method: "GET",
+          const retryUpstream = await fetch(`${UPSTREAM_BASE}/lessons/${lessonId}/complete`, {
+            method: "POST",
             headers: {
               Accept: "application/json",
+              "Content-Type": "application/json",
               Authorization: `Bearer ${auth.token}`,
             },
             cache: "no-store",
@@ -58,14 +74,14 @@ export async function GET(req: NextRequest) {
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch subjects after retry", requestId);
+          return handleApiError(retryError, "Network error: Failed to mark lesson complete after retry", requestId);
         }
       }
       
       throw fetchError;
     }
   } catch (err: any) {
-    return handleApiError(err, "An error occurred while fetching subjects", requestId);
+    return handleApiError(err, "Failed to mark lesson as complete", requestId);
   }
 }
 

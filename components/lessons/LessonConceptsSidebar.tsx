@@ -38,8 +38,9 @@ export function LessonConceptsSidebar({
       </CardHeader>
       <CardContent className="space-y-4">
         {concepts.map((concept, index) => {
+          // Check completion by verifying marker exists AND completed flag is true
           const isCompleted = checkMarkers?.some(
-            (marker) => marker.concept_id === concept.id
+            (marker) => marker.concept_id === concept.id && marker.completed === true
           );
           const progress = isCompleted ? 100 : 0;
 

@@ -14,10 +14,14 @@ import {
   Filter,
   RotateCcw,
   PlayCircle,
+  AlertCircle,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
@@ -35,7 +39,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { fetchLessons, getLessonMeta } from "@/lib/api/lessons";
+import { fetchLessons } from "@/lib/api/lessons";
 import { getStudentSubjects } from "@/lib/api/subjects";
 import { getSubjectById } from "@/config/education";
 import type { Lesson } from "@/lib/types/lessons";
@@ -157,29 +161,71 @@ export function LessonsDashboard() {
 
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  // Sync selectedSubjectId with URL params
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(
     subjectIdParam || "all"
   );
+
+  // Sync state with URL params when they change (e.g., back/forward navigation)
+  useEffect(() => {
+    const urlSubjectId = searchParams.get("subjectId");
+    if (urlSubjectId !== selectedSubjectId && urlSubjectId !== null) {
+      setSelectedSubjectId(urlSubjectId);
+    } else if (!urlSubjectId && selectedSubjectId !== "all") {
+      setSelectedSubjectId("all");
+    }
+  }, [searchParams, selectedSubjectId]);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
   const [availableSubjects, setAvailableSubjects] = useState<
     Array<{ id: number; name: string }>
   >([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalLessons, setTotalLessons] = useState(0);
 
   // Fetch available subjects
+  // Include all registered subjects: compulsory_selective, subjects, and selective (if selected)
   useEffect(() => {
     const fetchSubjects = async () => {
       try {
         const response = await getStudentSubjects();
         if (response.success && response.content) {
-          const allSubjects = [
-            ...(response.content.compulsory_selective || []),
-            ...(response.content.subjects || []),
-          ];
-          setAvailableSubjects(allSubjects);
+          // Combine all registered subjects:
+          // - compulsory_selective: religious study subject (if selected)
+          // - subjects: regular registered subjects
+          // - selective: elective subjects (if selected)
+          const allSubjects: Array<{ id: number; name: string }> = [];
+          
+          // Add compulsory selective if selected
+          if (response.content.compulsory_selective_status === 'selected' && response.content.compulsory_selective) {
+            allSubjects.push(...response.content.compulsory_selective);
+          }
+          
+          // Add regular subjects
+          if (response.content.subjects) {
+            allSubjects.push(...response.content.subjects);
+          }
+          
+          // Add selective subjects if selected
+          if (response.content.selective_status === 'selected' && response.content.selective) {
+            allSubjects.push(...response.content.selective);
+          }
+          
+          // Remove duplicates by id
+          const uniqueSubjects = Array.from(
+            new Map(allSubjects.map(s => [s.id, s])).values()
+          );
+          
+          setAvailableSubjects(uniqueSubjects);
         }
       } catch (error) {
-        console.error("Failed to fetch subjects:", error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch subjects";
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch subjects:", error);
+        }
+        setError(errorMessage);
       }
     };
     fetchSubjects();
@@ -201,30 +247,66 @@ export function LessonsDashboard() {
 
         // Fetch lessons for all subjects or specific subject
         if (selectedSubjectId === "all") {
-          // Fetch lessons for all registered subjects
-          const response = await getStudentSubjects();
-          if (response.success && response.content) {
-            const allSubjects = [
-              ...(response.content.compulsory_selective || []),
-              ...(response.content.subjects || []),
-            ];
+          // Use batch endpoint to fetch lessons for all subjects at once
+          if (availableSubjects.length === 0) {
+            setIsLoading(false);
+            return;
+          }
 
-            // Fetch lessons for each subject
+          try {
+            // Use batch endpoint for better performance
+            const subjectIds = availableSubjects.map(s => s.id);
+            const response = await fetch('/api/lessons/list/batch', {
+              method: 'POST',
+              headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+              },
+              credentials: 'include',
+              body: JSON.stringify({
+                class: classId,
+                subject_ids: subjectIds,
+                term: termId,
+                week: "all",
+              }),
+            });
+
+            if (!response.ok) {
+              const error = await response.json();
+              throw new Error(error.message || 'Failed to fetch lessons');
+            }
+
+            const result = await response.json();
+            if (result.success && result.content?.data) {
+              setLessons(result.content.data);
+              // Update pagination metadata
+              if (result.content.meta) {
+                setCurrentPage(result.content.meta.current_page);
+                setTotalPages(result.content.meta.last_page);
+                setTotalLessons(result.content.meta.total);
+              }
+            } else {
+              setLessons([]);
+            }
+          } catch (error) {
+            // Fallback to individual requests if batch fails
             const allLessons: Lesson[] = [];
-            for (const subject of allSubjects) {
+            for (const subject of availableSubjects) {
               try {
                 const lessonsResponse = await fetchLessons({
                   class: classId,
                   subject: String(subject.id),
                   term: termId,
-                  week: "all", // or fetch all weeks
+                  week: "all",
                 });
 
                 if (lessonsResponse.success && lessonsResponse.content?.data) {
                   allLessons.push(...lessonsResponse.content.data);
                 }
-              } catch (error) {
-                console.error(`Failed to fetch lessons for subject ${subject.id}:`, error);
+              } catch (err) {
+                if (process.env.NODE_ENV === "development") {
+                  console.error(`Failed to fetch lessons for subject ${subject.id}:`, err);
+                }
               }
             }
             setLessons(allLessons);
@@ -236,16 +318,27 @@ export function LessonsDashboard() {
             subject: selectedSubjectId,
             term: termId,
             week: "all",
+            page: currentPage,
           });
 
           if (lessonsResponse.success && lessonsResponse.content?.data) {
             setLessons(lessonsResponse.content.data);
+            // Update pagination metadata
+            if (lessonsResponse.content.meta) {
+              setCurrentPage(lessonsResponse.content.meta.current_page);
+              setTotalPages(lessonsResponse.content.meta.last_page);
+              setTotalLessons(lessonsResponse.content.meta.total);
+            }
           } else {
             setLessons([]);
           }
         }
       } catch (error) {
-        console.error("Failed to fetch lessons:", error);
+        const errorMessage = error instanceof Error ? error.message : "Failed to fetch lessons";
+        if (process.env.NODE_ENV === "development") {
+          console.error("Failed to fetch lessons:", error);
+        }
+        setError(errorMessage);
         setLessons([]);
       } finally {
         setIsLoading(false);
@@ -253,7 +346,7 @@ export function LessonsDashboard() {
     };
 
     loadLessons();
-  }, [currentClass, currentTerm, selectedSubjectId]);
+  }, [currentClass, currentTerm, selectedSubjectId, availableSubjects, currentPage]);
 
   // Filter lessons
   const filteredLessons = useMemo(() => {
@@ -313,6 +406,34 @@ export function LessonsDashboard() {
             <p className="mb-4 text-muted-foreground">
               Please select your class and term to view available lessons.
             </p>
+            <Button
+              variant="outline"
+              onClick={() => router.push("/dashboard/subjects")}
+            >
+              Go to Subjects
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show call-to-action if no subjects registered and "all" is selected
+  if (selectedSubjectId === "all" && availableSubjects.length === 0 && !isLoading) {
+    return (
+      <div className="space-y-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">
+              No Subjects Registered
+            </h3>
+            <p className="mb-4 text-muted-foreground">
+              Please register your subjects to view available lessons.
+            </p>
+            <Button onClick={() => router.push("/dashboard/subjects")}>
+              Register Subjects
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -325,6 +446,41 @@ export function LessonsDashboard() {
 
   return (
     <div className="space-y-6">
+      {/* Error Alert */}
+      {error && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription className="flex items-center justify-between">
+            <span>{error}</span>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setError(null);
+                  // Retry fetching
+                  if (currentClass && currentTerm) {
+                    setIsLoading(true);
+                    // Trigger re-fetch by updating a dependency
+                    setSelectedSubjectId(selectedSubjectId);
+                  }
+                }}
+              >
+                Retry
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => router.push("/dashboard/subjects")}
+              >
+                Go to Subjects
+              </Button>
+            </div>
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Header */}
       <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
         <div>
@@ -339,7 +495,9 @@ export function LessonsDashboard() {
           value={selectedSubjectId}
           onValueChange={(value) => {
             setSelectedSubjectId(value);
-            router.push(`/dashboard/lessons${value !== "all" ? `?subjectId=${value}` : ""}`);
+            // Update URL without causing full page reload
+            const newUrl = value !== "all" ? `/dashboard/lessons?subjectId=${value}` : "/dashboard/lessons";
+            router.push(newUrl);
           }}
         >
           <SelectTrigger className="w-[200px]">
@@ -480,11 +638,28 @@ export function LessonsDashboard() {
                 <CardContent className="p-8 text-center">
                   <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
                   <h3 className="mb-2 text-lg font-semibold">No Lessons Found</h3>
-                  <p className="text-muted-foreground">
+                  <p className="mb-4 text-muted-foreground">
                     {lessons.length === 0
                       ? `No lessons available for ${classDisplay} - ${termDisplay}`
                       : "Try adjusting your search or filters"}
                   </p>
+                  <div className="flex gap-2 justify-center">
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push("/dashboard/subjects")}
+                    >
+                      Go to Subjects
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setSelectedStatus("all");
+                      }}
+                    >
+                      Clear Filters
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -508,9 +683,18 @@ export function LessonsDashboard() {
                   <h3 className="mb-2 text-lg font-semibold">
                     No Lessons in Progress
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="mb-4 text-muted-foreground">
                     Start a lesson to see it here
                   </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedStatus("all");
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -534,14 +718,56 @@ export function LessonsDashboard() {
                   <h3 className="mb-2 text-lg font-semibold">
                     No Completed Lessons
                   </h3>
-                  <p className="text-muted-foreground">
+                  <p className="mb-4 text-muted-foreground">
                     Complete a lesson to see it here
                   </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setSearchQuery("");
+                      setSelectedStatus("all");
+                    }}
+                  >
+                    Clear Filters
+                  </Button>
                 </CardContent>
               </Card>
             )}
           </TabsContent>
         </Tabs>
+      )}
+
+      {/* Pagination Controls */}
+      {!isLoading && totalPages > 1 && (
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-muted-foreground">
+                Showing page {currentPage} of {totalPages} ({totalLessons} total lessons)
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="size-4" />
+                  Previous
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="size-4" />
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   );

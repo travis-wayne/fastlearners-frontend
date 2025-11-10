@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
+import { UPSTREAM_BASE } from "@/lib/api/client";
+import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
 export async function GET(
   req: NextRequest,
@@ -9,55 +9,77 @@ export async function GET(
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
-    return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
-    );
+    return createErrorResponse("Unauthorized", 401);
   }
+
+  const requestId = crypto.randomUUID();
 
   try {
     const lessonId = params.id;
 
     if (!lessonId) {
-      return NextResponse.json(
+      return createErrorResponse("Invalid request: lesson ID is required", 400, undefined, requestId);
+    }
+
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
+
+    try {
+      const upstream = await fetch(
+        `${UPSTREAM_BASE}/lessons/${lessonId}/content`,
         {
-          success: false,
-          message: "Invalid request: lesson ID is required",
-          content: null,
-          code: 400,
-        },
-        { status: 400 }
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          cache: "no-store",
+          signal: controller.signal,
+        }
       );
-    }
 
-    const upstream = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/lesson/${lessonId}/content`,
-      {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-        cache: "no-store",
+      clearTimeout(timeoutId);
+      const data = await upstream.json();
+
+      if (!upstream.ok) {
+        return handleUpstreamError(upstream, data, requestId);
       }
-    );
 
-    const data = await upstream.json();
+      return NextResponse.json(data, { status: upstream.status });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      
+      // Retry on network errors
+      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+        try {
+          const retryUpstream = await fetch(
+            `${UPSTREAM_BASE}/lessons/${lessonId}/content`,
+            {
+              method: "GET",
+              headers: {
+                Accept: "application/json",
+                Authorization: `Bearer ${auth.token}`,
+              },
+              cache: "no-store",
+            }
+          );
 
-    return NextResponse.json(data, { status: upstream.status });
-  } catch (err: any) {
-    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-      console.error("Lesson content API error:", err);
+          const retryData = await retryUpstream.json();
+          
+          if (!retryUpstream.ok) {
+            return handleUpstreamError(retryUpstream, retryData, requestId);
+          }
+
+          return NextResponse.json(retryData, { status: retryUpstream.status });
+        } catch (retryError) {
+          return handleApiError(retryError, "Network error: Failed to fetch lesson content after retry", requestId);
+        }
+      }
+      
+      throw fetchError;
     }
-    return NextResponse.json(
-      {
-        success: false,
-        message: err?.message || "Server error",
-        content: null,
-        code: 500,
-      },
-      { status: 500 }
-    );
+  } catch (err: any) {
+    return handleApiError(err, "Failed to fetch lesson content", requestId);
   }
 }
 

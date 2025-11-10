@@ -8,7 +8,7 @@ import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { getLessonContent, fetchLessons } from "@/lib/api/lessons";
+import { getLessonContent, fetchLessons, markLessonComplete } from "@/lib/api/lessons";
 import { getSubjectById } from "@/config/education";
 import { LessonLayout } from "@/components/lessons/LessonLayout";
 import { LessonConceptsSidebar } from "@/components/lessons/LessonConceptsSidebar";
@@ -76,7 +76,23 @@ export default function LessonPage() {
       if (!currentClass || !currentTerm || !lessonContent) return;
 
       try {
-        const subjectId = searchParams.get("subjectId") || String(lessonContent.id);
+        // Use subject_id from lessonContent, or fallback to searchParams, or derive from allLessons
+        let subjectId: string;
+        if (lessonContent.subject_id) {
+          subjectId = String(lessonContent.subject_id);
+        } else if (searchParams.get("subjectId")) {
+          subjectId = searchParams.get("subjectId")!;
+        } else {
+          // Try to find subject_id from the lesson in allLessons if available
+          const currentLesson = allLessons.find((l) => l.id === Number(lessonId));
+          subjectId = currentLesson?.subject_id ? String(currentLesson.subject_id) : "";
+        }
+
+        if (!subjectId) {
+          console.error("Cannot determine subject_id for lesson");
+          return;
+        }
+
         const response = await fetchLessons({
           class: currentClass.id,
           subject: subjectId,
@@ -96,28 +112,42 @@ export default function LessonPage() {
     };
 
     loadLessons();
-  }, [currentClass, currentTerm, lessonContent, lessonId, searchParams]);
+  }, [currentClass, currentTerm, lessonContent, lessonId, searchParams, allLessons]);
 
   const handleMarkComplete = async () => {
     setIsMarkingComplete(true);
     try {
-      // TODO: Call API to mark lesson as complete
-      // await markLessonComplete(Number(lessonId));
+      const result = await markLessonComplete(Number(lessonId));
       
-      toast({
-        title: "Success!",
-        description: "Lesson marked as complete",
-      });
-      
-      // Refresh lesson content
-      const response = await getLessonContent(Number(lessonId));
-      if (response.success && response.content) {
-        setLessonContent(response.content);
+      if (result.success) {
+        toast({
+          title: "Success!",
+          description: result.message || "Lesson marked as complete",
+        });
+        
+        // Optimistically update check markers
+        if (lessonContent) {
+          setLessonContent({
+            ...lessonContent,
+            check_markers: lessonContent.check_markers?.map(marker => ({
+              ...marker,
+              completed: true,
+            })) || [],
+          });
+        }
+        
+        // Refresh lesson content to get latest state
+        const response = await getLessonContent(Number(lessonId));
+        if (response.success && response.content) {
+          setLessonContent(response.content);
+        }
+      } else {
+        throw new Error(result.message);
       }
     } catch (error) {
       toast({
         title: "Error",
-        description: "Failed to mark lesson as complete",
+        description: error instanceof Error ? error.message : "Failed to mark lesson as complete",
         variant: "destructive",
       });
     } finally {
@@ -125,9 +155,14 @@ export default function LessonPage() {
     }
   };
 
-  const subject = lessonContent
-    ? getSubjectById(String(lessonContent.id))
+  // Get subject using subject_id from lessonContent or from allLessons
+  const subjectId = lessonContent?.subject_id 
+    ? String(lessonContent.subject_id)
+    : allLessons.find((l) => l.id === Number(lessonId))?.subject_id
+    ? String(allLessons.find((l) => l.id === Number(lessonId))!.subject_id)
     : null;
+  
+  const subject = subjectId ? getSubjectById(subjectId) : null;
 
   const previousLessonId =
     currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1]?.id : null;

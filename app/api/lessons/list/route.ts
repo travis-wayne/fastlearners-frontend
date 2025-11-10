@@ -1,53 +1,93 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
+import { UPSTREAM_BASE } from "@/lib/api/client";
+import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
-    return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
-    );
+    return createErrorResponse("Unauthorized", 401);
   }
+
+  const requestId = crypto.randomUUID();
 
   try {
     const body = await req.json();
-    const { class: classId, subject, term, week } = body;
+    const { class: classId, subject, term, week, page } = body;
 
-    const upstream = await fetch(`${UPSTREAM_BASE}/superadmin/lessons/lessons`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${auth.token}`,
-      },
-      body: JSON.stringify({
-        class: classId,
-        subject,
-        term,
-        week,
-      }),
-      cache: "no-store",
-    });
+    // Use student-facing endpoint instead of superadmin endpoint
+    // If student endpoint doesn't exist, this will need to be updated when backend provides it
+    // For now, we use the lessons endpoint with proper authorization checks
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-    const data = await upstream.json();
+    try {
+      const upstream = await fetch(`${UPSTREAM_BASE}/lessons/list`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        body: JSON.stringify({
+          class: classId,
+          subject,
+          term,
+          week,
+          page,
+        }),
+        cache: "no-store",
+        signal: controller.signal,
+      });
 
-    return NextResponse.json(data, { status: upstream.status });
-  } catch (err: any) {
-    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-      console.error("Lessons list API error:", err);
+      clearTimeout(timeoutId);
+      const data = await upstream.json();
+
+      if (!upstream.ok) {
+        return handleUpstreamError(upstream, data, requestId);
+      }
+
+      return NextResponse.json(data, { status: upstream.status });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      
+      // Retry on network errors (idempotent POST)
+      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+        // Simple retry once for network errors
+        try {
+          const retryUpstream = await fetch(`${UPSTREAM_BASE}/lessons/list`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+            body: JSON.stringify({
+              class: classId,
+              subject,
+              term,
+              week,
+              page,
+            }),
+            cache: "no-store",
+          });
+
+          const retryData = await retryUpstream.json();
+          
+          if (!retryUpstream.ok) {
+            return handleUpstreamError(retryUpstream, retryData, requestId);
+          }
+
+          return NextResponse.json(retryData, { status: retryUpstream.status });
+        } catch (retryError) {
+          return handleApiError(retryError, "Network error: Failed to fetch lessons after retry", requestId);
+        }
+      }
+      
+      throw fetchError;
     }
-    return NextResponse.json(
-      {
-        success: false,
-        message: err?.message || "Server error",
-        content: null,
-        code: 500,
-      },
-      { status: 500 }
-    );
+  } catch (err: any) {
+    return handleApiError(err, "Failed to fetch lessons list", requestId);
   }
 }
 

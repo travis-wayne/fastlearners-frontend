@@ -1,97 +1,109 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
+import { UPSTREAM_BASE } from "@/lib/api/client";
+import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
-    return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
-    );
+    return createErrorResponse("Unauthorized", 401);
   }
 
-  try {
-    const body = await req.json();
-    const { subjects } = body;
+  const requestId = crypto.randomUUID();
 
-    if (!Array.isArray(subjects) || subjects.length === 0) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid request: subjects array is required",
-          content: null,
-          code: 400,
-        },
-        { status: 400 }
-      );
+  try {
+    // Support both FormData and JSON formats
+    const contentType = req.headers.get("content-type") || "";
+    let subjectIds: number[] = [];
+
+    if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {
+      // Handle FormData format
+      const formData = await req.formData();
+      const subjectsArray = formData.getAll("subjects[]");
+      subjectIds = subjectsArray.map((id) => {
+        const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+        return Number.isNaN(numId) ? 0 : numId;
+      }).filter((id) => id > 0);
+    } else {
+      // Handle JSON format
+      const body = await req.json();
+      const { subjects } = body;
+      if (Array.isArray(subjects)) {
+        subjectIds = subjects.map((id: any) => {
+          const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+          return Number.isNaN(numId) ? 0 : numId;
+        }).filter((id) => id > 0);
+      }
     }
 
-    // Build form data as the API expects subjects[] format
+    if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
+      return createErrorResponse("Invalid request: subjects array is required", 400, undefined, requestId);
+    }
+
+    // Build form data as the upstream API expects subjects[] format
     const formData = new URLSearchParams();
-    subjects.forEach((id: number) => {
+    subjectIds.forEach((id: number) => {
       formData.append("subjects[]", String(id));
     });
 
-    const upstream = await fetch(`${UPSTREAM_BASE}/subjects/update-selective`, {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
-        Authorization: `Bearer ${auth.token}`,
-      },
-      body: formData.toString(),
-      cache: "no-store",
-    });
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-    const data = await upstream.json();
+    try {
+      const upstream = await fetch(`${UPSTREAM_BASE}/subjects/update-selective`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        body: formData.toString(),
+        cache: "no-store",
+        signal: controller.signal,
+      });
 
-    // Wrap upstream errors for security
-    if (!upstream.ok) {
-      // Log detailed error server-side
-      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-        console.error("Update selective subjects upstream error:", {
-          status: upstream.status,
-          data,
-        });
+      clearTimeout(timeoutId);
+      const data = await upstream.json();
+
+      if (!upstream.ok) {
+        return handleUpstreamError(upstream, data, requestId);
       }
 
-      // Return sanitized error response
-      const requestId = crypto.randomUUID();
-      return NextResponse.json(
-        {
-          success: false,
-          message: data.message || "Failed to update selective subjects",
-          content: null,
-          code: upstream.status,
-          requestId, // For traceability
-          // Include sanitized error code if available
-          ...(data.code && { errorCode: data.code }),
-        },
-        { status: upstream.status }
-      );
-    }
+      // Forward successful response
+      return NextResponse.json(data, { status: upstream.status });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      
+      // Retry on network errors (idempotent POST)
+      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+        try {
+          const retryUpstream = await fetch(`${UPSTREAM_BASE}/subjects/update-selective`, {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/x-www-form-urlencoded",
+              Authorization: `Bearer ${auth.token}`,
+            },
+            body: formData.toString(),
+            cache: "no-store",
+          });
 
-    // Forward successful response
-    return NextResponse.json(data, { status: upstream.status });
-  } catch (err: any) {
-    // Log detailed error server-side
-    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-      console.error("Update selective subjects error:", err);
+          const retryData = await retryUpstream.json();
+          
+          if (!retryUpstream.ok) {
+            return handleUpstreamError(retryUpstream, retryData, requestId);
+          }
+
+          return NextResponse.json(retryData, { status: retryUpstream.status });
+        } catch (retryError) {
+          return handleApiError(retryError, "Network error: Failed to update selective subjects after retry", requestId);
+        }
+      }
+      
+      throw fetchError;
     }
-    
-    const requestId = crypto.randomUUID();
-    return NextResponse.json(
-      {
-        success: false,
-        message: "An error occurred while updating selective subjects",
-        content: null,
-        code: 500,
-        requestId, // For traceability
-      },
-      { status: 500 }
-    );
+  } catch (err: any) {
+    return handleApiError(err, "An error occurred while updating selective subjects", requestId);
   }
 }
 

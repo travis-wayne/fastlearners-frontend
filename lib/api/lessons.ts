@@ -46,6 +46,7 @@ export async function fetchLessons(params: {
   subject: string;
   term: string;
   week: string;
+  page?: number | string;
 }): Promise<LessonsListResponse> {
   try {
     const res = await fetch("/api/lessons/list", {
@@ -115,6 +116,48 @@ export async function getLessonContent(
       success: false,
       message: err?.message || "Network error",
       content: null,
+      code: 500,
+    };
+  }
+}
+
+// Mark lesson as complete
+export async function markLessonComplete(
+  lessonId: number
+): Promise<{ success: boolean; message: string; code: number }> {
+  try {
+    const res = await fetch(`/api/lessons/${lessonId}/complete`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to mark lesson as complete",
+        code: res.status,
+      };
+    }
+
+    return {
+      success: true,
+      message: data.message || "Lesson marked as complete",
+      code: res.status,
+    };
+  } catch (err: any) {
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.error("markLessonComplete error:", err);
+    }
+    return {
+      success: false,
+      message: err?.message || "Network error",
       code: 500,
     };
   }

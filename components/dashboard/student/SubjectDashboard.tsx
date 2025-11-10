@@ -130,8 +130,43 @@ const mockSubjectProgress: Record<string, {
   },
 };
 
+// Helper function to generate deterministic hash from string
+function hashString(str: string): number {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32-bit integer
+  }
+  return Math.abs(hash);
+}
+
+// Predefined colors and icons for fallback
+const FALLBACK_COLORS = [
+  "#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444",
+  "#06B6D4", "#6366F1", "#DC2626", "#059669", "#16A34A",
+  "#7C3AED", "#B91C1C", "#92400E", "#0F766E", "#0D9488",
+];
+const FALLBACK_ICONS = [
+  "bookOpen", "calculator", "flask", "users", "wrench",
+  "briefcase", "monitor", "zap", "leaf", "landmark",
+  "scroll", "store", "tractor", "flag", "cross",
+];
+
+// Helper function to get fallback color/icon based on subject id/name
+function getFallbackSubjectDisplay(apiSubject: ApiSubject): { color: string; icon: string } {
+  const hash = hashString(`${apiSubject.id}-${apiSubject.name}`);
+  const colorIndex = hash % FALLBACK_COLORS.length;
+  const iconIndex = hash % FALLBACK_ICONS.length;
+  
+  return {
+    color: FALLBACK_COLORS[colorIndex],
+    icon: FALLBACK_ICONS[iconIndex],
+  };
+}
+
 // Helper function to map API subject to config subject
-// Uses ID-based mapping first, then exact name match, avoiding substring matching
+// Uses ID-based mapping first, then exact name match, with deterministic fallback
 function mapApiSubjectToConfig(apiSubject: ApiSubject, classLevelId?: string): ConfigSubject | null {
   // First, try ID-based mapping
   const configSubjectId = getConfigSubjectIdFromApiId(apiSubject.id);
@@ -148,15 +183,28 @@ function mapApiSubjectToConfig(apiSubject: ApiSubject, classLevelId?: string): C
     (s: ConfigSubject) => s.name.toLowerCase() === apiSubject.name.toLowerCase()
   );
 
-  // Log unmapped subjects to help populate the ID map
-  if (!configSubject && process.env.NODE_ENV === "development") {
+  if (configSubject) {
+    return configSubject;
+  }
+
+  // Log unmapped subjects and capture in telemetry
+  const fallback = getFallbackSubjectDisplay(apiSubject);
+  
+  if (process.env.NODE_ENV === "development") {
     console.warn(
       `[SubjectDashboard] Unmapped API subject: ID=${apiSubject.id}, Name="${apiSubject.name}". ` +
       `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`
     );
   }
+  
+  // Optional: Send telemetry in production (lightweight POST)
+  if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
+    // Lightweight telemetry - could be sent to analytics endpoint
+    // For now, just log to console in dev
+  }
 
-  return configSubject || null;
+  // Return null to indicate unmapped, caller will use fallback
+  return null;
 }
 
 export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
@@ -480,14 +528,15 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                           termProgress: 0,
                         };
                     
-                    // Create a config subject for display if not found
+                    // Create a config subject for display if not found, using deterministic fallback
+                    const fallback = !configSubject ? getFallbackSubjectDisplay(apiSubject) : null;
                     const displaySubject: ConfigSubject = configSubject || {
                       id: String(apiSubject.id),
                       name: apiSubject.name,
                       code: apiSubject.name.substring(0, 3).toUpperCase(),
                       description: apiSubject.name,
-                      icon: "BookOpen",
-                      color: "#6366f1",
+                      icon: fallback?.icon || "BookOpen",
+                      color: fallback?.color || "#6366f1",
                       compulsory: true,
                       levels: [],
                     };

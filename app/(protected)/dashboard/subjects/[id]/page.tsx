@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
@@ -43,70 +43,27 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
+import { getStudentSubjects } from "@/lib/api/subjects";
+import { Loader2 } from "lucide-react";
 
-// Mock data for subject progress
-const mockSubjectProgress = {
-  totalTopics: 12,
-  completedTopics: 8,
-  currentWeek: 9,
-  totalWeeks: 11,
-  upcomingAssessments: 2,
-  lastAccessed: "2 hours ago",
-  termProgress: 75,
-  grade: "B2",
-  caScore: 82,
-};
-
-// Mock scheme of work data
-const mockSchemeOfWork = {
-  weeks: [
-    {
-      week: 1,
-      topics: ["Introduction to Subject", "Basic Concepts"],
-      objectives: [
-        "Understand the fundamentals",
-        "Learn key terminology",
-        "Identify main concepts",
-      ],
-      activities: ["Class discussion", "Group work", "Practical exercise"],
-      resources: ["Textbook Chapter 1", "Video tutorial", "Worksheet"],
-      assessment: "Weekly quiz on basic concepts",
-    },
-    {
-      week: 2,
-      topics: ["Advanced Concepts", "Problem Solving"],
-      objectives: [
-        "Apply concepts to problems",
-        "Develop analytical skills",
-        "Practice problem-solving techniques",
-      ],
-      activities: ["Problem-solving session", "Case studies", "Group project"],
-      resources: ["Textbook Chapter 2", "Practice problems", "Online resources"],
-      assessment: "Assignment submission",
-    },
-    // Add more weeks as needed
-    ...Array.from({ length: 9 }, (_, i) => ({
-      week: i + 3,
-      topics: [`Topic ${i + 3}A`, `Topic ${i + 3}B`],
-      objectives: [
-        `Objective ${i + 3}1`,
-        `Objective ${i + 3}2`,
-        `Objective ${i + 3}3`,
-      ],
-      activities: [
-        `Activity ${i + 3}1`,
-        `Activity ${i + 3}2`,
-        `Activity ${i + 3}3`,
-      ],
-      resources: [
-        `Resource ${i + 3}1`,
-        `Resource ${i + 3}2`,
-        `Resource ${i + 3}3`,
-      ],
-      assessment: `Assessment for week ${i + 3}`,
-    })),
-  ],
-};
+interface SubjectDetailData {
+  id: number;
+  name: string;
+  progress: number;
+  grade: string;
+  caScore: number;
+  currentWeek: number;
+  totalWeeks: number;
+  upcomingAssessments: number;
+  schemeOfWork: Array<{
+    week: number;
+    topics: string[];
+    objectives: string[];
+    activities: string[];
+    resources: string[];
+    assessment: string;
+  }>;
+}
 
 export default function SubjectDetailPage() {
   const params = useParams();
@@ -116,28 +73,177 @@ export default function SubjectDetailPage() {
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
+  const [subjectDetail, setSubjectDetail] = useState<SubjectDetailData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+
   const subject = getSubjectById(subjectId);
 
-  if (!subject) {
+  // Validate subject is registered and fetch data
+  useEffect(() => {
+    const fetchSubjectData = async () => {
+      if (!subjectId) {
+        setError("Subject ID is required");
+        setIsLoading(false);
+        return;
+      }
+
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // First, validate subject is registered
+        const subjectsResponse = await getStudentSubjects();
+        if (!subjectsResponse.success || !subjectsResponse.content) {
+          setIsAuthorized(false);
+          setIsLoading(false);
+          return;
+        }
+
+        const allSubjects = [
+          ...(subjectsResponse.content.compulsory_selective || []),
+          ...(subjectsResponse.content.subjects || []),
+          ...(subjectsResponse.content.selective || []),
+        ];
+
+        const isRegistered = allSubjects.some((s: any) => String(s.id) === subjectId);
+        
+        if (!isRegistered) {
+          setIsAuthorized(false);
+          setIsLoading(false);
+          return;
+        }
+
+        setIsAuthorized(true);
+
+        // Fetch subject detail
+        const response = await fetch(`/api/subjects/${subjectId}`, {
+          headers: {
+            'Accept': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch subject detail');
+        }
+
+        const result = await response.json();
+        if (result.success && result.content) {
+          setSubjectDetail(result.content);
+        } else {
+          throw new Error(result.message || 'Failed to fetch subject detail');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch subject data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSubjectData();
+  }, [subjectId]);
+
+  // Use subject detail data or fallback to config subject
+  const subjectProgress = subjectDetail ? {
+    totalTopics: 12,
+    completedTopics: Math.round((subjectDetail.progress / 100) * 12),
+    currentWeek: subjectDetail.currentWeek,
+    totalWeeks: subjectDetail.totalWeeks,
+    upcomingAssessments: subjectDetail.upcomingAssessments,
+    lastAccessed: "2 hours ago",
+    termProgress: subjectDetail.progress,
+    grade: subjectDetail.grade,
+    caScore: subjectDetail.caScore,
+  } : {
+    totalTopics: 12,
+    completedTopics: 8,
+    currentWeek: 9,
+    totalWeeks: 11,
+    upcomingAssessments: 2,
+    lastAccessed: "2 hours ago",
+    termProgress: 75,
+    grade: "B2",
+    caScore: 82,
+  };
+
+  const schemeOfWork = subjectDetail?.schemeOfWork || [];
+
+  if (isLoading) {
     return (
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-8 text-center">
-            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-semibold">Subject Not Found</h3>
-            <p className="mb-4 text-muted-foreground">
-              The subject you&apos;re looking for doesn&apos;t exist or
-              isn&apos;t available.
-            </p>
-            <Button onClick={() => router.back()} variant="outline">
-              <ArrowLeft className="mr-2 size-4" />
-              Go Back
-            </Button>
+            <Loader2 className="mx-auto mb-4 size-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Loading subject details...</p>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  if (isAuthorized === false || (!subject && !subjectDetail)) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">Subject Not Found or Unauthorized</h3>
+            <p className="mb-4 text-muted-foreground">
+              {isAuthorized === false
+                ? "This subject is not registered or you don't have access to it."
+                : "The subject you're looking for doesn't exist or isn't available."}
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => router.push('/dashboard/subjects')} variant="outline">
+                Go to Subjects
+              </Button>
+              <Button onClick={() => router.back()} variant="outline">
+                <ArrowLeft className="mr-2 size-4" />
+                Go Back
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">Error Loading Subject</h3>
+            <p className="mb-4 text-muted-foreground">{error}</p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => window.location.reload()} variant="outline">
+                Retry
+              </Button>
+              <Button onClick={() => router.push('/dashboard/subjects')} variant="outline">
+                Go to Subjects
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Use subjectDetail name if available, otherwise use config subject
+  const displaySubject = subject || {
+    id: subjectId,
+    name: subjectDetail?.name || "Subject",
+    code: subjectDetail?.name?.substring(0, 3).toUpperCase() || "SUB",
+    description: subjectDetail?.name || "",
+    icon: "bookOpen",
+    color: "#6366f1",
+    compulsory: true,
+    levels: [],
+  };
 
   if (!currentClass || !currentTerm) {
     return (
@@ -191,15 +297,15 @@ export default function SubjectDetailPage() {
           </Button>
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <div
-                className="flex items-center justify-center rounded-lg p-2"
-                style={{ backgroundColor: `${subject.color}20` }}
-              >
-                <BookOpen className="size-5" style={{ color: subject.color }} />
-              </div>
+                <div
+                  className="flex items-center justify-center rounded-lg p-2"
+                  style={{ backgroundColor: `${displaySubject.color}20` }}
+                >
+                  <BookOpen className="size-5" style={{ color: displaySubject.color }} />
+                </div>
               <div>
-                <h1 className="text-2xl font-bold">{subject.name}</h1>
-                <p className="text-muted-foreground">{subject.description}</p>
+                <h1 className="text-2xl font-bold">{displaySubject.name}</h1>
+                <p className="text-muted-foreground">{displaySubject.description}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -207,7 +313,7 @@ export default function SubjectDetailPage() {
               <Separator orientation="vertical" className="h-4" />
               <span>{termDisplay}</span>
               <Separator orientation="vertical" className="h-4" />
-              <span>Code: {subject.code}</span>
+              <span>Code: {displaySubject.code}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -307,7 +413,7 @@ export default function SubjectDetailPage() {
                   <div>
                     <CardTitle>Scheme of Work</CardTitle>
                     <CardDescription>
-                      {subject.name} for {classDisplay} - {termDisplay}
+                      {displaySubject.name} for {classDisplay} - {termDisplay}
                     </CardDescription>
                   </div>
                   <Button variant="outline" size="sm">
@@ -317,8 +423,13 @@ export default function SubjectDetailPage() {
                 </div>
               </CardHeader>
               <CardContent>
-                <Accordion type="single" collapsible className="space-y-2">
-                  {mockSchemeOfWork.weeks.map((week, index) => (
+                {schemeOfWork.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Scheme of work not available for this subject.</p>
+                  </div>
+                ) : (
+                  <Accordion type="single" collapsible className="space-y-2">
+                    {schemeOfWork.map((week, index) => (
                     <AccordionItem
                       key={week.week}
                       value={`week-${week.week}`}
@@ -476,8 +587,9 @@ export default function SubjectDetailPage() {
                         )}
                       </AccordionContent>
                     </AccordionItem>
-                  ))}
-                </Accordion>
+                    ))}
+                  </Accordion>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
@@ -487,17 +599,17 @@ export default function SubjectDetailPage() {
               <CardContent className="p-8 text-center">
                 <PlayCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
                 <h3 className="mb-2 text-lg font-semibold">
-                  Lessons Coming Soon
+                  Lessons
                 </h3>
                 <p className="mb-4 text-muted-foreground">
-                  Interactive lessons for {subject.name} will be available soon.
+                  View interactive lessons for {displaySubject.name}.
                 </p>
                 <Button
                   onClick={() =>
                     router.push(`/dashboard/lessons?subjectId=${subjectId}`)
                   }
                 >
-                  View Available Lessons
+                  View Lessons
                 </Button>
               </CardContent>
             </Card>
@@ -511,7 +623,7 @@ export default function SubjectDetailPage() {
                   Assessments Coming Soon
                 </h3>
                 <p className="text-muted-foreground">
-                  Quizzes and assessments for {subject.name} will be available
+                  Quizzes and assessments for {displaySubject.name} will be available
                   soon.
                 </p>
               </CardContent>
@@ -526,7 +638,7 @@ export default function SubjectDetailPage() {
                   Resources Coming Soon
                 </h3>
                 <p className="text-muted-foreground">
-                  Additional resources and materials for {subject.name} will be
+                  Additional resources and materials for {displaySubject.name} will be
                   available soon.
                 </p>
               </CardContent>
