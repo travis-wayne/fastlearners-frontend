@@ -1,8 +1,4 @@
-import axios from "axios";
-
-import { getTokenFromCookies } from "@/lib/auth-cookies";
-
-const BASE_URL = "https://fastlearnersapp.com/api/v1";
+// Client-side bulk upload service - uses internal API routes for security
 
 // Types based on API documentation
 export interface BulkUploadApiResponse {
@@ -37,16 +33,6 @@ export interface BulkUploadFiles {
   check_markers_file: File;
 }
 
-// Get auth token from cookies
-const getAuthToken = (): string | null => {
-  return getTokenFromCookies();
-};
-
-// Create auth headers
-const createAuthHeaders = () => {
-  const token = getAuthToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
 
 /**
  * Upload all lesson files in one request
@@ -101,92 +87,83 @@ export const uploadAllLessonFilesBulk = async (
       }
     }
 
-    const token = getAuthToken();
-    if (!token) {
+    console.log("🎯 Uploading to: /api/uploads/all-lesson-files");
+
+    // Make the API request
+    const response = await fetch("/api/uploads/all-lesson-files", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      console.error("❌ Bulk upload failed:", data);
+      console.error("🔍 Error details:");
+      console.error("  Status:", response.status);
+      console.error("  Response Data:", data);
+
+      let errorMessage = "Bulk upload failed";
+      let validationErrors: Record<string, string[]> | undefined;
+
+      if (data) {
+        // Handle API error response
+        if (data.message) {
+          errorMessage = data.message;
+        }
+
+        // Handle validation errors (422 status)
+        if (response.status === 422 && data.errors) {
+          validationErrors = data.errors;
+
+          // Create user-friendly error message
+          const errorDetails = Object.entries(data.errors)
+            .map(
+              ([field, errors]) =>
+                `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`,
+            )
+            .join("; ");
+
+          errorMessage = `Validation failed - ${errorDetails}`;
+        }
+
+        // Handle specific error codes from documentation
+        else if (response.status === 400) {
+          errorMessage = data.message || "Invalid CSV format or missing columns";
+        } else if (response.status === 404) {
+          errorMessage =
+            data.message ||
+            "Resource not found (class, subject, term, week, lesson, or concept)";
+        } else if (response.status === 500) {
+          errorMessage = data.message || "Server error processing CSV files";
+        } else if (response.status === 401) {
+          errorMessage = "Unauthorized - please log in again";
+        }
+      }
+
       return {
         success: false,
-        message: "Authentication token not found",
-        error: "Please log in again",
+        message: errorMessage,
+        error: errorMessage,
+        apiResponse: data,
+        validationErrors,
       };
     }
 
-    console.log(
-      "🎯 Uploading to:",
-      `${BASE_URL}/superadmin/lessons/uploads/all-lesson-files`,
-    );
-    console.log("🔑 Using token:", token.substring(0, 20) + "...");
-
-    // Make the API request
-    const response = await axios.post(
-      `${BASE_URL}/superadmin/lessons/uploads/all-lesson-files`,
-      formData,
-      {
-        headers: {
-          ...createAuthHeaders(),
-          Accept: "application/json",
-          // Don't set Content-Type - let axios set it with boundary for multipart/form-data
-        },
-        timeout: 120000, // 2 minutes timeout for large uploads
-      },
-    );
-
-    console.log("✅ Bulk upload successful!", response.data);
+    console.log("✅ Bulk upload successful!", data);
 
     return {
       success: true,
-      message:
-        response.data.message || "All lesson files uploaded successfully",
-      apiResponse: response.data,
+      message: data.message || "All lesson files uploaded successfully",
+      apiResponse: data,
     };
   } catch (error: any) {
     console.error("❌ Bulk upload failed:", error);
-    console.error("🔍 Error details:");
-    console.error("  Status:", error.response?.status);
-    console.error("  Status Text:", error.response?.statusText);
-    console.error("  Headers:", error.response?.headers);
-    console.error("  Response Data:", error.response?.data);
+    console.error("🔍 Error details:", error);
 
     let errorMessage = "Bulk upload failed";
-    let validationErrors: Record<string, string[]> | undefined;
-
-    if (error.response?.data) {
-      const responseData = error.response.data;
-
-      // Handle API error response
-      if (responseData.message) {
-        errorMessage = responseData.message;
-      }
-
-      // Handle validation errors (422 status)
-      if (error.response.status === 422 && responseData.errors) {
-        validationErrors = responseData.errors;
-
-        // Create user-friendly error message
-        const errorDetails = Object.entries(responseData.errors)
-          .map(
-            ([field, errors]) =>
-              `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`,
-          )
-          .join("; ");
-
-        errorMessage = `Validation failed - ${errorDetails}`;
-      }
-
-      // Handle specific error codes from documentation
-      else if (error.response.status === 400) {
-        errorMessage =
-          responseData.message || "Invalid CSV format or missing columns";
-      } else if (error.response.status === 404) {
-        errorMessage =
-          responseData.message ||
-          "Resource not found (class, subject, term, week, lesson, or concept)";
-      } else if (error.response.status === 500) {
-        errorMessage =
-          responseData.message || "Server error processing CSV files";
-      } else if (error.response.status === 401) {
-        errorMessage = "Unauthorized - please log in again";
-      }
-    } else if (error.message) {
+    if (error.message) {
       errorMessage = error.message;
     }
 
@@ -194,8 +171,6 @@ export const uploadAllLessonFilesBulk = async (
       success: false,
       message: errorMessage,
       error: errorMessage,
-      apiResponse: error.response?.data,
-      validationErrors,
     };
   }
 };

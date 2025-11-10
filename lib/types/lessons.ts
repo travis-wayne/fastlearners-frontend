@@ -1,52 +1,27 @@
-// Base types for lesson metadata
-export interface ClassItem {
-  id: number;
-  name: string;
+// lib/types/lessons.ts
+
+export interface LessonMeta {
+  classes: Array<{ id: number; name: string }>;
+  subjects: Array<{ id: number; name: string }>;
+  terms: Array<{ id: number; name: string }>;
+  weeks: Array<{ id: number; name: string }>;
 }
 
-export interface Subject {
-  id: number;
-  name: string;
-}
-
-export interface Term {
-  id: number;
-  name: string;
-}
-
-export interface Week {
-  id: number;
-  name: number;
-}
-
-// Lesson types
 export interface Lesson {
   id: number;
-  class: string;
-  subject: string;
-  term: string;
-  week: number;
-  topic: string;
-  status: 'active' | 'inactive';
+  title: string;
+  description?: string;
+  subject_id: number;
+  class_id: number;
+  term_id: number;
+  week_id: number;
   created_at: string;
   updated_at: string;
+  status?: "not_started" | "in_progress" | "completed";
+  progress?: number;
 }
 
-export interface LessonDetail extends Lesson {
-  overview: string;
-  objectives: LessonObjective[];
-  key_concepts: Record<string, string>;
-  summary: string;
-  application: string;
-  video_path: string | null;
-}
-
-export interface LessonObjective {
-  description: string;
-  points: string[];
-}
-
-// Content types
+// Concept description structure
 export interface ConceptDescription {
   heading: string | null;
   description: string;
@@ -54,6 +29,7 @@ export interface ConceptDescription {
   points: string[];
 }
 
+// Example structure
 export interface Example {
   id: number;
   order_index: number;
@@ -62,131 +38,104 @@ export interface Example {
   problem: string;
   solution_steps: string[];
   answer: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
+// Exercise structure
 export interface Exercise {
   id: number;
   order_index: number;
   concept_title: string;
-  title: string;
+  title?: string;
   problem: string;
-  solution_steps: string[];
+  solution_steps?: string[];
   answers: string[];
   correct_answer: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface Concept {
-  id: number;
-  order_index: number;
-  lesson_topic: string;
-  title: string;
-  description: ConceptDescription[];
-  created_at: string;
-  updated_at: string;
-  examples: Example[];
-  exercises: Exercise[];
-}
-
+// General exercise structure
 export interface GeneralExercise {
   id: number;
   order_index: number;
   lesson_topic: string;
   problem: string;
-  solution_steps: string[];
+  solution_steps?: string[];
   answers: string[];
   correct_answer: string;
-  created_at: string;
-  updated_at: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface CheckMarker {
+// Concept structure
+export interface Concept {
   id: number;
-  lesson_topic: string;
-  overview: number;
-  lesson_video: number;
-  concept_one: number;
-  concept_two: number;
-  concept_three: number;
-  concept_four: number;
-  concept_five: number;
-  concept_six: number;
-  concept_seven: number;
-  general_exercises: number;
-  created_at: string;
-  updated_at: string;
+  order_index: number;
+  lesson_topic?: string;
+  title: string;
+  description: ConceptDescription[];
+  examples: Example[];
+  exercises: Exercise[];
+  created_at?: string;
+  updated_at?: string;
 }
 
-export interface LessonContent extends LessonDetail {
-  concepts: Concept[];
-  general_exercises: GeneralExercise[];
-  check_markers: CheckMarker[];
+// Lesson objective structure
+export interface LessonObjective {
+  description: string;
+  points: string[];
 }
 
-// API Response types
-export interface ApiResponse<T> {
-  success: boolean;
-  message: string;
-  content: T;
-  code: number;
-}
-
-export interface ApiErrorResponse {
-  success: false;
-  message: string;
-  errors: Record<string, string[]> | null;
-  code: number;
-}
-
-export interface PaginationLinks {
-  first: string;
-  last: string;
-  prev: string | null;
-  next: string | null;
-}
-
-export interface PaginationMeta {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
-}
-
-export interface PaginatedResponse<T> {
-  data: T[];
-  links: PaginationLinks;
-  meta: PaginationMeta;
-}
-
-// Specific API response types
-export interface LessonsMetadataResponse {
-  classes: ClassItem[];
-  subjects: Subject[];
-  terms: Term[];
-  weeks: Week[];
+export interface LessonContent {
+  id: number;
+  title?: string;
+  topic?: string;
+  class?: string;
+  subject?: string;
+  term?: string;
+  week?: string | number;
+  subject_id?: number; // Subject identifier for the lesson
+  overview?: string;
+  objectives?: LessonObjective[];
+  key_concepts?: Record<string, string>;
+  concepts?: Concept[];
+  general_exercises?: GeneralExercise[];
+  video_path?: string | null;
+  content?: any;
+  check_markers?: any[];
+  summary?: string;
+  application?: string;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface LessonsListResponse {
-  lessons: Lesson[];
-  links: PaginationLinks;
-  meta: PaginationMeta;
+  success: boolean;
+  message: string;
+  content: {
+    data: Lesson[];
+    meta?: {
+      current_page: number;
+      last_page: number;
+      per_page: number;
+      total: number;
+    };
+  } | null;
+  code: number;
 }
 
-// Filter types for lesson queries
-export interface LessonFilters {
-  class: string;
-  subject: string;
-  term: string;
-  week: string;
+export interface LessonContentResponse {
+  success: boolean;
+  message: string;
+  content: LessonContent | null;
+  code: number;
 }
 
-// UI state types
-export interface LessonUIState {
-  selectedLesson: LessonContent | null;
-  currentSection: 'overview' | 'concepts' | 'exercises';
-  completedSections: string[];
-  progress: number;
+export interface LessonMetaResponse {
+  success: boolean;
+  message: string;
+  content: LessonMeta | null;
+  code: number;
 }

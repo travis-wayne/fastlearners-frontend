@@ -1,8 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { mockSchemeOfWork } from "@/data/mock-scheme-of-work";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -18,7 +17,6 @@ import {
   Share2,
   Target,
   TrendingUp,
-  Users,
 } from "lucide-react";
 
 import { getSubjectById } from "@/config/education";
@@ -45,19 +43,27 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
+import { getStudentSubjects } from "@/lib/api/subjects";
+import { Loader2 } from "lucide-react";
 
-// Mock data for subject progress
-const mockSubjectProgress = {
-  totalTopics: 12,
-  completedTopics: 8,
-  currentWeek: 9,
-  totalWeeks: 11,
-  upcomingAssessments: 2,
-  lastAccessed: "2 hours ago",
-  termProgress: 75,
-  grade: "B2",
-  caScore: 82,
-};
+interface SubjectDetailData {
+  id: number;
+  name: string;
+  progress: number;
+  grade: string;
+  caScore: number;
+  currentWeek: number;
+  totalWeeks: number;
+  upcomingAssessments: number;
+  schemeOfWork: Array<{
+    week: number;
+    topics: string[];
+    objectives: string[];
+    activities: string[];
+    resources: string[];
+    assessment: string;
+  }>;
+}
 
 export default function SubjectDetailPage() {
   const params = useParams();
@@ -67,44 +73,177 @@ export default function SubjectDetailPage() {
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
+  const [subjectDetail, setSubjectDetail] = useState<SubjectDetailData | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState<boolean | null>(null);
+
   const subject = getSubjectById(subjectId);
 
-  // Get scheme of work for current subject, class, and term
-  const getSchemeOfWork = () => {
-    const key = `${subjectId}${currentClass?.stage?.toUpperCase()}${currentClass?.level}Term${currentTerm?.order}`;
-    // For demo, we'll use the JSS1 Term1 schemes we have
-    if (subjectId === "mathematics")
-      return mockSchemeOfWork.mathematicsJSS1Term1;
-    if (subjectId === "english") return mockSchemeOfWork.englishJSS1Term1;
-    if (subjectId === "basic-science")
-      return mockSchemeOfWork.basicScienceJSS1Term1;
+  // Validate subject is registered and fetch data
+  useEffect(() => {
+    const fetchSubjectData = async () => {
+      if (!subjectId) {
+        setError("Subject ID is required");
+        setIsLoading(false);
+        return;
+      }
 
-    // Return null if no scheme found
-    return null;
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // First, validate subject is registered
+        const subjectsResponse = await getStudentSubjects();
+        if (!subjectsResponse.success || !subjectsResponse.content) {
+          setIsAuthorized(false);
+          setIsLoading(false);
+          return;
+        }
+
+        const allSubjects = [
+          ...(subjectsResponse.content.compulsory_selective || []),
+          ...(subjectsResponse.content.subjects || []),
+          ...(subjectsResponse.content.selective || []),
+        ];
+
+        const isRegistered = allSubjects.some((s: any) => String(s.id) === subjectId);
+        
+        if (!isRegistered) {
+          setIsAuthorized(false);
+          setIsLoading(false);
+          return;
+        }
+
+        setIsAuthorized(true);
+
+        // Fetch subject detail
+        const response = await fetch(`/api/subjects/${subjectId}`, {
+          headers: {
+            'Accept': 'application/json',
+          },
+          credentials: 'include',
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.message || 'Failed to fetch subject detail');
+        }
+
+        const result = await response.json();
+        if (result.success && result.content) {
+          setSubjectDetail(result.content);
+        } else {
+          throw new Error(result.message || 'Failed to fetch subject detail');
+        }
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'Failed to fetch subject data');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSubjectData();
+  }, [subjectId]);
+
+  // Use subject detail data or fallback to config subject
+  const subjectProgress = subjectDetail ? {
+    totalTopics: 12,
+    completedTopics: Math.round((subjectDetail.progress / 100) * 12),
+    currentWeek: subjectDetail.currentWeek,
+    totalWeeks: subjectDetail.totalWeeks,
+    upcomingAssessments: subjectDetail.upcomingAssessments,
+    lastAccessed: "2 hours ago",
+    termProgress: subjectDetail.progress,
+    grade: subjectDetail.grade,
+    caScore: subjectDetail.caScore,
+  } : {
+    totalTopics: 12,
+    completedTopics: 8,
+    currentWeek: 9,
+    totalWeeks: 11,
+    upcomingAssessments: 2,
+    lastAccessed: "2 hours ago",
+    termProgress: 75,
+    grade: "B2",
+    caScore: 82,
   };
 
-  const schemeOfWork = getSchemeOfWork();
+  const schemeOfWork = subjectDetail?.schemeOfWork || [];
 
-  if (!subject) {
+  if (isLoading) {
     return (
       <div className="container mx-auto p-6">
         <Card>
           <CardContent className="p-8 text-center">
-            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-semibold">Subject Not Found</h3>
-            <p className="mb-4 text-muted-foreground">
-              The subject you&apos;re looking for doesn&apos;t exist or
-              isn&apos;t available.
-            </p>
-            <Button onClick={() => router.back()} variant="outline">
-              <ArrowLeft className="mr-2 size-4" />
-              Go Back
-            </Button>
+            <Loader2 className="mx-auto mb-4 size-12 animate-spin text-primary" />
+            <p className="text-muted-foreground">Loading subject details...</p>
           </CardContent>
         </Card>
       </div>
     );
   }
+
+  if (isAuthorized === false || (!subject && !subjectDetail)) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">Subject Not Found or Unauthorized</h3>
+            <p className="mb-4 text-muted-foreground">
+              {isAuthorized === false
+                ? "This subject is not registered or you don't have access to it."
+                : "The subject you're looking for doesn't exist or isn't available."}
+            </p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => router.push('/dashboard/subjects')} variant="outline">
+                Go to Subjects
+              </Button>
+              <Button onClick={() => router.back()} variant="outline">
+                <ArrowLeft className="mr-2 size-4" />
+                Go Back
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6">
+        <Card>
+          <CardContent className="p-8 text-center">
+            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <h3 className="mb-2 text-lg font-semibold">Error Loading Subject</h3>
+            <p className="mb-4 text-muted-foreground">{error}</p>
+            <div className="flex gap-2 justify-center">
+              <Button onClick={() => window.location.reload()} variant="outline">
+                Retry
+              </Button>
+              <Button onClick={() => router.push('/dashboard/subjects')} variant="outline">
+                Go to Subjects
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  // Use subjectDetail name if available, otherwise use config subject
+  const displaySubject = subject || {
+    id: subjectId,
+    name: subjectDetail?.name || "Subject",
+    code: subjectDetail?.name?.substring(0, 3).toUpperCase() || "SUB",
+    description: subjectDetail?.name || "",
+    icon: "bookOpen",
+    color: "#6366f1",
+    compulsory: true,
+    levels: [],
+  };
 
   if (!currentClass || !currentTerm) {
     return (
@@ -158,15 +297,15 @@ export default function SubjectDetailPage() {
           </Button>
           <div className="flex-1">
             <div className="mb-2 flex items-center gap-3">
-              <div
-                className="flex items-center justify-center rounded-lg p-2"
-                style={{ backgroundColor: `${subject.color}20` }}
-              >
-                <BookOpen className="size-5" style={{ color: subject.color }} />
-              </div>
+                <div
+                  className="flex items-center justify-center rounded-lg p-2"
+                  style={{ backgroundColor: `${displaySubject.color}20` }}
+                >
+                  <BookOpen className="size-5" style={{ color: displaySubject.color }} />
+                </div>
               <div>
-                <h1 className="text-2xl font-bold">{subject.name}</h1>
-                <p className="text-muted-foreground">{subject.description}</p>
+                <h1 className="text-2xl font-bold">{displaySubject.name}</h1>
+                <p className="text-muted-foreground">{displaySubject.description}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -174,7 +313,7 @@ export default function SubjectDetailPage() {
               <Separator orientation="vertical" className="h-4" />
               <span>{termDisplay}</span>
               <Separator orientation="vertical" className="h-4" />
-              <span>Code: {subject.code}</span>
+              <span>Code: {displaySubject.code}</span>
             </div>
           </div>
           <div className="flex items-center gap-2">
@@ -198,10 +337,10 @@ export default function SubjectDetailPage() {
               </div>
               <div className="space-y-2">
                 <p className="text-2xl font-bold">
-                  {mockSubjectProgress.termProgress}%
+                  {subjectProgress.termProgress}%
                 </p>
                 <Progress
-                  value={mockSubjectProgress.termProgress}
+                  value={subjectProgress.termProgress}
                   className="h-2"
                 />
               </div>
@@ -216,9 +355,9 @@ export default function SubjectDetailPage() {
                   Current Grade
                 </span>
               </div>
-              <p className="text-2xl font-bold">{mockSubjectProgress.grade}</p>
+              <p className="text-2xl font-bold">{subjectProgress.grade}</p>
               <p className="text-sm text-muted-foreground">
-                CA: {mockSubjectProgress.caScore}%
+                CA: {subjectProgress.caScore}%
               </p>
             </CardContent>
           </Card>
@@ -232,10 +371,10 @@ export default function SubjectDetailPage() {
                 </span>
               </div>
               <p className="text-2xl font-bold">
-                {mockSubjectProgress.currentWeek}
+                {subjectProgress.currentWeek}
               </p>
               <p className="text-sm text-muted-foreground">
-                of {mockSubjectProgress.totalWeeks} weeks
+                of {subjectProgress.totalWeeks} weeks
               </p>
             </CardContent>
           </Card>
@@ -249,7 +388,7 @@ export default function SubjectDetailPage() {
                 </span>
               </div>
               <p className="text-2xl font-bold">
-                {mockSubjectProgress.upcomingAssessments}
+                {subjectProgress.upcomingAssessments}
               </p>
               <p className="text-sm text-muted-foreground">upcoming</p>
             </CardContent>
@@ -268,190 +407,191 @@ export default function SubjectDetailPage() {
           </TabsList>
 
           <TabsContent value="scheme" className="space-y-4">
-            {schemeOfWork ? (
-              <Card>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <CardTitle>Scheme of Work</CardTitle>
-                      <CardDescription>
-                        {subject.name} for {classDisplay} - {termDisplay}
-                      </CardDescription>
-                    </div>
-                    <Button variant="outline" size="sm">
-                      <Download className="mr-2 size-4" />
-                      Download PDF
-                    </Button>
+            <Card>
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle>Scheme of Work</CardTitle>
+                    <CardDescription>
+                      {displaySubject.name} for {classDisplay} - {termDisplay}
+                    </CardDescription>
                   </div>
-                </CardHeader>
-                <CardContent>
+                  <Button variant="outline" size="sm">
+                    <Download className="mr-2 size-4" />
+                    Download PDF
+                  </Button>
+                </div>
+              </CardHeader>
+              <CardContent>
+                {schemeOfWork.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <p>Scheme of work not available for this subject.</p>
+                  </div>
+                ) : (
                   <Accordion type="single" collapsible className="space-y-2">
-                    {schemeOfWork.weeks.map((week, index) => (
-                      <AccordionItem
-                        key={week.week}
-                        value={`week-${week.week}`}
-                      >
-                        <AccordionTrigger className="hover:no-underline">
-                          <div className="flex flex-1 items-center gap-4">
-                            <div className="flex items-center gap-2">
-                              {week.week <= mockSubjectProgress.currentWeek ? (
-                                <CheckCircle className="size-5 text-green-600" />
-                              ) : (
-                                <Circle className="size-5 text-muted-foreground" />
-                              )}
-                              <span className="font-semibold">
-                                Week {week.week}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                              <span>{week.topics.join(", ")}</span>
-                            </div>
-                            {week.week === mockSubjectProgress.currentWeek && (
-                              <Badge variant="default" className="ml-auto">
-                                Current
-                              </Badge>
+                    {schemeOfWork.map((week, index) => (
+                    <AccordionItem
+                      key={week.week}
+                      value={`week-${week.week}`}
+                    >
+                      <AccordionTrigger className="hover:no-underline">
+                        <div className="flex flex-1 items-center gap-4">
+                          <div className="flex items-center gap-2">
+                            {week.week <= subjectProgress.currentWeek ? (
+                              <CheckCircle className="size-5 text-green-600" />
+                            ) : (
+                              <Circle className="size-5 text-muted-foreground" />
                             )}
+                            <span className="font-semibold">
+                              Week {week.week}
+                            </span>
                           </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pt-4">
-                          <div className="grid gap-6 md:grid-cols-2">
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <BookOpen className="size-4" />
-                                  Topics
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.topics.map((topic, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {topic}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <Target className="size-4" />
-                                  Learning Objectives
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.objectives.map((objective, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {objective}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <span>{week.topics.join(", ")}</span>
+                          </div>
+                          {week.week === subjectProgress.currentWeek && (
+                            <Badge variant="default" className="ml-auto">
+                              Current
+                            </Badge>
+                          )}
+                        </div>
+                      </AccordionTrigger>
+                      <AccordionContent className="pt-4">
+                        <div className="grid gap-6 md:grid-cols-2">
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <BookOpen className="size-4" />
+                                Topics
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.topics.map((topic, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {topic}
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
-
-                            <div className="space-y-4">
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <PlayCircle className="size-4" />
-                                  Activities
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.activities.map((activity, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {activity}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <FileText className="size-4" />
-                                  Resources
-                                </h4>
-                                <ul className="space-y-1">
-                                  {week.resources.map((resource, i) => (
-                                    <li
-                                      key={i}
-                                      className="flex items-center gap-2 text-sm text-muted-foreground"
-                                    >
-                                      <div className="size-1.5 rounded-full bg-current opacity-60" />
-                                      {resource}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-
-                              <div>
-                                <h4 className="mb-2 flex items-center gap-2 font-semibold">
-                                  <Award className="size-4" />
-                                  Assessment
-                                </h4>
-                                <p className="text-sm text-muted-foreground">
-                                  {week.assessment}
-                                </p>
-                              </div>
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <Target className="size-4" />
+                                Learning Objectives
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.objectives.map((objective, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {objective}
+                                  </li>
+                                ))}
+                              </ul>
                             </div>
                           </div>
-
-                          {week.week <= mockSubjectProgress.currentWeek && (
-                            <div className="mt-6 border-t pt-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-sm text-green-600">
-                                  <CheckCircle className="size-4" />
-                                  <span>Week completed</span>
-                                </div>
-                                <Button size="sm" variant="outline">
-                                  View Lessons
+                          <div className="space-y-4">
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <PlayCircle className="size-4" />
+                                Activities
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.activities.map((activity, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {activity}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <FileText className="size-4" />
+                                Resources
+                              </h4>
+                              <ul className="space-y-1">
+                                {week.resources.map((resource, i) => (
+                                  <li
+                                    key={i}
+                                    className="flex items-center gap-2 text-sm text-muted-foreground"
+                                  >
+                                    <div className="size-1.5 rounded-full bg-current opacity-60" />
+                                    {resource}
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                            <div>
+                              <h4 className="mb-2 flex items-center gap-2 font-semibold">
+                                <Award className="size-4" />
+                                Assessment
+                              </h4>
+                              <p className="text-sm text-muted-foreground">
+                                {week.assessment}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                        {week.week <= subjectProgress.currentWeek && (
+                          <div className="mt-6 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-green-600">
+                                <CheckCircle className="size-4" />
+                                <span>Week completed</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  router.push(
+                                    `/dashboard/lessons?subjectId=${subjectId}`
+                                  )
+                                }
+                              >
+                                View Lessons
+                              </Button>
+                            </div>
+                          </div>
+                        )}
+                        {week.week === subjectProgress.currentWeek && (
+                          <div className="mt-6 border-t pt-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-sm text-blue-600">
+                                <Clock className="size-4" />
+                                <span>Currently studying this week</span>
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/lessons?subjectId=${subjectId}`
+                                    )
+                                  }
+                                >
+                                  Continue Lesson
                                 </Button>
+                                <Button size="sm">Take Quiz</Button>
                               </div>
                             </div>
-                          )}
-
-                          {week.week === mockSubjectProgress.currentWeek && (
-                            <div className="mt-6 border-t pt-4">
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-sm text-blue-600">
-                                  <Clock className="size-4" />
-                                  <span>Currently studying this week</span>
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button size="sm" variant="outline">
-                                    Continue Lesson
-                                  </Button>
-                                  <Button size="sm">Take Quiz</Button>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </AccordionContent>
-                      </AccordionItem>
+                          </div>
+                        )}
+                      </AccordionContent>
+                    </AccordionItem>
                     ))}
                   </Accordion>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card>
-                <CardContent className="p-8 text-center">
-                  <FileText className="mx-auto mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-semibold">
-                    No Scheme of Work Available
-                  </h3>
-                  <p className="text-muted-foreground">
-                    The scheme of work for {subject.name} in {classDisplay} -{" "}
-                    {termDisplay} is not yet available.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
+                )}
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="lessons" className="space-y-4">
@@ -459,11 +599,18 @@ export default function SubjectDetailPage() {
               <CardContent className="p-8 text-center">
                 <PlayCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
                 <h3 className="mb-2 text-lg font-semibold">
-                  Lessons Coming Soon
+                  Lessons
                 </h3>
-                <p className="text-muted-foreground">
-                  Interactive lessons for {subject.name} will be available soon.
+                <p className="mb-4 text-muted-foreground">
+                  View interactive lessons for {displaySubject.name}.
                 </p>
+                <Button
+                  onClick={() =>
+                    router.push(`/dashboard/lessons?subjectId=${subjectId}`)
+                  }
+                >
+                  View Lessons
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -476,7 +623,7 @@ export default function SubjectDetailPage() {
                   Assessments Coming Soon
                 </h3>
                 <p className="text-muted-foreground">
-                  Quizzes and assessments for {subject.name} will be available
+                  Quizzes and assessments for {displaySubject.name} will be available
                   soon.
                 </p>
               </CardContent>
@@ -491,7 +638,7 @@ export default function SubjectDetailPage() {
                   Resources Coming Soon
                 </h3>
                 <p className="text-muted-foreground">
-                  Additional resources and materials for {subject.name} will be
+                  Additional resources and materials for {displaySubject.name} will be
                   available soon.
                 </p>
               </CardContent>
@@ -502,3 +649,4 @@ export default function SubjectDetailPage() {
     </motion.div>
   );
 }
+

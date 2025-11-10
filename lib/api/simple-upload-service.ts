@@ -1,19 +1,4 @@
-import axios from "axios";
-
-import { getTokenFromCookies } from "@/lib/auth-cookies";
-
-const BASE_URL = "https://fastlearnersapp.com/api/v1";
-
-// Get auth token from cookies (matching your auth store)
-const getAuthToken = (): string | null => {
-  return getTokenFromCookies();
-};
-
-// Create axios instance with auth header
-const createAuthHeaders = () => {
-  const token = getAuthToken();
-  return token ? { Authorization: `Bearer ${token}` } : {};
-};
+// Client-side upload service - uses internal API routes for security
 
 export interface SimpleUploadResult {
   success: boolean;
@@ -39,30 +24,31 @@ export const uploadCheckMarkersSimple = async (
       type: file.type,
     });
 
-    const response = await axios.post(
-      `${BASE_URL}/superadmin/lessons/uploads/check-markers`,
-      formData,
-      {
-        headers: {
-          ...createAuthHeaders(),
-          Accept: "application/json",
-          // Don't set Content-Type - let axios set it with boundary
-        },
-      },
-    );
+    const response = await fetch("/api/uploads/check-markers", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: "Upload failed",
+        error: data?.message || "Unknown error occurred",
+      };
+    }
 
     return {
       success: true,
-      message: response.data?.message || "Check markers uploaded successfully!",
+      message: data?.message || "Check markers uploaded successfully!",
     };
   } catch (error: any) {
     return {
       success: false,
       message: "Upload failed",
-      error:
-        error.response?.data?.message ||
-        error.message ||
-        "Unknown error occurred",
+      error: error.message || "Unknown error occurred",
     };
   }
 };
@@ -75,31 +61,31 @@ export const uploadSchemeOfWorkSimple = async (
     const formData = new FormData();
     formData.append("scheme_of_work_file", file);
 
-    const response = await axios.post(
-      `${BASE_URL}/superadmin/lessons/uploads/scheme-of-work`,
-      formData,
-      {
-        headers: {
-          ...createAuthHeaders(),
-          Accept: "application/json",
-          "Content-Type": "multipart/form-data",
-        },
-      },
-    );
+    const response = await fetch("/api/uploads/scheme-of-work", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: "Upload failed",
+        error: data?.message || "Unknown error occurred",
+      };
+    }
 
     return {
       success: true,
-      message:
-        response.data?.message || "Scheme of work uploaded successfully!",
+      message: data?.message || "Scheme of work uploaded successfully!",
     };
   } catch (error: any) {
     return {
       success: false,
       message: "Upload failed",
-      error:
-        error.response?.data?.message ||
-        error.message ||
-        "Unknown error occurred",
+      error: error.message || "Unknown error occurred",
     };
   }
 };

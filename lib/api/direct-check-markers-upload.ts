@@ -1,8 +1,4 @@
-import axios from "axios";
-
-import { getTokenFromCookies } from "@/lib/auth-cookies";
-
-const BASE_URL = "https://fastlearnersapp.com/api/v1";
+// Client-side direct upload service - uses internal API routes for security
 
 export interface DirectUploadResult {
   success: boolean;
@@ -19,23 +15,12 @@ export const uploadCheckMarkersDirectly = async (
   file: File,
 ): Promise<DirectUploadResult> => {
   try {
-    const token = getTokenFromCookies();
-
-    if (!token) {
-      return {
-        success: false,
-        message: "No authentication token found",
-        error: "Please log in again",
-      };
-    }
-
-    console.log("🚀 Direct upload starting (using vanilla fetch)...");
+    console.log("🚀 Direct upload starting (using internal API route)...");
     console.log("📁 File:", {
       name: file.name,
       size: file.size,
       type: file.type,
     });
-    console.log("🔑 Token present:", token ? "Yes" : "No");
 
     const formData = new FormData();
     formData.append("check_markers_file", file);
@@ -51,12 +36,8 @@ export const uploadCheckMarkersDirectly = async (
     }
 
     // Log the request details before sending
-    const url = `${BASE_URL}/superadmin/lessons/uploads/check-markers`;
+    const url = "/api/uploads/check-markers";
     console.log("🎯 Request URL:", url);
-    console.log("📨 Request headers will be:", {
-      Authorization: `Bearer ${token}`,
-      Accept: "application/json",
-    });
     console.log("📦 Request body (FormData):", formData);
 
     // Attempt to inspect the FormData more thoroughly
@@ -75,14 +56,10 @@ export const uploadCheckMarkersDirectly = async (
       });
     }
 
-    // Use vanilla fetch to bypass ALL axios issues
+    // Use internal API route
     const response = await fetch(url, {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        // DO NOT set Content-Type - let browser set multipart boundary
-      },
+      credentials: "include",
       body: formData,
     });
 

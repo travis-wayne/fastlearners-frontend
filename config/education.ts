@@ -696,3 +696,35 @@ export function getSubjectById(id: string): Subject | undefined {
 export function getTermById(id: string): Term | undefined {
   return terms.find((term) => term.id === id);
 }
+
+/**
+ * Mapping from upstream API subject IDs to config subject IDs
+ * This provides a definitive mapping to avoid fragile name-based matching
+ * 
+ * TODO: Populate this map with actual API subject IDs from the upstream API
+ * To populate:
+ * 1. Fetch subjects from /api/subjects endpoint
+ * 2. Match API subject names to config subject names
+ * 3. Add entries: [API_ID]: "config-subject-id"
+ * 
+ * Example structure:
+ * {
+ *   1: "english",
+ *   2: "mathematics",
+ *   3: "basic-science",
+ *   ...
+ * }
+ */
+export const apiSubjectIdToConfigIdMap: Record<number, string> = {
+  // This map should be populated with actual API subject IDs
+  // Currently empty - mapping falls back to name-based matching
+  // Add mappings as API subject IDs are identified from the upstream API
+};
+
+/**
+ * Get config subject ID from API subject ID
+ * Falls back to name-based matching if mapping is missing
+ */
+export function getConfigSubjectIdFromApiId(apiSubjectId: number): string | null {
+  return apiSubjectIdToConfigIdMap[apiSubjectId] || null;
+}
