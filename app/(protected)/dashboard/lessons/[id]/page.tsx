@@ -28,6 +28,7 @@ export default function LessonPage() {
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const lessonId = params?.id as string;
+  
 
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
