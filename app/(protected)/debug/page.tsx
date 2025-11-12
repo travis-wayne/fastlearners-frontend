@@ -4,7 +4,6 @@ import { useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 
-import { getAuthCookies, getUserFromCookies } from "@/lib/auth-cookies";
 import { RBACUtils } from "@/lib/rbac/role-config";
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
 import { Badge } from "@/components/ui/badge";
@@ -79,35 +78,33 @@ export default function AuthDebugPage() {
       hasPermission("view_admin_panel"),
     );
 
-    console.log("\n🍪 Cookie Data:");
-    const cookieUser = getUserFromCookies();
-    const authCookies = getAuthCookies();
-    console.log("  Cookie User:", cookieUser);
-    console.log("  Auth Cookies:", authCookies);
-    setCookieData({ cookieUser, authCookies });
+    console.log("\n📊 Auth Store State:");
+    console.log("  User from store:", user);
+    console.log("  Is Authenticated:", isAuthenticated);
+    setCookieData({ user, isAuthenticated });
   };
 
   const testApiProfile = async () => {
     try {
       console.log("🌐 [API TEST] Fetching user profile from API...");
 
-      const response = await fetch("/api/auth/profile", {
+      const response = await fetch("/api/auth/session", {
         headers: {
-          Authorization: `Bearer ${getAuthCookies()?.token}`,
           "Content-Type": "application/json",
         },
       });
 
       const data = await response.json();
-      console.log("📊 API Profile Response:", data);
+      console.log("📊 API Session Response:", data);
 
       if (response.ok && data.success) {
         console.log("✅ API returned user data:");
-        console.log("  Email:", data.content?.email);
-        console.log("  Roles:", data.content?.role);
-        console.log("  Primary Role:", data.content?.role?.[0]);
+        console.log("  Email:", data.user?.email);
+        console.log("  Roles:", data.user?.role);
+        console.log("  Primary Role:", data.user?.role?.[0]);
       } else {
         console.log("❌ API Error:", data.message || "Unknown error");
+        console.log("  Code:", data.code);
       }
     } catch (error) {
       console.error("🚨 API Request failed:", error);

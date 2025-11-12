@@ -1,10 +1,13 @@
-import { SharedSettingsPage } from "@/components/settings/shared-settings-page";
+import { ContentSection } from './components/content-section'
+import { ProfileForm } from './profile/profile-form'
 
 export default function SettingsPage() {
   return (
-    <SharedSettingsPage
-      customTitle="Student Settings"
-      customDescription="Manage your student profile, security, and account settings."
-    />
-  );
+    <ContentSection
+      title='Profile'
+      desc='This is how others will see you on the site.'
+    >
+      <ProfileForm />
+    </ContentSection>
+  )
 }

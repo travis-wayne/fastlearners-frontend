@@ -28,37 +28,14 @@ export function setAuthCookies(_data: AuthCookieData): void {
 }
 
 /**
- * DEPRECATED: Read auth data from legacy client cookies (transitional support only).
- * DO NOT USE IN PRODUCTION CODE. This function is kept only for legacy cleanup.
- * Returns null if cookies are missing/expired.
+ * @deprecated REMOVED: Client-side code must NOT read tokens from cookies (XSS exposure).
+ * This function now throws an error to prevent misuse.
+ * Use internal API routes (/api/*) which handle authentication server-side.
  */
 export function getAuthCookies(): AuthCookieData | null {
-  if (process.env.NODE_ENV === "production") {
-    console.error(
-      "getAuthCookies() should not be called in production. Use internal API routes instead.",
-    );
-    return null;
-  }
-  try {
-    const token = Cookies.get(AUTH_TOKEN_COOKIE);
-    const expiresStr = Cookies.get(AUTH_EXPIRES_COOKIE);
-
-    if (!token || !expiresStr) {
-      return null;
-    }
-    const expiresAt = parseInt(expiresStr);
-
-    // Check if token is expired
-    if (Number.isNaN(expiresAt) || Date.now() >= expiresAt) {
-      clearAuthCookies();
-      return null;
-    }
-
-    return { token, expiresAt };
-  } catch {
-    clearAuthCookies(); // Clear corrupted cookies
-    return null;
-  }
+  throw new Error(
+    "getAuthCookies() is removed for security. Use /api/auth/session or server routes instead.",
+  );
 }
 
 /**
@@ -75,35 +52,25 @@ export function clearAuthCookies(): void {
 }
 
 /**
- * @deprecated DO NOT USE. Use internal API routes instead.
+ * @deprecated REMOVED: Client-side code must NOT read tokens from cookies (XSS exposure).
+ * This function now throws an error to prevent misuse.
+ * Use internal API routes (/api/*) which handle authentication server-side.
  */
 export function isAuthenticatedFromCookies(): boolean {
-  if (process.env.NODE_ENV === "production") {
-    console.error(
-      "isAuthenticatedFromCookies() should not be called in production. Use internal API routes instead.",
-    );
-    return false;
-  }
-  return getAuthCookies() !== null;
+  throw new Error(
+    "isAuthenticatedFromCookies() is removed for security. Use /api/auth/session or server routes instead.",
+  );
 }
 
 /**
- * @deprecated DO NOT USE. This function is removed for security reasons.
- * Client-side code must NOT read tokens from cookies (XSS exposure).
+ * @deprecated REMOVED: Client-side code must NOT read tokens from cookies (XSS exposure).
+ * This function now throws an error to prevent misuse.
  * Use internal API routes (/api/*) which handle authentication server-side.
- * 
- * This function will throw an error in production builds.
  */
 export function getTokenFromCookies(): string | null {
-  if (process.env.NODE_ENV === "production") {
-    throw new Error(
-      "getTokenFromCookies() is not allowed in production. Use internal API routes (/api/*) instead.",
-    );
-  }
-  console.error(
-    "getTokenFromCookies() is deprecated and will be removed. Use internal API routes instead.",
+  throw new Error(
+    "getTokenFromCookies() is removed for security. Use /api/auth/session or server routes instead.",
   );
-  return getAuthCookies()?.token || null;
 }
 
 /**

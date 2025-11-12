@@ -1,7 +1,6 @@
 import { create } from "zustand";
 
 import { authApi } from "@/lib/api/auth";
-import { getUserFromCookies, isAuthenticatedFromCookies } from "@/lib/auth-cookies";
 import {
   LoginCredentials,
   ProfileStatus,
@@ -64,25 +63,65 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     if (typeof window !== "undefined") {
       const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH !== "false"; // default to true
       if (useHttpOnly) {
-        // Fetch session from server (HttpOnly cookies)
-        fetch("/api/auth/session")
-          .then(async (r) => {
-            if (!r.ok) throw new Error("No session");
-            const data = await r.json();
+        // Fetch session from server (HttpOnly cookies) with timeout and retry
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout
+
+        const attemptFetch = async (attempt: number = 0): Promise<void> => {
+          const maxAttempts = 2;
+          const backoffDelays = [300, 900]; // ms
+
+          try {
+            const response = await fetch("/api/auth/session", {
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+
+            if (!response.ok) {
+              const data = await response.json().catch(() => ({}));
+              // Handle specific error codes
+              if (data.code === "NO_AUTH_COOKIES" || data.code === "TOKEN_EXPIRED") {
+                set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
+                return;
+              }
+              throw new Error(data.message || "No session");
+            }
+
+            const data = await response.json();
             set({
               user: data.user || null,
               isAuthenticated: Boolean(data.user),
               isLoading: false,
               isHydrated: true,
             });
-          })
-          .catch(() => {
+          } catch (error: any) {
+            clearTimeout(timeoutId);
+
+            // Retry with exponential backoff
+            if (attempt < maxAttempts && !controller.signal.aborted) {
+              const delay = backoffDelays[attempt] || 900;
+              if (process.env.NODE_ENV !== "production") {
+                console.warn(`Auth hydration attempt ${attempt + 1} failed, retrying in ${delay}ms:`, error);
+              }
+              setTimeout(() => attemptFetch(attempt + 1), delay);
+              return;
+            }
+
+            // Final failure - set hydrated state to prevent blocking
+            if (process.env.NODE_ENV !== "production") {
+              console.warn("Auth hydration failed after retries:", error);
+            }
             set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
-          });
+          }
+        };
+
+        attemptFetch();
       } else {
-        const user = getUserFromCookies();
-        const isAuthenticated = isAuthenticatedFromCookies();
-        set({ user, isAuthenticated, isLoading: false, isHydrated: true });
+        // Dev-only fallback: no-op path that sets unauthenticated state
+        if (process.env.NODE_ENV !== "production") {
+          console.warn("HttpOnly auth is disabled. This is a dev-only fallback.");
+        }
+        set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
       }
     }
   },

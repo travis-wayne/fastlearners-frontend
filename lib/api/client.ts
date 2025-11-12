@@ -38,7 +38,7 @@ function validateApiEnv() {
 // Get validated API base URL
 export const API_BASE = (() => {
   const env = validateApiEnv();
-  return env.NEXT_PUBLIC_API_URL || 'https://fastlearnersapp.com/api/v1';
+  return env?.NEXT_PUBLIC_API_URL || 'https://fastlearnersapp.com/api/v1';
 })();
 
 // Helper to build request headers with auth

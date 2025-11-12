@@ -30,27 +30,76 @@ export async function getUserProfile(token: string): Promise<ProfileData> {
 }
 
 // Update user profile (class, discipline, term)
+// Fetches current profile first to merge updates and send complete payload
 export async function updateProfile(
   token: string,
-  data: {
+  updates: {
     class: string;
     discipline?: string;
     term?: string;
     [key: string]: any;
   }
 ): Promise<ProfileData> {
-  const response = await fetch(`${API_BASE}/profile/edit`, {
+  // Fetch current profile to merge with updates
+  // This ensures we send a complete payload that passes backend validation
+  const currentProfile = await getUserProfile(token);
+
+  // Validate discipline if provided (must be one of the allowed values for SSS classes)
+  if (updates.discipline) {
+    const validDisciplines = ['Art', 'Commercial', 'Science'];
+    if (!validDisciplines.includes(updates.discipline)) {
+      throw new Error(`Invalid discipline. Must be one of: ${validDisciplines.join(', ')}`);
+    }
+  }
+
+  // Build complete payload by merging current profile with updates
+  const payload: Partial<ProfileData> = {
+    ...currentProfile,  // Preserve existing fields
+    ...updates,         // Overlay academic changes
+  };
+
+  // Ensure role is set (default to 'student' if not present)
+  // Handle role conversion - ProfileData has role as string[], but backend may expect string
+  // We'll keep it as array for the payload but ensure it has a value
+  if (!currentProfile.role || currentProfile.role.length === 0) {
+    // If no role, set to student
+    payload.role = ['student'];
+  } else if (Array.isArray(currentProfile.role) && currentProfile.role.includes('guest')) {
+    // If user is guest, update to student
+    payload.role = ['student'];
+  }
+  // Otherwise keep existing role array
+
+  // Remove discipline for non-SSS classes
+  const classCategory = updates.class?.startsWith('SSS') ? 'sss' : 'jss';
+  if (classCategory !== 'sss' && 'discipline' in payload) {
+    delete payload.discipline;
+  }
+
+  const response = await fetch(`${API_BASE}/api/v1/profile/edit`, {
     method: 'POST',
     headers: {
       'Authorization': `Bearer ${token}`,
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
-    body: JSON.stringify(data),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     const error = await response.json();
+    
+    // Extract validation errors if present
+    if (error.errors) {
+      const errorMessages = Object.entries(error.errors)
+        .map(([field, messages]) => {
+          const msgArray = Array.isArray(messages) ? messages : [messages];
+          return `${field}: ${msgArray.join(', ')}`;
+        })
+        .join('; ');
+      throw new Error(errorMessages || error.message || 'Validation failed');
+    }
+    
     throw new Error(error.message || 'Failed to update profile');
   }
 
@@ -161,7 +210,6 @@ export async function getStudentSubjects(): Promise<SubjectsResponse> {
         message: data.message || "Failed to fetch subjects",
         content: null,
         code: res.status,
-        errors: data.errors,
       };
     }
 
@@ -223,19 +271,62 @@ export async function updateSelectiveSubjectsClient(
   subjectIds: number[]
 ): Promise<UpdateResponse> {
   try {
+    // Clean and validate subject IDs before sending
+    // Filter out null, undefined, NaN, and invalid values
+    // Convert to numbers and ensure they're positive integers
+    const cleanedSubjectIds = subjectIds
+      .filter((id) => id != null && id !== undefined && !Number.isNaN(id))
+      .map((id) => {
+        const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+        return Number.isNaN(numId) ? null : numId;
+      })
+      .filter((id): id is number => id !== null && id > 0 && Number.isInteger(id))
+      .filter((id, index, array) => array.indexOf(id) === index); // Remove duplicates
+
+    // Validate that we have at least one valid subject ID
+    if (cleanedSubjectIds.length === 0) {
+      return {
+        success: false,
+        message: "Invalid request: at least one valid subject ID is required",
+        content: null,
+        code: 400,
+        errors: {
+          subjects: "Subject IDs array is empty or contains only invalid values",
+        },
+      };
+    }
+
+    // Log what we're sending for debugging
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.log("[updateSelectiveSubjectsClient] Sending:", {
+        originalCount: subjectIds.length,
+        cleanedCount: cleanedSubjectIds.length,
+        cleanedSubjectIds,
+        originalSubjectIds: subjectIds,
+      });
+    }
+
     const res = await fetch("/api/subjects/update-selective", {
       method: "POST",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({ subjects: subjectIds }),
+      body: JSON.stringify({ subjects: cleanedSubjectIds }),
       cache: "no-store",
     });
 
     const data = await res.json();
 
     if (!res.ok) {
+      // Log error details for debugging
+      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+        console.error("[updateSelectiveSubjectsClient] Error response:", {
+          status: res.status,
+          data,
+          sentSubjectIds: cleanedSubjectIds,
+        });
+      }
       return {
         success: false,
         message: data.message || "Failed to update selective subjects",

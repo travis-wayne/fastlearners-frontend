@@ -108,27 +108,26 @@ export const authApi = {
 // User Profile Management APIs
 export const profileApi = {
   getProfile: async (): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.get<{ user: User }>("/profile");
-    return response.data;
+    const response = await fetch("/api/profile", {
+      method: "GET",
+      headers: { Accept: "application/json" },
+      credentials: "include",
+    });
+    return await response.json();
   },
 
   updateProfile: async (
     data: ProfileUpdateData,
   ): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.post<{ user: User }>("/profile/edit", data);
-    return response.data;
+    return postJson<ApiResponse<{ user: User }>>("/api/profile/edit", data);
   },
 
   changePassword: async (data: ChangePasswordData): Promise<ApiResponse> => {
-    const response = await api.post("/profile/edit/password", data);
-    return response.data;
+    return postJson<ApiResponse>("/api/profile/edit/password", data);
   },
 
   updateRole: async (role: string): Promise<ApiResponse<{ user: User }>> => {
-    const response = await api.post<{ user: User }>("/profile/update-role", {
-      role,
-    });
-    return response.data;
+    return postJson<ApiResponse<{ user: User }>>("/api/auth/set-role", { role });
   },
 };
 

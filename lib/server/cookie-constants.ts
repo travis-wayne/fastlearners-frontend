@@ -7,7 +7,7 @@ export const isProd = process.env.NODE_ENV === "production";
 export const defaultCookieOptions = {
   httpOnly: true as const,
   secure: isProd,
-  sameSite: (isProd ? "strict" : "lax") as const,
+  sameSite: (isProd ? "strict" : "lax") as "strict" | "lax",
   path: "/",
-};
+} as const;
 

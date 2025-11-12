@@ -75,7 +75,10 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
+# Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
+# Client-side cookie readers are disabled and all auth is handled server-side.
 # Add other secrets and keys as required by your environment
 ```
 
@@ -114,6 +117,11 @@ Use the scripts defined in `package.json` with `pnpm <script>`:
 ## Contentlayer
 
 This project uses Contentlayer for content (see `contentlayer.config.ts`). When running the dev server, Contentlayer will generate the necessary content types automatically.
+
+**Windows Compatibility Note:** Contentlayer may show warnings on Windows systems. These warnings are typically harmless and can be ignored. If you encounter build issues on Windows, try:
+1. Running the dev server with administrator privileges
+2. Ensuring your file paths don't contain special characters
+3. Checking that `contentlayer.config.ts` uses forward slashes in path patterns
 
 If you see Contentlayer-related errors, try reinstalling dependencies and restarting the dev server:
 
@@ -236,7 +244,10 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
+# Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
+# Client-side cookie readers are disabled and all auth is handled server-side.
 # Add other secrets and keys as required by your environment
 ```
 
@@ -275,6 +286,11 @@ Use the scripts defined in `package.json` with `pnpm <script>`:
 ## Contentlayer
 
 This project uses Contentlayer for content (see `contentlayer.config.ts`). When running the dev server, Contentlayer will generate the necessary content types automatically.
+
+**Windows Compatibility Note:** Contentlayer may show warnings on Windows systems. These warnings are typically harmless and can be ignored. If you encounter build issues on Windows, try:
+1. Running the dev server with administrator privileges
+2. Ensuring your file paths don't contain special characters
+3. Checking that `contentlayer.config.ts` uses forward slashes in path patterns
 
 If you see Contentlayer-related errors, try reinstalling dependencies and restarting the dev server:
 
@@ -407,7 +423,10 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
+# Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
+# Client-side cookie readers are disabled and all auth is handled server-side.
 # Add other secrets and keys as required by your environment
 ```
 
@@ -476,7 +495,10 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
+# Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
+# Client-side cookie readers are disabled and all auth is handled server-side.
 # Add other secrets and keys as required by your environment
 ```
 
@@ -545,7 +567,10 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
+# Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
+# Client-side cookie readers are disabled and all auth is handled server-side.
 # Add other secrets and keys as required by your environment
 ```
 
@@ -614,7 +639,10 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=http://localhost:4000
+NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
+# Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
+# Client-side cookie readers are disabled and all auth is handled server-side.
 # Add other secrets and keys as required by your environment
 ```
 
@@ -653,6 +681,11 @@ Use the scripts defined in `package.json` with `pnpm <script>`:
 ## Contentlayer
 
 This project uses Contentlayer for content (see `contentlayer.config.ts`). When running the dev server, Contentlayer will generate the necessary content types automatically.
+
+**Windows Compatibility Note:** Contentlayer may show warnings on Windows systems. These warnings are typically harmless and can be ignored. If you encounter build issues on Windows, try:
+1. Running the dev server with administrator privileges
+2. Ensuring your file paths don't contain special characters
+3. Checking that `contentlayer.config.ts` uses forward slashes in path patterns
 
 If you see Contentlayer-related errors, try reinstalling dependencies and restarting the dev server:
 

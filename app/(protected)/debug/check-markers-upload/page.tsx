@@ -27,7 +27,6 @@ import {
 } from "@/lib/api/lesson-service";
 import { uploadCheckMarkers } from "@/lib/api/lesson-upload";
 import { uploadCheckMarkersSimple } from "@/lib/api/simple-upload-service";
-import { getAuthCookies, getTokenFromCookies } from "@/lib/auth-cookies";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -91,34 +90,25 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
     addLog("info", "Sample check-markers file downloaded");
   };
 
-  const debugAuthState = () => {
+  const debugAuthState = async () => {
     addLog("info", "=== AUTH STATE DEBUG ===");
 
     // Check auth store
     addLog("info", `Auth Store - Authenticated: ${isAuthenticated}`);
     addLog("info", `Auth Store - User:`, user);
 
-    // Check cookies
-    const authCookies = getAuthCookies();
-    addLog("info", `Auth Cookies:`, authCookies);
-
-    const token = getTokenFromCookies();
-    addLog(
-      "info",
-      `Token from cookies: ${token ? "Present (" + token.substring(0, 20) + "...)" : "Missing"}`,
-    );
-
-    // Check if token is valid format
-    if (token) {
-      try {
-        const tokenParts = token.split(".");
-        addLog(
-          "info",
-          `Token format: ${tokenParts.length === 3 ? "JWT (3 parts)" : `${tokenParts.length} parts`}`,
-        );
-      } catch (e) {
-        addLog("warning", "Token format validation failed");
-      }
+    // Check session API
+    try {
+      const response = await fetch("/api/auth/session");
+      const data = await response.json();
+      addLog("info", `Session API Response:`, {
+        success: data.success,
+        code: data.code,
+        message: data.message,
+        hasUser: !!data.user,
+      });
+    } catch (error) {
+      addLog("error", `Session API Error:`, error);
     }
   };
 

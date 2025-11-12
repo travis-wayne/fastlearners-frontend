@@ -85,6 +85,6 @@ export function handleApiError(
     ? error.message 
     : defaultMessage;
 
-  return createErrorResponse(500, message, undefined, requestId);
+  return createErrorResponse(message, 500, undefined, requestId);
 }
 

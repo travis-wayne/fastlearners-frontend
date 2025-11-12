@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 
+const MAX_HYDRATION_TIMEOUT = 10000; // 10 seconds max wait
+
 export function useAuthInit() {
   const [isInitialized, setIsInitialized] = useState(false);
   const { isHydrated, isLoading, hydrate } = useAuthStore();
@@ -26,6 +28,18 @@ export function useAuthInit() {
       setIsInitialized(true);
     }
   }, [isHydrated, hydrate]);
+
+  // Fallback timeout to prevent indefinite blocking
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (!isHydrated) {
+        console.warn("useAuthInit - Hydration timeout, proceeding with unauthenticated state");
+        setIsInitialized(true);
+      }
+    }, MAX_HYDRATION_TIMEOUT);
+
+    return () => clearTimeout(timeoutId);
+  }, [isHydrated]);
 
   return {
     isInitialized: isInitialized && isHydrated && !isLoading,

@@ -14,12 +14,78 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
-    // Ensure term is included if provided (backend should support this)
-    // Note: If backend doesn't support term yet, it will be ignored
-    const updateData = {
-      ...body,
-      // term is already included in body if provided by client
-    };
+    // If only partial updates are provided (e.g., just class/discipline),
+    // fetch current profile first to merge and send complete payload
+    const hasOnlyAcademicFields = body.class !== undefined && 
+      Object.keys(body).filter(k => !['class', 'discipline', 'term'].includes(k)).length === 0;
+    
+    let updateData = body;
+    
+    if (hasOnlyAcademicFields) {
+      // Fetch current profile to merge
+      try {
+        const profileResponse = await fetch(`${UPSTREAM_BASE}/profile`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          cache: "no-store",
+        });
+
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          if (profileData.content?.user) {
+            // Merge current profile with updates
+            updateData = {
+              ...profileData.content.user,
+              ...body,
+            };
+            
+            // Handle role - ensure it's set properly
+            // Backend may expect string or array, so we'll send as-is but ensure it has a value
+            if (!updateData.role || (Array.isArray(updateData.role) && updateData.role.length === 0)) {
+              updateData.role = 'student';
+            } else if (Array.isArray(updateData.role) && updateData.role.includes('guest')) {
+              // Convert guest to student
+              updateData.role = updateData.role.map(r => r === 'guest' ? 'student' : r);
+            } else if (typeof updateData.role === 'string' && updateData.role === 'guest') {
+              updateData.role = 'student';
+            }
+            
+            // Remove discipline for non-SSS classes
+            const classCategory = body.class?.startsWith('SSS') ? 'sss' : 'jss';
+            if (classCategory !== 'sss' && updateData.discipline) {
+              delete updateData.discipline;
+            }
+          }
+        }
+      } catch (profileError) {
+        // If profile fetch fails, proceed with partial update
+        // Backend validation will catch any issues
+        if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+          console.warn("Failed to fetch current profile for merge:", profileError);
+        }
+      }
+    }
+    
+    // Validate discipline if provided
+    if (updateData.discipline) {
+      const validDisciplines = ['Art', 'Commercial', 'Science'];
+      if (!validDisciplines.includes(updateData.discipline)) {
+        return NextResponse.json(
+          {
+            success: false,
+            message: `Invalid discipline. Must be one of: ${validDisciplines.join(', ')}`,
+            errors: {
+              discipline: [`Discipline must be one of: ${validDisciplines.join(', ')}`],
+            },
+            requestId,
+          },
+          { status: 422 }
+        );
+      }
+    }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);

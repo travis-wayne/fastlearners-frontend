@@ -25,7 +25,8 @@
     "check:all": "npm run type-check && npm run lint && npm run format:check && npm run check:no-token-cookies",
     "fix:all": "npm run lint:fix && npm run format",
     "type-check": "tsc --noEmit",
-    "check:no-token-cookies": "node scripts/check-no-token-cookies.js"
+    "check:no-token-cookies": "node scripts/check-no-token-cookies.js",
+    "browserslist:update": "npx update-browserslist-db@latest"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -71,6 +72,7 @@
     "@react-email/html": "0.0.8",
     "@t3-oss/env-nextjs": "^0.11.0",
     "@tabler/icons-react": "^3.35.0",
+    "@tanstack/react-router": "^1.135.2",
     "@tanstack/react-table": "^8.21.3",
     "@types/papaparse": "^5.3.16",
     "@typescript-eslint/parser": "^7.17.0",
@@ -111,7 +113,7 @@
     "zod": "^3.23.8",
     "zustand": "^5.0.7"
   },
-  "devDependencies": {"openapi-typescript": "^6.7.0",
+  "devDependencies": {
     "@commitlint/cli": "^19.3.0",
     "@commitlint/config-conventional": "^19.2.2",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
@@ -131,6 +133,7 @@
     "husky": "^9.1.1",
     "lint-staged": "^16.1.6",
     "mdast-util-toc": "^7.1.0",
+    "openapi-typescript": "^6.7.0",
     "postcss": "^8.4.39",
     "prettier": "^3.3.3",
     "prettier-plugin-tailwindcss": "^0.6.5",

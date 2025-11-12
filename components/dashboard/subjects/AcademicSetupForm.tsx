@@ -39,6 +39,15 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
   const handleSubmit = async () => {
     if (!canSubmit) return;
 
+    // Validate discipline if SSS class
+    if (isSSS && selectedDiscipline) {
+      const validDisciplines = ['Art', 'Commercial', 'Science'];
+      if (!validDisciplines.includes(selectedDiscipline)) {
+        toast.error(`Invalid discipline. Must be one of: ${validDisciplines.join(', ')}`);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
     try {
       // If token is provided, use direct API call
@@ -64,6 +73,18 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
 
         if (!response.ok) {
           const error = await response.json();
+          
+          // Extract validation errors if present
+          if (error.errors) {
+            const errorMessages = Object.entries(error.errors)
+              .map(([field, messages]) => {
+                const msgArray = Array.isArray(messages) ? messages : [messages];
+                return `${field}: ${msgArray.join(', ')}`;
+              })
+              .join('; ');
+            throw new Error(errorMessages || error.message || 'Validation failed');
+          }
+          
           throw new Error(error.message || 'Failed to update profile');
         }
       }

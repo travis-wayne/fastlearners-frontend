@@ -28,8 +28,8 @@ import { useToast } from "@/components/ui/use-toast";
 import { SubjectCard } from "@/components/ui/subject-selection/subject-card";
 import {
   getStudentSubjects,
-  updateCompulsorySelective,
-  updateSelectiveSubjects,
+  updateCompulsorySelectiveClient,
+  updateSelectiveSubjectsClient,
 } from "@/lib/api/subjects";
 import { useAcademicContext } from "@/components/providers/academic-context";
 import { getClassLevelById, getTermById } from "@/config/education";
@@ -373,7 +373,7 @@ export function SubjectSetupForm({
       // Step 1: Update compulsory selective if JSS and selected
       if (classLevel === "JSS" && data.compulsorySelective) {
         compulsoryResult = await retryWithBackoff(async () => {
-          const result = await updateCompulsorySelective(data.compulsorySelective!);
+          const result = await updateCompulsorySelectiveClient(data.compulsorySelective!);
           if (!result.success) {
             throw new Error(result.message || "Failed to update compulsory selective");
           }
@@ -401,13 +401,42 @@ export function SubjectSetupForm({
 
       // Step 2: Update selective subjects (core + electives) with retry
       // Include both core subjects selected in Step 2 and electives selected in Step 3
-      const allSelectedSubjectIds = [...coreSubjectIds, ...data.electiveIds];
+      // Ensure electiveIds is an array and filter out any invalid values
+      const electiveIds = Array.isArray(data.electiveIds) ? data.electiveIds : [];
+      const allSelectedSubjectIds = [...coreSubjectIds, ...electiveIds].filter(
+        (id) => id != null && id !== undefined && !Number.isNaN(id) && id > 0
+      );
+      
+      // Validate that we have at least one subject ID
+      if (allSelectedSubjectIds.length === 0) {
+        throw new Error("No valid subject IDs to update. Please select at least one subject.");
+      }
       
       try {
         selectiveResult = await retryWithBackoff(async () => {
-          const result = await updateSelectiveSubjects(allSelectedSubjectIds);
+          const result = await updateSelectiveSubjectsClient(allSelectedSubjectIds);
           if (!result.success) {
-            throw new Error(result.message || "Failed to update selective subjects");
+            // Create a detailed error with validation information
+            const errorMessage = result.message || "Failed to update selective subjects";
+            const errorDetails = result.errors 
+              ? ` Validation errors: ${JSON.stringify(result.errors)}`
+              : "";
+            const fullMessage = `${errorMessage}${errorDetails} (Code: ${result.code})`;
+            
+            // Log for debugging
+            if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+              console.error("[SubjectSetupForm] updateSelectiveSubjectsClient failed:", {
+                result,
+                sentSubjectIds: allSelectedSubjectIds,
+                coreSubjectIds,
+                electiveIds: data.electiveIds,
+              });
+            }
+            
+            const error = new Error(fullMessage) as any;
+            error.code = result.code;
+            error.errors = result.errors;
+            throw error;
           }
           return result;
         });

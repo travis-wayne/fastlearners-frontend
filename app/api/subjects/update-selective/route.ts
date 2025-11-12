@@ -15,29 +15,90 @@ export async function POST(req: NextRequest) {
     // Support both FormData and JSON formats
     const contentType = req.headers.get("content-type") || "";
     let subjectIds: number[] = [];
+    let validationErrors: Record<string, string> = {};
 
     if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {
       // Handle FormData format
-      const formData = await req.formData();
-      const subjectsArray = formData.getAll("subjects[]");
-      subjectIds = subjectsArray.map((id) => {
-        const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
-        return Number.isNaN(numId) ? 0 : numId;
-      }).filter((id) => id > 0);
+      const incomingFormData = await req.formData();
+      const subjectsArray = incomingFormData.getAll("subjects[]");
+      
+      if (subjectsArray.length === 0) {
+        validationErrors.subjects = "subjects array is required";
+      } else {
+        subjectIds = subjectsArray
+          .map((id) => {
+            const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+            return Number.isNaN(numId) ? null : numId;
+          })
+          .filter((id): id is number => id !== null && id > 0 && Number.isInteger(id));
+        
+        if (subjectIds.length === 0) {
+          validationErrors.subjects = "subjects array must contain at least one valid positive integer";
+        }
+      }
     } else {
       // Handle JSON format
-      const body = await req.json();
-      const { subjects } = body;
-      if (Array.isArray(subjects)) {
-        subjectIds = subjects.map((id: any) => {
-          const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
-          return Number.isNaN(numId) ? 0 : numId;
-        }).filter((id) => id > 0);
+      try {
+        const body = await req.json();
+        const { subjects } = body;
+        
+        if (!subjects) {
+          validationErrors.subjects = "subjects field is required";
+        } else if (!Array.isArray(subjects)) {
+          validationErrors.subjects = "subjects must be an array";
+        } else if (subjects.length === 0) {
+          validationErrors.subjects = "subjects array cannot be empty";
+        } else {
+          subjectIds = subjects
+            .map((id: any) => {
+              if (id == null || id === undefined) return null;
+              const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+              return Number.isNaN(numId) ? null : numId;
+            })
+            .filter((id): id is number => id !== null && id > 0 && Number.isInteger(id));
+          
+          if (subjectIds.length === 0) {
+            validationErrors.subjects = "subjects array must contain at least one valid positive integer";
+          } else if (subjectIds.length !== subjects.length) {
+            validationErrors.subjects = `subjects array contains invalid values. ${subjects.length - subjectIds.length} invalid value(s) filtered out`;
+          }
+        }
+      } catch (jsonError) {
+        validationErrors.body = "Invalid JSON in request body";
       }
     }
 
-    if (!Array.isArray(subjectIds) || subjectIds.length === 0) {
-      return createErrorResponse("Invalid request: subjects array is required", 400, undefined, requestId);
+    // Return 422 Unprocessable Entity for validation errors
+    if (Object.keys(validationErrors).length > 0 || !Array.isArray(subjectIds) || subjectIds.length === 0) {
+      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+        console.error("[update-selective] Validation failed:", {
+          validationErrors,
+          subjectIds,
+          receivedSubjects: contentType.includes("multipart") 
+            ? "FormData" 
+            : "JSON (check body)",
+        });
+      }
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed: " + (Object.values(validationErrors)[0] || "subjects array is required"),
+          content: null,
+          code: 422,
+          requestId,
+          errors: validationErrors,
+        },
+        { status: 422 }
+      );
+    }
+
+    // Log successful validation for debugging
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.log("[update-selective] Validation passed:", {
+        subjectIdsCount: subjectIds.length,
+        subjectIds,
+        requestId,
+      });
     }
 
     // Build form data as the upstream API expects subjects[] format
@@ -66,6 +127,16 @@ export async function POST(req: NextRequest) {
       const data = await upstream.json();
 
       if (!upstream.ok) {
+        // Log upstream error details for debugging
+        if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+          console.error("[update-selective] Upstream API error:", {
+            status: upstream.status,
+            statusText: upstream.statusText,
+            data,
+            requestId,
+            sentSubjectIds: subjectIds,
+          });
+        }
         return handleUpstreamError(upstream, data, requestId);
       }
 

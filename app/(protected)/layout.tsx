@@ -18,6 +18,7 @@ import { MarqueeMessages } from "@/components/navigation/marquee-messages";
 import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
 import { AcademicProvider } from "@/components/providers/academic-context";
+import { FontProvider } from "@/context/font-provider";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ProtectedLayoutProps {
@@ -60,7 +61,8 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
 
   return (
     <AcademicProvider>
-      <div className="relative flex min-h-screen w-full">
+      <FontProvider>
+        <div className="relative flex min-h-screen w-full">
         <DashboardSidebar links={filteredLinks} />
 
         <div className="flex flex-1 flex-col">
@@ -92,6 +94,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
           <MarqueeMessages />
         </div>
       </div>
+      </FontProvider>
     </AcademicProvider>
   );
 }
