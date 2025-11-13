@@ -23,12 +23,19 @@ const nextConfig = {
     ],
   },
   // Fix Contentlayer file-watching on Windows
-  webpack: (config) => {
-    config.watchOptions = {
-      ...config.watchOptions,
-      poll: true,
-      ignored: /node_modules/,
-    };
+  webpack(config, { dev }) {
+    if (dev) {
+      config.watchOptions = {
+        poll: true,
+        ignored: [
+          '**/node_modules/**',
+          '**/.git/**',
+          'C:/pagefile.sys',
+          'C:/swapfile.sys',
+          'C:/Windows/**',
+        ],
+      };
+    }
     return config;
   },
 };

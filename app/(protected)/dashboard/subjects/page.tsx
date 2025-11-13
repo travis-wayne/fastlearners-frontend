@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { AcademicSetupClient } from "@/components/dashboard/subjects/AcademicSetupClient";
 import { SubjectSelectionForm } from "@/components/dashboard/subjects/SubjectSelectionForm";
+import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
 import { SubjectDashboardShell } from "@/components/dashboard/student/SubjectDashboardShell";
 import { ProfileChangeBanner } from "@/components/dashboard/subjects/ProfileChangeBanner";
 import { getUserProfile, getSubjects } from "@/lib/api/subjects";
@@ -67,7 +68,7 @@ export default async function SubjectsPage() {
               Select your subjects for {profile.class}
             </p>
           </div>
-          <SubjectSelectionForm classLevel={profile.class!} />
+          <SimpleSubjectSelector />
         </div>
       ) : (
         // Step 4: Dashboard

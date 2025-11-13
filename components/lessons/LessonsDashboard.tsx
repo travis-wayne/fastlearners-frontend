@@ -5,6 +5,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import {
   BookOpen,
   AlertCircle,
+  Loader2,
+  ChevronRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -12,7 +14,16 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Card,
   CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
 } from "@/components/ui/card";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Select,
   SelectContent,
@@ -20,13 +31,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { getSubjectsWithSlugs } from "@/lib/api/lessons";
-import { getStudentSubjects } from "@/lib/api/subjects";
+import type { TopicsByTerm, TopicItem } from "@/lib/types/lessons";
 import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
 import { useAuthStore } from '@/store/authStore';
+import type { TopicsByTerm, TopicItem } from "@/lib/types/lessons";
 
 // LessonCard removed - lessons are accessed via subject/topic slugs only
 
@@ -41,10 +52,12 @@ export function LessonsDashboard() {
   const { user } = useAuthStore();
 
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingTopics, setIsLoadingTopics] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [availableSubjects, setAvailableSubjects] = useState<
     Array<{ id: number; name: string; slug?: string }>
   >([]);
+  const [selectedSubjectTopics, setSelectedSubjectTopics] = useState<TopicsByTerm | null>(null);
   // Sync selectedSubjectId with URL params
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(
     subjectIdParam || "all"
@@ -69,75 +82,116 @@ export function LessonsDashboard() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
-  // Memoized callback to load available subjects
-  // Include all registered subjects: compulsory_selective, subjects, and selective (if selected)
-  // Also fetch subjects with slugs to merge slug information
-  const loadAvailableSubjects = useMemo(() => {
-    return async () => {
+  // Fetch subjects from /api/lessons/ endpoint
+  useEffect(() => {
+    const fetchSubjects = async () => {
+      setIsLoading(true);
+      setError(null);
       try {
-        const [subjectsResponse, slugsResponse] = await Promise.all([
-          getStudentSubjects(),
-          getSubjectsWithSlugs().catch(() => null), // Don't fail if slugs endpoint fails
-        ]);
-        
-        if (subjectsResponse.success && subjectsResponse.content) {
-          // Combine all registered subjects:
-          // - compulsory_selective: religious study subject (if selected)
-          // - subjects: regular registered subjects
-          // - selective: elective subjects (if selected)
-          const allSubjects: Array<{ id: number; name: string; slug?: string }> = [];
-          
-          // Add compulsory selective if selected
-          if (subjectsResponse.content.compulsory_selective_status === 'selected' && subjectsResponse.content.compulsory_selective) {
-            allSubjects.push(...subjectsResponse.content.compulsory_selective.map(s => ({ id: s.id, name: s.name, slug: s.slug })));
-          }
-          
-          // Add regular subjects
-          if (subjectsResponse.content.subjects) {
-            allSubjects.push(...subjectsResponse.content.subjects.map(s => ({ id: s.id, name: s.name, slug: s.slug })));
-          }
-          
-          // Add selective subjects if selected
-          if (subjectsResponse.content.selective_status === 'selected' && subjectsResponse.content.selective) {
-            allSubjects.push(...subjectsResponse.content.selective.map(s => ({ id: s.id, name: s.name, slug: s.slug })));
-          }
-          
-          // Merge slugs from getSubjectsWithSlugs if available
-          if (slugsResponse?.success && slugsResponse.content?.subjects) {
-            const slugMap = new Map(slugsResponse.content.subjects.map(s => [s.id, s.slug]));
-            allSubjects.forEach(subject => {
-              if (!subject.slug && slugMap.has(subject.id)) {
-                subject.slug = slugMap.get(subject.id);
-              }
-            });
-          }
-          
-          // Remove duplicates by id
-          const uniqueSubjects = Array.from(
-            new Map(allSubjects.map(s => [s.id, s])).values()
-          );
-          
-          setAvailableSubjects(uniqueSubjects);
+        // Direct API call to /api/lessons/ endpoint
+        const response = await fetch("/api/lessons", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setError(data.message || "Failed to fetch subjects");
+          setAvailableSubjects([]);
+          return;
+        }
+
+        // API returns: { success: true, content: { subjects: [...] } }
+        if (data.success && data.content?.subjects) {
+          const subjects = data.content.subjects.map((s: { id: number; name: string; slug: string }) => ({
+            id: s.id,
+            name: s.name,
+            slug: s.slug,
+          }));
+          setAvailableSubjects(subjects);
+        } else {
+          setError(data.message || "No subjects found");
+          setAvailableSubjects([]);
         }
       } catch (error) {
         const errorMessage = error instanceof Error ? error.message : "Failed to fetch subjects";
-        if (process.env.NODE_ENV === "development") {
-          console.error("Failed to fetch subjects:", error);
-        }
         setError(errorMessage);
+        setAvailableSubjects([]);
+      } finally {
+        setIsLoading(false);
       }
     };
-  }, []); // Empty deps - function doesn't depend on any state
 
-  // Fetch available subjects on mount
-  useEffect(() => {
-    loadAvailableSubjects();
-  }, [loadAvailableSubjects]);
+    fetchSubjects();
+  }, [user?.class, user?.discipline]); // Refetch when class/discipline changes
 
-  // Refetch subjects when user's class or discipline changes
+  // Get selected subject
+  const selectedSubject = availableSubjects.find(
+    (s) => String(s.id) === selectedSubjectId
+  );
+
+  // Fetch topics when a subject is selected
   useEffect(() => {
-    loadAvailableSubjects();
-  }, [user?.class, user?.discipline, loadAvailableSubjects]);
+    const loadTopics = async () => {
+      if (selectedSubjectId === "all") {
+        setSelectedSubjectTopics(null);
+        return;
+      }
+
+      const subject = availableSubjects.find(
+        (s) => String(s.id) === selectedSubjectId
+      );
+
+      if (!subject || !subject.slug) {
+        setSelectedSubjectTopics(null);
+        return;
+      }
+
+      setIsLoadingTopics(true);
+      setError(null);
+      
+      try {
+        // Direct API call to /api/lessons/{subjectSlug} endpoint
+        const response = await fetch(`/api/lessons/${subject.slug}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+          cache: "no-store",
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+          setError(data.message || "Failed to load topics");
+          setSelectedSubjectTopics(null);
+          return;
+        }
+
+        // API returns: { success: true, content: { topics: { first_term: [], second_term: [], third_term: [] } } }
+        if (data.success && data.content?.topics) {
+          setSelectedSubjectTopics(data.content.topics);
+        } else {
+          setError(data.message || "No topics found");
+          setSelectedSubjectTopics(null);
+        }
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : "Failed to load topics";
+        setError(errorMessage);
+        setSelectedSubjectTopics(null);
+      } finally {
+        setIsLoadingTopics(false);
+      }
+    };
+
+    loadTopics();
+  }, [selectedSubjectId, availableSubjects]);
 
   // LessonsDashboard uses slug-based navigation only
   // Lessons are accessed via subject/topic slugs, not from a list
@@ -197,10 +251,6 @@ export function LessonsDashboard() {
       </div>
     );
   }
-
-  const selectedSubject = availableSubjects.find(
-    (s) => String(s.id) === selectedSubjectId
-  );
 
   return (
     <div className="space-y-6">
@@ -273,22 +323,110 @@ export function LessonsDashboard() {
         </Select>
       </div>
 
-      {/* Subject Selection - navigate to topics via slug */}
+      {/* Subject Selection - Show topics in accordion */}
       {selectedSubjectId !== "all" && selectedSubject && selectedSubject.slug && (
         <Card>
-          <CardContent className="p-8 text-center">
-            <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-semibold">
-              {selectedSubject.name} Lessons
-            </h3>
-            <p className="mb-4 text-muted-foreground">
-              Select a subject to view available topics and lessons.
-            </p>
-            <Button
-              onClick={() => router.push(`/dashboard/lessons?subject=${selectedSubject.slug}`)}
-            >
-              View Topics
-            </Button>
+          <CardHeader>
+            <CardTitle>{selectedSubject.name} Topics</CardTitle>
+            <CardDescription>
+              Select a topic to view the lesson overview and content
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoadingTopics ? (
+              <div className="flex items-center justify-center py-8">
+                <Loader2 className="size-6 animate-spin text-primary mr-2" />
+                <span className="text-muted-foreground">Loading topics...</span>
+              </div>
+            ) : selectedSubjectTopics ? (
+              <Accordion type="single" collapsible className="w-full">
+                {/* First Term */}
+                {selectedSubjectTopics.first_term && selectedSubjectTopics.first_term.length > 0 && (
+                  <AccordionItem value="first_term">
+                    <AccordionTrigger>First Term ({selectedSubjectTopics.first_term.length} topics)</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        {selectedSubjectTopics.first_term.map((topic: TopicItem) => (
+                          <Button
+                            key={topic.id}
+                            variant="ghost"
+                            className="w-full justify-between"
+                            onClick={() => router.push(`/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`)}
+                          >
+                            <span className="text-left">
+                              <span className="font-medium">Week {topic.week}</span> - {topic.topic}
+                            </span>
+                            <ChevronRight className="size-4" />
+                          </Button>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {/* Second Term */}
+                {selectedSubjectTopics.second_term && selectedSubjectTopics.second_term.length > 0 && (
+                  <AccordionItem value="second_term">
+                    <AccordionTrigger>Second Term ({selectedSubjectTopics.second_term.length} topics)</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        {selectedSubjectTopics.second_term.map((topic: TopicItem) => (
+                          <Button
+                            key={topic.id}
+                            variant="ghost"
+                            className="w-full justify-between"
+                            onClick={() => router.push(`/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`)}
+                          >
+                            <span className="text-left">
+                              <span className="font-medium">Week {topic.week}</span> - {topic.topic}
+                            </span>
+                            <ChevronRight className="size-4" />
+                          </Button>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {/* Third Term */}
+                {selectedSubjectTopics.third_term && selectedSubjectTopics.third_term.length > 0 && (
+                  <AccordionItem value="third_term">
+                    <AccordionTrigger>Third Term ({selectedSubjectTopics.third_term.length} topics)</AccordionTrigger>
+                    <AccordionContent>
+                      <div className="space-y-2">
+                        {selectedSubjectTopics.third_term.map((topic: TopicItem) => (
+                          <Button
+                            key={topic.id}
+                            variant="ghost"
+                            className="w-full justify-between"
+                            onClick={() => router.push(`/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`)}
+                          >
+                            <span className="text-left">
+                              <span className="font-medium">Week {topic.week}</span> - {topic.topic}
+                            </span>
+                            <ChevronRight className="size-4" />
+                          </Button>
+                        ))}
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                )}
+
+                {/* No topics message */}
+                {(!selectedSubjectTopics.first_term || selectedSubjectTopics.first_term.length === 0) &&
+                 (!selectedSubjectTopics.second_term || selectedSubjectTopics.second_term.length === 0) &&
+                 (!selectedSubjectTopics.third_term || selectedSubjectTopics.third_term.length === 0) && (
+                  <div className="py-8 text-center text-muted-foreground">
+                    No topics available for this subject.
+                  </div>
+                )}
+              </Accordion>
+            ) : error ? (
+              <Alert variant="destructive">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            ) : null}
           </CardContent>
         </Card>
       )}

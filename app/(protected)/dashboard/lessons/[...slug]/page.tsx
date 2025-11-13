@@ -8,7 +8,7 @@ import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { markLessonComplete, getLessonContentBySlug, getTopicsBySubjectSlug } from "@/lib/api/lessons";
+import { markLessonComplete, getTopicsBySubjectSlug } from "@/lib/api/lessons";
 import { getSubjectById } from "@/config/education";
 import { getTopicsForTerm } from "@/lib/types/lessons";
 import { LessonLayout } from "@/components/lessons/LessonLayout";
@@ -16,12 +16,13 @@ import { LessonConceptsSidebar } from "@/components/lessons/LessonConceptsSideba
 import { LessonContent } from "@/components/lessons/LessonContent";
 import { LessonTocSidebar } from "@/components/lessons/LessonTocSidebar";
 import { LessonNavigation } from "@/components/lessons/LessonNavigation";
+import { TopicOverview } from "@/components/lessons/TopicOverview";
 import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
 import { useToast } from "@/components/ui/use-toast";
-import type { LessonContent as LessonContentType } from "@/lib/types/lessons";
+import type { LessonContent as LessonContentType, TopicOverview as TopicOverviewType } from "@/lib/types/lessons";
 
 export default function LessonPage() {
   const params = useParams();
@@ -38,7 +39,9 @@ export default function LessonPage() {
 
   const [lessonContent, setLessonContent] =
     useState<LessonContentType | null>(null);
+  const [topicOverview, setTopicOverview] = useState<TopicOverviewType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingOverview, setIsLoadingOverview] = useState(true);
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
   const [isSlugBased, setIsSlugBased] = useState(false);
   const [subjectSlug, setSubjectSlug] = useState<string | null>(null);
@@ -65,20 +68,49 @@ export default function LessonPage() {
       }
 
       setIsLoading(true);
+      setIsLoadingOverview(true);
       const [subjSlug, topSlug] = slugParts;
       setIsSlugBased(true);
       setSubjectSlug(subjSlug);
       setTopicSlug(topSlug);
       
       try {
-        const response = await getLessonContentBySlug(subjSlug, topSlug);
-        
-        if (response.success && response.content) {
-          setLessonContent(response.content);
+        // Fetch both topic overview and lesson content in parallel using direct API calls
+        const [overviewRes, contentRes] = await Promise.all([
+          fetch(`/api/lessons/${subjSlug}/${topSlug}/overview`, {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            credentials: "include",
+            cache: "no-store",
+          }),
+          fetch(`/api/lessons/${subjSlug}/${topSlug}/content`, {
+            method: "GET",
+            headers: { Accept: "application/json" },
+            credentials: "include",
+            cache: "no-store",
+          }),
+        ]);
+
+        // Parse responses
+        const overviewData = await overviewRes.json();
+        const contentData = await contentRes.json();
+
+        // Set topic overview
+        if (overviewRes.ok && overviewData.success && overviewData.content?.overview) {
+          setTopicOverview(overviewData.content.overview);
+        } else {
+          console.warn("Failed to load topic overview:", overviewData.message);
+        }
+
+        // Set lesson content
+        if (contentRes.ok && contentData.success && contentData.content) {
+          // Handle both content.lesson and content formats
+          const lesson = contentData.content.lesson || contentData.content;
+          setLessonContent(lesson);
         } else {
           toast({
             title: "Error",
-            description: response.message || "Failed to load lesson",
+            description: contentData.message || "Failed to load lesson",
             variant: "destructive",
           });
         }
@@ -90,6 +122,7 @@ export default function LessonPage() {
         });
       } finally {
         setIsLoading(false);
+        setIsLoadingOverview(false);
       }
     };
 
@@ -238,10 +271,12 @@ export default function LessonPage() {
             <ArrowLeft className="size-4" />
           </Button>
           <div>
-            <h1 className="text-3xl font-bold">{lessonContent.title}</h1>
+            <h1 className="text-3xl font-bold">
+              {lessonContent.topic || lessonContent.title || "Lesson"}
+            </h1>
             {subject && (
               <p className="text-muted-foreground">
-                {subject.name} • {classDisplay} • {termDisplay}
+                {lessonContent.subject || subject.name} • {lessonContent.class || classDisplay} • {lessonContent.term || termDisplay}
               </p>
             )}
           </div>
@@ -258,11 +293,42 @@ export default function LessonPage() {
         }
         mainContent={
           <div className="space-y-6 pr-4">
-            <LessonContent
-              content={lessonContent}
-              onMarkComplete={handleMarkComplete}
-              isCompleted={isCompleted}
-            />
+            {/* Topic Overview - Introduction to the lesson */}
+            {topicOverview && subjectSlug && topicSlug && (
+              <div className="space-y-4">
+                <div className="border-b pb-2">
+                  <h2 className="text-xl font-semibold">Topic Overview</h2>
+                  <p className="text-sm text-muted-foreground">
+                    Introduction to this lesson topic
+                  </p>
+                </div>
+                <TopicOverview 
+                  overview={topicOverview} 
+                  subjectSlug={subjectSlug}
+                  topicSlug={topicSlug}
+                />
+              </div>
+            )}
+
+            {/* Lesson Content */}
+            {lessonContent && (
+              <div className="space-y-4">
+                {topicOverview && (
+                  <div className="border-b pb-2">
+                    <h2 className="text-xl font-semibold">Lesson Content</h2>
+                    <p className="text-sm text-muted-foreground">
+                      Detailed lesson materials and concepts
+                    </p>
+                  </div>
+                )}
+                <LessonContent
+                  content={lessonContent}
+                  onMarkComplete={handleMarkComplete}
+                  isCompleted={isCompleted}
+                />
+              </div>
+            )}
+
             <LessonNavigation
               previousUrl={previousUrl}
               nextUrl={nextUrl}

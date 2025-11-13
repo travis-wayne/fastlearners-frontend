@@ -23,7 +23,7 @@ import * as z from "zod";
 import { format, parse } from "date-fns";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import {
   Select,
@@ -542,20 +542,18 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex items-center gap-2">
-            <Loader2 className="size-4 animate-spin" />
-            <span>Loading...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="size-8 sm:size-12 animate-spin text-primary" />
+          <span className="text-sm sm:text-base text-muted-foreground">Loading...</span>
+        </div>
+      </div>
     );
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-      {/* Progress Bar */}
+      {/* Progress Section */}
       <div className="space-y-2">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">
@@ -567,17 +565,32 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       </div>
 
       {/* Step Indicators */}
-      <div className="flex justify-center space-x-2">
+      <div className="flex justify-center gap-2">
         {effectiveSteps.map((step, index) => (
           <div
             key={step.id}
-            className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
-              index <= currentStepIndex
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-muted-foreground"
-            }`}
+            className="flex flex-col items-center gap-1.5"
           >
-            {step.id}
+            <div
+              className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
+                index < currentStepIndex
+                  ? "bg-primary text-primary-foreground"
+                  : index === currentStepIndex
+                  ? "bg-primary text-primary-foreground ring-2 ring-primary/20"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
+              {index < currentStepIndex ? (
+                <CheckCircle className="w-4 h-4" />
+              ) : (
+                step.id
+              )}
+            </div>
+            <span className={`text-xs text-center max-w-[60px] truncate ${
+              index === currentStepIndex ? "font-medium text-foreground" : "text-muted-foreground"
+            }`}>
+              {step.title}
+            </span>
           </div>
         ))}
       </div>
@@ -590,15 +603,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: -20 }}
           transition={{ duration: 0.3 }}
+          className="w-full"
         >
           {/* Step 1: Role Selection */}
           {currentStep === 1 && (
             <Card>
               <CardHeader>
                 <CardTitle>{STEPS[0].title}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {STEPS[0].description}
-                </p>
+                <CardDescription>{STEPS[0].description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -638,9 +650,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>{STEPS[1].title}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {STEPS[1].description}
-                </p>
+                <CardDescription>{STEPS[1].description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -711,9 +721,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>{STEPS[2].title}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {STEPS[2].description}
-                </p>
+                <CardDescription>{STEPS[2].description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid gap-4 md:grid-cols-2">
@@ -825,9 +833,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>{STEPS[3].title}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {STEPS[3].description}
-                </p>
+                <CardDescription>{STEPS[3].description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {(selectedRole === "student" || primaryRole === "student") && (
@@ -958,9 +964,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             <Card>
               <CardHeader>
                 <CardTitle>{STEPS[4].title}</CardTitle>
-                <p className="text-sm text-muted-foreground">
-                  {STEPS[4].description}
-                </p>
+                <CardDescription>{STEPS[4].description}</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -1022,7 +1026,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       </AnimatePresence>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between pt-4 border-t">
         <Button
           type="button"
           variant="outline"

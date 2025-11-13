@@ -1,7 +1,6 @@
 "use client";
 
 import { ReactNode } from "react";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface DashboardBlogLayoutProps {
   title: string;
@@ -22,7 +21,7 @@ export function DashboardBlogLayout({
 }: DashboardBlogLayoutProps) {
   return (
     <>
-      <MaxWidthWrapper className="py-6 md:pb-8 md:pt-10">
+      <div className="container py-6 md:pb-8 md:pt-10">
         <div className="max-w-screen-sm">
           <h1 className="font-heading text-3xl md:text-4xl">{title}</h1>
           {description && (
@@ -31,9 +30,9 @@ export function DashboardBlogLayout({
             </p>
           )}
         </div>
-      </MaxWidthWrapper>
+      </div>
 
-      <MaxWidthWrapper className={className}>{children}</MaxWidthWrapper>
+      <div className={className ? `container ${className}` : "container"}>{children}</div>
     </>
   );
 }

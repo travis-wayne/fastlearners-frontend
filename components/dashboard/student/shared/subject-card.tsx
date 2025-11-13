@@ -32,6 +32,7 @@ interface SubjectCardProps {
   progress: SubjectProgress;
   className?: string;
   variant?: "default" | "compact" | "detailed";
+  slug?: string; // Optional slug for navigation
 }
 
 const getSubjectIcon = (iconName: string) => {
@@ -56,6 +57,7 @@ export function SubjectCard({
   progress,
   className = "",
   variant = "default",
+  slug,
 }: SubjectCardProps) {
   const IconComponent = getSubjectIcon(subject.icon);
 
@@ -107,7 +109,7 @@ export function SubjectCard({
           </div>
         </div>
         <Link
-          href={`/dashboard/subjects/${subject.id}`}
+          href={slug ? `/dashboard/subjects/${slug}` : `/dashboard/subjects/${subject.id}`}
           className="absolute inset-0"
         >
           <span className="sr-only">View {subject.name}</span>
@@ -231,7 +233,7 @@ export function SubjectCard({
           </div>
         </div>
         <Link
-          href={`/dashboard/subjects/${subject.id}`}
+          href={slug ? `/dashboard/subjects/${slug}` : `/dashboard/subjects/${subject.id}`}
           className="absolute inset-0"
         >
           <span className="sr-only">View {subject.name}</span>
@@ -323,7 +325,7 @@ export function SubjectCard({
         </div>
       </div>
       <Link
-        href={`/dashboard/subjects/${subject.id}`}
+        href={slug ? `/dashboard/subjects/${slug}` : `/dashboard/subjects/${subject.id}`}
         className="absolute inset-0"
       >
         <span className="sr-only">View {subject.name}</span>

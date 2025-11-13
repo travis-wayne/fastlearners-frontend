@@ -45,6 +45,7 @@ import {
   type Subject as ConfigSubject,
 } from "@/config/education";
 import { getStudentSubjects } from "@/lib/api/subjects";
+import { getSubjectsWithSlugs } from "@/lib/api/lessons";
 import type { SubjectsContent, Subject as ApiSubject } from "@/lib/types/subjects";
 
 interface SubjectDashboardProps {
@@ -211,6 +212,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(
     initialData || null
   );
+  const [subjectsWithSlugs, setSubjectsWithSlugs] = useState<Map<number, string>>(new Map());
   const [isLoading, setIsLoading] = useState(!initialData);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState<string>("all");
@@ -219,21 +221,50 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
   useEffect(() => {
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        // Fetch subjects data
+        const response = await getStudentSubjects();
+        if (response.success && response.content) {
+          setSubjectsData(response.content);
+        }
+
+        // Fetch subjects with slugs for navigation
+        const slugsResponse = await getSubjectsWithSlugs();
+        if (slugsResponse.success && slugsResponse.content?.subjects) {
+          const slugMap = new Map<number, string>();
+          slugsResponse.content.subjects.forEach((s) => {
+            slugMap.set(s.id, s.slug);
+          });
+          setSubjectsWithSlugs(slugMap);
+        }
+      } catch (error) {
+        console.error("Failed to fetch subjects:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
     if (!initialData) {
-      const fetchData = async () => {
-        setIsLoading(true);
+      fetchData();
+    } else {
+      // Still fetch slugs even if we have initial data
+      const fetchSlugs = async () => {
         try {
-          const response = await getStudentSubjects();
-          if (response.success && response.content) {
-            setSubjectsData(response.content);
+          const slugsResponse = await getSubjectsWithSlugs();
+          if (slugsResponse.success && slugsResponse.content?.subjects) {
+            const slugMap = new Map<number, string>();
+            slugsResponse.content.subjects.forEach((s) => {
+              slugMap.set(s.id, s.slug);
+            });
+            setSubjectsWithSlugs(slugMap);
           }
         } catch (error) {
-          console.error("Failed to fetch subjects:", error);
-        } finally {
-          setIsLoading(false);
+          console.error("Failed to fetch subject slugs:", error);
         }
       };
-      fetchData();
+      fetchSlugs();
     }
   }, [initialData]);
 
@@ -547,6 +578,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                         key={apiSubject.id}
                         subject={displaySubject}
                         progress={progress}
+                        slug={subjectsWithSlugs.get(apiSubject.id)}
                       />
                     );
                   })}
@@ -599,6 +631,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                         key={apiSubject.id}
                         subject={displaySubject}
                         progress={progress}
+                        slug={subjectsWithSlugs.get(apiSubject.id)}
                       />
                     );
                   })}
@@ -651,6 +684,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                         key={apiSubject.id}
                         subject={displaySubject}
                         progress={progress}
+                        slug={subjectsWithSlugs.get(apiSubject.id)}
                       />
                     );
                   })}

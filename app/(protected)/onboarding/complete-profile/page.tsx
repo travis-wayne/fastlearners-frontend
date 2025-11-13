@@ -35,35 +35,50 @@ export default function CompleteProfilePage() {
   };
 
   const handleBack = () => {
-    // TODO: Add confirmation dialog if form has unsaved changes
     router.push("/dashboard");
   };
 
   if (authLoading || !user) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="size-8 animate-spin" />
-        <span className="ml-2">Loading...</span>
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="size-8 animate-spin text-primary" />
+          <span className="text-sm text-muted-foreground">Loading...</span>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto py-8">
-      <div className="mb-6">
-        <Button variant="ghost" onClick={handleBack} className="mb-4">
-          <ArrowLeft className="size-4 mr-2" />
-          Back to Dashboard
-        </Button>
-        <h1 className="text-3xl font-bold">Complete Your Profile</h1>
-        <div className="mt-4">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium">Profile Completion</span>
-            <span className="text-sm text-muted-foreground">{completionPercentage}%</span>
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleBack}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="size-4" />
+            Back
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Complete Your Profile</h1>
+            <p className="text-sm text-muted-foreground mt-1">
+              Fill in your information to get the most out of Fast Learner
+            </p>
           </div>
-          <Progress value={completionPercentage} className="w-full" />
         </div>
       </div>
+
+      <div className="space-y-2">
+        <div className="flex items-center justify-between text-sm">
+          <span className="text-muted-foreground">Profile Completion</span>
+          <span className="font-medium">{completionPercentage}%</span>
+        </div>
+        <Progress value={completionPercentage} className="h-2" />
+      </div>
+
       <OnboardingWizard onComplete={handleComplete} />
     </div>
   );

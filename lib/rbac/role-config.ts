@@ -217,6 +217,10 @@ export class RBACUtils {
    */
   static canAccessRoute(user: User | null, route: string): boolean {
     if (!user) return false;
+    if (!user.role || !Array.isArray(user.role) || user.role.length === 0) {
+      console.warn("Invalid or missing user role array in canAccessRoute");
+      return false;
+    }
     const userRole = user.role[0];
 
     // Special handling for onboarding routes
@@ -302,14 +306,16 @@ export class RBACUtils {
    * Get the correct home route for a user role
    */
   static getHomeRoute(userRole: UserRole | undefined | null): string {
-    // Default to guest if role is undefined or null
+    // Default to guest if role is undefined or null (fallback for when role fetch fails in middleware)
     if (!userRole) {
+      console.log(`Role fetch failed or undefined, falling back to guest home route: ${ROLE_CONFIGURATIONS.guest.homeRoute}`);
       return ROLE_CONFIGURATIONS.guest.homeRoute;
     }
     
     // Check if the role exists in configurations
     if (!ROLE_CONFIGURATIONS[userRole]) {
       console.warn(`Unknown role "${userRole}", defaulting to guest route`);
+      console.log(`Invalid role encountered: ${userRole}, falling back to guest home route`);
       return ROLE_CONFIGURATIONS.guest.homeRoute;
     }
     

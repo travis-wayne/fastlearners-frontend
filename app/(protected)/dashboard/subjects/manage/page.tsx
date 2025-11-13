@@ -3,80 +3,88 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { AlertTriangle, ArrowLeft } from "lucide-react";
+import { AlertTriangle, ArrowLeft, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { SubjectSetupForm } from "@/components/dashboard/student/SubjectSetupForm";
-import { getStudentSubjects } from "@/lib/api/subjects";
-import type { SubjectsContent } from "@/lib/types/subjects";
-import { useAcademicContext } from "@/components/providers/academic-context";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
+import { getProfile } from "@/lib/api/profile";
+import { useAuthStore } from "@/store/authStore";
 
 export default function ManageSubjectsPage() {
   const router = useRouter();
-  const { currentClass, currentTerm } = useAcademicContext();
-  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(null);
+  const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [formSubmitHandler, setFormSubmitHandler] = useState<(() => void) | null>(null);
+  const [profileError, setProfileError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
+    const checkProfile = async () => {
       setIsLoading(true);
+      setProfileError(null);
+      
       try {
-        const response = await getStudentSubjects();
-        if (response.success && response.content) {
-          setSubjectsData(response.content);
+        // Fetch user profile to verify class and discipline are set
+        const profile = await getProfile();
+        
+        // Check if user has a class set (required for subject selection)
+        if (!profile.class) {
+          setProfileError(
+            "You need to set your class in your profile before selecting subjects. " +
+            "Please update your profile first."
+          );
         }
-      } catch (error) {
-        console.error("Failed to fetch subjects:", error);
+      } catch (error: any) {
+        setProfileError(error.message || "Failed to load profile information");
       } finally {
         setIsLoading(false);
       }
     };
 
-    fetchData();
+    checkProfile();
   }, []);
-
-  const handleConfirmUpdate = () => {
-    setShowConfirmDialog(false);
-    if (formSubmitHandler) {
-      // Call the submit handler
-      formSubmitHandler();
-      setFormSubmitHandler(null);
-    }
-    // Redirect will happen after form submission completes via onComplete
-  };
-
-  // Prepare initial data for form pre-filling
-  const initialFormData = subjectsData
-    ? {
-        classId: currentClass?.id || "",
-        termId: currentTerm?.id || "",
-        compulsorySelective:
-          subjectsData.compulsory_selective?.[0]?.id || undefined,
-        // Use selective items for electives, not subjects
-        electiveIds: subjectsData.selective?.map((s) => s.id) || [],
-      }
-    : undefined;
 
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[60vh]">
         <div className="text-center space-y-4">
-          <div className="size-8 animate-spin rounded-full border-b-2 border-primary mx-auto" />
+          <Loader2 className="size-8 animate-spin text-primary mx-auto" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
+      </div>
+    );
+  }
+
+  // Show error if profile doesn't have class set
+  if (profileError || !user?.class) {
+    return (
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button variant="outline" size="icon" onClick={() => router.back()}>
+            <ArrowLeft className="size-4" />
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold">Manage Subjects</h1>
+            <p className="text-muted-foreground">
+              Update your subject selections based on your profile
+            </p>
+          </div>
+        </div>
+
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertDescription>
+            {profileError || "Your profile doesn't have a class set. Please update your profile first."}
+          </AlertDescription>
+        </Alert>
+
+        <Card>
+          <CardContent className="pt-6">
+            <Button onClick={() => router.push("/dashboard/settings/profile")}>
+              Update Profile
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
@@ -91,36 +99,34 @@ export default function ManageSubjectsPage() {
         <div>
           <h1 className="text-3xl font-bold">Manage Subjects</h1>
           <p className="text-muted-foreground">
-            Update your subject selections. Changes will overwrite your current
-            selections.
+            Update your subject selections for {user.class}
+            {user.discipline && ` - ${user.discipline}`}
           </p>
         </div>
       </div>
 
-      {/* Warning Card */}
+      {/* Info Card */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
       >
-        <Card className="border-orange-200 bg-orange-50 dark:border-orange-900 dark:bg-orange-950">
+        <Card className="border-blue-200 bg-blue-50 dark:border-blue-900 dark:bg-blue-950">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2 text-orange-900 dark:text-orange-100">
+            <CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
               <AlertTriangle className="size-5" />
               Important Notice
             </CardTitle>
+            <CardDescription className="text-blue-800 dark:text-blue-200">
+              Subject selections are based on your profile information
+            </CardDescription>
           </CardHeader>
-          <CardContent className="text-orange-800 dark:text-orange-200">
-            <p className="mb-2">
-              Modifying your subject selections will overwrite your current
-              registration.
-            </p>
+          <CardContent className="text-blue-800 dark:text-blue-200">
             <ul className="list-disc list-inside space-y-1 text-sm">
               <li>
-                Your previous subject selections will be replaced with new ones
+                Your class ({user.class}) and discipline ({user.discipline || "N/A"}) are taken from your profile
               </li>
               <li>
-                Progress and data associated with removed subjects may be
-                affected
+                Modifying your subject selections will overwrite your current registration
               </li>
               <li>
                 You can always come back to modify your selections again
@@ -130,60 +136,14 @@ export default function ManageSubjectsPage() {
         </Card>
       </motion.div>
 
-      {/* Subject Setup Form */}
+      {/* Subject Selector */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <Card>
-          <CardHeader>
-            <CardTitle>Update Subject Selection</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {subjectsData && (
-              <SubjectSetupForm
-                initialData={initialFormData}
-                requireConfirmation={true}
-                onRequestConfirmation={(submitHandler) => {
-                  setFormSubmitHandler(() => submitHandler);
-                  setShowConfirmDialog(true);
-                }}
-                onComplete={() => {
-                  router.push("/dashboard/subjects");
-                }}
-              />
-            )}
-          </CardContent>
-        </Card>
+        <SimpleSubjectSelector />
       </motion.div>
-
-      {/* Confirmation Dialog */}
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Confirm Subject Update</AlertDialogTitle>
-            <AlertDialogDescription>
-              Are you sure you want to update your subject selections? This will
-              overwrite your current registration. This action cannot be undone
-              easily.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel
-              onClick={() => {
-                setShowConfirmDialog(false);
-                setFormSubmitHandler(null);
-              }}
-            >
-              Cancel
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmUpdate}>
-              Yes, Update Subjects
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </div>
   );
 }

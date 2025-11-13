@@ -132,10 +132,28 @@ export const updateProfile = async (
       const errorData = await response.json().catch(() => ({}));
       
       if (errorData.errors) {
-        // Handle validation errors
+        // Handle validation errors - collect all error messages
         const errors = errorData.errors;
-        const firstError = Object.values(errors)[0] as string[];
-        throw new Error(firstError[0] || "Validation failed");
+        const errorMessages: string[] = [];
+        
+        // Collect all error messages from all fields
+        Object.entries(errors).forEach(([field, messages]) => {
+          const msgArray = Array.isArray(messages) ? messages : [messages];
+          msgArray.forEach(msg => {
+            if (typeof msg === 'string') {
+              errorMessages.push(msg);
+            }
+          });
+        });
+        
+        // Return all error messages joined, or just the first if only one
+        if (errorMessages.length > 0) {
+          throw new Error(errorMessages.length === 1 
+            ? errorMessages[0] 
+            : errorMessages.join('; '));
+        }
+        
+        throw new Error("Validation failed");
       }
       
       throw new Error(errorData.message || "Failed to update profile");
