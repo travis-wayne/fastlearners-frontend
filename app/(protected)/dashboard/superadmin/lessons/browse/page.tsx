@@ -24,10 +24,9 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardHeader } from "@/components/dashboard/header";
 
-// Use the axios-based API to mirror production responses/messages
+// NOTE: getLessonsMetadata and getLessons removed from lessons-api.ts
+// This superadmin page should use admin-only endpoints or getProfileData() for metadata
 import {
-  getLessonsMetadata,
-  getLessons,
   getErrorMessage,
   type LessonsListResponse,
   type MetadataResponse,
@@ -48,18 +47,20 @@ export default function BrowseLessonsPage() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await getLessonsMetadata();
-        if (res.success) {
-          setMetadata(res.content);
-          // Preselect first options to reduce user friction
-          const m = res.content;
-          setSelectedClass(m.classes?.[0]?.id?.toString() || "");
-          setSelectedSubject(m.subjects?.[0]?.id?.toString() || "");
-          setSelectedTerm(m.terms?.[0]?.id?.toString() || "");
-          setSelectedWeek(m.weeks?.[0]?.id?.toString() || "");
-        } else {
-          setError(res.message || "Failed to load metadata");
-        }
+        // TODO: Replace with admin-only endpoint or use getProfileData() from lib/api/profile.ts
+        // getLessonsMetadata removed - this superadmin page needs admin-only client
+        setError("Admin endpoint not implemented. getLessonsMetadata() was removed from student app.");
+        // const res = await getLessonsMetadata();
+        // if (res.success) {
+        //   setMetadata(res.content);
+        //   const m = res.content;
+        //   setSelectedClass(m.classes?.[0]?.id?.toString() || "");
+        //   setSelectedSubject(m.subjects?.[0]?.id?.toString() || "");
+        //   setSelectedTerm(m.terms?.[0]?.id?.toString() || "");
+        //   setSelectedWeek(m.weeks?.[0]?.id?.toString() || "");
+        // } else {
+        //   setError(res.message || "Failed to load metadata");
+        // }
       } catch (e: any) {
         setError(getErrorMessage(e));
       }
@@ -74,20 +75,24 @@ export default function BrowseLessonsPage() {
     setLoading(true);
     setError(null);
     try {
-      const res = await getLessons({
-        class: selectedClass,
-        subject: selectedSubject,
-        term: selectedTerm,
-        week: selectedWeek,
-      });
-      if (res.success && res.content) {
-        setLessons(res.content.lessons || []);
-      } else if (res.success && res.content === null) {
-        setLessons([]);
-      } else {
-        setError(res.message || "Failed to fetch lessons");
-        setLessons([]);
-      }
+      // TODO: Replace with admin-only endpoint
+      // getLessons removed - this superadmin page needs admin-only client
+      setError("Admin endpoint not implemented. getLessons() was removed from student app.");
+      setLessons([]);
+      // const res = await getLessons({
+      //   class: selectedClass,
+      //   subject: selectedSubject,
+      //   term: selectedTerm,
+      //   week: selectedWeek,
+      // });
+      // if (res.success && res.content) {
+      //   setLessons(res.content.lessons || []);
+      // } else if (res.success && res.content === null) {
+      //   setLessons([]);
+      // } else {
+      //   setError(res.message || "Failed to fetch lessons");
+      //   setLessons([]);
+      // }
     } catch (e: any) {
       setError(getErrorMessage(e));
       setLessons([]);

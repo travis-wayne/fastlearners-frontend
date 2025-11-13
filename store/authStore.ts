@@ -7,6 +7,7 @@ import {
   User,
   UserRole,
 } from "@/lib/types/auth";
+import { calculateProfileCompletion, isProfileComplete, getMissingFields } from "@/lib/utils/profile-completion";
 
 interface AuthState {
   // State
@@ -15,6 +16,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isHydrated: boolean; // Track if store has been rehydrated from localStorage
+  academicFieldsChanged: boolean; // Flag to indicate if academic fields have changed
 
   // Actions
   setUser: (user: User) => void;
@@ -33,6 +35,8 @@ interface AuthState {
   // Profile completion helpers
   getProfileStatus: () => ProfileStatus;
   isProfileComplete: () => boolean;
+  getProfileCompletionPercentage: () => number;
+  getMissingProfileFields: () => string[];
   canAccessFeature: (feature: string) => boolean;
 
   // Role-based helpers
@@ -40,6 +44,9 @@ interface AuthState {
   isPrimaryRole: (role: UserRole) => boolean;
   isGuest: () => boolean;
   canChangeRole: () => boolean;
+
+  // Academic fields change helper
+  hasAcademicFieldsChanged: (updates: Partial<User>) => boolean;
 }
 
 export const useAuthStore = create<AuthState>()((set, get) => ({
@@ -49,6 +56,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   isLoading: false, // Start with loading false to prevent premature loading state
   error: null,
   isHydrated: false, // Set to false initially
+  academicFieldsChanged: false, // Initial flag
 
   // Actions
   setUser: (user: User) => {
@@ -231,8 +239,16 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   updateUserProfile: (updates: Partial<User>) => {
     const currentUser = get().user;
     if (currentUser) {
+      const hasChanged = get().hasAcademicFieldsChanged(updates);
+      if (hasChanged) {
+        set({ academicFieldsChanged: true });
+      }
       const updatedUser = { ...currentUser, ...updates };
       get().setUser(updatedUser);
+      // Clear banner dismissal to ensure banner reappears if profile becomes incomplete
+      if (typeof window !== 'undefined' && updatedUser.id) {
+        localStorage.removeItem(`profile-completion-banner-dismissed-${updatedUser.id}`);
+      }
     }
   },
 
@@ -243,30 +259,27 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     const user = get().user;
     if (!user) return "guest";
 
-    const primaryRole = user.role[0];
-
-    if (primaryRole === "guest") {
-      return "guest";
-    }
-
-    const hasBasicInfo = user.name && user.email && user.date_of_birth;
-    if (!hasBasicInfo) {
-      return "guest";
-    }
-
-    const hasRoleSpecificData =
-      primaryRole === "student"
-        ? user.school || user.class
-        : primaryRole === "guardian"
-          ? user.phone
-          : false;
-
-    return hasRoleSpecificData ? "complete" : "role_details_complete";
+    const percentage = calculateProfileCompletion(user);
+    if (percentage <= 20) return "guest";
+    if (percentage <= 40) return "basic_complete";
+    if (percentage <= 60) return "role_selected";
+    if (percentage <= 80) return "role_details_complete";
+    return "complete";
   },
 
   isProfileComplete: (): boolean => {
-    const status = get().getProfileStatus();
-    return status === "complete";
+    const user = get().user;
+    return user ? isProfileComplete(user) : false;
+  },
+
+  getProfileCompletionPercentage: (): number => {
+    const user = get().user;
+    return user ? calculateProfileCompletion(user) : 0;
+  },
+
+  getMissingProfileFields: (): string[] => {
+    const user = get().user;
+    return user ? getMissingFields(user) : [];
   },
 
   canAccessFeature: (feature: string): boolean => {
@@ -317,6 +330,17 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
     // Only guests can change their role (during onboarding)
     // Once a user has selected student or guardian, they cannot change
     return user.role[0] === "guest";
+  },
+
+  hasAcademicFieldsChanged: (updates: Partial<User>): boolean => {
+    const user = get().user;
+    if (!user) return false;
+    
+    return (
+      Boolean(updates.class && updates.class !== user.class) ||
+      Boolean(updates.discipline && updates.discipline !== user.discipline) ||
+      Boolean(updates.role && updates.role[0] !== user.role[0])
+    );
   },
 }));
 

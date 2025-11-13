@@ -2,7 +2,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { getQuizById, type Quiz, type QuizQuestion } from "@/data/mock-quizzes";
+// Mock quizzes removed - replace with real API endpoints when available
+// import { getQuizById, type Quiz, type QuizQuestion } from "@/data/mock-quizzes";
+
+// Temporary types until real API is implemented
+type Quiz = any;
+type QuizQuestion = any;
+
+const getQuizById = (id: string): Quiz | null => {
+  // TODO: Replace with real API call
+  console.warn("Mock quizzes removed - implement real API endpoint");
+  return null;
+};
 import { motion } from "framer-motion";
 import {
   ArrowLeft,

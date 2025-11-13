@@ -15,12 +15,13 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  getLessons,
-  trashLesson,
-  type ClassInfo,
-  type Lesson,
-  type SubjectInfo,
+// NOTE: getLessons and trashLesson removed from lesson-service.ts
+// These functions hit non-documented superadmin endpoints and should be in admin-only client
+// This teacher page should use admin-only endpoints or be moved to admin-only app
+import type {
+  ClassInfo,
+  Lesson,
+  SubjectInfo,
 } from "@/lib/api/lesson-service";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -77,20 +78,24 @@ export default function LessonsPage() {
       setLoading(true);
       setError(null);
 
-      const classId = filters.classId ? parseInt(filters.classId) : undefined;
-      const subjectId = filters.subjectId
-        ? parseInt(filters.subjectId)
-        : undefined;
-
-      const response = await getLessons(classId, subjectId);
-
-      if (response.success) {
-        setLessons(response.content.lessons || []);
-        setClasses(response.content.classes || []);
-        setSubjects(response.content.subjects || []);
-      } else {
-        setError(response.message || "Failed to fetch lessons");
-      }
+      // TODO: Replace with admin-only endpoint
+      // getLessons removed - this teacher page needs admin-only client
+      setError("Admin endpoint not implemented. getLessons() was removed from student app.");
+      setLessons([]);
+      setClasses([]);
+      setSubjects([]);
+      // const classId = filters.classId ? parseInt(filters.classId) : undefined;
+      // const subjectId = filters.subjectId
+      //   ? parseInt(filters.subjectId)
+      //   : undefined;
+      // const response = await getLessons(classId, subjectId);
+      // if (response.success) {
+      //   setLessons(response.content.lessons || []);
+      //   setClasses(response.content.classes || []);
+      //   setSubjects(response.content.subjects || []);
+      // } else {
+      //   setError(response.message || "Failed to fetch lessons");
+      // }
     } catch (err: any) {
       setError(
         err.response?.data?.message || err.message || "Failed to fetch lessons",
@@ -119,15 +124,16 @@ export default function LessonsPage() {
     }
 
     try {
-      const response = await trashLesson(lessonId);
-
-      if (response.success) {
-        toast.success(response.message || "Lesson moved to trash successfully");
-        // Remove from current list
-        setLessons((prev) => prev.filter((lesson) => lesson.id !== lessonId));
-      } else {
-        toast.error(response.message || "Failed to move lesson to trash");
-      }
+      // TODO: Replace with admin-only endpoint
+      // trashLesson removed - this teacher page needs admin-only client
+      toast.error("Admin endpoint not implemented. trashLesson() was removed from student app.");
+      // const response = await trashLesson(lessonId);
+      // if (response.success) {
+      //   toast.success(response.message || "Lesson moved to trash successfully");
+      //   setLessons((prev) => prev.filter((lesson) => lesson.id !== lessonId));
+      // } else {
+      //   toast.error(response.message || "Failed to move lesson to trash");
+      // }
     } catch (err: any) {
       toast.error(
         err.response?.data?.message ||

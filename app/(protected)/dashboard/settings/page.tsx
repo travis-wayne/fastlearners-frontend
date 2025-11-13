@@ -1,13 +1,14 @@
-import { ContentSection } from './components/content-section'
-import { ProfileForm } from './profile/profile-form'
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function SettingsPage() {
-  return (
-    <ContentSection
-      title='Profile'
-      desc='This is how others will see you on the site.'
-    >
-      <ProfileForm />
-    </ContentSection>
-  )
+  const router = useRouter()
+
+  useEffect(() => {
+    router.push('/dashboard/settings/profile')
+  }, [router])
+
+  return null
 }

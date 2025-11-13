@@ -1,5 +1,11 @@
 "use client";
 
+/**
+ * @deprecated This component is deprecated. All roles should now use `/dashboard/settings` instead.
+ * This component is kept for backward compatibility during the transition period.
+ * Plan to remove it in a future update.
+ */
+
 import { useAuthStore } from "@/store/authStore";
 import {
   Crown,

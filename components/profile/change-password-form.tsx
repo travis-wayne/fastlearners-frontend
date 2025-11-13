@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  AlertCircle,
   CheckCircle,
   Eye,
   EyeOff,
@@ -69,6 +70,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -85,11 +87,12 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
   const onSubmit = async (data: PasswordFormData) => {
     try {
       setIsChanging(true);
+      setErrorMessage(null); // Clear any previous error
 
       // Additional validation
       const validationErrors = validatePasswordData(data as ChangePasswordData);
       if (validationErrors.length > 0) {
-        toast.error(validationErrors[0]);
+        setErrorMessage(validationErrors[0]);
         return;
       }
 
@@ -101,7 +104,7 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
       toast.success("Password changed successfully");
       onSuccess?.();
     } catch (error: any) {
-      toast.error(error.message || "Failed to change password");
+      setErrorMessage(error.message || "Failed to change password");
     } finally {
       setIsChanging(false);
     }
@@ -152,6 +155,16 @@ export function ChangePasswordForm({ onSuccess }: ChangePasswordFormProps) {
             Email verification complete. You can now change your password.
           </AlertDescription>
         </Alert>
+
+        {/* Display error message if present */}
+        {errorMessage && (
+          <Alert className="border-red-200 bg-red-50">
+            <AlertCircle className="size-4 text-red-600" />
+            <AlertDescription className="text-red-800">
+              {errorMessage}
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {/* Current Password */}

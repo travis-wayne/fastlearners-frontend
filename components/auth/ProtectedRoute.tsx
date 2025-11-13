@@ -61,16 +61,22 @@ export function ProtectedRoute({
 
       // Check if profile completion is required
       if (requireCompleteProfile && !isProfileComplete()) {
-        router.push("/onboarding/complete-profile");
+        router.push("/onboarding");
         return;
       }
 
       // Guest users with incomplete profiles should be redirected
-      // TODO: Re-enable this when profile completion flow is ready
-      // if (user.role[0] === 'guest' && !isProfileComplete()) {
-      //   router.push('/onboarding/complete-profile');
-      //   return;
-      // }
+      if (user.role[0] === 'guest' && !isProfileComplete()) {
+        router.push('/onboarding');
+        return;
+      }
+
+      // Prevent access to onboarding routes if profile is complete
+      if (window.location.pathname.startsWith('/onboarding') && isProfileComplete()) {
+        const userRoute = getRoleBasedRoute(user);
+        router.push(userRoute);
+        return;
+      }
     }
   }, [
     isAuthenticated,

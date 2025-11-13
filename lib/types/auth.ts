@@ -17,6 +17,7 @@ export interface User {
   phone: string;
   school: string | null;
   class: string | null;
+  discipline: string | null;
   date_of_birth: string | null;
   country: string | null;
   state: string | null;
@@ -27,6 +28,8 @@ export interface User {
   status: "active" | "inactive" | "suspended";
   created_at: string;
   role: UserRole[];
+  child_email?: string | null;
+  child_phone?: string | null;
 }
 
 export type UserRole =
@@ -92,6 +95,7 @@ export interface ProfileUpdateData {
   phone?: string;
   school?: string;
   class?: string;
+  discipline?: string;
   date_of_birth?: string;
   country?: string;
   state?: string;
@@ -107,8 +111,8 @@ export interface ProfileUpdateData {
 
 export interface ChangePasswordData {
   current_password: string;
-  password: string;
-  password_confirmation: string;
+  new_password: string;
+  new_password_confirmation: string;
 }
 
 // Guest capabilities and content access levels

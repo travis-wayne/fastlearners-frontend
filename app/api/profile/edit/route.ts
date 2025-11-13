@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import { UPSTREAM_BASE } from "@/lib/api/client";
 import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import { validateProfileEdit } from "@/lib/validation/profile-validation";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -14,78 +15,105 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
+    // Fetch current profile to get user role for validation
+    let currentProfile: any = null;
+    let userRole: string | null = null;
+    
+    try {
+      const profileResponse = await fetch(`${UPSTREAM_BASE}/profile`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        cache: "no-store",
+      });
+
+      if (profileResponse.ok) {
+        const profileData = await profileResponse.json();
+        if (profileData.content?.user) {
+          currentProfile = profileData.content.user;
+          // Extract role - handle both array and string formats
+          const role = currentProfile.role;
+          userRole = Array.isArray(role) ? role[0] : role;
+        }
+      }
+    } catch (profileError) {
+      // If profile fetch fails, proceed without role-based validation
+      // Backend validation will catch any issues
+      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+        console.warn("Failed to fetch current profile for validation:", profileError);
+      }
+    }
+    
     // If only partial updates are provided (e.g., just class/discipline),
-    // fetch current profile first to merge and send complete payload
+    // merge with current profile to send complete payload
     const hasOnlyAcademicFields = body.class !== undefined && 
       Object.keys(body).filter(k => !['class', 'discipline', 'term'].includes(k)).length === 0;
     
-    let updateData = body;
+    let updateData = { ...body };
     
-    if (hasOnlyAcademicFields) {
-      // Fetch current profile to merge
-      try {
-        const profileResponse = await fetch(`${UPSTREAM_BASE}/profile`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
-          cache: "no-store",
-        });
-
-        if (profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          if (profileData.content?.user) {
-            // Merge current profile with updates
-            updateData = {
-              ...profileData.content.user,
-              ...body,
-            };
-            
-            // Handle role - ensure it's set properly
-            // Backend may expect string or array, so we'll send as-is but ensure it has a value
-            if (!updateData.role || (Array.isArray(updateData.role) && updateData.role.length === 0)) {
-              updateData.role = 'student';
-            } else if (Array.isArray(updateData.role) && updateData.role.includes('guest')) {
-              // Convert guest to student
-              updateData.role = updateData.role.map(r => r === 'guest' ? 'student' : r);
-            } else if (typeof updateData.role === 'string' && updateData.role === 'guest') {
-              updateData.role = 'student';
-            }
-            
-            // Remove discipline for non-SSS classes
-            const classCategory = body.class?.startsWith('SSS') ? 'sss' : 'jss';
-            if (classCategory !== 'sss' && updateData.discipline) {
-              delete updateData.discipline;
-            }
-          }
-        }
-      } catch (profileError) {
-        // If profile fetch fails, proceed with partial update
-        // Backend validation will catch any issues
-        if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-          console.warn("Failed to fetch current profile for merge:", profileError);
-        }
+    // Don't merge role from current profile - validation will handle role checking
+    // Only merge other fields if needed for academic-only updates
+    if (hasOnlyAcademicFields && currentProfile) {
+      // Merge current profile with updates, but exclude role
+      const { role, ...profileWithoutRole } = currentProfile;
+      updateData = {
+        ...profileWithoutRole,
+        ...body,
+      };
+    }
+    
+    // Remove role from updateData if it's not explicitly in body and user is not guest
+    // This prevents accidentally sending role when it shouldn't be changed
+    if (!body.role && currentProfile) {
+      const currentRole = Array.isArray(currentProfile.role) ? currentProfile.role[0] : currentProfile.role;
+      if (currentRole && currentRole !== 'guest') {
+        // Role is already set and not guest - don't include it in update
+        delete updateData.role;
       }
     }
     
-    // Validate discipline if provided
-    if (updateData.discipline) {
-      const validDisciplines = ['Art', 'Commercial', 'Science'];
-      if (!validDisciplines.includes(updateData.discipline)) {
-        return NextResponse.json(
-          {
-            success: false,
-            message: `Invalid discipline. Must be one of: ${validDisciplines.join(', ')}`,
-            errors: {
-              discipline: [`Discipline must be one of: ${validDisciplines.join(', ')}`],
-            },
-            requestId,
-          },
-          { status: 422 }
-        );
+    // Use centralized validation logic
+    const validationResult = validateProfileEdit(currentProfile || {}, updateData);
+    
+    // If validation failed, return errors
+    if (!validationResult.isValid) {
+      // Determine appropriate status code based on error type
+      let statusCode = 422;
+      
+      // Check for specific error types that should return different status codes
+      if (validationResult.errors.role?.some(msg => msg.includes('already updated'))) {
+        statusCode = 401;
+      } else if (validationResult.errors.class?.some(msg => msg.includes('already updated'))) {
+        statusCode = 400;
+      } else if (validationResult.errors.discipline?.some(msg => msg.includes('already updated'))) {
+        statusCode = 401;
+      } else if (validationResult.errors.discipline?.some(msg => msg.includes('SSS class'))) {
+        statusCode = 400;
+      } else if (validationResult.errors.username?.some(msg => msg.includes('already updated'))) {
+        statusCode = 401;
+      } else if (validationResult.errors.date_of_birth?.some(msg => msg.includes('already updated'))) {
+        statusCode = 401;
+      } else if (validationResult.errors.gender?.some(msg => msg.includes('already updated'))) {
+        statusCode = 401;
       }
+      
+      return NextResponse.json(
+        {
+          success: false,
+          message: statusCode === 422 
+            ? "Validation failed." 
+            : Object.values(validationResult.errors)[0]?.[0] || "Validation failed.",
+          errors: validationResult.errors,
+          requestId,
+        },
+        { status: statusCode }
+      );
     }
+    
+    // Use cleaned data from validation
+    updateData = validationResult.cleanedData;
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
@@ -107,7 +135,109 @@ export async function POST(req: NextRequest) {
       const data = await r.json();
 
       if (!r.ok) {
-        // Return validation errors if present
+        // Handle different error status codes according to API documentation
+        if (r.status === 422 && data?.errors) {
+          // Validation errors - return as-is with proper message
+          return NextResponse.json(
+            {
+              success: false,
+              message: data?.message || "Validation failed.",
+              errors: data.errors,
+              requestId,
+            },
+            { status: 422 }
+          );
+        }
+        
+        // Handle specific error messages from backend
+        if (data?.message) {
+          // Check for specific error types and return appropriate status codes
+          if (data.message.includes('Username already updated')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Username already updated and cannot be changed.",
+                errors: null,
+                requestId,
+              },
+              { status: 401 }
+            );
+          }
+          
+          if (data.message.includes('Role already updated')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Role already updated and cannot be changed. For further enquiries, please contact our support team.",
+                errors: null,
+                requestId,
+              },
+              { status: 401 }
+            );
+          }
+          
+          if (data.message.includes('Class already updated')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Class already updated. Make a request for class upgrade.",
+                errors: null,
+                requestId,
+              },
+              { status: 400 }
+            );
+          }
+          
+          if (data.message.includes('Discipline already updated')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Discipline already updated. For further enquiries, please contact our support team.",
+                errors: null,
+                requestId,
+              },
+              { status: 401 }
+            );
+          }
+          
+          if (data.message.includes('Gender already updated')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Gender already updated. For further enquiries, please contact our support team.",
+                errors: null,
+                requestId,
+              },
+              { status: 401 }
+            );
+          }
+          
+          if (data.message.includes('Date of birth already updated')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Date of birth already updated. For further enquiries, please contact our support team.",
+                errors: null,
+                requestId,
+              },
+              { status: 401 }
+            );
+          }
+          
+          if (data.message.includes('SSS class to choose a discipline')) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "You have to be in SSS class to choose a discipline!",
+                errors: null,
+                requestId,
+              },
+              { status: 400 }
+            );
+          }
+        }
+        
+        // Return validation errors if present (for other status codes)
         if (data?.errors) {
           return NextResponse.json(
             {
@@ -125,8 +255,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          user: data?.content?.user || null,
           message: data?.message || "Profile updated successfully",
+          content: {
+            user: data?.content?.user || null,
+          },
         },
         { status: 200 }
       );
@@ -149,6 +281,65 @@ export async function POST(req: NextRequest) {
           const retryData = await retryR.json();
           
           if (!retryR.ok) {
+            // Handle errors same way as main request
+            if (retryR.status === 422 && retryData?.errors) {
+              return NextResponse.json(
+                {
+                  success: false,
+                  message: retryData?.message || "Validation failed.",
+                  errors: retryData.errors,
+                  requestId,
+                },
+                { status: 422 }
+              );
+            }
+            
+            // Handle specific error messages
+            if (retryData?.message) {
+              if (retryData.message.includes('Username already updated')) {
+                return NextResponse.json(
+                  { success: false, message: "Username already updated and cannot be changed.", errors: null, requestId },
+                  { status: 401 }
+                );
+              }
+              if (retryData.message.includes('Role already updated')) {
+                return NextResponse.json(
+                  { success: false, message: "Role already updated and cannot be changed. For further enquiries, please contact our support team.", errors: null, requestId },
+                  { status: 401 }
+                );
+              }
+              if (retryData.message.includes('Class already updated')) {
+                return NextResponse.json(
+                  { success: false, message: "Class already updated. Make a request for class upgrade.", errors: null, requestId },
+                  { status: 400 }
+                );
+              }
+              if (retryData.message.includes('Discipline already updated')) {
+                return NextResponse.json(
+                  { success: false, message: "Discipline already updated. For further enquiries, please contact our support team.", errors: null, requestId },
+                  { status: 401 }
+                );
+              }
+              if (retryData.message.includes('Gender already updated')) {
+                return NextResponse.json(
+                  { success: false, message: "Gender already updated. For further enquiries, please contact our support team.", errors: null, requestId },
+                  { status: 401 }
+                );
+              }
+              if (retryData.message.includes('Date of birth already updated')) {
+                return NextResponse.json(
+                  { success: false, message: "Date of birth already updated. For further enquiries, please contact our support team.", errors: null, requestId },
+                  { status: 401 }
+                );
+              }
+              if (retryData.message.includes('SSS class to choose a discipline')) {
+                return NextResponse.json(
+                  { success: false, message: "You have to be in SSS class to choose a discipline!", errors: null, requestId },
+                  { status: 400 }
+                );
+              }
+            }
+            
             if (retryData?.errors) {
               return NextResponse.json(
                 {
@@ -166,8 +357,10 @@ export async function POST(req: NextRequest) {
           return NextResponse.json(
             {
               success: true,
-              user: retryData?.content?.user || null,
               message: retryData?.message || "Profile updated successfully",
+              content: {
+                user: retryData?.content?.user || null,
+              },
             },
             { status: 200 }
           );

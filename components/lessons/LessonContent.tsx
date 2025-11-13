@@ -86,14 +86,25 @@ export function LessonContent({
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <ul className="space-y-2">
+            <div className="space-y-4">
               {content.objectives.map((objective, index) => (
-                <li key={index} className="flex items-start gap-2">
-                  <CheckCircle className="mt-0.5 size-4 text-green-600 shrink-0" />
-                  <span className="text-muted-foreground">{objective}</span>
-                </li>
+                <div key={index} className="space-y-2">
+                  {objective.description && (
+                    <p className="text-muted-foreground">{objective.description}</p>
+                  )}
+                  {objective.points && Array.isArray(objective.points) && objective.points.length > 0 && (
+                    <ul className="space-y-2 ml-4">
+                      {objective.points.map((point, pointIndex) => (
+                        <li key={pointIndex} className="flex items-start gap-2">
+                          <CheckCircle className="mt-0.5 size-4 text-green-600 shrink-0" />
+                          <span className="text-muted-foreground">{point}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
               ))}
-            </ul>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -126,9 +137,39 @@ export function LessonContent({
                 <CardTitle className="text-xl">{concept.title}</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed">
-                  {concept.description}
-                </p>
+                {/* Description - array of ConceptDescription objects */}
+                {concept.description && Array.isArray(concept.description) && concept.description.length > 0 && (
+                  <div className="space-y-4">
+                    {concept.description.map((desc, index) => (
+                      <div key={index} className="space-y-2">
+                        {desc.heading && (
+                          <h4 className="font-semibold text-lg">{desc.heading}</h4>
+                        )}
+                        {desc.description && (
+                          <p className="text-muted-foreground leading-relaxed">
+                            {desc.description}
+                          </p>
+                        )}
+                        {desc.image_path && (
+                          <div className="my-2">
+                            <img 
+                              src={desc.image_path} 
+                              alt={desc.heading || "Concept illustration"} 
+                              className="rounded-lg max-w-full h-auto"
+                            />
+                          </div>
+                        )}
+                        {desc.points && Array.isArray(desc.points) && desc.points.length > 0 && (
+                          <ul className="list-disc list-inside space-y-1 text-muted-foreground">
+                            {desc.points.map((point, pointIndex) => (
+                              <li key={pointIndex}>{point}</li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
 
                 {/* Examples */}
                 {concept.examples && concept.examples.length > 0 && (
@@ -136,13 +177,32 @@ export function LessonContent({
                     <h4 className="font-semibold">Examples</h4>
                     {concept.examples.map((example, index) => (
                       <div
-                        key={index}
-                        className="rounded-lg border bg-muted/50 p-4"
+                        key={example.id || index}
+                        className="rounded-lg border bg-muted/50 p-4 space-y-2"
                       >
-                        <h5 className="font-medium mb-2">{example.title}</h5>
-                        <p className="text-sm text-muted-foreground">
-                          {example.content}
-                        </p>
+                        {example.title && (
+                          <h5 className="font-medium">{example.title}</h5>
+                        )}
+                        {example.problem && (
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Problem:</strong> {example.problem}
+                          </p>
+                        )}
+                        {example.solution_steps && example.solution_steps.length > 0 && (
+                          <div className="space-y-1">
+                            <strong className="text-sm">Solution Steps:</strong>
+                            <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground ml-2">
+                              {example.solution_steps.map((step, stepIndex) => (
+                                <li key={stepIndex}>{step}</li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+                        {example.answer && (
+                          <p className="text-sm">
+                            <strong>Answer:</strong> <span className="text-primary">{example.answer}</span>
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>
@@ -154,21 +214,42 @@ export function LessonContent({
                     <h4 className="font-semibold">Exercises</h4>
                     {concept.exercises.map((exercise, index) => (
                       <div
-                        key={index}
+                        key={exercise.id || index}
                         className="rounded-lg border p-4 space-y-2"
                       >
-                        <h5 className="font-medium">{exercise.title}</h5>
-                        <p className="text-sm text-muted-foreground">
-                          {exercise.content}
-                        </p>
-                        {exercise.check_markers &&
-                          exercise.check_markers.length > 0 && (
-                            <div className="flex items-center gap-2 pt-2">
-                              <Badge variant="outline">
-                                {exercise.check_markers.length} checkpoints
-                              </Badge>
-                            </div>
-                          )}
+                        {exercise.title && (
+                          <h5 className="font-medium">{exercise.title}</h5>
+                        )}
+                        {exercise.problem && (
+                          <p className="text-sm text-muted-foreground">
+                            <strong>Problem:</strong> {exercise.problem}
+                          </p>
+                        )}
+                        {exercise.solution_steps && exercise.solution_steps.length > 0 && (
+                          <div className="space-y-1">
+                            <strong className="text-sm">Solution Steps:</strong>
+                            <ol className="list-decimal list-inside space-y-1 text-sm text-muted-foreground ml-2">
+                              {exercise.solution_steps.map((step, stepIndex) => (
+                                <li key={stepIndex}>{step}</li>
+                              ))}
+                            </ol>
+                          </div>
+                        )}
+                        {exercise.answers && exercise.answers.length > 0 && (
+                          <div className="space-y-1">
+                            <strong className="text-sm">Options:</strong>
+                            <ul className="list-disc list-inside space-y-1 text-sm text-muted-foreground ml-2">
+                              {exercise.answers.map((answer, answerIndex) => (
+                                <li key={answerIndex}>{answer}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                        {exercise.correct_answer && (
+                          <p className="text-sm">
+                            <strong>Correct Answer:</strong> <span className="text-green-600">{exercise.correct_answer}</span>
+                          </p>
+                        )}
                       </div>
                     ))}
                   </div>

@@ -1,0 +1,94 @@
+'use client'
+
+import { useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+
+import { useAuthStore } from '@/store/authStore'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { User, BookOpen, Trophy, ArrowRight } from 'lucide-react'
+
+export default function OnboardingPage() {
+  const router = useRouter()
+  const { user, getProfileCompletionPercentage, isProfileComplete } = useAuthStore()
+  const percentage = user ? getProfileCompletionPercentage() : 0
+  const isComplete = user ? isProfileComplete() : false
+
+  useEffect(() => {
+    if (isComplete) {
+      router.push('/dashboard')
+    }
+  }, [isComplete, router])
+
+  if (!user) return null
+
+  const benefits = [
+    { icon: User, text: 'Personalized learning experience' },
+    { icon: BookOpen, text: 'Access to all courses and activities' },
+    { icon: Trophy, text: 'Track your progress and achievements' },
+  ]
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Welcome, {user.name || user.email?.split('@')[0] || 'there'}!
+        </h1>
+        <p className="text-muted-foreground mt-1">
+          Complete your profile to unlock the full Fast Learner experience.
+        </p>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle>Profile Completion</CardTitle>
+              <CardDescription>
+                You're {percentage}% done! Fill in the remaining details to get started.
+              </CardDescription>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold text-primary">{percentage}%</div>
+              <div className="text-xs text-muted-foreground">Complete</div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <Progress value={percentage} className="h-2" />
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <div>
+            <h3 className="text-sm font-medium mb-3">What you'll get:</h3>
+            <ul className="space-y-2">
+              {benefits.map((benefit, index) => (
+                <li key={index} className="flex items-center gap-3 text-sm">
+                  <benefit.icon className="h-4 w-4 text-primary flex-shrink-0" />
+                  <span>{benefit.text}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+            <Button
+              onClick={() => router.push('/onboarding/complete-profile')}
+              className="flex-1"
+            >
+              Complete Profile
+              <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => router.push('/dashboard')}
+              className="flex-1"
+            >
+              Skip for Now
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  )
+}

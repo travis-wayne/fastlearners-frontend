@@ -5,15 +5,15 @@ import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
 
 interface LessonNavigationProps {
-  previousLessonId?: number | null;
-  nextLessonId?: number | null;
+  previousUrl?: string | null;
+  nextUrl?: string | null;
   onPrevious?: () => void;
   onNext?: () => void;
 }
 
 export function LessonNavigation({
-  previousLessonId,
-  nextLessonId,
+  previousUrl,
+  nextUrl,
   onPrevious,
   onNext,
 }: LessonNavigationProps) {
@@ -22,16 +22,16 @@ export function LessonNavigation({
   const handlePrevious = () => {
     if (onPrevious) {
       onPrevious();
-    } else if (previousLessonId) {
-      router.push(`/dashboard/lessons/${previousLessonId}`);
+    } else if (previousUrl) {
+      router.push(previousUrl);
     }
   };
 
   const handleNext = () => {
     if (onNext) {
       onNext();
-    } else if (nextLessonId) {
-      router.push(`/dashboard/lessons/${nextLessonId}`);
+    } else if (nextUrl) {
+      router.push(nextUrl);
     }
   };
 
@@ -40,7 +40,7 @@ export function LessonNavigation({
       <Button
         variant="outline"
         onClick={handlePrevious}
-        disabled={!previousLessonId}
+        disabled={!previousUrl}
       >
         <ArrowLeft className="mr-2 size-4" />
         Previous Lesson
@@ -49,7 +49,7 @@ export function LessonNavigation({
       <Button
         variant="default"
         onClick={handleNext}
-        disabled={!nextLessonId}
+        disabled={!nextUrl}
       >
         Next Lesson
         <ArrowRight className="ml-2 size-4" />

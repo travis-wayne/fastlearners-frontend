@@ -2,8 +2,12 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { AcademicSetupClient } from "@/components/dashboard/subjects/AcademicSetupClient";
 import { SubjectSelectionForm } from "@/components/dashboard/subjects/SubjectSelectionForm";
+import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
 import { SubjectDashboardShell } from "@/components/dashboard/student/SubjectDashboardShell";
+import { ProfileChangeBanner } from "@/components/dashboard/subjects/ProfileChangeBanner";
 import { getUserProfile, getSubjects } from "@/lib/api/subjects";
+
+export const dynamic = 'force-dynamic';
 
 async function getUserProfileData() {
   try {
@@ -43,6 +47,7 @@ export default async function SubjectsPage() {
 
   return (
     <div className="container max-w-screen-2xl mx-auto">
+      <ProfileChangeBanner />
       {!hasClass ? (
         // Step 1: Academic Setup
         <div className="space-y-6">
@@ -63,7 +68,7 @@ export default async function SubjectsPage() {
               Select your subjects for {profile.class}
             </p>
           </div>
-          <SubjectSelectionForm classLevel={profile.class!} />
+          <SimpleSubjectSelector />
         </div>
       ) : (
         // Step 4: Dashboard

@@ -12,6 +12,7 @@ import { Separator } from '@/components/ui/separator';
 import { getSubjectIcon, getSelectiveRequirement } from '@/data/subjects-metadata';
 import { getSubjects, updateCompulsorySelective, updateSelectiveSubjects } from '@/lib/api/subjects';
 import type { SubjectItem } from '@/lib/types/subjects';
+import { useAuthStore } from '@/store/authStore';
 
 interface SubjectSelectionFormProps {
   token?: string; // Optional token for direct API calls (server-side)
@@ -35,10 +36,18 @@ export function SubjectSelectionForm({ token, classLevel }: SubjectSelectionForm
 
   const isJSS = classLevel.startsWith('JSS');
   const requiredElectives = getSelectiveRequirement(classLevel);
+  const { user } = useAuthStore();
 
   useEffect(() => {
     fetchSubjects();
   }, []);
+
+  useEffect(() => {
+    // Refetch subjects when user's class changes
+    if (user?.class !== classLevel) {
+      fetchSubjects();
+    }
+  }, [user?.class]);
 
   const fetchSubjects = async () => {
     try {
@@ -64,24 +73,15 @@ export function SubjectSelectionForm({ token, classLevel }: SubjectSelectionForm
       setSubjectsData(data);
       
       // Pre-select compulsory selective if already selected
-      // Find the selected compulsory subject from the compulsory_selective list
-      if (data.compulsory_selective_status === 'selected' && data.compulsory_selective?.length > 0) {
-        // The compulsory_selective array contains the selected subject
-        const selected = data.compulsory_selective[0];
-        if (selected) setSelectedCompulsory(selected.id);
-      }
-
-      // Pre-select elective subjects if already selected
-      // Only include subjects that are in the selective list AND not in compulsory_selective
-      if (data.selective_status === 'selected' && data.selective?.length > 0) {
-        const selectedIds = data.selective
-          .filter((sel: SubjectItem) => 
-            // Exclude compulsory selective subjects from electives
-            !data.compulsory_selective?.some((cs: SubjectItem) => cs.id === sel.id)
-          )
-          .map((sel: SubjectItem) => sel.id);
-        setSelectedElectives(selectedIds);
-      }
+      // Only preselect if backend supplies a dedicated field for chosen IDs
+      // The compulsory_selective array contains available options, not selected items
+      // We should only preselect if there's a dedicated selected field
+      // For now, initialize as empty - actual selections should come from a dedicated endpoint
+      setSelectedCompulsory(null);
+      setSelectedElectives([]);
+      
+      // TODO: If backend provides a dedicated field for selected IDs, use it here
+      // Example: if (data.selected_compulsory_id) setSelectedCompulsory(data.selected_compulsory_id);
     } catch (error: any) {
       toast.error(error.message || 'Failed to fetch subjects');
     } finally {
@@ -117,6 +117,8 @@ export function SubjectSelectionForm({ token, classLevel }: SubjectSelectionForm
       }
 
       toast.success('Core subject saved!');
+      // Refresh auth store and subjects
+      useAuthStore.getState().hydrate();
       await fetchSubjects(); // Refresh data
     } catch (error: any) {
       toast.error(error.message || 'Failed to update compulsory subject');
@@ -154,6 +156,10 @@ export function SubjectSelectionForm({ token, classLevel }: SubjectSelectionForm
       }
 
       toast.success('All subjects registered successfully!');
+      // Refresh auth store to get latest subject selections
+      await useAuthStore.getState().hydrate();
+      // Refresh subjects data
+      await fetchSubjects();
       router.push('/dashboard/subjects');
       router.refresh();
     } catch (error: any) {
@@ -335,4 +341,3 @@ export function SubjectSelectionForm({ token, classLevel }: SubjectSelectionForm
     </div>
   );
 }
-

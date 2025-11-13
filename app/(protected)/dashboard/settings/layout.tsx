@@ -1,12 +1,17 @@
+"use client";
+
 import { Monitor, Bell, Palette, Wrench, UserCog } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
 import { Main } from '@/components/settings/layout/main'
 import { SidebarNav } from './components/sidebar-nav'
+import { useAuthStore } from '@/store/authStore'
+import { useRouter } from 'next/navigation'
+import { useEffect } from 'react'
 
 const sidebarNavItems = [
   {
     title: 'Profile',
-    href: '/dashboard/settings',
+    href: '/dashboard/settings/profile',
     icon: <UserCog size={18} />,
   },
   {
@@ -36,6 +41,32 @@ export default function SettingsLayout({
 }: {
   children: React.ReactNode
 }) {
+  const { user, isAuthenticated, isLoading } = useAuthStore()
+  const router = useRouter()
+
+  useEffect(() => {
+    if (!isLoading && !isAuthenticated) {
+      router.push('/auth/login')
+    }
+  }, [isAuthenticated, isLoading, router])
+
+  if (isLoading) {
+    return (
+      <Main fixed>
+        <div className='flex items-center justify-center h-64'>
+          <div className='text-center'>
+            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto'></div>
+            <p className='mt-2 text-muted-foreground'>Loading settings...</p>
+          </div>
+        </div>
+      </Main>
+    )
+  }
+
+  if (!isAuthenticated) {
+    return null
+  }
+
   return (
     <Main fixed>
       <div className='space-y-0.5'>
@@ -45,6 +76,11 @@ export default function SettingsLayout({
         <p className='text-muted-foreground'>
           Manage your account settings and set e-mail preferences.
         </p>
+        {user && (
+          <p className='text-sm text-muted-foreground'>
+            Role: {user.role[0]}
+          </p>
+        )}
       </div>
       <Separator className='my-4 lg:my-6' />
       <div className='flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
@@ -56,4 +92,3 @@ export default function SettingsLayout({
     </Main>
   )
 }
-

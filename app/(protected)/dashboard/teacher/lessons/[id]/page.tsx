@@ -17,11 +17,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import {
-  getLessonContent,
-  trashLesson,
-  type Lesson,
-} from "@/lib/api/lesson-service";
+// NOTE: getLessonContent and trashLesson removed from lesson-service.ts
+// These functions hit non-documented superadmin endpoints and should be in admin-only client
+// This teacher page should use admin-only endpoints or be moved to admin-only app
+import type { Lesson } from "@/lib/api/lesson-service";
 import {
   Accordion,
   AccordionContent,
@@ -58,13 +57,15 @@ export default function LessonDetailPage() {
       setLoading(true);
       setError(null);
 
-      const response = await getLessonContent(lessonId);
-
-      if (response.success) {
-        setLesson(response.content);
-      } else {
-        setError(response.message || "Failed to fetch lesson");
-      }
+      // TODO: Replace with admin-only endpoint
+      // getLessonContent removed - this teacher page needs admin-only client
+      setError("Admin endpoint not implemented. getLessonContent() was removed from student app. Use slug-based endpoints for student-facing features.");
+      // const response = await getLessonContent(lessonId);
+      // if (response.success) {
+      //   setLesson(response.content);
+      // } else {
+      //   setError(response.message || "Failed to fetch lesson");
+      // }
     } catch (err: any) {
       setError(
         err.response?.data?.message || err.message || "Failed to fetch lesson",
@@ -89,14 +90,16 @@ export default function LessonDetailPage() {
     }
 
     try {
-      const response = await trashLesson(lesson.id);
-
-      if (response.success) {
-        toast.success(response.message || "Lesson moved to trash successfully");
-        router.push("/dashboard/teacher/lessons");
-      } else {
-        toast.error(response.message || "Failed to move lesson to trash");
-      }
+      // TODO: Replace with admin-only endpoint
+      // trashLesson removed - this teacher page needs admin-only client
+      toast.error("Admin endpoint not implemented. trashLesson() was removed from student app.");
+      // const response = await trashLesson(lesson.id);
+      // if (response.success) {
+      //   toast.success(response.message || "Lesson moved to trash successfully");
+      //   router.push("/dashboard/teacher/lessons");
+      // } else {
+      //   toast.error(response.message || "Failed to move lesson to trash");
+      // }
     } catch (err: any) {
       toast.error(
         err.response?.data?.message ||

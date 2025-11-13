@@ -10,7 +10,8 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DashboardHeader } from "@/components/dashboard/header";
-import { getLessonsMetadata } from "@/lib/api/lessons";
+// NOTE: getLessonsMetadata removed - this superadmin page needs admin-only endpoint
+// Use getProfileData() from lib/api/profile.ts for metadata or create admin-only client
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 
@@ -25,9 +26,13 @@ export default function LessonsPage() {
     setError(null);
     
     try {
-      const data = await getLessonsMetadata();
-      setApiData(data);
-      console.log("API Response:", data);
+      // TODO: Replace with admin-only endpoint or use getProfileData() from lib/api/profile.ts
+      // getLessonsMetadata removed - this superadmin page needs admin-only client
+      setError("Admin endpoint not implemented. getLessonsMetadata() was removed from student app.");
+      setApiData(null);
+      // const data = await getLessonsMetadata();
+      // setApiData(data);
+      // console.log("API Response:", data);
     } catch (err: any) {
       setError(err.message || "Failed to fetch data");
       console.error("API Error:", err);

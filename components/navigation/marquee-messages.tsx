@@ -80,98 +80,28 @@ export function MarqueeMessages({
   const fetchMessages = useCallback(async () => {
     try {
       setError(null);
-      const response = await fetch(apiEndpoint);
-
-      if (!response.ok) {
-        // If API is not available, use mock data
-        if (response.status === 404) {
-          setMessages(getMockMessages());
-          setLoading(false);
-          return;
-        }
-        throw new Error(`Failed to fetch messages: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (data.success && Array.isArray(data.messages)) {
-        setMessages(
-          data.messages.filter((msg: MarqueeMessage) => msg.isActive),
-        );
-      } else {
-        throw new Error("Invalid response format");
-      }
+      // API endpoint removed - marquee messages feature disabled
+      // If needed, replace with a documented, real endpoint
+      setMessages([]);
+      setLoading(false);
     } catch (error) {
       console.error("Error fetching marquee messages:", error);
-      // Fallback to mock data if API fails
-      setMessages(getMockMessages());
-      setError("Using offline messages");
+      setMessages([]);
+      setError("Marquee messages feature is currently unavailable");
     } finally {
       setLoading(false);
     }
   }, [apiEndpoint]);
 
-  const getMockMessages = (): MarqueeMessage[] => [
-    {
-      id: "1",
-      content:
-        "Welcome to the enhanced navigation system! Enjoy the new features.",
-      type: "announcement",
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "2",
-      content: "System maintenance scheduled for tonight at 2:00 AM EST.",
-      type: "maintenance",
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    },
-    {
-      id: "3",
-      content:
-        "New lesson upload feature now available in the teacher dashboard.",
-      type: "info",
-      isActive: true,
-      createdAt: new Date().toISOString(),
-    },
-  ];
 
   const addMessage = async () => {
-    if (!newMessage.content.trim()) return;
-
-    try {
-      const response = await fetch(apiEndpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          content: newMessage.content,
-          type: newMessage.type,
-          isActive: true,
-        }),
-      });
-
-      if (response.ok) {
-        await fetchMessages();
-        setNewMessage({ content: "", type: "info" });
-        setIsAdminDialogOpen(false);
-      }
-    } catch (error) {
-      console.error("Error adding message:", error);
-    }
+    // API endpoint removed - marquee messages feature disabled
+    console.warn("Marquee messages API is not available");
   };
 
   const deleteMessage = async (messageId: string) => {
-    try {
-      const response = await fetch(`${apiEndpoint}?id=${messageId}`, {
-        method: "DELETE",
-      });
-
-      if (response.ok) {
-        await fetchMessages();
-      }
-    } catch (error) {
-      console.error("Error deleting message:", error);
-    }
+    // API endpoint removed - marquee messages feature disabled
+    console.warn("Marquee messages API is not available");
   };
 
   useEffect(() => {
@@ -216,235 +146,6 @@ export function MarqueeMessages({
     }
   };
 
-  if (loading) {
-    return (
-      <div
-        className={cn(
-          "h-12 animate-pulse border-t bg-muted/50 shadow-lg",
-          className,
-        )}
-      >
-        <div className="flex h-full items-center px-6">
-          <div className="h-4 w-64 animate-pulse rounded bg-muted-foreground/20" />
-        </div>
-      </div>
-    );
-  }
-
-  if (messages.length === 0) {
-    return null; // Don't render anything if no messages
-  }
-
-  return (
-    <div
-      className={cn(
-        "relative w-full border-t bg-background/95 shadow-lg backdrop-blur supports-[backdrop-filter]:bg-background/60",
-        className,
-      )}
-    >
-      <div className="flex h-12 items-center px-4">
-        {/* Pause/Play Control */}
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="mr-2 size-8 shrink-0"
-                onClick={() => setIsPaused(!isPaused)}
-              >
-                {isPaused ? (
-                  <Play className="size-3" />
-                ) : (
-                  <Pause className="size-3" />
-                )}
-                <span className="sr-only">
-                  {isPaused ? "Resume" : "Pause"} messages
-                </span>
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              {isPaused ? "Resume" : "Pause"} scrolling messages
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-
-        {/* Scrolling Messages Container */}
-        <div className="flex-1 overflow-hidden">
-          <div
-            ref={marqueeRef}
-            className={cn(
-              "animate-marquee flex items-center space-x-8",
-              isPaused && "animation-paused",
-            )}
-            style={{
-              animationDuration: `${Math.max(20, messages.length * 8)}s`,
-            }}
-            onMouseEnter={() => setIsPaused(true)}
-            onMouseLeave={() => setIsPaused(false)}
-          >
-            {messages.map((message) => {
-              const config = getMessageConfig(message.type);
-              const Icon = config.icon;
-
-              return (
-                <div
-                  key={`${message.id}-${message.createdAt}`}
-                  className={cn(
-                    "flex shrink-0 items-center space-x-2 whitespace-nowrap rounded-md border px-3 py-1 text-sm font-medium",
-                    config.color,
-                    config.bgColor,
-                    config.borderColor,
-                  )}
-                >
-                  <Icon className="size-3 shrink-0" />
-                  <span>{message.content}</span>
-                  {isAdmin && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="ml-2 size-5 p-0 opacity-70 hover:bg-background/50 hover:opacity-100"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteMessage(message.id);
-                      }}
-                    >
-                      <Trash2 className="size-2" />
-                      <span className="sr-only">Delete message</span>
-                    </Button>
-                  )}
-                </div>
-              );
-            })}
-
-            {/* Duplicate messages for seamless loop */}
-            {messages.map((message) => {
-              const config = getMessageConfig(message.type);
-              const Icon = config.icon;
-
-              return (
-                <div
-                  key={`duplicate-${message.id}-${message.createdAt}`}
-                  className={cn(
-                    "flex shrink-0 items-center space-x-2 whitespace-nowrap rounded-md border px-3 py-1 text-sm font-medium",
-                    config.color,
-                    config.bgColor,
-                    config.borderColor,
-                  )}
-                  aria-hidden="true"
-                >
-                  <Icon className="size-3 shrink-0" />
-                  <span>{message.content}</span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Admin Controls */}
-        {isAdmin && (
-          <Dialog open={isAdminDialogOpen} onOpenChange={setIsAdminDialogOpen}>
-            <DialogTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="ml-2 size-8 shrink-0"
-              >
-                <Plus className="size-3" />
-                <span className="sr-only">Add message</span>
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>Add Marquee Message</DialogTitle>
-                <DialogDescription>
-                  Create a new message that will appear in the scrolling ticker.
-                </DialogDescription>
-              </DialogHeader>
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="message-content">Message Content</Label>
-                  <Input
-                    id="message-content"
-                    placeholder="Enter your message..."
-                    value={newMessage.content}
-                    onChange={(e) =>
-                      setNewMessage({ ...newMessage, content: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="message-type">Message Type</Label>
-                  <Select
-                    value={newMessage.type}
-                    onValueChange={(value: MarqueeMessage["type"]) =>
-                      setNewMessage({ ...newMessage, type: value })
-                    }
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="info">Info</SelectItem>
-                      <SelectItem value="announcement">Announcement</SelectItem>
-                      <SelectItem value="alert">Alert</SelectItem>
-                      <SelectItem value="maintenance">Maintenance</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              <DialogFooter>
-                <Button
-                  variant="outline"
-                  onClick={() => setIsAdminDialogOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  onClick={addMessage}
-                  disabled={!newMessage.content.trim()}
-                >
-                  Add Message
-                </Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
-        )}
-
-        {error && (
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div className="ml-2">
-                  <AlertCircle className="size-4 text-yellow-600" />
-                </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>{error}</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
-        )}
-      </div>
-
-      <style jsx>{`
-        @keyframes marquee {
-          0% {
-            transform: translateX(100%);
-          }
-          100% {
-            transform: translateX(-100%);
-          }
-        }
-
-        .animate-marquee {
-          animation: marquee linear infinite;
-        }
-
-        .animation-paused {
-          animation-play-state: paused;
-        }
-      `}</style>
-    </div>
-  );
+  // Marquee messages feature disabled - hide UI until backend endpoint exists
+  return null;
 }

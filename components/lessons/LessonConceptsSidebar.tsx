@@ -60,9 +60,15 @@ export function LessonConceptsSidebar({
                     <h4 className="text-sm font-medium leading-tight">
                       {concept.title}
                     </h4>
-                    <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
-                      {concept.description}
-                    </p>
+                    {concept.description && Array.isArray(concept.description) && concept.description.length > 0 ? (
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                        {concept.description[0]?.description || concept.description[0]?.heading || "No description available"}
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-xs text-muted-foreground line-clamp-2">
+                        No description available
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>

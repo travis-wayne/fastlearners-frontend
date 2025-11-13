@@ -20,6 +20,7 @@ import {
   Target,
   TrendingUp,
   Trophy,
+  Loader2,
 } from "lucide-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -48,6 +49,7 @@ import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
 import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { LeaderBoard } from "@/components/dashboard/LeaderBoard";
 import { ProgressDonut } from "@/components/dashboard/ProgressDonut";
+import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -83,12 +85,37 @@ interface TimeData {
 export function StudentDashboard() {
   const [timeData, setTimeData] = useState<TimeData | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>("Physics");
+  const [dashboardData, setDashboardData] = useState<DashboardContent | null>(null);
+  const [isLoadingDashboard, setIsLoadingDashboard] = useState(true);
   const subjectToProgress: Record<string, number> = {
     Mathematics: 65,
     Physics: 50,
     Chemistry: 80,
     Biology: 90,
   };
+
+  // Fetch dashboard data
+  useEffect(() => {
+    const fetchDashboard = async () => {
+      setIsLoadingDashboard(true);
+      try {
+        const response = await getDashboard();
+        if (response.success && response.content) {
+          setDashboardData(response.content);
+          // Set selected subject to the progress subject if available
+          if (response.content.progress?.subject) {
+            setSelectedSubject(response.content.progress.subject);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch dashboard:", error);
+      } finally {
+        setIsLoadingDashboard(false);
+      }
+    };
+
+    fetchDashboard();
+  }, []);
 
   // Update time every second
   useEffect(() => {
@@ -318,7 +345,7 @@ export function StudentDashboard() {
               <div className="mb-2 flex items-center gap-2">
                 {getPeriodIcon()}
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {timeData?.greeting || "Good day"}, Student! 🎓
+                  {timeData?.greeting || "Good day"}, {dashboardData?.name || "Student"}! 🎓
                 </h2>
               </div>
               <p className="text-base leading-relaxed text-gray-800 dark:text-white/90">
@@ -466,15 +493,94 @@ export function StudentDashboard() {
         />
 
         {/* Overview grid - extracted */}
-        <OverviewGrid
-          stats={[
-            { label: "Subjects Registered", value: "9/11" },
-            { label: "Lessons Completed", value: "100/200" },
-            { label: "Quizzes Completed", value: "6/20" },
-            { label: "Time Spent Learning", value: "300 hrs" },
-            { label: "Subscription Status", value: "Active" },
-          ]}
-        />
+        {isLoadingDashboard ? (
+          <Card className="h-full border bg-card">
+            <CardContent className="flex items-center justify-center p-8">
+              <Loader2 className="size-6 animate-spin text-muted-foreground" />
+            </CardContent>
+          </Card>
+        ) : (
+          <OverviewGrid
+            stats={[
+              { 
+                label: "Subjects", 
+                value: dashboardData?.subjects || "N/A" 
+              },
+              { 
+                label: "Lessons", 
+                value: dashboardData?.lessons || "N/A" 
+              },
+              { 
+                label: "Quizzes", 
+                value: dashboardData?.quizzes || "N/A" 
+              },
+              { 
+                label: "Subscription Status", 
+                value: dashboardData?.subscription_status 
+                  ? dashboardData.subscription_status.charAt(0).toUpperCase() + 
+                    dashboardData.subscription_status.slice(1)
+                  : "N/A" 
+              },
+            ]}
+          />
+        )}
+
+        {/* Progress Card */}
+        {dashboardData?.progress && (
+          <motion.div variants={itemVariants}>
+            <Card className="border-primary/20 bg-gradient-to-r from-primary/5 to-blue-50/50 dark:to-blue-950/20">
+              <CardHeader>
+                <div className="flex items-center gap-2">
+                  <div className="rounded-lg bg-primary/10 p-2">
+                    <Target className="size-5 text-primary" />
+                  </div>
+                  <div>
+                    <CardTitle>Progress Overview</CardTitle>
+                    <CardDescription>
+                      Your learning progress in {dashboardData.progress.subject}
+                    </CardDescription>
+                  </div>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div>
+                    <div className="mb-2 flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground">
+                        {dashboardData.progress.subject} Progress
+                      </span>
+                      <span className="font-medium">
+                        {dashboardData.progress.covered} / {dashboardData.progress.covered + dashboardData.progress.left}
+                      </span>
+                    </div>
+                    <Progress 
+                      value={
+                        dashboardData.progress.covered + dashboardData.progress.left > 0
+                          ? (dashboardData.progress.covered / (dashboardData.progress.covered + dashboardData.progress.left)) * 100
+                          : 0
+                      } 
+                      className="h-3" 
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="rounded-lg border bg-muted/50 p-3">
+                      <div className="text-sm text-muted-foreground">Covered</div>
+                      <div className="text-2xl font-bold text-primary">
+                        {dashboardData.progress.covered}
+                      </div>
+                    </div>
+                    <div className="rounded-lg border bg-muted/50 p-3">
+                      <div className="text-sm text-muted-foreground">Remaining</div>
+                      <div className="text-2xl font-bold text-muted-foreground">
+                        {dashboardData.progress.left}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Today's Lessons - Enhanced */}
