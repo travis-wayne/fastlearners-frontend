@@ -134,7 +134,7 @@ export default function SubjectDetailPage() {
             <AlertCircle className="mx-auto mb-4 size-12 text-destructive" />
             <h3 className="mb-2 text-lg font-semibold">Error Loading Topics</h3>
             <p className="mb-4 text-muted-foreground">{error}</p>
-            <div className="flex gap-2 justify-center">
+            <div className="flex justify-center gap-2">
               <Button onClick={() => router.back()} variant="outline">
                 <ArrowLeft className="mr-2 size-4" />
                 Go Back
@@ -182,7 +182,7 @@ export default function SubjectDetailPage() {
             <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
             <h3 className="mb-2 text-lg font-semibold">No Topics Available</h3>
             <p className="mb-4 text-muted-foreground">
-              This subject doesn't have any topics yet.
+              This subject doesn&apos;t have any topics yet.
             </p>
             <Button onClick={() => router.back()} variant="outline">
               <ArrowLeft className="mr-2 size-4" />
@@ -310,12 +310,12 @@ export default function SubjectDetailPage() {
         transition={{ delay: 0.2 }}
       >
         <Alert>
-          <BookOpen className="h-4 w-4" />
+          <BookOpen className="size-4" />
           <AlertDescription>
             Click on any topic above to view its lessons. You can also navigate to{" "}
             <Button
               variant="link"
-              className="p-0 h-auto"
+              className="h-auto p-0"
               onClick={() => router.push(`/dashboard/lessons?subject=${subjectSlug}`)}
             >
               the lessons page

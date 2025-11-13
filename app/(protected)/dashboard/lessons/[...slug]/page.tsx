@@ -2,19 +2,16 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { ArrowLeft, BookOpen, Loader2, CheckCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import { markLessonComplete, getTopicsBySubjectSlug } from "@/lib/api/lessons";
+import { Badge } from "@/components/ui/badge";
+import { markLessonComplete, getTopicsBySubjectSlug, getLessonContentBySlug } from "@/lib/api/lessons";
 import { getSubjectById } from "@/config/education";
 import { getTopicsForTerm } from "@/lib/types/lessons";
-import { LessonLayout } from "@/components/lessons/LessonLayout";
-import { LessonConceptsSidebar } from "@/components/lessons/LessonConceptsSidebar";
 import { LessonContent } from "@/components/lessons/LessonContent";
-import { LessonTocSidebar } from "@/components/lessons/LessonTocSidebar";
 import { LessonNavigation } from "@/components/lessons/LessonNavigation";
 import { TopicOverview } from "@/components/lessons/TopicOverview";
 import {
@@ -22,18 +19,17 @@ import {
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
 import { useToast } from "@/components/ui/use-toast";
+import { cn } from "@/lib/utils";
+import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { DashboardTableOfContents } from "@/components/shared/toc";
 import type { LessonContent as LessonContentType, TopicOverview as TopicOverviewType } from "@/lib/types/lessons";
+import type { TableOfContents } from "@/lib/toc";
 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  // Handle slug array: [subjectSlug, topicSlug] from catch-all route
-  const slugArray = params?.slug as string[] | string;
-  const slugParts = Array.isArray(slugArray) ? slugArray : (slugArray ? [slugArray] : []);
-  
-
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
@@ -48,10 +44,15 @@ export default function LessonPage() {
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
   const [previousUrl, setPreviousUrl] = useState<string | null>(null);
   const [nextUrl, setNextUrl] = useState<string | null>(null);
+  const [toc, setToc] = useState<TableOfContents>({});
 
   // Fetch lesson content - slug-based only
   useEffect(() => {
     const loadLesson = async () => {
+      // Handle slug array: [subjectSlug, topicSlug] from catch-all route
+      const slugArray = params?.slug as string[] | string;
+      const slugParts = Array.isArray(slugArray) ? slugArray : (slugArray ? [slugArray] : []);
+      
       if (slugParts.length !== 2) {
         if (slugParts.length > 0) {
           toast({
@@ -127,7 +128,7 @@ export default function LessonPage() {
     };
 
     loadLesson();
-  }, [slugParts, toast, router]);
+  }, [params?.slug, toast, router]);
 
   // Fetch all lessons to determine previous/next - slug-based only
   useEffect(() => {
@@ -234,8 +235,8 @@ export default function LessonPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="space-y-4 text-center">
           <Loader2 className="mx-auto size-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Loading lesson...</p>
         </div>
@@ -262,90 +263,122 @@ export default function LessonPage() {
     );
   }
 
+  const subjectName = lessonContent.subject || subject?.name || "Subject";
+  const lessonTitle = lessonContent.topic || lessonContent.title || "Lesson";
+  const lessonDescription = lessonContent.overview || topicOverview?.introduction || "";
+
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="size-4" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">
-              {lessonContent.topic || lessonContent.title || "Lesson"}
-            </h1>
+    <>
+      <MaxWidthWrapper className="pt-6 md:pt-10">
+        <div className="flex flex-col space-y-4">
+          <div className="flex items-center space-x-4">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.back()}
+              className="h-8 rounded-lg"
+            >
+              <ArrowLeft className="mr-2 size-4" />
+              Back
+            </Button>
             {subject && (
-              <p className="text-muted-foreground">
-                {lessonContent.subject || subject.name} • {lessonContent.class || classDisplay} • {lessonContent.term || termDisplay}
-              </p>
+              <Link
+                href={`/dashboard/subjects/${subjectSlug || ''}`}
+                className={cn(
+                  "h-8 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent",
+                  "inline-flex items-center"
+                )}
+              >
+                {subjectName}
+              </Link>
+            )}
+            <Badge variant="outline" className="h-8 rounded-lg">
+              {classDisplay} • {termDisplay}
+            </Badge>
+            {isCompleted && (
+              <Badge variant="default" className="h-8 rounded-lg">
+                <CheckCircle className="mr-1 size-3" />
+                Completed
+              </Badge>
             )}
           </div>
+          <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
+            {lessonTitle}
+          </h1>
+          {lessonDescription && (
+            <p className="text-base text-muted-foreground md:text-lg">
+              {lessonDescription}
+            </p>
+          )}
         </div>
-      </div>
+      </MaxWidthWrapper>
 
-      {/* 3-Column Layout */}
-      <LessonLayout
-        leftSidebar={
-          <LessonConceptsSidebar
-            concepts={lessonContent.concepts}
-            checkMarkers={lessonContent.check_markers}
-          />
-        }
-        mainContent={
-          <div className="space-y-6 pr-4">
-            {/* Topic Overview - Introduction to the lesson */}
-            {topicOverview && subjectSlug && topicSlug && (
-              <div className="space-y-4">
-                <div className="border-b pb-2">
-                  <h2 className="text-xl font-semibold">Topic Overview</h2>
-                  <p className="text-sm text-muted-foreground">
-                    Introduction to this lesson topic
-                  </p>
-                </div>
-                <TopicOverview 
-                  overview={topicOverview} 
-                  subjectSlug={subjectSlug}
-                  topicSlug={topicSlug}
-                />
-              </div>
-            )}
+      <div className="relative">
+        <div className="absolute top-52 w-full border-t" />
 
-            {/* Lesson Content */}
-            {lessonContent && (
-              <div className="space-y-4">
-                {topicOverview && (
+        <MaxWidthWrapper className="grid grid-cols-4 gap-10 pt-8 max-md:px-0">
+          <div className="relative col-span-4 mb-10 flex flex-col space-y-8 border-y bg-background md:rounded-xl md:border lg:col-span-3">
+            <div className="px-[.8rem] pb-10 pt-8 md:px-8">
+              {/* Topic Overview - Introduction to the lesson */}
+              {topicOverview && subjectSlug && topicSlug && (
+                <div className="mb-8 space-y-6">
                   <div className="border-b pb-2">
-                    <h2 className="text-xl font-semibold">Lesson Content</h2>
-                    <p className="text-sm text-muted-foreground">
-                      Detailed lesson materials and concepts
+                    <h2 className="text-2xl font-semibold">Topic Overview</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Introduction to this lesson topic
                     </p>
                   </div>
-                )}
-                <LessonContent
-                  content={lessonContent}
-                  onMarkComplete={handleMarkComplete}
-                  isCompleted={isCompleted}
+                  <TopicOverview 
+                    overview={topicOverview} 
+                    subjectSlug={subjectSlug}
+                    topicSlug={topicSlug}
+                  />
+                </div>
+              )}
+
+              {/* Lesson Content */}
+              {lessonContent && (
+                <div className="space-y-6">
+                  {topicOverview && (
+                    <div className="border-b pb-2">
+                      <h2 className="text-2xl font-semibold">Lesson Content</h2>
+                      <p className="mt-1 text-sm text-muted-foreground">
+                        Detailed lesson materials and concepts
+                      </p>
+                    </div>
+                  )}
+                  <LessonContent
+                    content={lessonContent}
+                    onMarkComplete={handleMarkComplete}
+                    isCompleted={isCompleted}
+                  />
+                </div>
+              )}
+
+              {/* Navigation */}
+              <div className="mt-12 border-t pt-8">
+                <LessonNavigation
+                  previousUrl={previousUrl}
+                  nextUrl={nextUrl}
                 />
               </div>
-            )}
-
-            <LessonNavigation
-              previousUrl={previousUrl}
-              nextUrl={nextUrl}
-            />
+            </div>
           </div>
-        }
-        rightSidebar={
-          <LessonTocSidebar
-            content={
-              lessonContent.content ||
-              lessonContent.concepts
-                ?.map((c) => c.description)
-                .join("\n\n")
-            }
-          />
-        }
-      />
-    </div>
+
+          <div className="sticky top-20 col-span-1 mt-52 hidden flex-col divide-y divide-muted self-start pb-24 lg:flex">
+            {toc?.items && toc.items.length > 0 ? (
+              <DashboardTableOfContents toc={toc} />
+            ) : (
+              <div className="space-y-2">
+                <p className="text-[15px] font-medium">On This Page</p>
+                <p className="text-sm text-muted-foreground">
+                  Table of contents will appear here
+                </p>
+              </div>
+            )}
+          </div>
+        </MaxWidthWrapper>
+      </div>
+    </>
   );
 }

@@ -18,12 +18,12 @@ import { useRouter } from "next/navigation";
 type Quiz = any;
 
 const getAvailableQuizzes = () => [];
-const getBestScore = () => 0;
+const getBestScore = (_quizId?: string) => ({ score: 0, totalPoints: 100, passed: false });
 const getCompletedQuizzes = () => [];
-const getLatestAttempt = () => null;
+const getLatestAttempt = (_quizId?: string) => null;
 const getPendingQuizzes = () => [];
 const getQuizStats = () => ({ total: 0, completed: 0, average: 0 });
-const getQuizzesByClassAndTerm = () => [];
+const getQuizzesByClassAndTerm = (_className?: string, _termName?: string): Quiz[] => [];
 import { motion } from "framer-motion";
 import {
   AlertCircle,

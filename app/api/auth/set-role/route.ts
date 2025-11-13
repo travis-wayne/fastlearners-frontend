@@ -1,11 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 
 import {
-  AUTH_TOKEN_COOKIE,
-  REG_TOKEN_COOKIE,
   clearRegTokenServer,
   setAuthCookiesServer,
 } from "@/lib/server/auth-cookies";
+import { AUTH_TOKEN_COOKIE, REG_TOKEN_COOKIE } from "@/lib/server/cookie-constants";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
 

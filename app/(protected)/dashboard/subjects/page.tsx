@@ -46,14 +46,14 @@ export default async function SubjectsPage() {
   const hasRegisteredSubjects = hasSubjects && hasSubjects.subjects && hasSubjects.subjects.length > 0;
 
   return (
-    <div className="container max-w-screen-2xl mx-auto">
+    <div className="container mx-auto max-w-screen-2xl">
       <ProfileChangeBanner />
       {!hasClass ? (
         // Step 1: Academic Setup
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">Welcome! Let's Get Started</h1>
-            <p className="text-muted-foreground mt-2">
+            <h1 className="text-3xl font-bold">Welcome! Let&apos;s Get Started</h1>
+            <p className="mt-2 text-muted-foreground">
               Set up your academic profile to begin learning
             </p>
           </div>
@@ -64,7 +64,7 @@ export default async function SubjectsPage() {
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold">Subject Registration</h1>
-            <p className="text-muted-foreground mt-2">
+            <p className="mt-2 text-muted-foreground">
               Select your subjects for {profile.class}
             </p>
           </div>
