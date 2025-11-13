@@ -27,9 +27,12 @@ import {
 import { useLessonsStore } from '@/lib/store/lessons';
 import { LessonContent, Concept, Example, Exercise, GeneralExercise } from '@/lib/types/lessons';
 import { cn } from '@/lib/utils';
+import { getLessonContentBySlug } from '@/lib/api/lessons';
 
 interface LessonViewerProps {
   lessonId?: number;
+  subjectSlug?: string;
+  topicSlug?: string;
   onBack?: () => void;
   autoLoad?: boolean;
 }
@@ -357,7 +360,7 @@ function LoadingSkeleton() {
   );
 }
 
-export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewerProps) {
+export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoad = true }: LessonViewerProps) {
   const {
     selectedLesson,
     isLoadingLessonContent,
@@ -365,23 +368,39 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
     completedSections,
     currentSection,
     progress,
-    fetchLessonContent,
+    fetchLessonContentBySlug,
+    setSelectedLesson,
     markSectionCompleted,
     setCurrentSection,
     clearSelectedLesson,
     clearError,
+    setError,
+    setIsLoadingLessonContent,
   } = useLessonsStore();
 
   useEffect(() => {
-    if (lessonId && autoLoad) {
-      fetchLessonContent(lessonId);
-    }
+    const loadLesson = async () => {
+      if (subjectSlug && topicSlug && autoLoad) {
+        try {
+          await fetchLessonContentBySlug(subjectSlug, topicSlug);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to load lesson');
+          setIsLoadingLessonContent(false);
+        }
+      } else if (lessonId && autoLoad) {
+        // NOTE: ID-based loading removed - use subjectSlug and topicSlug instead
+        setError('Lesson ID-based loading is no longer supported. Please provide subjectSlug and topicSlug.');
+        setIsLoadingLessonContent(false);
+      }
+    };
+
+    loadLesson();
 
     return () => {
       // Optional: Clear selected lesson when component unmounts
       // clearSelectedLesson();
     };
-  }, [lessonId, autoLoad, fetchLessonContent]);
+  }, [lessonId, subjectSlug, topicSlug, autoLoad, fetchLessonContentBySlug, setSelectedLesson, setError, setIsLoadingLessonContent]);
 
   const handleMarkCompleted = (sectionId: string) => {
     markSectionCompleted(sectionId);
@@ -444,6 +463,12 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
   }
 
   const lesson = selectedLesson;
+  
+  // Default optional fields to prevent runtime errors
+  const objectives = lesson.objectives || [];
+  const concepts = lesson.concepts || [];
+  const general_exercises = lesson.general_exercises || [];
+  const key_concepts = lesson.key_concepts || {};
 
   return (
     <div className="space-y-6">
@@ -515,11 +540,11 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
           </TabsTrigger>
           <TabsTrigger value="concepts" className="flex items-center gap-2">
             <Brain className="size-4" />
-            Concepts ({lesson.concepts.length})
+            Concepts ({concepts.length})
           </TabsTrigger>
           <TabsTrigger value="exercises" className="flex items-center gap-2">
             <Trophy className="size-4" />
-            Exercises ({lesson.general_exercises.length})
+            Exercises ({general_exercises.length})
           </TabsTrigger>
         </TabsList>
 
@@ -558,7 +583,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
           </Card>
 
           {/* Objectives */}
-          {lesson.objectives.length > 0 && (
+          {objectives.length > 0 && (
 <Card className="bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -567,7 +592,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {lesson.objectives.map((objective, index) => (
+                {objectives.map((objective, index) => (
                   <div key={index} className="space-y-3">
                     <p className="text-slate-700 dark:text-slate-300">
                       {objective.description}
@@ -604,7 +629,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
           )}
 
           {/* Key Concepts Summary */}
-          {Object.keys(lesson.key_concepts).length > 0 && (
+          {Object.keys(key_concepts).length > 0 && (
 <Card className="bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -614,7 +639,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(lesson.key_concepts).map(([concept, description]) => (
+                  {Object.entries(key_concepts).map(([concept, description]) => (
                     <div key={concept} className="border-l-4 border-blue-500 pl-4">
                       <h4 className="mb-1 font-semibold text-slate-900 dark:text-slate-100">
                         {concept}
@@ -674,8 +699,8 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
         </TabsContent>
 
         <TabsContent value="concepts" className="space-y-6">
-          {lesson.concepts.length > 0 ? (
-            lesson.concepts.map((concept) => (
+          {concepts.length > 0 ? (
+            concepts.map((concept) => (
               <ConceptSection
                 key={concept.id}
                 concept={concept}
@@ -696,9 +721,9 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
         </TabsContent>
 
         <TabsContent value="exercises" className="space-y-6">
-          {lesson.general_exercises.length > 0 ? (
+          {general_exercises.length > 0 ? (
             <>
-<Card className="bg-card">
+              <Card className="bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Trophy className="size-5 text-orange-600" />
@@ -711,7 +736,7 @@ export function LessonViewer({ lessonId, onBack, autoLoad = true }: LessonViewer
                   </p>
                   
                   <div className="space-y-4">
-                    {lesson.general_exercises.map((exercise, index) => (
+                    {general_exercises.map((exercise, index) => (
                       <ExerciseCard
                         key={exercise.id}
                         exercise={exercise}

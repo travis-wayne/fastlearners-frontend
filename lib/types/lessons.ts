@@ -7,6 +7,12 @@ export interface LessonMeta {
   weeks: Array<{ id: number; name: string }>;
 }
 
+export interface SubjectWithSlug {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 export interface Lesson {
   id: number;
   title: string;
@@ -19,6 +25,14 @@ export interface Lesson {
   updated_at: string;
   status?: "not_started" | "in_progress" | "completed";
   progress?: number;
+}
+
+export interface TopicItem {
+  id: number;
+  topic: string;
+  slug: string;
+  week: number;
+  order_index: number;
 }
 
 // Concept description structure
@@ -69,6 +83,36 @@ export interface GeneralExercise {
   updated_at?: string;
 }
 
+export interface TopicsByTerm {
+  first_term: TopicItem[];
+  second_term: TopicItem[];
+  third_term: TopicItem[];
+}
+
+/**
+ * Map internal term IDs to API keys
+ */
+export function mapTermIdToApiKey(termId: string): keyof TopicsByTerm {
+  const termKeyMap: Record<string, keyof TopicsByTerm> = {
+    'term1': 'first_term',
+    'term2': 'second_term',
+    'term3': 'third_term',
+  };
+  return termKeyMap[termId] || 'first_term';
+}
+
+/**
+ * Safely get topics for a term, defaulting to empty array if undefined
+ */
+export function getTopicsForTerm(
+  topics: TopicsByTerm | undefined,
+  termId: string
+): TopicItem[] {
+  if (!topics) return [];
+  const apiKey = mapTermIdToApiKey(termId);
+  return topics[apiKey] || [];
+}
+
 // Concept structure
 export interface Concept {
   id: number;
@@ -86,6 +130,14 @@ export interface Concept {
 export interface LessonObjective {
   description: string;
   points: string[];
+}
+
+export interface TopicOverview {
+  introduction: string;
+  concepts_count: number;
+  summary: string;
+  application: string;
+  general_exercises: string;
 }
 
 export interface LessonContent {
@@ -137,5 +189,26 @@ export interface LessonMetaResponse {
   success: boolean;
   message: string;
   content: LessonMeta | null;
+  code: number;
+}
+
+export interface SubjectsWithSlugsResponse {
+  success: boolean;
+  message: string;
+  content: { subjects: SubjectWithSlug[] } | null;
+  code: number;
+}
+
+export interface TopicsResponse {
+  success: boolean;
+  message: string;
+  content: { topics: TopicsByTerm } | null;
+  code: number;
+}
+
+export interface TopicOverviewResponse {
+  success: boolean;
+  message: string;
+  content: { overview: TopicOverview } | null;
   code: number;
 }

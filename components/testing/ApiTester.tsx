@@ -18,10 +18,6 @@ import {
   AlertTriangle 
 } from 'lucide-react';
 import {
-  getLessonsMetadata,
-  getLessons,
-  getLesson,
-  getLessonContent,
   getStudentDashboard,
   getGuardianDashboard,
   getGuestDashboard,
@@ -30,6 +26,11 @@ import {
   updateSelectiveSubjects,
   getErrorMessage,
 } from '@/lib/api/lessons-api';
+import {
+  getSubjectsWithSlugs,
+  getTopicsBySubjectSlug,
+  getLessonContentBySlug,
+} from '@/lib/api/lessons';
 
 interface TestResult {
   endpoint: string;
@@ -99,22 +100,20 @@ export function ApiTester() {
   };
 
   // Individual test functions
-  const testLessonsMetadata = () => 
-    testEndpoint('Get Lessons Metadata', getLessonsMetadata, 'GET');
+  const testGetSubjectsWithSlugs = () =>
+    testEndpoint('Get Subjects With Slugs', getSubjectsWithSlugs, 'GET');
 
-  const testGetLessons = () =>
-    testEndpoint('Get Lessons', () => getLessons({
-      class: '4',
-      subject: '1', 
-      term: '1',
-      week: '1'
-    }), 'POST');
+  const testGetTopicsBySubjectSlug = () =>
+    testEndpoint('Get Topics By Subject Slug', () => {
+      // Use a test subject slug - adjust based on your test data
+      return getTopicsBySubjectSlug('mathematics');
+    }, 'GET');
 
-  const testGetLesson = () =>
-    testEndpoint('Get Specific Lesson', () => getLesson(2), 'GET');
-
-  const testGetLessonContent = () =>
-    testEndpoint('Get Lesson Content', () => getLessonContent(2), 'GET');
+  const testGetLessonContentBySlug = () =>
+    testEndpoint('Get Lesson Content By Slug', () => {
+      // Use test slugs - adjust based on your test data
+      return getLessonContentBySlug('mathematics', 'algebra');
+    }, 'GET');
 
   const testStudentDashboard = () =>
     testEndpoint('Student Dashboard', getStudentDashboard, 'GET');
@@ -142,10 +141,9 @@ export function ApiTester() {
     setResults([]);
 
     const tests = [
-      testLessonsMetadata,
-      testGetLessons,
-      testGetLesson,
-      testGetLessonContent,
+      testGetSubjectsWithSlugs,
+      testGetTopicsBySubjectSlug,
+      testGetLessonContentBySlug,
       testStudentDashboard,
       testGuardianDashboard,
       testGuestDashboard,
@@ -258,7 +256,7 @@ export function ApiTester() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-lg">
               <Database className="size-4" />
-              Lessons Management
+              Lessons Management (Slug-based)
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -266,34 +264,26 @@ export function ApiTester() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={testLessonsMetadata}
+                onClick={testGetSubjectsWithSlugs}
                 className="w-full justify-start"
               >
-                Test Lessons Metadata
+                Test Get Subjects With Slugs
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={testGetLessons}
+                onClick={testGetTopicsBySubjectSlug}
                 className="w-full justify-start"
               >
-                Test Get Lessons
+                Test Get Topics By Subject Slug
               </Button>
               <Button
                 variant="outline"
                 size="sm"
-                onClick={testGetLesson}
+                onClick={testGetLessonContentBySlug}
                 className="w-full justify-start"
               >
-                Test Get Specific Lesson
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={testGetLessonContent}
-                className="w-full justify-start"
-              >
-                Test Get Lesson Content
+                Test Get Lesson Content By Slug
               </Button>
             </div>
           </CardContent>

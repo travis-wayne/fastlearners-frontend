@@ -3,7 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getLessonContent as getContent, getErrorMessage } from "@/lib/api/lessons-api";
+// NOTE: getLessonContent removed from lessons-api.ts - this page needs admin-only endpoint
+// This superadmin page should use a separate admin client that calls superadmin endpoints directly
+import { getErrorMessage } from "@/lib/api/lessons-api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -26,11 +28,14 @@ export default function LessonContentPage() {
       setLoading(true);
       setError(null);
       try {
-        const res = await getContent(id);
-        if (mounted) {
-          if (res.success) setContent(res.content);
-          else setError(res.message || "Failed to load content");
-        }
+        // TODO: Replace with admin-only endpoint
+        // getLessonContent removed - this superadmin page needs admin-only client
+        setError("Admin endpoint not implemented. getLessonContent() was removed from student app.");
+        // const res = await getContent(id);
+        // if (mounted) {
+        //   if (res.success) setContent(res.content);
+        //   else setError(res.message || "Failed to load content");
+        // }
       } catch (e: any) {
         if (mounted) setError(getErrorMessage(e));
       } finally {

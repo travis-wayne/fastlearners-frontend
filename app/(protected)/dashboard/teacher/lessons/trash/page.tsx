@@ -13,7 +13,10 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { getTrashedLessons, type Lesson } from "@/lib/api/lesson-service";
+// NOTE: getTrashedLessons removed from lesson-service.ts
+// This function hits non-documented superadmin endpoints and should be in admin-only client
+// This teacher page should use admin-only endpoints or be moved to admin-only app
+import type { Lesson } from "@/lib/api/lesson-service";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -50,13 +53,16 @@ export default function LessonTrashPage() {
       setLoading(true);
       setError(null);
 
-      const response = await getTrashedLessons();
-
-      if (response.success) {
-        setTrashedLessons(response.content || []);
-      } else {
-        setError(response.message || "Failed to fetch trashed lessons");
-      }
+      // TODO: Replace with admin-only endpoint
+      // getTrashedLessons removed - this teacher page needs admin-only client
+      setError("Admin endpoint not implemented. getTrashedLessons() was removed from student app.");
+      setTrashedLessons([]);
+      // const response = await getTrashedLessons();
+      // if (response.success) {
+      //   setTrashedLessons(response.content || []);
+      // } else {
+      //   setError(response.message || "Failed to fetch trashed lessons");
+      // }
     } catch (err: any) {
       // Handle the case where the endpoint doesn't exist yet
       if (err.response?.status === 404) {

@@ -1,94 +1,87 @@
 import { NextRequest, NextResponse } from "next/server";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
+import { UPSTREAM_BASE } from "@/lib/api/client";
+import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
-    return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
-    );
+    return createErrorResponse("Unauthorized", 401);
   }
+
+  const requestId = crypto.randomUUID();
 
   try {
     const body = await req.json();
     const { subject } = body;
 
     if (!subject || typeof subject !== "number") {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Invalid request: subject ID is required",
-          content: null,
-          code: 400,
-        },
-        { status: 400 }
-      );
+      return createErrorResponse("Invalid request: subject ID is required", 400, undefined, requestId);
     }
 
-    const upstream = await fetch(
-      `${UPSTREAM_BASE}/subjects/update-compulsory-selective`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify({ subject }),
-        cache: "no-store",
-      }
-    );
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
-    const data = await upstream.json();
-
-    // Wrap upstream errors for security
-    if (!upstream.ok) {
-      // Log detailed error server-side
-      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-        console.error("Update compulsory selective upstream error:", {
-          status: upstream.status,
-          data,
-        });
-      }
-
-      // Return sanitized error response
-      const requestId = crypto.randomUUID();
-      return NextResponse.json(
+    try {
+      const upstream = await fetch(
+        `${UPSTREAM_BASE}/subjects/update-compulsory-selective`,
         {
-          success: false,
-          message: data.message || "Failed to update compulsory selective",
-          content: null,
-          code: upstream.status,
-          requestId, // For traceability
-          // Include sanitized error code if available
-          ...(data.code && { errorCode: data.code }),
-        },
-        { status: upstream.status }
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: JSON.stringify({ subject }),
+          cache: "no-store",
+          signal: controller.signal,
+        }
       );
-    }
 
-    // Forward successful response
-    return NextResponse.json(data, { status: upstream.status });
+      clearTimeout(timeoutId);
+      const data = await upstream.json();
+
+      if (!upstream.ok) {
+        return handleUpstreamError(upstream, data, requestId);
+      }
+
+      return NextResponse.json(data, { status: upstream.status });
+    } catch (fetchError: any) {
+      clearTimeout(timeoutId);
+      
+      // Retry on network errors
+      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+        try {
+          const retryUpstream = await fetch(
+            `${UPSTREAM_BASE}/subjects/update-compulsory-selective`,
+            {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${auth.token}`,
+              },
+              body: JSON.stringify({ subject }),
+              cache: "no-store",
+            }
+          );
+
+          const retryData = await retryUpstream.json();
+          
+          if (!retryUpstream.ok) {
+            return handleUpstreamError(retryUpstream, retryData, requestId);
+          }
+
+          return NextResponse.json(retryData, { status: retryUpstream.status });
+        } catch (retryError) {
+          return handleApiError(retryError, "Network error: Failed to update compulsory selective after retry", requestId);
+        }
+      }
+      
+      throw fetchError;
+    }
   } catch (err: any) {
-    // Log detailed error server-side
-    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-      console.error("Update compulsory selective error:", err);
-    }
-    
-    const requestId = crypto.randomUUID();
-    return NextResponse.json(
-      {
-        success: false,
-        message: "An error occurred while updating compulsory selective",
-        content: null,
-        code: 500,
-        requestId, // For traceability
-      },
-      { status: 500 }
-    );
+    return handleApiError(err, "Failed to update compulsory selective", requestId);
   }
 }
 

@@ -22,6 +22,15 @@ const nextConfig = {
       },
     ],
   },
+  // Fix Contentlayer file-watching on Windows
+  webpack: (config) => {
+    config.watchOptions = {
+      ...config.watchOptions,
+      poll: true,
+      ignored: /node_modules/,
+    };
+    return config;
+  },
 };
 
 module.exports = withContentlayer(nextConfig);

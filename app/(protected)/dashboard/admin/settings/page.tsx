@@ -1,15 +1,26 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { AlertCircle, Loader2 } from "lucide-react";
 
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { SharedSettingsPage } from "@/components/settings/shared-settings-page";
 
 export default function SettingsPage() {
+  const router = useRouter();
   const { hasPermission, userRole } = usePermissionCheck();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+
   const canAccessAdminSettings =
     hasPermission("manage_platform") || userRole === "admin";
+
+  useEffect(() => {
+    if (canAccessAdminSettings) {
+      setIsRedirecting(true);
+      router.push("/dashboard/settings");
+    }
+  }, [canAccessAdminSettings, router]);
 
   if (!canAccessAdminSettings) {
     return (
@@ -23,11 +34,15 @@ export default function SettingsPage() {
     );
   }
 
-  return (
-    <SharedSettingsPage
-      customTitle="Administrator Settings"
-      customDescription="Manage your administrator profile, security, and account settings."
-      hideAccountTab={true}
-    />
-  );
+  if (isRedirecting) {
+    return (
+      <div className="flex items-center justify-center p-8">
+        <Loader2 className="size-6 animate-spin mr-2" />
+        <span>Redirecting to settings...</span>
+      </div>
+    );
+  }
+
+  // Fallback (should not reach here due to redirect)
+  return null;
 }

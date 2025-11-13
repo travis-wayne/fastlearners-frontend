@@ -1,4 +1,5 @@
-import { UserRole } from "@/lib/types/auth";
+import { UserRole, User } from "@/lib/types/auth";
+import { isProfileComplete } from "@/lib/utils/profile-completion";
 
 /**
  * Single source of truth for role-based routing and access control
@@ -15,15 +16,17 @@ export interface RoleConfig {
 
 export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
   guest: {
-    homeRoute: "/auth/set-role",
+    homeRoute: "/onboarding",
     allowedRoutes: [
       "/auth/login",
       "/auth/register",
       "/auth/set-role",
       "/onboarding",
+      "/onboarding/complete-profile",
       "/auth",
       "/auth/role", // Role selection during onboarding (legacy)
       "/role", // Role selection during onboarding (legacy)
+      "/dashboard/settings", // Allow guests to access settings
     ],
     restrictedRoutes: ["/dashboard", "/superadmin", "/admin", "/teacher"],
     requiresOnboarding: true,
@@ -42,12 +45,14 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       "/lessons",
       "/exercises",
       "/profile",
+      // Onboarding access is permitted only while profile is incomplete, enforced by RBACUtils.canAccessRoute()
+      "/onboarding",
+      "/onboarding/complete-profile",
     ],
     restrictedRoutes: [
       "/superadmin",
       "/admin",
       "/teacher",
-      "/onboarding", // Cannot go back to onboarding
     ],
     requiresOnboarding: false,
     canSwitchRoles: false, // Permanent choice - can only switch from Guest → Student once
@@ -62,12 +67,14 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       "/progress", // View children's progress
       "/profile",
       "/guardian-tools",
+      // Onboarding access is permitted only while profile is incomplete, enforced by RBACUtils.canAccessRoute()
+      "/onboarding",
+      "/onboarding/complete-profile",
     ],
     restrictedRoutes: [
       "/superadmin",
       "/admin",
       "/teacher",
-      "/onboarding", // Cannot go back to onboarding
     ],
     requiresOnboarding: false,
     canSwitchRoles: false, // Permanent choice - can only switch from Guest → Guardian once
@@ -78,6 +85,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
     allowedRoutes: [
       "/dashboard/teacher",
       "/dashboard",
+      "/dashboard/settings",
       "/teacher",
       "/lessons",
       "/uploads",
@@ -207,7 +215,21 @@ export class RBACUtils {
   /**
    * Check if a user can access a specific route
    */
-  static canAccessRoute(userRole: UserRole, route: string): boolean {
+  static canAccessRoute(user: User | null, route: string): boolean {
+    if (!user) return false;
+    const userRole = user.role[0];
+
+    // Special handling for onboarding routes
+    if (route.startsWith("/onboarding")) {
+      // Only allow guest, student, and guardian (when incomplete) to access onboarding
+      if (userRole === "guest" || userRole === "student" || userRole === "guardian") {
+        if (userRole === "guest") return true;
+        return !isProfileComplete(user);
+      }
+      // For admin, teacher, and superadmin, respect restrictedRoutes
+      return false;
+    }
+
     const config = ROLE_CONFIGURATIONS[userRole];
 
     // Superadmin can access everything

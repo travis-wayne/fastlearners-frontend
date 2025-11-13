@@ -2,16 +2,28 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import {
-  getAvailableQuizzes,
-  getBestScore,
-  getCompletedQuizzes,
-  getLatestAttempt,
-  getPendingQuizzes,
-  getQuizStats,
-  getQuizzesByClassAndTerm,
-  type Quiz,
-} from "@/data/mock-quizzes";
+// Mock quizzes removed - replace with real API endpoints when available
+// import {
+//   getAvailableQuizzes,
+//   getBestScore,
+//   getCompletedQuizzes,
+//   getLatestAttempt,
+//   getPendingQuizzes,
+//   getQuizStats,
+//   getQuizzesByClassAndTerm,
+//   type Quiz,
+// } from "@/data/mock-quizzes";
+
+// Temporary types and stubs until real API is implemented
+type Quiz = any;
+
+const getAvailableQuizzes = () => [];
+const getBestScore = () => 0;
+const getCompletedQuizzes = () => [];
+const getLatestAttempt = () => null;
+const getPendingQuizzes = () => [];
+const getQuizStats = () => ({ total: 0, completed: 0, average: 0 });
+const getQuizzesByClassAndTerm = () => [];
 import { motion } from "framer-motion";
 import {
   AlertCircle,

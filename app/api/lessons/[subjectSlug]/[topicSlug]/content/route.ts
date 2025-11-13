@@ -5,7 +5,7 @@ import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { subjectSlug: string; topicSlug: string } }
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -15,10 +15,10 @@ export async function GET(
   const requestId = crypto.randomUUID();
 
   try {
-    const lessonId = params.id;
+    const { subjectSlug, topicSlug } = params;
 
-    if (!lessonId) {
-      return createErrorResponse("Invalid request: lesson ID is required", 400, undefined, requestId);
+    if (!subjectSlug || !topicSlug) {
+      return createErrorResponse("Invalid request: subjectSlug and topicSlug are required", 400, undefined, requestId);
     }
 
     const controller = new AbortController();
@@ -26,7 +26,7 @@ export async function GET(
 
     try {
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/${lessonId}/content`,
+        `${UPSTREAM_BASE}/lessons/${subjectSlug}/${topicSlug}/content`,
         {
           method: "GET",
           headers: {
@@ -45,7 +45,13 @@ export async function GET(
         return handleUpstreamError(upstream, data, requestId);
       }
 
-      return NextResponse.json(data, { status: upstream.status });
+      // Normalize response shape: map data.content.lesson to content
+      const normalizedData = {
+        ...data,
+        content: data.content?.lesson || data.content,
+      };
+
+      return NextResponse.json(normalizedData, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
       
@@ -53,7 +59,7 @@ export async function GET(
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/${lessonId}/content`,
+            `${UPSTREAM_BASE}/lessons/${subjectSlug}/${topicSlug}/content`,
             {
               method: "GET",
               headers: {
@@ -70,7 +76,13 @@ export async function GET(
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
-          return NextResponse.json(retryData, { status: retryUpstream.status });
+          // Normalize response shape: map retryData.content.lesson to content
+          const normalizedRetryData = {
+            ...retryData,
+            content: retryData.content?.lesson || retryData.content,
+          };
+
+          return NextResponse.json(normalizedRetryData, { status: retryUpstream.status });
         } catch (retryError) {
           return handleApiError(retryError, "Network error: Failed to fetch lesson content after retry", requestId);
         }
@@ -82,4 +94,3 @@ export async function GET(
     return handleApiError(err, "Failed to fetch lesson content", requestId);
   }
 }
-

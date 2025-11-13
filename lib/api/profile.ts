@@ -11,7 +11,7 @@ export interface UserProfile {
   name: string;
   email: string;
   phone: string;
-  role: "student" | "guest" | "guardian" | "teacher" | "admin" | "superadmin";
+  role: string[];
   email_verified_at: string | null;
   phone_verified_at: string | null;
   created_at: string;
@@ -19,6 +19,18 @@ export interface UserProfile {
   // Guardian-specific fields
   child_email?: string;
   child_phone?: string;
+  // Additional fields from API
+  username: string | null;
+  school: string | null;
+  class: string | null;
+  discipline: string | null;
+  date_of_birth: string | null;
+  country: string | null;
+  state: string | null;
+  city: string | null;
+  address: string | null;
+  gender: string | null;
+  status: string;
 }
 
 export interface ProfileResponse {
@@ -30,13 +42,23 @@ export interface ProfileResponse {
 }
 
 export interface ProfileEditData {
-  name: string;
-  email: string;
-  phone: string;
-  role: "student" | "guest" | "guardian";
+  name?: string;
+  phone?: string;
+  role?: "student" | "guest" | "guardian";
   // Required only for guardians
   child_email?: string;
   child_phone?: string;
+  // Additional fields
+  username?: string;
+  school?: string;
+  class?: string;
+  discipline?: string;
+  date_of_birth?: string;
+  country?: string;
+  state?: string;
+  city?: string;
+  address?: string;
+  gender?: string;
 }
 
 export interface ChangePasswordData {
@@ -48,9 +70,6 @@ export interface ChangePasswordData {
 export interface ChangePasswordResponse {
   success: boolean;
   message: string;
-  content: {
-    user: UserProfile;
-  };
 }
 
 export interface ApiError {
@@ -124,11 +143,11 @@ export const updateProfile = async (
 
     const data = await response.json();
     
-    if (!data.success || !data.user) {
+    if (!data.success || !data.content?.user) {
       throw new Error(data.message || "Failed to update profile");
     }
 
-    return data.user as UserProfile;
+    return data.content.user as UserProfile;
   } catch (error: any) {
     if (error.message) {
       throw error;
@@ -143,7 +162,7 @@ export const updateProfile = async (
  */
 export const changePassword = async (
   passwordData: ChangePasswordData,
-): Promise<UserProfile> => {
+): Promise<void> => {
   try {
     const response = await fetch("/api/profile/edit/password", {
       method: "POST",
@@ -174,7 +193,8 @@ export const changePassword = async (
       throw new Error(data.message || "Failed to change password");
     }
 
-    return data.content.user;
+    // Password change successful, no user data returned
+    return;
   } catch (error: any) {
     if (error.message) {
       throw error;
@@ -184,40 +204,87 @@ export const changePassword = async (
 };
 
 /**
+ * Get profile metadata (classes, roles, disciplines)
+ */
+export const getProfileData = async (): Promise<{ classes: Array<{ name: string }>; roles: string[]; discipline: Array<{ name: string }> }> => {
+  try {
+    const response = await fetch("/api/profile/data", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to fetch profile data");
+    }
+    
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || "Failed to fetch profile data");
+    }
+
+    return data.content;
+  } catch (error: any) {
+    if (error.message) {
+      throw error;
+    }
+    throw new Error("Failed to fetch profile metadata");
+  }
+};
+
+/**
  * Validate profile data before submission
+ * Only enforces fields relevant to the current role context
  */
 export const validateProfileData = (data: ProfileEditData): string[] => {
   const errors: string[] = [];
 
-  if (!data.name.trim()) {
+  // Basic validations - always required
+  if (!data.name?.trim()) {
     errors.push("Name is required");
   }
 
-  if (!data.email.trim()) {
-    errors.push("Email is required");
-  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) {
-    errors.push("Please enter a valid email address");
+  // Phone format validation if provided (not universally required)
+  // Let backend handle nuanced requirements
+
+  // Role validation - only for student/guardian (not guest)
+  if (data.role && !['student', 'guardian'].includes(data.role)) {
+    errors.push("Role must be student or guardian");
   }
 
-  if (!data.phone.trim()) {
-    errors.push("Phone number is required");
+  // Student-specific validations (only if role is student)
+  if (data.role === "student") {
+    // Student fields are optional - backend will enforce what's needed
+    // Only validate format if provided
   }
 
-  if (!data.role) {
-    errors.push("Role is required");
-  }
-
-  // Guardian-specific validation
+  // Guardian-specific validation (only if role is guardian)
   if (data.role === "guardian") {
-    if (!data.child_email?.trim()) {
-      errors.push("Child email is required for guardians");
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.child_email)) {
+    if (data.child_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.child_email)) {
       errors.push("Please enter a valid child email address");
     }
+    // Let backend enforce required fields for guardians
+  }
 
-    if (!data.child_phone?.trim()) {
-      errors.push("Child phone number is required for guardians");
-    }
+  // Format validations for optional fields (only if provided)
+  if (data.discipline && !['Art', 'Commercial', 'Science'].includes(data.discipline)) {
+    errors.push("Discipline must be Art, Commercial, or Science");
+  }
+
+  if (data.class && !['JSS1', 'JSS2', 'JSS3', 'SSS1', 'SSS2', 'SSS3'].includes(data.class)) {
+    errors.push("Class must be JSS1-JSS3 or SSS1-SSS3");
+  }
+
+  if (data.date_of_birth && !/^\d{2}\/\d{2}\/\d{4}$/.test(data.date_of_birth)) {
+    errors.push("Date of birth must be in DD/MM/YYYY format");
+  }
+
+  if (data.gender && !['male', 'female'].includes(data.gender)) {
+    errors.push("Gender must be male or female");
   }
 
   return errors;

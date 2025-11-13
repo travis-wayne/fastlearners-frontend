@@ -17,6 +17,7 @@ import { UserAccountNav } from "@/components/layout/user-account-nav";
 import { MarqueeMessages } from "@/components/navigation/marquee-messages";
 import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
+import { ProfileCompletionBanner } from "@/components/onboarding/profile-completion-banner";
 import { AcademicProvider } from "@/components/providers/academic-context";
 import { FontProvider } from "@/context/font-provider";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
@@ -81,6 +82,10 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
               <UserAccountNav />
             </MaxWidthWrapper>
           </header>
+
+          <div className="sticky top-14 z-40 lg:top-[60px]">
+            <ProfileCompletionBanner />
+          </div>
 
           <main className="flex-1 p-4 pb-16 xl:px-8">
             <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-0 lg:gap-6">

@@ -1,10 +1,6 @@
 import { create } from 'zustand';
 import { devtools, persist } from 'zustand/middleware';
 import {
-  getLessonsMetadata,
-  getLessons,
-  getLesson,
-  getLessonContent,
   type ClassItem,
   type Subject,
   type Term,
@@ -13,10 +9,13 @@ import {
   type LessonDetail,
   type LessonContent,
   type LessonFilters,
-  type MetadataResponse,
-  type LessonsListResponse,
   getErrorMessage,
 } from '@/lib/api/lessons-api';
+import {
+  getSubjectsWithSlugs,
+  getTopicsBySubjectSlug,
+  getLessonContentBySlug,
+} from '@/lib/api/lessons';
 
 interface LessonsStore {
   // Metadata
@@ -56,14 +55,16 @@ interface LessonsStore {
   // API actions
   fetchMetadata: () => Promise<void>;
   fetchLessons: (page?: number) => Promise<void>;
-  fetchLessonById: (lessonId: number) => Promise<void>;
-  fetchLessonContent: (lessonId: number) => Promise<void>;
+  fetchLessonContentBySlug: (subjectSlug: string, topicSlug: string) => Promise<void>;
   
   // UI actions
   setCurrentSection: (section: 'overview' | 'concepts' | 'exercises') => void;
   markSectionCompleted: (sectionId: string) => void;
+  setSelectedLesson: (lesson: LessonContent) => void;
   clearSelectedLesson: () => void;
   clearError: () => void;
+  setError: (error: string | null) => void;
+  setIsLoadingLessonContent: (isLoading: boolean) => void;
   
   // Progress calculation
   calculateProgress: () => void;
@@ -117,18 +118,18 @@ export const useLessonsStore = create<LessonsStore>()(
           set({ isLoadingMetadata: true, error: null });
           
           try {
-            const response = await getLessonsMetadata();
-            if (response.success) {
-              set({
-                classes: response.content.classes,
-                subjects: response.content.subjects,
-                terms: response.content.terms,
-                weeks: response.content.weeks,
-                isLoadingMetadata: false,
-              });
-            } else {
-              throw new Error(response.message);
-            }
+            // Use getProfileData from lib/api/profile.ts instead of removed getLessonsMetadata
+            const { getProfileData } = await import('@/lib/api/profile');
+            const profileData = await getProfileData();
+            
+            // Map profile data to metadata format
+            set({
+              classes: profileData.classes || [],
+              subjects: [], // Subjects should come from getSubjectsWithSlugs()
+              terms: [], // Terms should come from academic context
+              weeks: [], // Weeks should come from academic context
+              isLoadingMetadata: false,
+            });
           } catch (error) {
             console.error('Failed to fetch lessons metadata:', error);
             set({
@@ -139,89 +140,26 @@ export const useLessonsStore = create<LessonsStore>()(
         },
 
         fetchLessons: async (page = 1) => {
-          const { filters } = get();
-          
-          // Check if all required filters are set
-          if (!filters.class || !filters.subject || !filters.term || !filters.week) {
-            set({ 
-              error: 'Please select class, subject, term, and week to view lessons',
-              lessons: [],
-            });
-            return;
-          }
-          
-          set({ isLoadingLessons: true, error: null });
-          
-          try {
-            const response = await getLessons(filters);
-            
-            if (response.success && response.content) {
-              set({
-                lessons: response.content.lessons,
-                currentPage: response.content.meta.current_page,
-                totalPages: response.content.meta.last_page,
-                totalLessons: response.content.meta.total,
-                isLoadingLessons: false,
-              });
-            } else {
-              // Handle case where no lessons found
-              set({
-                lessons: [],
-                currentPage: 1,
-                totalPages: 1,
-                totalLessons: 0,
-                isLoadingLessons: false,
-                error: response.message || 'No lessons found',
-              });
-            }
-          } catch (error) {
-            console.error('Failed to fetch lessons:', error);
-            set({
-              error: getErrorMessage(error),
-              lessons: [],
-              isLoadingLessons: false,
-            });
-          }
+          // fetchLessons removed - use slug-based navigation instead
+          // Use getSubjectsWithSlugs() and getTopicsBySubjectSlug() from lib/api/lessons.ts
+          set({ 
+            error: 'Please use slug-based navigation to view lessons. Use getSubjectsWithSlugs() and getTopicsBySubjectSlug()',
+            lessons: [],
+            isLoadingLessons: false,
+          });
         },
 
-        fetchLessonById: async (lessonId) => {
-          set({ isLoading: true, error: null });
-          
-          try {
-            const response = await getLesson(lessonId);
-            
-            if (response.success && response.content) {
-              // Note: This only gets basic lesson details, not full content
-              set({
-                selectedLesson: { 
-                  ...response.content, 
-                  concepts: [], 
-                  general_exercises: [], 
-                  check_markers: [] 
-                } as LessonContent,
-                isLoading: false,
-              });
-            } else {
-              throw new Error(response.message);
-            }
-          } catch (error) {
-            console.error('Failed to fetch lesson:', error);
-            set({
-              error: getErrorMessage(error),
-              isLoading: false,
-            });
-          }
-        },
-
-        fetchLessonContent: async (lessonId) => {
+        fetchLessonContentBySlug: async (subjectSlug, topicSlug) => {
           set({ isLoadingLessonContent: true, error: null });
           
           try {
-            const response = await getLessonContent(lessonId);
+            const response = await getLessonContentBySlug(subjectSlug, topicSlug);
             
             if (response.success && response.content) {
+              // Map the slug-based response to LessonContent format
+              const lessonContent = response.content;
               set({
-                selectedLesson: response.content,
+                selectedLesson: lessonContent as LessonContent,
                 isLoadingLessonContent: false,
                 completedSections: [], // Reset completed sections for new lesson
                 currentSection: 'overview',
@@ -230,7 +168,7 @@ export const useLessonsStore = create<LessonsStore>()(
               // Calculate initial progress
               get().calculateProgress();
             } else {
-              throw new Error(response.message);
+              throw new Error(response.message || 'Failed to fetch lesson content');
             }
           } catch (error) {
             console.error('Failed to fetch lesson content:', error);
@@ -259,6 +197,17 @@ export const useLessonsStore = create<LessonsStore>()(
           get().calculateProgress();
         },
 
+        setSelectedLesson: (lesson) => {
+          set({
+            selectedLesson: lesson,
+            isLoadingLessonContent: false,
+            completedSections: [],
+            currentSection: 'overview',
+            error: null,
+          });
+          get().calculateProgress();
+        },
+
         clearSelectedLesson: () => {
           set({
             selectedLesson: null,
@@ -270,6 +219,14 @@ export const useLessonsStore = create<LessonsStore>()(
 
         clearError: () => {
           set({ error: null });
+        },
+
+        setError: (error) => {
+          set({ error });
+        },
+
+        setIsLoadingLessonContent: (isLoading) => {
+          set({ isLoadingLessonContent: isLoading });
         },
 
         calculateProgress: () => {

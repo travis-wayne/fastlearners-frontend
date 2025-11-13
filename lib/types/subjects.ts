@@ -17,6 +17,7 @@ export interface ApiSubjectsResponse {
 export interface SubjectItem {
   id: number;
   name: string;
+  slug?: string; // Optional for backward compatibility
 }
 
 // Legacy alias for backward compatibility
@@ -87,11 +88,6 @@ export interface DashboardData {
   code: number;
 }
 
-export interface ProfilePageData {
-  classes: Array<{ name: string }>;
-  roles: string[];
-  discipline: Array<{ name: string }>;
-}
 
 // Frontend State Types
 export interface SubjectRegistrationState {

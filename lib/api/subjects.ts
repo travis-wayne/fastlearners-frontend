@@ -129,7 +129,7 @@ export async function getSubjects(token: string): Promise<ApiSubjectsResponse['c
 export async function updateCompulsorySelective(
   token: string,
   subjectId: number
-): Promise<void> {
+): Promise<{ success: boolean; message: string }> {
   const response = await fetch(`${API_BASE}/subjects/update-compulsory-selective`, {
     method: 'POST',
     headers: {
@@ -144,13 +144,15 @@ export async function updateCompulsorySelective(
     const error = await response.json();
     throw new Error(error.message || 'Failed to update compulsory selective');
   }
+
+  return { success: true, message: 'Compulsory selective updated successfully' };
 }
 
 // Update selective subjects (JSS: 4, SSS: 5) - using FormData
 export async function updateSelectiveSubjects(
   token: string,
   subjectIds: number[]
-): Promise<void> {
+): Promise<{ success: boolean; message: string }> {
   const formData = new FormData();
   subjectIds.forEach(id => {
     formData.append('subjects[]', id.toString());
@@ -169,6 +171,8 @@ export async function updateSelectiveSubjects(
     const error = await response.json();
     throw new Error(error.message || 'Failed to update selective subjects');
   }
+
+  return { success: true, message: 'Selective subjects updated successfully' };
 }
 
 // Get dashboard data
@@ -353,3 +357,7 @@ export async function updateSelectiveSubjectsClient(
 // Note: The direct backend functions (with token parameter) are the primary API.
 // The Client functions (using internal routes) are kept for backward compatibility.
 // For new code, prefer the direct functions when you have access to the token.
+
+// Note: After updating subjects, callers should refresh the user profile
+// by calling useAuthStore.getState().hydrate() to ensure auth store
+// has the latest subject selections.

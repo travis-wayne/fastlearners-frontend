@@ -175,57 +175,13 @@ export interface LessonFilters {
 
 
 // API functions
-export const getLessonsMetadata = async (): Promise<ApiResponse<MetadataResponse>> => {
-  const response = await fetch('/api/lessons/meta', {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-    },
-  });
-  return await response.json();
-};
-
-export const getLessons = async (
-  filters: LessonFilters
-): Promise<ApiResponse<LessonsListResponse>> => {
-  const response = await fetch('/api/lessons/list', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(filters),
-  });
-  return await response.json();
-};
-
-export const getLesson = async (
-  lessonId: number
-): Promise<ApiResponse<LessonDetail>> => {
-  const response = await fetch(`/api/lessons/${lessonId}`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-    },
-  });
-  return await response.json();
-};
-
-export const getLessonContent = async (
-  lessonId: number
-): Promise<ApiResponse<LessonContent>> => {
-  const response = await fetch(`/api/lessons/${lessonId}/content`, {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      'Accept': 'application/json',
-    },
-  });
-  return await response.json();
-};
+// getLessonsMetadata removed - use getProfileData() from lib/api/profile.ts instead
+// getLessons removed - use slug-based endpoints from lib/api/lessons.ts:
+// - getSubjectsWithSlugs()
+// - getTopicsBySubjectSlug(subjectSlug)
+// - getLessonContentBySlug(subjectSlug, topicSlug)
+// getLesson removed - use slug-based endpoints from lib/api/lessons.ts instead
+// getLessonContent removed - use getLessonContentBySlug() from lib/api/lessons.ts instead
 
 // Student/Guardian/Guest Dashboard APIs
 export interface StudentDashboardData {

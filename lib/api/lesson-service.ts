@@ -257,65 +257,19 @@ export const uploadAllLessonFiles = async (files: {
 };
 
 // Get lessons data
-export const getLessons = async (
-  classId?: number,
-  subjectId?: number,
-): Promise<ApiResponse<GetLessonsResponse>> => {
-  const body: any = {};
-  if (classId) body.class_id = classId;
-  if (subjectId) body.subject_id = subjectId;
+// getLessons removed - use slug-based endpoints instead:
+// - getSubjectsWithSlugs()
+// - getTopicsBySubjectSlug(subjectSlug)
+// - getLessonContentBySlug(subjectSlug, topicSlug)
+// getLessonContent removed - use getLessonContentBySlug() from lib/api/lessons.ts instead
+// This function called /api/lessons/[id] which proxies to superadmin endpoints not in student docs
 
-  const response = await fetch("/api/lessons/list", {
-    method: "POST",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: Object.keys(body).length > 0 ? JSON.stringify(body) : undefined,
-  });
-
-  return await response.json();
-};
-
-export const getLessonContent = async (
-  lessonId: number,
-): Promise<ApiResponse<Lesson>> => {
-  const response = await fetch(`/api/lessons/${lessonId}`, {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  return await response.json();
-};
-
-// Delete/Trash functions
-export const trashLesson = async (lessonId: number): Promise<ApiResponse> => {
-  const response = await fetch(`/api/lessons/${lessonId}/trash`, {
-    method: "DELETE",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  return await response.json();
-};
-
-export const getTrashedLessons = async (): Promise<ApiResponse<Lesson[]>> => {
-  const response = await fetch("/api/lessons/trashed", {
-    method: "GET",
-    credentials: "include",
-    headers: {
-      Accept: "application/json",
-    },
-  });
-
-  return await response.json();
-};
+// Trash functions removed - these hit superadmin endpoints not in student docs
+// If staff tools require them, segregate under an admin-only feature flag or separate admin app
+// Functions that should be in admin-only client:
+// - trashLesson(lessonId)
+// - getTrashedLessons()
+// - getLessonContent(lessonId) - use slug-based endpoints for student app
 
 // CSV validation helpers
 export const validateCSVFormat = (

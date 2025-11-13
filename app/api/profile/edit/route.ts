@@ -42,22 +42,13 @@ export async function POST(req: NextRequest) {
               ...body,
             };
             
-            // Handle role - ensure it's set properly
-            // Backend may expect string or array, so we'll send as-is but ensure it has a value
-            if (!updateData.role || (Array.isArray(updateData.role) && updateData.role.length === 0)) {
-              updateData.role = 'student';
-            } else if (Array.isArray(updateData.role) && updateData.role.includes('guest')) {
-              // Convert guest to student
-              updateData.role = updateData.role.map(r => r === 'guest' ? 'student' : r);
-            } else if (typeof updateData.role === 'string' && updateData.role === 'guest') {
-              updateData.role = 'student';
+            // Only forward role if it's explicitly provided in the request body
+            // Preserve existing role without coercion
+            if (!body.role) {
+              // Keep existing role from profile
+              updateData.role = profileData.content.user.role;
             }
             
-            // Remove discipline for non-SSS classes
-            const classCategory = body.class?.startsWith('SSS') ? 'sss' : 'jss';
-            if (classCategory !== 'sss' && updateData.discipline) {
-              delete updateData.discipline;
-            }
           }
         }
       } catch (profileError) {
@@ -67,6 +58,11 @@ export async function POST(req: NextRequest) {
           console.warn("Failed to fetch current profile for merge:", profileError);
         }
       }
+    }
+    
+    // Always remove discipline for non-SSS classes (outside hasOnlyAcademicFields path)
+    if (updateData.class && !updateData.class.startsWith('SSS')) {
+      delete updateData.discipline;
     }
     
     // Validate discipline if provided
@@ -125,8 +121,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: true,
-          user: data?.content?.user || null,
           message: data?.message || "Profile updated successfully",
+          content: {
+            user: data?.content?.user || null,
+          },
         },
         { status: 200 }
       );
@@ -166,8 +164,10 @@ export async function POST(req: NextRequest) {
           return NextResponse.json(
             {
               success: true,
-              user: retryData?.content?.user || null,
               message: retryData?.message || "Profile updated successfully",
+              content: {
+                user: retryData?.content?.user || null,
+              },
             },
             { status: 200 }
           );

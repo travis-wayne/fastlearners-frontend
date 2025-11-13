@@ -1,4 +1,5 @@
-// app/api/lessons/[id]/complete/route.ts - Mark lesson as complete
+// app/api/lessons/by-id/[id]/complete/route.ts - Mark lesson as complete
+// Moved from [id]/complete to avoid routing conflict with [subjectSlug]
 // Currently uses mock data. See docs/API_ENDPOINTS.md for backend implementation guide.
 
 import { NextRequest, NextResponse } from "next/server";

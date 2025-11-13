@@ -892,6 +892,26 @@ export function getTermById(id: string): Term | undefined {
 }
 
 /**
+ * Normalize class strings from API to internal keys
+ * Maps SS1 → SSS1, SS2 → SSS2, SS3 → SSS3
+ * This handles cases where the API returns "SS1" but internal config uses "SSS1"
+ */
+export function normalizeClassString(className: string | null | undefined): string | null {
+  if (!className) return null;
+  
+  // Normalize to handle SS1/SS2/SS3 → SSS1/SSS2/SSS3
+  const normalized = className.trim();
+  
+  // Map SS1/SS2/SS3 to SSS1/SSS2/SSS3 (without track)
+  // For classes with track, they should already be in correct format
+  if (normalized.match(/^SS[123]$/i)) {
+    return normalized.replace(/^SS/i, 'SSS');
+  }
+  
+  return normalized;
+}
+
+/**
  * Mapping from upstream API subject IDs to config subject IDs
  * This provides a definitive mapping to avoid fragile name-based matching
  * 

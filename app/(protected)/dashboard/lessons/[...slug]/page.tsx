@@ -8,8 +8,9 @@ import { ArrowLeft, BookOpen, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { getLessonContent, fetchLessons, markLessonComplete } from "@/lib/api/lessons";
+import { markLessonComplete, getLessonContentBySlug, getTopicsBySubjectSlug } from "@/lib/api/lessons";
 import { getSubjectById } from "@/config/education";
+import { getTopicsForTerm } from "@/lib/types/lessons";
 import { LessonLayout } from "@/components/lessons/LessonLayout";
 import { LessonConceptsSidebar } from "@/components/lessons/LessonConceptsSidebar";
 import { LessonContent } from "@/components/lessons/LessonContent";
@@ -27,7 +28,9 @@ export default function LessonPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { toast } = useToast();
-  const lessonId = params?.id as string;
+  // Handle slug array: [subjectSlug, topicSlug] from catch-all route
+  const slugArray = params?.slug as string[] | string;
+  const slugParts = Array.isArray(slugArray) ? slugArray : (slugArray ? [slugArray] : []);
   
 
   const { currentClass, currentTerm } = useAcademicContext();
@@ -37,17 +40,39 @@ export default function LessonPage() {
     useState<LessonContentType | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
-  const [allLessons, setAllLessons] = useState<any[]>([]);
-  const [currentLessonIndex, setCurrentLessonIndex] = useState(-1);
+  const [isSlugBased, setIsSlugBased] = useState(false);
+  const [subjectSlug, setSubjectSlug] = useState<string | null>(null);
+  const [topicSlug, setTopicSlug] = useState<string | null>(null);
+  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
+  const [nextUrl, setNextUrl] = useState<string | null>(null);
 
-  // Fetch lesson content
+  // Fetch lesson content - slug-based only
   useEffect(() => {
     const loadLesson = async () => {
-      if (!lessonId) return;
+      if (slugParts.length !== 2) {
+        if (slugParts.length > 0) {
+          toast({
+            title: "Error",
+            description: "Invalid lesson URL. Please use format: /dashboard/lessons/{subjectSlug}/{topicSlug}",
+            variant: "destructive",
+          });
+        }
+        setIsLoading(false);
+        if (slugParts.length > 0) {
+          router.push("/dashboard/lessons");
+        }
+        return;
+      }
 
       setIsLoading(true);
+      const [subjSlug, topSlug] = slugParts;
+      setIsSlugBased(true);
+      setSubjectSlug(subjSlug);
+      setTopicSlug(topSlug);
+      
       try {
-        const response = await getLessonContent(Number(lessonId));
+        const response = await getLessonContentBySlug(subjSlug, topSlug);
+        
         if (response.success && response.content) {
           setLessonContent(response.content);
         } else {
@@ -69,43 +94,51 @@ export default function LessonPage() {
     };
 
     loadLesson();
-  }, [lessonId, toast]);
+  }, [slugParts, toast, router]);
 
-  // Fetch all lessons to determine previous/next
+  // Fetch all lessons to determine previous/next - slug-based only
   useEffect(() => {
     const loadLessons = async () => {
-      if (!currentClass || !currentTerm || !lessonContent) return;
+      if (!currentClass || !currentTerm || !lessonContent || !isSlugBased || !subjectSlug || !topicSlug) return;
 
       try {
-        // Use subject_id from lessonContent, or fallback to searchParams, or derive from allLessons
-        let subjectId: string;
-        if (lessonContent.subject_id) {
-          subjectId = String(lessonContent.subject_id);
-        } else if (searchParams.get("subjectId")) {
-          subjectId = searchParams.get("subjectId")!;
-        } else {
-          // Try to find subject_id from the lesson in allLessons if available
-          const currentLesson = allLessons.find((l) => l.id === Number(lessonId));
-          subjectId = currentLesson?.subject_id ? String(currentLesson.subject_id) : "";
-        }
-
-        if (!subjectId) {
-          console.error("Cannot determine subject_id for lesson");
-          return;
-        }
-
-        const response = await fetchLessons({
-          class: currentClass.id,
-          subject: subjectId,
-          term: currentTerm.id,
-          week: "all",
-        });
-
-        if (response.success && response.content?.data) {
-          const lessons = response.content.data;
-          setAllLessons(lessons);
-          const index = lessons.findIndex((l) => l.id === Number(lessonId));
-          setCurrentLessonIndex(index);
+        // For slug-based, fetch topics by subject slug
+        const topicsResponse = await getTopicsBySubjectSlug(subjectSlug);
+        if (topicsResponse.success && topicsResponse.content) {
+          const topics = topicsResponse.content.topics;
+          // Use helper to safely get topics for current term
+          const termTopics = getTopicsForTerm(topics, currentTerm.id);
+          const currentIndex = termTopics.findIndex(t => t.slug === topicSlug);
+          
+          // Compute prev/next within current term
+          let prevSlug: string | null = currentIndex > 0 ? termTopics[currentIndex - 1].slug : null;
+          let nextSlug: string | null = currentIndex >= 0 && currentIndex < termTopics.length - 1 ? termTopics[currentIndex + 1].slug : null;
+          
+          // If at boundaries within a term, peek into adjacent term arrays for cross-term navigation
+          if (!prevSlug && currentIndex === 0) {
+            // At start of current term, check previous term
+            const prevTermId = currentTerm.id === 'term2' ? 'term1' : currentTerm.id === 'term3' ? 'term2' : null;
+            if (prevTermId) {
+              const prevTermTopics = getTopicsForTerm(topics, prevTermId);
+              if (prevTermTopics.length > 0) {
+                prevSlug = prevTermTopics[prevTermTopics.length - 1].slug;
+              }
+            }
+          }
+          
+          if (!nextSlug && currentIndex === termTopics.length - 1) {
+            // At end of current term, check next term
+            const nextTermId = currentTerm.id === 'term1' ? 'term2' : currentTerm.id === 'term2' ? 'term3' : null;
+            if (nextTermId) {
+              const nextTermTopics = getTopicsForTerm(topics, nextTermId);
+              if (nextTermTopics.length > 0) {
+                nextSlug = nextTermTopics[0].slug;
+              }
+            }
+          }
+          
+          setPreviousUrl(prevSlug ? `/dashboard/lessons/${subjectSlug}/${prevSlug}` : null);
+          setNextUrl(nextSlug ? `/dashboard/lessons/${subjectSlug}/${nextSlug}` : null);
         }
       } catch (error) {
         console.error("Failed to load lessons list:", error);
@@ -113,12 +146,13 @@ export default function LessonPage() {
     };
 
     loadLessons();
-  }, [currentClass, currentTerm, lessonContent, lessonId, searchParams, allLessons]);
+  }, [currentClass, currentTerm, lessonContent, isSlugBased, subjectSlug, topicSlug]);
 
   const handleMarkComplete = async () => {
+    if (!lessonContent) return;
     setIsMarkingComplete(true);
     try {
-      const result = await markLessonComplete(Number(lessonId));
+      const result = await markLessonComplete(lessonContent.id);
       
       if (result.success) {
         toast({
@@ -138,9 +172,11 @@ export default function LessonPage() {
         }
         
         // Refresh lesson content to get latest state
-        const response = await getLessonContent(Number(lessonId));
-        if (response.success && response.content) {
-          setLessonContent(response.content);
+        if (isSlugBased && subjectSlug && topicSlug) {
+          const response = await getLessonContentBySlug(subjectSlug, topicSlug);
+          if (response.success && response.content) {
+            setLessonContent(response.content);
+          }
         }
       } else {
         throw new Error(result.message);
@@ -156,21 +192,9 @@ export default function LessonPage() {
     }
   };
 
-  // Get subject using subject_id from lessonContent or from allLessons
-  const subjectId = lessonContent?.subject_id 
-    ? String(lessonContent.subject_id)
-    : allLessons.find((l) => l.id === Number(lessonId))?.subject_id
-    ? String(allLessons.find((l) => l.id === Number(lessonId))!.subject_id)
-    : null;
-  
+  // Get subject using subject_id from lessonContent
+  const subjectId = lessonContent?.subject_id ? String(lessonContent.subject_id) : null;
   const subject = subjectId ? getSubjectById(subjectId) : null;
-
-  const previousLessonId =
-    currentLessonIndex > 0 ? allLessons[currentLessonIndex - 1]?.id : null;
-  const nextLessonId =
-    currentLessonIndex >= 0 && currentLessonIndex < allLessons.length - 1
-      ? allLessons[currentLessonIndex + 1]?.id
-      : null;
 
   const isCompleted =
     lessonContent?.check_markers?.every((m: any) => m.completed) || false;
@@ -240,8 +264,8 @@ export default function LessonPage() {
               isCompleted={isCompleted}
             />
             <LessonNavigation
-              previousLessonId={previousLessonId}
-              nextLessonId={nextLessonId}
+              previousUrl={previousUrl}
+              nextUrl={nextUrl}
             />
           </div>
         }
