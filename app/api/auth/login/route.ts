@@ -107,7 +107,7 @@ export async function POST(req: NextRequest) {
     const expiresAt = Date.now() + 7 * 24 * 60 * 60 * 1000; // 7 days
 
     const res = NextResponse.json({ success: true, user });
-    setAuthCookiesServer(res, { token: access_token, user, expiresAt });
+    setAuthCookiesServer(res, { token: access_token, expiresAt });
     return res;
   } catch (e: any) {
     console.error("[Login Route] Unexpected error:", e);
