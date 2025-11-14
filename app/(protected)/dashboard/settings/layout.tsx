@@ -53,9 +53,9 @@ export default function SettingsLayout({
   if (isLoading) {
     return (
       <Main fixed>
-        <div className='flex items-center justify-center h-64'>
+        <div className='flex h-64 items-center justify-center'>
           <div className='text-center'>
-            <div className='animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto'></div>
+            <div className='mx-auto size-8 animate-spin rounded-full border-b-2 border-primary'></div>
             <p className='mt-2 text-muted-foreground'>Loading settings...</p>
           </div>
         </div>
@@ -83,7 +83,7 @@ export default function SettingsLayout({
         )}
       </div>
       <Separator className='my-4 lg:my-6' />
-      <div className='flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-y-0 lg:space-x-12'>
+      <div className='flex flex-1 flex-col space-y-2 overflow-hidden md:space-y-2 lg:flex-row lg:space-x-12 lg:space-y-0'>
         <aside className='top-0 lg:sticky lg:w-1/5'>
           <SidebarNav items={sidebarNavItems} />
         </aside>

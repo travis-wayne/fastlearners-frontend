@@ -133,18 +133,18 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="bg-background min-h-screen">
+    <div className="min-h-screen bg-background">
       {/* Mobile menu button */}
-      <div className="fixed top-4 left-4 z-50 lg:hidden">
+      <div className="fixed left-4 top-4 z-50 lg:hidden">
         <Button variant="outline" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          {sidebarOpen ? <X className="size-4" /> : <Menu className="size-4" />}
         </Button>
       </div>
 
       {/* Sidebar */}
       <div
         className={cn(
-          "bg-card fixed inset-y-0 left-0 z-40 w-64 transform border-r transition-transform duration-200 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 z-40 w-64 border-r bg-card transition duration-200 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}>
         <div className="p-6">

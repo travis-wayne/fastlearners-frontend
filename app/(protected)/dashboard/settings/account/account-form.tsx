@@ -27,8 +27,8 @@ export function AccountForm() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-balance">Password</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-balance text-2xl font-semibold">Password</h1>
+        <p className="mt-1 text-muted-foreground">
           Remember, your password is your digital key to your account. Keep it safe, keep it secure!
         </p>
       </div>
@@ -44,7 +44,7 @@ export function AccountForm() {
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <Label className="text-base">Account Status</Label>
-              <p className="text-muted-foreground text-sm">Your account is currently {user?.status}</p>
+              <p className="text-sm text-muted-foreground">Your account is currently {user?.status}</p>
             </div>
             <Badge {...getStatusBadgeProps(user?.status || 'inactive')}>
               {user?.status}
@@ -54,7 +54,7 @@ export function AccountForm() {
           <div className="flex items-center justify-between">
             <div className="space-y-1">
               <Label className="text-base">Account Created</Label>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 {user?.created_at ? new Date(user.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A'}
               </p>
             </div>

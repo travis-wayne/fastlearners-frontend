@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 
 import { RBACUtils } from "@/lib/rbac/role-config";
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
+import { User } from "@/lib/types/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -55,9 +56,10 @@ export default function AuthDebugPage() {
       `  RBACUtils.hasPermission(${testRole}, 'TEACHER'):`,
       RBACUtils.hasPermission(testRole, "TEACHER"),
     );
+    const testUser = { role: [testRole] } as User;
     console.log(
       `  RBACUtils.canAccessRoute(${testRole}, '/admin/lessons'):`,
-      RBACUtils.canAccessRoute(testRole, "/admin/lessons"),
+      RBACUtils.canAccessRoute(testUser, "/admin/lessons"),
     );
 
     console.log("\n📋 Permission Hook Results:");

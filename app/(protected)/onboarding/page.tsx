@@ -35,7 +35,7 @@ export default function OnboardingPage() {
         <h1 className="text-2xl font-bold tracking-tight">
           Welcome, {user.name || user.email?.split('@')[0] || 'there'}!
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="mt-1 text-muted-foreground">
           Complete your profile to unlock the full Fast Learner experience.
         </p>
       </div>
@@ -46,7 +46,7 @@ export default function OnboardingPage() {
             <div>
               <CardTitle>Profile Completion</CardTitle>
               <CardDescription>
-                You're {percentage}% done! Fill in the remaining details to get started.
+                You&apos;re {percentage}% done! Fill in the remaining details to get started.
               </CardDescription>
             </div>
             <div className="text-right">
@@ -60,11 +60,11 @@ export default function OnboardingPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div>
-            <h3 className="text-sm font-medium mb-3">What you'll get:</h3>
+            <h3 className="mb-3 text-sm font-medium">What you&apos;ll get:</h3>
             <ul className="space-y-2">
               {benefits.map((benefit, index) => (
                 <li key={index} className="flex items-center gap-3 text-sm">
-                  <benefit.icon className="h-4 w-4 text-primary flex-shrink-0" />
+                  <benefit.icon className="size-4 shrink-0 text-primary" />
                   <span>{benefit.text}</span>
                 </li>
               ))}
@@ -77,7 +77,7 @@ export default function OnboardingPage() {
               className="flex-1"
             >
               Complete Profile
-              <ArrowRight className="ml-2 h-4 w-4" />
+              <ArrowRight className="ml-2 size-4" />
             </Button>
             <Button
               variant="outline"

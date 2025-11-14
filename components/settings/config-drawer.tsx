@@ -135,7 +135,7 @@ function RadioGroupItem({
     >
       <div
         className={cn(
-          'ring-border relative rounded-[6px] ring-[1px]',
+          'relative rounded-[6px] ring-1 ring-border',
           'group-data-[state=checked]:ring-primary group-data-[state=checked]:shadow-2xl',
           'group-focus-visible:ring-2'
         )}

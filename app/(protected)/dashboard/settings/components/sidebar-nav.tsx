@@ -52,10 +52,10 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
         </Select>
       </div>
 
-      <ScrollArea className='bg-background hidden w-full min-w-40 px-1 py-2 md:block'>
+      <ScrollArea className='hidden w-full min-w-40 bg-background px-1 py-2 md:block'>
         <nav
           className={cn(
-            'flex space-x-2 py-1 lg:flex-col lg:space-y-1 lg:space-x-0',
+            'flex space-x-2 py-1 lg:flex-col lg:space-x-0 lg:space-y-1',
             className
           )}
           {...props}
@@ -66,10 +66,10 @@ export function SidebarNav({ className, items, ...props }: SidebarNavProps) {
               href={item.href}
               className={cn(
                 buttonVariants({ variant: 'ghost' }),
+                'justify-start',
                 pathname.startsWith(item.href)
                   ? 'bg-muted hover:bg-accent'
-                  : 'hover:bg-accent hover:underline',
-                'justify-start'
+                  : 'hover:bg-accent hover:underline'
               )}
             >
               <span className='me-2'>{item.icon}</span>

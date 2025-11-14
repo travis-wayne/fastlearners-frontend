@@ -154,7 +154,7 @@ export function SimpleSubjectSelector() {
     return (
       <Card>
         <CardContent className="flex items-center justify-center p-8">
-          <Loader2 className="w-6 h-6 animate-spin text-primary mr-2" />
+          <Loader2 className="mr-2 size-6 animate-spin text-primary" />
           <span>Loading subjects...</span>
         </CardContent>
       </Card>
@@ -164,7 +164,7 @@ export function SimpleSubjectSelector() {
   if (!subjectsData) {
     return (
       <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
+        <AlertCircle className="size-4" />
         <AlertDescription>
           Failed to load subjects. Please try again.
         </AlertDescription>
@@ -190,7 +190,7 @@ export function SimpleSubjectSelector() {
               </div>
               {compulsoryComplete && (
                 <Badge variant="default" className="bg-green-600">
-                  <CheckCircle2 className="w-4 h-4 mr-1" />
+                  <CheckCircle2 className="mr-1 size-4" />
                   Completed
                 </Badge>
               )}
@@ -199,7 +199,7 @@ export function SimpleSubjectSelector() {
           <CardContent className="space-y-4">
             {compulsoryComplete ? (
               <Alert>
-                <CheckCircle2 className="h-4 w-4" />
+                <CheckCircle2 className="size-4" />
                 <AlertDescription>
                   Your compulsory selective subject has been selected and cannot be changed.
                 </AlertDescription>
@@ -222,7 +222,7 @@ export function SimpleSubjectSelector() {
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{subject.name}</span>
                         {selectedCompulsory === subject.id && (
-                          <CheckCircle2 className="w-5 h-5 text-primary" />
+                          <CheckCircle2 className="size-5 text-primary" />
                         )}
                       </div>
                     </button>
@@ -237,7 +237,7 @@ export function SimpleSubjectSelector() {
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                       Saving...
                     </>
                   ) : (
@@ -264,7 +264,7 @@ export function SimpleSubjectSelector() {
               <div className="flex items-center gap-2">
                 {selectiveComplete && (
                   <Badge variant="default" className="bg-green-600">
-                    <CheckCircle2 className="w-4 h-4 mr-1" />
+                    <CheckCircle2 className="mr-1 size-4" />
                     Completed
                   </Badge>
                 )}
@@ -279,7 +279,7 @@ export function SimpleSubjectSelector() {
           <CardContent className="space-y-4">
             {selectiveComplete ? (
               <Alert>
-                <CheckCircle2 className="h-4 w-4" />
+                <CheckCircle2 className="size-4" />
                 <AlertDescription>
                   Your selective subjects have been selected and cannot be changed.
                 </AlertDescription>
@@ -288,7 +288,7 @@ export function SimpleSubjectSelector() {
               <>
                 {selectedSelective.length < requiredSelectiveCount && (
                   <Alert>
-                    <AlertCircle className="h-4 w-4" />
+                    <AlertCircle className="size-4" />
                     <AlertDescription>
                       Please select {requiredSelectiveCount - selectedSelective.length} more subject(s)
                     </AlertDescription>
@@ -318,9 +318,9 @@ export function SimpleSubjectSelector() {
                         <div className="flex items-center justify-between">
                           <span className="font-medium">{subject.name}</span>
                           {isSelected ? (
-                            <CheckCircle2 className="w-5 h-5 text-primary" />
+                            <CheckCircle2 className="size-5 text-primary" />
                           ) : (
-                            <Circle className="w-5 h-5 text-muted-foreground" />
+                            <Circle className="size-5 text-muted-foreground" />
                           )}
                         </div>
                       </button>
@@ -336,12 +336,12 @@ export function SimpleSubjectSelector() {
                 >
                   {isSubmitting ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="mr-2 size-4 animate-spin" />
                       Saving...
                     </>
                   ) : (
                     <>
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
+                      <CheckCircle2 className="mr-2 size-4" />
                       Save Selective Subjects ({selectedSelective.length}/{requiredSelectiveCount})
                     </>
                   )}
@@ -355,7 +355,7 @@ export function SimpleSubjectSelector() {
       {/* Summary */}
       {(compulsoryComplete || selectiveComplete) && (
         <Alert>
-          <CheckCircle2 className="h-4 w-4" />
+          <CheckCircle2 className="size-4" />
           <AlertDescription>
             {compulsoryComplete && selectiveComplete
               ? 'All subject selections are complete!'

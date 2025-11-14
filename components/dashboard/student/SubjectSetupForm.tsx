@@ -605,7 +605,7 @@ export function SubjectSetupForm({
       {/* Subject Count Tracker */}
       {classId && (
         <div className="rounded-lg border bg-card p-4">
-          <div className="flex items-center justify-between mb-2">
+          <div className="mb-2 flex items-center justify-between">
             <h3 className="text-sm font-semibold">Subject Selection Progress</h3>
             <span className={`text-sm font-medium ${
               totalSelected === expectedTotal ? "text-green-600" : "text-muted-foreground"
@@ -615,7 +615,7 @@ export function SubjectSetupForm({
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="mb-1 flex items-center justify-between">
                 <span className="text-muted-foreground">Core Subjects</span>
                 <span className={`font-medium ${
                   coreSubjectIds.length === requiredCoreCount ? "text-green-600" : "text-orange-600"
@@ -629,7 +629,7 @@ export function SubjectSetupForm({
               />
             </div>
             <div>
-              <div className="flex items-center justify-between mb-1">
+              <div className="mb-1 flex items-center justify-between">
                 <span className="text-muted-foreground">Elective Subjects</span>
                 <span className={`font-medium ${
                   electiveIds.length === requiredElectiveCountForTracker ? "text-green-600" : "text-orange-600"
@@ -778,7 +778,7 @@ export function SubjectSetupForm({
                           : "border-muted hover:border-primary/50"
                       }`}
                     >
-                      <h3 className="font-semibold mb-2 capitalize">{track} Track</h3>
+                      <h3 className="mb-2 font-semibold capitalize">{track} Track</h3>
                       <p className="text-sm text-muted-foreground">
                         {track === "science" && "For students pursuing medicine, engineering, or science-related fields"}
                         {track === "arts" && "For students interested in law, languages, or social sciences"}
@@ -813,7 +813,7 @@ export function SubjectSetupForm({
               <CardContent>
                 {isLoadingSubjects || !apiSubjectsData ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    <Loader2 className="size-6 animate-spin text-muted-foreground" />
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -910,7 +910,7 @@ export function SubjectSetupForm({
               <CardContent>
                 {isLoadingSubjects || !apiSubjectsData ? (
                   <div className="flex items-center justify-center py-8">
-                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                    <Loader2 className="size-6 animate-spin text-muted-foreground" />
                   </div>
                 ) : (
                   <div className="space-y-6">
@@ -1070,25 +1070,25 @@ export function SubjectSetupForm({
           onClick={handleBack}
           disabled={currentStep === 1 || isSubmitting}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 size-4" />
           Back
         </Button>
 
         {currentStep < STEPS.length ? (
           <Button type="button" onClick={handleNext}>
             Next
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 size-4" />
           </Button>
         ) : (
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 Submitting...
               </>
             ) : (
               <>
-                <CheckCircle className="mr-2 h-4 w-4" />
+                <CheckCircle className="mr-2 size-4" />
                 Confirm & Submit
               </>
             )}

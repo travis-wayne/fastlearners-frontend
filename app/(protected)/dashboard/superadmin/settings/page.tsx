@@ -37,7 +37,7 @@ export default function SettingsPage() {
   if (isRedirecting) {
     return (
       <div className="flex items-center justify-center p-8">
-        <Loader2 className="size-6 animate-spin mr-2" />
+        <Loader2 className="mr-2 size-6 animate-spin" />
         <span>Redirecting to settings...</span>
       </div>
     );

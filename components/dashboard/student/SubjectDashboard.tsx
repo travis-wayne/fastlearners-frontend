@@ -425,7 +425,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
           <div className="flex items-center gap-2">
             <Link href="/dashboard/subjects/manage">
               <Button variant="outline">
-                <Settings className="mr-2 h-4 w-4" />
+                <Settings className="mr-2 size-4" />
                 Manage
               </Button>
             </Link>

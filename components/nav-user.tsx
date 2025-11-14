@@ -97,7 +97,7 @@ export function NavUser({ user }: NavUserProps) {
                 size='lg'
                 className='w-full justify-start gap-2 p-2 data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
               >
-                <Avatar className='h-8 w-8 rounded-lg'>
+                <Avatar className='size-8 rounded-lg'>
                   <AvatarImage src={avatar} alt={name} />
                   <AvatarFallback className='rounded-lg'>
                     {getInitials(user.name, user.email)}
@@ -118,7 +118,7 @@ export function NavUser({ user }: NavUserProps) {
             >
               <DropdownMenuLabel className='p-0 font-normal'>
                 <div className='flex items-center gap-2 px-1 py-1.5 text-start text-sm'>
-                  <Avatar className='h-8 w-8 rounded-lg'>
+                  <Avatar className='size-8 rounded-lg'>
                     <AvatarImage src={avatar} alt={name} />
                     <AvatarFallback className='rounded-lg'>
                       {getInitials(user.name, user.email)}

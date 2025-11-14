@@ -46,9 +46,9 @@ export default function ManageSubjectsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="text-center space-y-4">
-          <Loader2 className="size-8 animate-spin text-primary mx-auto" />
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <div className="space-y-4 text-center">
+          <Loader2 className="mx-auto size-8 animate-spin text-primary" />
           <p className="text-muted-foreground">Loading...</p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export default function ManageSubjectsPage() {
         </div>
 
         <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
+          <AlertTriangle className="size-4" />
           <AlertDescription>
             {profileError || "Your profile doesn't have a class set. Please update your profile first."}
           </AlertDescription>
@@ -121,7 +121,7 @@ export default function ManageSubjectsPage() {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-blue-800 dark:text-blue-200">
-            <ul className="list-disc list-inside space-y-1 text-sm">
+            <ul className="list-inside list-disc space-y-1 text-sm">
               <li>
                 Your class ({user.class}) and discipline ({user.discipline || "N/A"}) are taken from your profile
               </li>

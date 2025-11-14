@@ -40,7 +40,7 @@ export default function CompleteProfilePage() {
 
   if (authLoading || !user) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
+      <div className="flex min-h-[400px] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
           <Loader2 className="size-8 animate-spin text-primary" />
           <span className="text-sm text-muted-foreground">Loading...</span>
@@ -64,7 +64,7 @@ export default function CompleteProfilePage() {
           </Button>
           <div>
             <h1 className="text-2xl font-bold tracking-tight">Complete Your Profile</h1>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="mt-1 text-sm text-muted-foreground">
               Fill in your information to get the most out of Fast Learner
             </p>
           </div>
