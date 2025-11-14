@@ -17,11 +17,11 @@ import { useRouter } from "next/navigation";
 // Temporary types and stubs until real API is implemented
 type Quiz = any;
 
-const getAvailableQuizzes = () => [];
+const getAvailableQuizzes = (): Quiz[] => [];
 const getBestScore = (_quizId?: string) => ({ score: 0, totalPoints: 100, passed: false });
-const getCompletedQuizzes = () => [];
+const getCompletedQuizzes = (): Quiz[] => [];
 const getLatestAttempt = (_quizId?: string) => null;
-const getPendingQuizzes = () => [];
+const getPendingQuizzes = (): Quiz[] => [];
 const getQuizStats = () => ({ total: 0, completed: 0, average: 0 });
 const getQuizzesByClassAndTerm = (_className?: string, _termName?: string): Quiz[] => [];
 import { motion } from "framer-motion";
