@@ -7,8 +7,6 @@ import { AlertCircle, BookOpen, ChevronRight, Loader2 } from "lucide-react";
 
 import type {
   TopicItem,
-  TopicItem,
-  TopicsByTerm,
   TopicsByTerm,
 } from "@/lib/types/lessons";
 import {
