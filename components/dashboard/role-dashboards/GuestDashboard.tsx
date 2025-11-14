@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 import { format } from "date-fns";
 import { ArrowRight, BookOpen, History, ListChecks } from "lucide-react";
 
-import { useAuthStore } from "@/store/authStore";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -17,7 +17,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-function formatDisplayName(user?: { name?: string | null; username?: string | null; email?: string | null }) {
+function formatDisplayName(user?: {
+  name?: string | null;
+  username?: string | null;
+  email?: string | null;
+}) {
   if (!user) return "Learner";
   const candidates = [user.name, user.username, user.email].filter(
     (v): v is string => typeof v === "string" && v.trim().length > 0,
@@ -35,7 +39,9 @@ export function GuestDashboard() {
   const role = (user?.role?.[0] || "guest") as string;
   const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
 
-  const [timePeriod, setTimePeriod] = useState<"morning" | "afternoon" | "evening" | "night">("morning");
+  const [timePeriod, setTimePeriod] = useState<
+    "morning" | "afternoon" | "evening" | "night"
+  >("morning");
   useEffect(() => {
     const update = () => {
       const h = new Date().getHours();
@@ -73,7 +79,9 @@ export function GuestDashboard() {
   return (
     <div className="space-y-6">
       {/* Hero banner */}
-      <div className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}>
+      <div
+        className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
+      >
         <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <p className="text-sm text-white/90">{today}</p>
@@ -81,13 +89,18 @@ export function GuestDashboard() {
               Good Morning, {displayName}
             </h1>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="h-5 px-2 text-xs">Role: {roleLabel}</Badge>
+              <Badge variant="secondary" className="h-5 px-2 text-xs">
+                Role: {roleLabel}
+              </Badge>
               {user?.email ? (
-                <Badge variant="outline" className="h-5 px-2 text-xs">{user.email}</Badge>
+                <Badge variant="outline" className="h-5 px-2 text-xs">
+                  {user.email}
+                </Badge>
               ) : null}
             </div>
             <p className="max-w-xl text-sm text-white/90">
-              Possible announcements // Possible announcements // Possible announcements.
+              Possible announcements // Possible announcements // Possible
+              announcements.
             </p>
           </div>
           <div className="hidden select-none md:block">

@@ -2,18 +2,6 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-// Mock quizzes removed - replace with real API endpoints when available
-// import { getQuizById, type Quiz, type QuizQuestion } from "@/data/mock-quizzes";
-
-// Temporary types until real API is implemented
-type Quiz = any;
-type QuizQuestion = any;
-
-const getQuizById = (id: string): Quiz | null => {
-  // TODO: Replace with real API call
-  console.warn("Mock quizzes removed - implement real API endpoint");
-  return null;
-};
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -31,6 +19,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
+// Mock quizzes removed - replace with real API endpoints when available
+// import { getQuizById, type Quiz, type QuizQuestion } from "@/data/mock-quizzes";
+
+// Temporary types until real API is implemented
+type Quiz = any;
+type QuizQuestion = any;
+
+const getQuizById = (id: string): Quiz | null => {
+  // TODO: Replace with real API call
+  console.warn("Mock quizzes removed - implement real API endpoint");
+  return null;
+};
 
 export default function QuizDetailPage() {
   const params = useParams();
@@ -53,7 +54,6 @@ export default function QuizDetailPage() {
       }
     }
   }, [quizId]);
-
 
   const handleSubmitQuiz = useCallback(() => {
     if (!quiz) return;

@@ -1,26 +1,39 @@
-"use client"
+"use client";
 
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { Separator } from '@/components/ui/separator'
-import { Switch } from '@/components/ui/switch'
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Switch } from "@/components/ui/switch";
 
 export function DisplayForm() {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Account Settings</CardTitle>
-        <CardDescription>Manage your account preferences and subscription.</CardDescription>
+        <CardDescription>
+          Manage your account preferences and subscription.
+        </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <Label className="text-base">Account Status</Label>
-            <p className="text-sm text-muted-foreground">Your account is currently active</p>
+            <p className="text-sm text-muted-foreground">
+              Your account is currently active
+            </p>
           </div>
-          <Badge variant="outline" className="border-green-200 bg-green-50 text-green-700">
+          <Badge
+            variant="outline"
+            className="border-green-200 bg-green-50 text-green-700"
+          >
             Active
           </Badge>
         </div>
@@ -28,7 +41,9 @@ export function DisplayForm() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <Label className="text-base">Subscription Plan</Label>
-            <p className="text-sm text-muted-foreground">Pro Plan - $29/month</p>
+            <p className="text-sm text-muted-foreground">
+              Pro Plan - $29/month
+            </p>
           </div>
           <Button variant="outline">Manage Subscription</Button>
         </div>
@@ -46,11 +61,13 @@ export function DisplayForm() {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <Label className="text-base">Data Export</Label>
-            <p className="text-sm text-muted-foreground">Download a copy of your data</p>
+            <p className="text-sm text-muted-foreground">
+              Download a copy of your data
+            </p>
           </div>
           <Button variant="outline">Export Data</Button>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

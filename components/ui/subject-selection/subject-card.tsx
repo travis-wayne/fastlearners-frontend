@@ -1,11 +1,12 @@
 "use client";
 
 import React from "react";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
-import { Check, Book } from "lucide-react";
+import { Book, Check } from "lucide-react";
+
 import type { Subject } from "@/lib/types/subjects";
+import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 interface SubjectCardProps {
   subject: Subject;
@@ -41,9 +42,9 @@ export function SubjectCard({
       whileHover={disabled ? undefined : { scale: 1.02, y: -2 }}
       whileTap={disabled ? undefined : { scale: 0.98 }}
       className={cn(
-        "w-full cursor-pointer transition-colors text-left",
+        "w-full cursor-pointer text-left transition-colors",
         isSelected && "border-primary bg-primary/5",
-        disabled && "opacity-50 cursor-not-allowed"
+        disabled && "cursor-not-allowed opacity-50",
       )}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
@@ -53,9 +54,9 @@ export function SubjectCard({
     >
       <Card className="h-full border-2 transition-all hover:shadow-md">
         <CardHeader className="flex items-center justify-between pb-2">
-          <Book className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
+          <Book className="size-5 text-muted-foreground" aria-hidden="true" />
           {isSelected && (
-            <Check className="h-5 w-5 text-primary" aria-hidden="true" />
+            <Check className="size-5 text-primary" aria-hidden="true" />
           )}
         </CardHeader>
         <CardContent className="pt-0">
@@ -67,4 +68,3 @@ export function SubjectCard({
     </motion.button>
   );
 }
-

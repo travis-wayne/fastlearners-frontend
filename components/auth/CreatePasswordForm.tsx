@@ -53,7 +53,10 @@ export function CreatePasswordForm() {
       const r = await fetch("/api/auth/create-password", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password, password_confirmation: confirmPassword }),
+        body: JSON.stringify({
+          password,
+          password_confirmation: confirmPassword,
+        }),
       });
       const response = await r.json();
 
@@ -67,7 +70,9 @@ export function CreatePasswordForm() {
           router.push("/auth/set-role");
         }, 200);
       } else {
-        setError(response?.message || "Failed to create password. Please try again.");
+        setError(
+          response?.message || "Failed to create password. Please try again.",
+        );
       }
     } catch (err: any) {
       setError("An error occurred. Please try again.");

@@ -1,15 +1,15 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "@/store/authStore";
+import { AnimatePresence, motion } from "framer-motion";
 import { AlertCircle, ArrowRight } from "lucide-react";
 
-import { useAuthStore } from "@/store/authStore";
 import { getMissingFields } from "@/lib/utils/profile-completion";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 export const ProfileCompletionBanner: React.FC = () => {
   const user = useAuthStore((state) => state.user);
@@ -79,7 +79,8 @@ export const ProfileCompletionBanner: React.FC = () => {
               <div className="flex-1">
                 <AlertTitle>Complete Your Profile</AlertTitle>
                 <AlertDescription>
-                  You&apos;re {percentage}% done! Complete your profile to unlock all features. {missingFields.length} fields remaining.
+                  You&apos;re {percentage}% done! Complete your profile to
+                  unlock all features. {missingFields.length} fields remaining.
                 </AlertDescription>
               </div>
               <div className="mt-2 flex items-center space-x-2 md:mt-0">

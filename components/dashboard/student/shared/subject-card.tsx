@@ -1,19 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import {
-  BookOpen,
-  Calendar,
-  Clock,
-  Target,
-  Trophy,
-} from "lucide-react";
+import { BookOpen, Calendar, Clock, Target, Trophy } from "lucide-react";
 import * as Icons from "lucide-react";
 
 import { Subject } from "@/config/education";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
 
 interface SubjectProgress {
   totalTopics: number;
@@ -66,7 +60,7 @@ export function SubjectCard({
       <article
         className={cn(
           "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:shadow-md sm:p-4 md:p-5",
-          className
+          className,
         )}
       >
         <div className="w-full overflow-hidden rounded-xl border border-border">
@@ -95,7 +89,7 @@ export function SubjectCard({
                 <Badge
                   className={cn(
                     "text-xs",
-                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800"
+                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800",
                   )}
                 >
                   {progress.grade}
@@ -109,7 +103,11 @@ export function SubjectCard({
           </div>
         </div>
         <Link
-          href={slug ? `/dashboard/subjects/${slug}` : `/dashboard/subjects/${subject.id}`}
+          href={
+            slug
+              ? `/dashboard/subjects/${slug}`
+              : `/dashboard/subjects/${subject.id}`
+          }
           className="absolute inset-0"
         >
           <span className="sr-only">View {subject.name}</span>
@@ -123,7 +121,7 @@ export function SubjectCard({
       <article
         className={cn(
           "group relative flex h-full flex-col space-y-2 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg sm:p-5 md:p-6",
-          className
+          className,
         )}
       >
         <div className="w-full overflow-hidden rounded-xl border border-border">
@@ -156,7 +154,7 @@ export function SubjectCard({
                 <Badge
                   className={cn(
                     "text-xs",
-                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800"
+                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800",
                   )}
                 >
                   Grade: {progress.grade}
@@ -198,19 +196,19 @@ export function SubjectCard({
             <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-xs sm:text-sm">
-                  <Target className="size-3 sm:size-4 text-muted-foreground" />
+                  <Target className="size-3 text-muted-foreground sm:size-4" />
                   <span className="text-muted-foreground">CA Score</span>
                 </div>
-                <div className="text-base sm:text-lg font-semibold">
+                <div className="text-base font-semibold sm:text-lg">
                   {progress.caScore ? `${progress.caScore}%` : "N/A"}
                 </div>
               </div>
               <div className="space-y-1">
                 <div className="flex items-center gap-2 text-xs sm:text-sm">
-                  <Calendar className="size-3 sm:size-4 text-muted-foreground" />
+                  <Calendar className="size-3 text-muted-foreground sm:size-4" />
                   <span className="text-muted-foreground">Assessments</span>
                 </div>
-                <div className="text-base sm:text-lg font-semibold">
+                <div className="text-base font-semibold sm:text-lg">
                   {progress.upcomingAssessments}
                 </div>
               </div>
@@ -227,13 +225,19 @@ export function SubjectCard({
             {!progress.lastAccessed && (
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Calendar className="size-4" />
-                <span>Week {progress.currentWeek} of {progress.totalWeeks}</span>
+                <span>
+                  Week {progress.currentWeek} of {progress.totalWeeks}
+                </span>
               </div>
             )}
           </div>
         </div>
         <Link
-          href={slug ? `/dashboard/subjects/${slug}` : `/dashboard/subjects/${subject.id}`}
+          href={
+            slug
+              ? `/dashboard/subjects/${slug}`
+              : `/dashboard/subjects/${subject.id}`
+          }
           className="absolute inset-0"
         >
           <span className="sr-only">View {subject.name}</span>
@@ -247,7 +251,7 @@ export function SubjectCard({
     <article
       className={cn(
         "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg sm:p-5 md:p-6",
-        className
+        className,
       )}
     >
       <div className="w-full overflow-hidden rounded-xl border border-border">
@@ -280,7 +284,7 @@ export function SubjectCard({
               <Badge
                 className={cn(
                   "text-xs",
-                  gradeColors[progress.grade] || "bg-gray-100 text-gray-800"
+                  gradeColors[progress.grade] || "bg-gray-100 text-gray-800",
                 )}
               >
                 {progress.grade}
@@ -325,7 +329,11 @@ export function SubjectCard({
         </div>
       </div>
       <Link
-        href={slug ? `/dashboard/subjects/${slug}` : `/dashboard/subjects/${subject.id}`}
+        href={
+          slug
+            ? `/dashboard/subjects/${slug}`
+            : `/dashboard/subjects/${subject.id}`
+        }
         className="absolute inset-0"
       >
         <span className="sr-only">View {subject.name}</span>

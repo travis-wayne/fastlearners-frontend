@@ -1,8 +1,8 @@
-import { ApiTester } from '@/components/testing/ApiTester';
+import { ApiTester } from "@/components/testing/ApiTester";
 
 export const metadata = {
-  title: 'API Testing - Fast Learners',
-  description: 'Test API connectivity and endpoints',
+  title: "API Testing - Fast Learners",
+  description: "Test API connectivity and endpoints",
 };
 
 export default function ApiTestPage() {
@@ -14,7 +14,7 @@ export default function ApiTestPage() {
           Test connectivity and functionality of Fast Learners API endpoints.
         </p>
       </div>
-      
+
       <ApiTester />
     </div>
   );

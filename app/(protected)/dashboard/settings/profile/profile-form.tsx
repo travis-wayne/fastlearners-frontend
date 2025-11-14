@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { ProfileForm as WorkingProfileForm } from "@/components/profile/profile-form"
+import { ProfileForm as WorkingProfileForm } from "@/components/profile/profile-form";
 
 export function ProfileForm() {
-  return <WorkingProfileForm />
+  return <WorkingProfileForm />;
 }

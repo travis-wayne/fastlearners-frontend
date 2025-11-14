@@ -1,13 +1,14 @@
-import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { AcademicSetupClient } from "@/components/dashboard/subjects/AcademicSetupClient";
-import { SubjectSelectionForm } from "@/components/dashboard/subjects/SubjectSelectionForm";
-import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
-import { SubjectDashboardShell } from "@/components/dashboard/student/SubjectDashboardShell";
-import { ProfileChangeBanner } from "@/components/dashboard/subjects/ProfileChangeBanner";
-import { getUserProfile, getSubjects } from "@/lib/api/subjects";
+import { redirect } from "next/navigation";
 
-export const dynamic = 'force-dynamic';
+import { getSubjects, getUserProfile } from "@/lib/api/subjects";
+import { SubjectDashboardShell } from "@/components/dashboard/student/SubjectDashboardShell";
+import { AcademicSetupClient } from "@/components/dashboard/subjects/AcademicSetupClient";
+import { ProfileChangeBanner } from "@/components/dashboard/subjects/ProfileChangeBanner";
+import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
+import { SubjectSelectionForm } from "@/components/dashboard/subjects/SubjectSelectionForm";
+
+export const dynamic = "force-dynamic";
 
 async function getUserProfileData() {
   try {
@@ -43,7 +44,8 @@ export default async function SubjectsPage() {
   // Check registration status
   const hasClass = !!profile.class;
   const hasSubjects = hasClass ? await getSubjectsData() : null;
-  const hasRegisteredSubjects = hasSubjects && hasSubjects.subjects && hasSubjects.subjects.length > 0;
+  const hasRegisteredSubjects =
+    hasSubjects && hasSubjects.subjects && hasSubjects.subjects.length > 0;
 
   return (
     <div className="container mx-auto max-w-screen-2xl">
@@ -52,7 +54,9 @@ export default async function SubjectsPage() {
         // Step 1: Academic Setup
         <div className="space-y-6">
           <div>
-            <h1 className="text-3xl font-bold">Welcome! Let&apos;s Get Started</h1>
+            <h1 className="text-3xl font-bold">
+              Welcome! Let&apos;s Get Started
+            </h1>
             <p className="mt-2 text-muted-foreground">
               Set up your academic profile to begin learning
             </p>

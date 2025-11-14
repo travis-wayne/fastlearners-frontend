@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
+
 import { cn } from "@/lib/utils";
 
 export const GlowingStarsBackgroundCard = ({
@@ -23,7 +24,7 @@ export const GlowingStarsBackgroundCard = ({
       }}
       className={cn(
         "size-full rounded-xl border border-[#eaeaea] bg-[linear-gradient(110deg,#333_0.6%,#222)] p-4 dark:border-neutral-600",
-        className
+        className,
       )}
     >
       <div className="flex items-center justify-center">
@@ -42,9 +43,7 @@ export const GlowingStarsDescription = ({
   children?: React.ReactNode;
 }) => {
   return (
-    <p className={cn("max-w-64 text-base text-white", className)}>
-      {children}
-    </p>
+    <p className={cn("max-w-64 text-base text-white", className)}>{children}</p>
   );
 };
 
@@ -73,7 +72,7 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
   useEffect(() => {
     const interval = setInterval(() => {
       highlightedStars.current = Array.from({ length: 5 }, () =>
-        Math.floor(Math.random() * stars)
+        Math.floor(Math.random() * stars),
       );
       setGlowingStars([...highlightedStars.current]);
     }, 3000);
@@ -83,7 +82,7 @@ export const Illustration = ({ mouseEnter }: { mouseEnter: boolean }) => {
 
   return (
     <div
-className="h-48 w-full p-1"
+      className="h-48 w-full p-1"
       style={{
         display: "grid",
         gridTemplateColumns: `repeat(${columns}, 1fr)`,
@@ -152,8 +151,14 @@ const Glow = ({ delay }: { delay: number }) => {
       exit={{
         opacity: 0,
       }}
-className="absolute z-10 rounded-full bg-blue-500 shadow-2xl shadow-blue-400"
-      style={{ left: "50%", transform: "translateX(-50%)", width: 4, height: 4, filter: "blur(1px)" }}
+      className="absolute z-10 rounded-full bg-blue-500 shadow-2xl shadow-blue-400"
+      style={{
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: 4,
+        height: 4,
+        filter: "blur(1px)",
+      }}
     />
   );
 };

@@ -1,8 +1,8 @@
 "use client";
 
-import { AlertCircle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 
 import { usePermissionCheck } from "@/hooks/useRBACGuard";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -38,7 +38,9 @@ export default function SettingsPage() {
       <div className="flex h-64 items-center justify-center">
         <div className="text-center">
           <div className="mx-auto size-8 animate-spin rounded-full border-b-2 border-primary"></div>
-          <p className="mt-2 text-muted-foreground">Redirecting to settings...</p>
+          <p className="mt-2 text-muted-foreground">
+            Redirecting to settings...
+          </p>
         </div>
       </div>
     );

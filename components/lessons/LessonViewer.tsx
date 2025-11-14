@@ -1,33 +1,40 @@
-'use client';
+"use client";
 
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import { Separator } from '@/components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React, { useEffect, useState } from "react";
 import {
+  AlertCircle,
+  ArrowLeft,
   BookOpen,
-  Target,
-  Lightbulb,
-  PenTool,
+  Brain,
   CheckCircle2,
   Circle,
-  Play,
-  ArrowLeft,
-  AlertCircle,
-  FileText,
-  Brain,
-  Trophy,
   Clock,
-} from 'lucide-react';
-import { useLessonsStore } from '@/lib/store/lessons';
-import { LessonContent, Concept, Example, Exercise, GeneralExercise } from '@/lib/types/lessons';
-import { cn } from '@/lib/utils';
-import { getLessonContentBySlug } from '@/lib/api/lessons';
+  FileText,
+  Lightbulb,
+  PenTool,
+  Play,
+  Target,
+  Trophy,
+} from "lucide-react";
+
+import { getLessonContentBySlug } from "@/lib/api/lessons";
+import { useLessonsStore } from "@/lib/store/lessons";
+import {
+  Concept,
+  Example,
+  Exercise,
+  GeneralExercise,
+  LessonContent,
+} from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
+import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface LessonViewerProps {
   lessonId?: number;
@@ -54,11 +61,15 @@ interface ExerciseCardProps {
   onAnswer?: (exerciseId: number, answer: string) => void;
 }
 
-function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectionProps) {
+function ConceptSection({
+  concept,
+  isCompleted,
+  onMarkCompleted,
+}: ConceptSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false);
 
   return (
-<Card className="border-border bg-card">
+    <Card className="border-border bg-card">
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="flex-1">
@@ -81,11 +92,11 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
             onClick={() => setIsExpanded(!isExpanded)}
             className="text-slate-600 dark:text-slate-400"
           >
-            {isExpanded ? 'Collapse' : 'Expand'}
+            {isExpanded ? "Collapse" : "Expand"}
           </Button>
         </div>
       </CardHeader>
-      
+
       {isExpanded && (
         <CardContent className="pt-0">
           <div className="space-y-6">
@@ -108,9 +119,11 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
                   </ul>
                 )}
                 {desc.image_path && (
-<div className="rounded-lg bg-muted p-4 text-center">
+                  <div className="rounded-lg bg-muted p-4 text-center">
                     <FileText className="mx-auto mb-2 size-8 text-slate-400" />
-                    <p className="text-sm text-slate-500">Image: {desc.image_path}</p>
+                    <p className="text-sm text-slate-500">
+                      Image: {desc.image_path}
+                    </p>
                   </div>
                 )}
               </div>
@@ -124,7 +137,11 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
                   Examples
                 </h4>
                 {concept.examples.map((example, index) => (
-                  <ExampleCard key={example.id} example={example} index={index} />
+                  <ExampleCard
+                    key={example.id}
+                    example={example}
+                    index={index}
+                  />
                 ))}
               </div>
             )}
@@ -137,21 +154,27 @@ function ConceptSection({ concept, isCompleted, onMarkCompleted }: ConceptSectio
                   Practice Exercises
                 </h4>
                 {concept.exercises.map((exercise, index) => (
-                  <ExerciseCard key={exercise.id} exercise={exercise} index={index} />
+                  <ExerciseCard
+                    key={exercise.id}
+                    exercise={exercise}
+                    index={index}
+                  />
                 ))}
               </div>
             )}
 
             {/* Mark as completed button */}
-<div className="border-t border-border pt-4">
+            <div className="border-t border-border pt-4">
               <Button
-                onClick={() => onMarkCompleted(`concept_${concept.order_index - 1}`)}
+                onClick={() =>
+                  onMarkCompleted(`concept_${concept.order_index - 1}`)
+                }
                 disabled={isCompleted}
                 className={cn(
-                  'w-full',
-                  isCompleted 
-                    ? 'bg-emerald-600 hover:bg-emerald-700' 
-                    : 'bg-blue-600 hover:bg-blue-700'
+                  "w-full",
+                  isCompleted
+                    ? "bg-emerald-600 hover:bg-emerald-700"
+                    : "bg-blue-600 hover:bg-blue-700",
                 )}
               >
                 {isCompleted ? (
@@ -185,7 +208,7 @@ function ExampleCard({ example, index }: ExampleCardProps) {
               {example.title}
             </span>
           </div>
-          
+
           <div className="rounded-lg border border-yellow-200 bg-white p-3 dark:border-yellow-800/30 dark:bg-slate-900">
             <p className="mb-2 font-medium text-slate-900 dark:text-slate-100">
               Problem:
@@ -223,7 +246,7 @@ function ExampleCard({ example, index }: ExampleCardProps) {
 }
 
 function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
-  const [selectedAnswer, setSelectedAnswer] = useState<string>('');
+  const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [isRevealed, setIsRevealed] = useState(false);
 
   const handleSubmit = () => {
@@ -240,10 +263,10 @@ function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
           <div className="flex items-center gap-2">
             <PenTool className="size-4 text-blue-600" />
             <span className="font-medium text-blue-800 dark:text-blue-200">
-              {'title' in exercise ? exercise.title : `Exercise ${index + 1}`}
+              {"title" in exercise ? exercise.title : `Exercise ${index + 1}`}
             </span>
           </div>
-          
+
           <div className="rounded-lg border border-blue-200 bg-white p-3 dark:border-blue-800/30 dark:bg-slate-900">
             <p className="mb-3 text-slate-900 dark:text-slate-100">
               {exercise.problem}
@@ -254,12 +277,17 @@ function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                 <label
                   key={answerIndex}
                   className={cn(
-                    'flex cursor-pointer items-center gap-2 rounded-lg border p-2 transition-colors',
+                    "flex cursor-pointer items-center gap-2 rounded-lg border p-2 transition-colors",
                     selectedAnswer === answer
-                      ? 'border-blue-300 bg-blue-100 dark:border-blue-700 dark:bg-blue-900/20'
-                      : 'border-slate-200 bg-slate-50 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700',
-                    isRevealed && answer === exercise.correct_answer && 'border-emerald-300 bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20',
-                    isRevealed && selectedAnswer === answer && answer !== exercise.correct_answer && 'border-red-300 bg-red-100 dark:border-red-700 dark:bg-red-900/20'
+                      ? "border-blue-300 bg-blue-100 dark:border-blue-700 dark:bg-blue-900/20"
+                      : "border-slate-200 bg-slate-50 hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700",
+                    isRevealed &&
+                      answer === exercise.correct_answer &&
+                      "border-emerald-300 bg-emerald-100 dark:border-emerald-700 dark:bg-emerald-900/20",
+                    isRevealed &&
+                      selectedAnswer === answer &&
+                      answer !== exercise.correct_answer &&
+                      "border-red-300 bg-red-100 dark:border-red-700 dark:bg-red-900/20",
                   )}
                 >
                   <input
@@ -292,20 +320,27 @@ function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
             )}
 
             {isRevealed && (
-              <div className={cn(
-                'mt-3 rounded-lg p-3',
-                isCorrect 
-                  ? 'border border-emerald-200 bg-emerald-50 dark:border-emerald-800/30 dark:bg-emerald-900/10'
-                  : 'border border-red-200 bg-red-50 dark:border-red-800/30 dark:bg-red-900/10'
-              )}>
-                <p className={cn(
-                  'mb-1 font-medium',
-                  isCorrect ? 'text-emerald-800 dark:text-emerald-200' : 'text-red-800 dark:text-red-200'
-                )}>
-                  {isCorrect ? '✅ Correct!' : '❌ Incorrect'}
+              <div
+                className={cn(
+                  "mt-3 rounded-lg p-3",
+                  isCorrect
+                    ? "border border-emerald-200 bg-emerald-50 dark:border-emerald-800/30 dark:bg-emerald-900/10"
+                    : "border border-red-200 bg-red-50 dark:border-red-800/30 dark:bg-red-900/10",
+                )}
+              >
+                <p
+                  className={cn(
+                    "mb-1 font-medium",
+                    isCorrect
+                      ? "text-emerald-800 dark:text-emerald-200"
+                      : "text-red-800 dark:text-red-200",
+                  )}
+                >
+                  {isCorrect ? "✅ Correct!" : "❌ Incorrect"}
                 </p>
                 <p className="text-sm text-slate-700 dark:text-slate-300">
-                  The correct answer is: <strong>{exercise.correct_answer}</strong>
+                  The correct answer is:{" "}
+                  <strong>{exercise.correct_answer}</strong>
                 </p>
               </div>
             )}
@@ -319,7 +354,7 @@ function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 function LoadingSkeleton() {
   return (
     <div className="space-y-6">
-<Card className="bg-card">
+      <Card className="bg-card">
         <CardHeader>
           <div className="space-y-3">
             <Skeleton className="h-8 w-3/4" />
@@ -338,9 +373,9 @@ function LoadingSkeleton() {
           </div>
         </CardContent>
       </Card>
-      
+
       {Array.from({ length: 3 }).map((_, index) => (
-<Card key={index} className="bg-card">
+        <Card key={index} className="bg-card">
           <CardHeader>
             <Skeleton className="h-6 w-1/2" />
           </CardHeader>
@@ -360,7 +395,13 @@ function LoadingSkeleton() {
   );
 }
 
-export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoad = true }: LessonViewerProps) {
+export function LessonViewer({
+  lessonId,
+  subjectSlug,
+  topicSlug,
+  onBack,
+  autoLoad = true,
+}: LessonViewerProps) {
   const {
     selectedLesson,
     isLoadingLessonContent,
@@ -384,12 +425,16 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
         try {
           await fetchLessonContentBySlug(subjectSlug, topicSlug);
         } catch (err) {
-          setError(err instanceof Error ? err.message : 'Failed to load lesson');
+          setError(
+            err instanceof Error ? err.message : "Failed to load lesson",
+          );
           setIsLoadingLessonContent(false);
         }
       } else if (lessonId && autoLoad) {
         // NOTE: ID-based loading removed - use subjectSlug and topicSlug instead
-        setError('Lesson ID-based loading is no longer supported. Please provide subjectSlug and topicSlug.');
+        setError(
+          "Lesson ID-based loading is no longer supported. Please provide subjectSlug and topicSlug.",
+        );
         setIsLoadingLessonContent(false);
       }
     };
@@ -400,13 +445,24 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
       // Optional: Clear selected lesson when component unmounts
       // clearSelectedLesson();
     };
-  }, [lessonId, subjectSlug, topicSlug, autoLoad, fetchLessonContentBySlug, setSelectedLesson, setError, setIsLoadingLessonContent]);
+  }, [
+    lessonId,
+    subjectSlug,
+    topicSlug,
+    autoLoad,
+    fetchLessonContentBySlug,
+    setSelectedLesson,
+    setError,
+    setIsLoadingLessonContent,
+  ]);
 
   const handleMarkCompleted = (sectionId: string) => {
     markSectionCompleted(sectionId);
   };
 
-  const handleSectionChange = (section: 'overview' | 'concepts' | 'exercises') => {
+  const handleSectionChange = (
+    section: "overview" | "concepts" | "exercises",
+  ) => {
     setCurrentSection(section);
   };
 
@@ -442,7 +498,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
 
   if (!selectedLesson) {
     return (
-<Card className="border-dashed border-border bg-muted">
+      <Card className="border-dashed border-border bg-muted">
         <CardContent className="flex flex-col items-center justify-center py-12">
           <BookOpen className="mb-4 size-12 text-slate-400" />
           <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
@@ -463,7 +519,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
   }
 
   const lesson = selectedLesson;
-  
+
   // Default optional fields to prevent runtime errors
   const objectives = lesson.objectives || [];
   const concepts = lesson.concepts || [];
@@ -488,25 +544,37 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                   Back to lessons
                 </Button>
               )}
-              
+
               <h1 className="mb-2 text-2xl font-bold">{lesson.topic}</h1>
-              
+
               <div className="mb-4 flex flex-wrap gap-2">
-                <Badge variant="secondary" className="border-white/30 bg-white/20 text-white">
+                <Badge
+                  variant="secondary"
+                  className="border-white/30 bg-white/20 text-white"
+                >
                   {lesson.class}
                 </Badge>
-                <Badge variant="secondary" className="border-white/30 bg-white/20 text-white">
+                <Badge
+                  variant="secondary"
+                  className="border-white/30 bg-white/20 text-white"
+                >
                   {lesson.subject}
                 </Badge>
-                <Badge variant="secondary" className="border-white/30 bg-white/20 text-white">
+                <Badge
+                  variant="secondary"
+                  className="border-white/30 bg-white/20 text-white"
+                >
                   {lesson.term} Term
                 </Badge>
-                <Badge variant="secondary" className="border-white/30 bg-white/20 text-white">
+                <Badge
+                  variant="secondary"
+                  className="border-white/30 bg-white/20 text-white"
+                >
                   Week {lesson.week}
                 </Badge>
               </div>
             </div>
-            
+
             {lesson.video_path && (
               <Button
                 variant="secondary"
@@ -550,7 +618,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
 
         <TabsContent value="overview" className="space-y-6">
           {/* Overview */}
-<Card className="bg-card">
+          <Card className="bg-card">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="size-5 text-blue-600" />
@@ -562,12 +630,12 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                 {lesson.overview}
               </p>
               <Button
-                onClick={() => handleMarkCompleted('overview')}
-                disabled={completedSections.includes('overview')}
+                onClick={() => handleMarkCompleted("overview")}
+                disabled={completedSections.includes("overview")}
                 className="mt-4"
                 size="sm"
               >
-                {completedSections.includes('overview') ? (
+                {completedSections.includes("overview") ? (
                   <>
                     <CheckCircle2 className="mr-2 size-4" />
                     Completed
@@ -584,7 +652,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
 
           {/* Objectives */}
           {objectives.length > 0 && (
-<Card className="bg-card">
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Target className="size-5 text-emerald-600" />
@@ -607,12 +675,12 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                   </div>
                 ))}
                 <Button
-                  onClick={() => handleMarkCompleted('objectives')}
-                  disabled={completedSections.includes('objectives')}
+                  onClick={() => handleMarkCompleted("objectives")}
+                  disabled={completedSections.includes("objectives")}
                   className="mt-4"
                   size="sm"
                 >
-                  {completedSections.includes('objectives') ? (
+                  {completedSections.includes("objectives") ? (
                     <>
                       <CheckCircle2 className="mr-2 size-4" />
                       Completed
@@ -630,7 +698,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
 
           {/* Key Concepts Summary */}
           {Object.keys(key_concepts).length > 0 && (
-<Card className="bg-card">
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Lightbulb className="size-5 text-yellow-600" />
@@ -639,16 +707,21 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {Object.entries(key_concepts).map(([concept, description]) => (
-                    <div key={concept} className="border-l-4 border-blue-500 pl-4">
-                      <h4 className="mb-1 font-semibold text-slate-900 dark:text-slate-100">
-                        {concept}
-                      </h4>
-                      <p className="text-sm text-slate-600 dark:text-slate-400">
-                        {description}
-                      </p>
-                    </div>
-                  ))}
+                  {Object.entries(key_concepts).map(
+                    ([concept, description]) => (
+                      <div
+                        key={concept}
+                        className="border-l-4 border-blue-500 pl-4"
+                      >
+                        <h4 className="mb-1 font-semibold text-slate-900 dark:text-slate-100">
+                          {concept}
+                        </h4>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                          {description}
+                        </p>
+                      </div>
+                    ),
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -656,7 +729,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
 
           {/* Summary and Application */}
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-<Card className="bg-card">
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Summary</CardTitle>
               </CardHeader>
@@ -665,18 +738,20 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                   {lesson.summary}
                 </p>
                 <Button
-                  onClick={() => handleMarkCompleted('summary')}
-                  disabled={completedSections.includes('summary')}
+                  onClick={() => handleMarkCompleted("summary")}
+                  disabled={completedSections.includes("summary")}
                   className="mt-3"
                   size="sm"
                   variant="outline"
                 >
-                  {completedSections.includes('summary') ? 'Completed' : 'Mark as Read'}
+                  {completedSections.includes("summary")
+                    ? "Completed"
+                    : "Mark as Read"}
                 </Button>
               </CardContent>
             </Card>
 
-<Card className="bg-card">
+            <Card className="bg-card">
               <CardHeader>
                 <CardTitle className="text-base">Application</CardTitle>
               </CardHeader>
@@ -685,13 +760,15 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                   {lesson.application}
                 </p>
                 <Button
-                  onClick={() => handleMarkCompleted('application')}
-                  disabled={completedSections.includes('application')}
+                  onClick={() => handleMarkCompleted("application")}
+                  disabled={completedSections.includes("application")}
                   className="mt-3"
                   size="sm"
                   variant="outline"
                 >
-                  {completedSections.includes('application') ? 'Completed' : 'Mark as Read'}
+                  {completedSections.includes("application")
+                    ? "Completed"
+                    : "Mark as Read"}
                 </Button>
               </CardContent>
             </Card>
@@ -704,12 +781,14 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
               <ConceptSection
                 key={concept.id}
                 concept={concept}
-                isCompleted={completedSections.includes(`concept_${concept.order_index - 1}`)}
+                isCompleted={completedSections.includes(
+                  `concept_${concept.order_index - 1}`,
+                )}
                 onMarkCompleted={handleMarkCompleted}
               />
             ))
           ) : (
-<Card className="border-dashed bg-muted">
+            <Card className="border-dashed bg-muted">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Brain className="mb-4 size-12 text-slate-400" />
                 <p className="text-slate-600 dark:text-slate-400">
@@ -734,7 +813,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                   <p className="mb-6 text-slate-600 dark:text-slate-400">
                     Test your understanding with these practice exercises.
                   </p>
-                  
+
                   <div className="space-y-4">
                     {general_exercises.map((exercise, index) => (
                       <ExerciseCard
@@ -744,13 +823,13 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
                       />
                     ))}
                   </div>
-                  
+
                   <Button
-                    onClick={() => handleMarkCompleted('general_exercises')}
-                    disabled={completedSections.includes('general_exercises')}
+                    onClick={() => handleMarkCompleted("general_exercises")}
+                    disabled={completedSections.includes("general_exercises")}
                     className="mt-6 w-full bg-orange-600 hover:bg-orange-700"
                   >
-                    {completedSections.includes('general_exercises') ? (
+                    {completedSections.includes("general_exercises") ? (
                       <>
                         <CheckCircle2 className="mr-2 size-4" />
                         Exercises Completed
@@ -766,7 +845,7 @@ export function LessonViewer({ lessonId, subjectSlug, topicSlug, onBack, autoLoa
               </Card>
             </>
           ) : (
-<Card className="border-dashed bg-muted">
+            <Card className="border-dashed bg-muted">
               <CardContent className="flex flex-col items-center justify-center py-12">
                 <Trophy className="mb-4 size-12 text-slate-400" />
                 <p className="text-slate-600 dark:text-slate-400">

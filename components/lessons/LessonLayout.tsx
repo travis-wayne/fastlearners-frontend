@@ -1,6 +1,7 @@
 "use client";
 
 import { ReactNode } from "react";
+
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 interface LessonLayoutProps {
@@ -27,9 +28,7 @@ export function LessonLayout({
 
       {/* Main Content */}
       <main className="lg:col-span-6">
-        <ScrollArea className="h-[calc(100vh-6rem)]">
-          {mainContent}
-        </ScrollArea>
+        <ScrollArea className="h-[calc(100vh-6rem)]">{mainContent}</ScrollArea>
       </main>
 
       {/* Right Sidebar - TOC */}
@@ -43,4 +42,3 @@ export function LessonLayout({
     </div>
   );
 }
-

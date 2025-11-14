@@ -11,6 +11,7 @@ import {
   ChevronRight,
   Circle,
   Clock,
+  Loader2,
   Moon,
   Play,
   Star,
@@ -20,9 +21,9 @@ import {
   Target,
   TrendingUp,
   Trophy,
-  Loader2,
 } from "lucide-react";
 
+import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
@@ -45,11 +46,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AchievementsSection } from "@/components/dashboard/AchievementsSection";
-import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
-import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { LeaderBoard } from "@/components/dashboard/LeaderBoard";
+import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
+import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
 import { ProgressDonut } from "@/components/dashboard/ProgressDonut";
-import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -85,7 +85,9 @@ interface TimeData {
 export function StudentDashboard() {
   const [timeData, setTimeData] = useState<TimeData | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>("Physics");
-  const [dashboardData, setDashboardData] = useState<DashboardContent | null>(null);
+  const [dashboardData, setDashboardData] = useState<DashboardContent | null>(
+    null,
+  );
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(true);
   const subjectToProgress: Record<string, number> = {
     Mathematics: 65,
@@ -295,21 +297,19 @@ export function StudentDashboard() {
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
         <div
-          className={`relative overflow-hidden rounded-2xl p-8 ${
-            (useMemo(() => {
-              switch (timeData?.period) {
-                case "morning":
-                  return "bg-gradient-to-br from-blue-200 via-cyan-200 to-yellow-100 dark:from-blue-400 dark:via-cyan-300 dark:to-yellow-200";
-                case "afternoon":
-                  return "bg-gradient-to-br from-blue-300 via-purple-200 to-orange-200 dark:from-blue-500 dark:via-purple-400 dark:to-orange-300";
-                case "evening":
-                  return "bg-gradient-to-br from-purple-300 via-pink-300 to-orange-200 dark:from-purple-500 dark:via-pink-500 dark:to-orange-400";
-                case "night":
-                default:
-                  return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
-              }
-            }, [timeData?.period]))
-          } transition-all duration-700 ease-in-out`}
+          className={`relative overflow-hidden rounded-2xl p-8 ${useMemo(() => {
+            switch (timeData?.period) {
+              case "morning":
+                return "bg-gradient-to-br from-blue-200 via-cyan-200 to-yellow-100 dark:from-blue-400 dark:via-cyan-300 dark:to-yellow-200";
+              case "afternoon":
+                return "bg-gradient-to-br from-blue-300 via-purple-200 to-orange-200 dark:from-blue-500 dark:via-purple-400 dark:to-orange-300";
+              case "evening":
+                return "bg-gradient-to-br from-purple-300 via-pink-300 to-orange-200 dark:from-purple-500 dark:via-pink-500 dark:to-orange-400";
+              case "night":
+              default:
+                return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
+            }
+          }, [timeData?.period])} transition-all duration-700 ease-in-out`}
         >
           <div className="relative z-10 max-w-lg">
             {/* Header with date and time */}
@@ -322,9 +322,7 @@ export function StudentDashboard() {
               >
                 <div className="flex items-center gap-2 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm dark:bg-white/20">
                   <Calendar className="size-4 text-gray-900 dark:text-white" />
-                  <span className="text-sm font-medium">
-                    {timeData.date}
-                  </span>
+                  <span className="text-sm font-medium">{timeData.date}</span>
                 </div>
                 <div className="flex items-center gap-2 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm dark:bg-white/20">
                   <Clock className="size-4 text-gray-900 dark:text-white" />
@@ -345,7 +343,8 @@ export function StudentDashboard() {
               <div className="mb-2 flex items-center gap-2">
                 {getPeriodIcon()}
                 <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
-                  {timeData?.greeting || "Good day"}, {dashboardData?.name || "Student"}! 🎓
+                  {timeData?.greeting || "Good day"},{" "}
+                  {dashboardData?.name || "Student"}! 🎓
                 </h2>
               </div>
               <p className="text-base leading-relaxed text-gray-800 dark:text-white/90">
@@ -416,12 +415,20 @@ export function StudentDashboard() {
           {/* Soft moving highlights */}
           <div className="pointer-events-none absolute inset-0 overflow-hidden">
             <motion.div
-              animate={{ x: [0, 100, 0], y: [0, -50, 0], opacity: [0.1, 0.2, 0.1] }}
+              animate={{
+                x: [0, 100, 0],
+                y: [0, -50, 0],
+                opacity: [0.1, 0.2, 0.1],
+              }}
               transition={{ duration: 8, repeat: Infinity }}
               className="absolute -right-10 -top-10 size-32 rounded-full bg-white/5 blur-xl"
             />
             <motion.div
-              animate={{ x: [0, -80, 0], y: [0, 60, 0], opacity: [0.05, 0.15, 0.05] }}
+              animate={{
+                x: [0, -80, 0],
+                y: [0, 60, 0],
+                opacity: [0.05, 0.15, 0.05],
+              }}
               transition={{ duration: 12, repeat: Infinity, delay: 2 }}
               className="absolute -bottom-10 -left-10 size-40 rounded-full bg-white/5 blur-2xl"
             />
@@ -502,24 +509,24 @@ export function StudentDashboard() {
         ) : (
           <OverviewGrid
             stats={[
-              { 
-                label: "Subjects", 
-                value: dashboardData?.subjects || "N/A" 
+              {
+                label: "Subjects",
+                value: dashboardData?.subjects || "N/A",
               },
-              { 
-                label: "Lessons", 
-                value: dashboardData?.lessons || "N/A" 
+              {
+                label: "Lessons",
+                value: dashboardData?.lessons || "N/A",
               },
-              { 
-                label: "Quizzes", 
-                value: dashboardData?.quizzes || "N/A" 
+              {
+                label: "Quizzes",
+                value: dashboardData?.quizzes || "N/A",
               },
-              { 
-                label: "Subscription Status", 
-                value: dashboardData?.subscription_status 
-                  ? dashboardData.subscription_status.charAt(0).toUpperCase() + 
+              {
+                label: "Subscription Status",
+                value: dashboardData?.subscription_status
+                  ? dashboardData.subscription_status.charAt(0).toUpperCase() +
                     dashboardData.subscription_status.slice(1)
-                  : "N/A" 
+                  : "N/A",
               },
             ]}
           />
@@ -550,27 +557,38 @@ export function StudentDashboard() {
                         {dashboardData.progress.subject} Progress
                       </span>
                       <span className="font-medium">
-                        {dashboardData.progress.covered} / {dashboardData.progress.covered + dashboardData.progress.left}
+                        {dashboardData.progress.covered} /{" "}
+                        {dashboardData.progress.covered +
+                          dashboardData.progress.left}
                       </span>
                     </div>
-                    <Progress 
+                    <Progress
                       value={
-                        dashboardData.progress.covered + dashboardData.progress.left > 0
-                          ? (dashboardData.progress.covered / (dashboardData.progress.covered + dashboardData.progress.left)) * 100
+                        dashboardData.progress.covered +
+                          dashboardData.progress.left >
+                        0
+                          ? (dashboardData.progress.covered /
+                              (dashboardData.progress.covered +
+                                dashboardData.progress.left)) *
+                            100
                           : 0
-                      } 
-                      className="h-3" 
+                      }
+                      className="h-3"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="rounded-lg border bg-muted/50 p-3">
-                      <div className="text-sm text-muted-foreground">Covered</div>
+                      <div className="text-sm text-muted-foreground">
+                        Covered
+                      </div>
                       <div className="text-2xl font-bold text-primary">
                         {dashboardData.progress.covered}
                       </div>
                     </div>
                     <div className="rounded-lg border bg-muted/50 p-3">
-                      <div className="text-sm text-muted-foreground">Remaining</div>
+                      <div className="text-sm text-muted-foreground">
+                        Remaining
+                      </div>
                       <div className="text-2xl font-bold text-muted-foreground">
                         {dashboardData.progress.left}
                       </div>
@@ -609,47 +627,52 @@ export function StudentDashboard() {
           <CardContent>
             <div className="w-full overflow-x-auto">
               <Table className="min-w-[680px]">
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Subject</TableHead>
-                  <TableHead>Lesson</TableHead>
-                  <TableHead>Duration</TableHead>
-                  <TableHead>Progress</TableHead>
-                  <TableHead>Action</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {todaysLessonsTable.map((lesson) => (
-                  <TableRow key={lesson.id}>
-                    <TableCell className="font-medium">
-                      {lesson.subject}
-                    </TableCell>
-                    <TableCell>{lesson.lesson}</TableCell>
-                    <TableCell>{lesson.duration}</TableCell>
-                    <TableCell>
-                      {lesson.progress > 0 ? (
-                        <div className="flex items-center gap-2">
-                          <Progress value={lesson.progress} className="w-16" />
-                          <span className="text-sm">{lesson.progress}%</span>
-                        </div>
-                      ) : (
-                        <span className="text-sm text-muted-foreground">
-                          Not started
-                        </span>
-                      )}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        size="sm"
-                        variant={lesson.progress === 0 ? "default" : "outline"}
-                      >
-                        {lesson.status}
-                      </Button>
-                    </TableCell>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Subject</TableHead>
+                    <TableHead>Lesson</TableHead>
+                    <TableHead>Duration</TableHead>
+                    <TableHead>Progress</TableHead>
+                    <TableHead>Action</TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {todaysLessonsTable.map((lesson) => (
+                    <TableRow key={lesson.id}>
+                      <TableCell className="font-medium">
+                        {lesson.subject}
+                      </TableCell>
+                      <TableCell>{lesson.lesson}</TableCell>
+                      <TableCell>{lesson.duration}</TableCell>
+                      <TableCell>
+                        {lesson.progress > 0 ? (
+                          <div className="flex items-center gap-2">
+                            <Progress
+                              value={lesson.progress}
+                              className="w-16"
+                            />
+                            <span className="text-sm">{lesson.progress}%</span>
+                          </div>
+                        ) : (
+                          <span className="text-sm text-muted-foreground">
+                            Not started
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        <Button
+                          size="sm"
+                          variant={
+                            lesson.progress === 0 ? "default" : "outline"
+                          }
+                        >
+                          {lesson.status}
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
             </div>
           </CardContent>
         </Card>

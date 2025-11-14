@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 
 import { RBACUtils } from "@/lib/rbac/role-config";
-import { usePermissionCheck } from "@/hooks/useRBACGuard";
 import { User } from "@/lib/types/auth";
+import { usePermissionCheck } from "@/hooks/useRBACGuard";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {

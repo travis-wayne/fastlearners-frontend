@@ -1,7 +1,8 @@
-import { Link } from '@tanstack/react-router'
-import useDialogState from '@/hooks/use-dialog-state'
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Button } from '@/components/ui/button'
+import { Link } from "@tanstack/react-router";
+
+import useDialogState from "@/hooks/use-dialog-state";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,28 +12,28 @@ import {
   DropdownMenuSeparator,
   DropdownMenuShortcut,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu'
-import { SignOutDialog } from '@/components/sign-out-dialog'
+} from "@/components/ui/dropdown-menu";
+import { SignOutDialog } from "@/components/sign-out-dialog";
 
 export function ProfileDropdown() {
-  const [open, setOpen] = useDialogState()
+  const [open, setOpen] = useDialogState();
 
   return (
     <>
       <DropdownMenu modal={false}>
         <DropdownMenuTrigger asChild>
-          <Button variant='ghost' className='relative size-8 rounded-full'>
-            <Avatar className='size-8'>
-              <AvatarImage src='/avatars/01.png' alt='@shadcn' />
+          <Button variant="ghost" className="relative size-8 rounded-full">
+            <Avatar className="size-8">
+              <AvatarImage src="/avatars/01.png" alt="@shadcn" />
               <AvatarFallback>SN</AvatarFallback>
             </Avatar>
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent className='w-56' align='end' forceMount>
-          <DropdownMenuLabel className='font-normal'>
-            <div className='flex flex-col gap-1.5'>
-              <p className='text-sm leading-none font-medium'>satnaing</p>
-              <p className='text-muted-foreground text-xs leading-none'>
+        <DropdownMenuContent className="w-56" align="end" forceMount>
+          <DropdownMenuLabel className="font-normal">
+            <div className="flex flex-col gap-1.5">
+              <p className="text-sm font-medium leading-none">satnaing</p>
+              <p className="text-xs leading-none text-muted-foreground">
                 satnaingdev@gmail.com
               </p>
             </div>
@@ -40,19 +41,19 @@ export function ProfileDropdown() {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link to='/settings'>
+              <Link to="/settings">
                 Profile
                 <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to='/settings'>
+              <Link to="/settings">
                 Billing
                 <DropdownMenuShortcut>⌘B</DropdownMenuShortcut>
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
-              <Link to='/settings'>
+              <Link to="/settings">
                 Settings
                 <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
               </Link>
@@ -60,9 +61,9 @@ export function ProfileDropdown() {
             <DropdownMenuItem>New Team</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant='destructive' onClick={() => setOpen(true)}>
+          <DropdownMenuItem variant="destructive" onClick={() => setOpen(true)}>
             Sign out
-            <DropdownMenuShortcut className='text-current'>
+            <DropdownMenuShortcut className="text-current">
               ⇧⌘Q
             </DropdownMenuShortcut>
           </DropdownMenuItem>
@@ -71,5 +72,5 @@ export function ProfileDropdown() {
 
       <SignOutDialog open={!!open} onOpenChange={setOpen} />
     </>
-  )
+  );
 }

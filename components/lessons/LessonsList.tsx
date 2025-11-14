@@ -1,24 +1,25 @@
-'use client';
+"use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+import React from "react";
+import Link from "next/link";
 import {
-  BookOpen,
-  Clock,
-  Calendar,
-  Users,
-  ChevronRight,
   AlertCircle,
+  BookOpen,
+  Calendar,
+  ChevronRight,
+  Clock,
   FileText,
-} from 'lucide-react';
-import { useLessonsStore } from '@/lib/store/lessons';
-import { Lesson } from '@/lib/types/lessons';
-import { cn } from '@/lib/utils';
+  Users,
+} from "lucide-react";
+
+import { useLessonsStore } from "@/lib/store/lessons";
+import { Lesson } from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LessonsListProps {
   onLessonSelect?: (lessonId: number) => void;
@@ -37,14 +38,17 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
     onSelect?.(lesson.id);
   };
 
-  const statusColor = lesson.status === 'active' 
-    ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400'
-    : 'bg-slate-100 text-slate-800 dark:bg-slate-900/20 dark:text-slate-400';
+  const statusColor =
+    lesson.status === "active"
+      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
+      : "bg-slate-100 text-slate-800 dark:bg-slate-900/20 dark:text-slate-400";
 
   if (compact) {
     return (
-<Card className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-md"
-            onClick={handleClick}>
+      <Card
+        className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-md"
+        onClick={handleClick}
+      >
         <CardContent className="p-4">
           <div className="flex items-start justify-between">
             <div className="min-w-0 flex-1">
@@ -71,14 +75,16 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
   }
 
   return (
-<Card className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-lg"
-          onClick={handleClick}>
+    <Card
+      className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-lg"
+      onClick={handleClick}
+    >
       <CardHeader className="pb-4">
         <div className="flex items-start justify-between">
           <div className="min-w-0 flex-1">
             <div className="mb-2 flex items-center gap-2">
               <BookOpen className="size-5 text-blue-600" />
-              <Badge className={cn('text-xs', statusColor)}>
+              <Badge className={cn("text-xs", statusColor)}>
                 {lesson.status}
               </Badge>
             </div>
@@ -89,7 +95,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
           <ChevronRight className="mt-1 size-5 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
         </div>
       </CardHeader>
-      
+
       <CardContent className="pt-0">
         <div className="space-y-3">
           {/* Subject and Class Info */}
@@ -118,9 +124,13 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
 
           {/* Dates */}
           <div className="flex items-center justify-between border-t border-slate-200 pt-2 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-500">
-            <span>Created: {new Date(lesson.created_at).toLocaleDateString()}</span>
+            <span>
+              Created: {new Date(lesson.created_at).toLocaleDateString()}
+            </span>
             {lesson.updated_at !== lesson.created_at && (
-              <span>Updated: {new Date(lesson.updated_at).toLocaleDateString()}</span>
+              <span>
+                Updated: {new Date(lesson.updated_at).toLocaleDateString()}
+              </span>
             )}
           </div>
         </div>
@@ -132,7 +142,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
 function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   if (compact) {
     return (
-<Card className="bg-card">
+      <Card className="bg-card">
         <CardContent className="p-4">
           <div className="space-y-3">
             <Skeleton className="h-5 w-3/4" />
@@ -148,7 +158,7 @@ function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   }
 
   return (
-<Card className="bg-card">
+    <Card className="bg-card">
       <CardHeader className="pb-4">
         <div className="space-y-3">
           <div className="flex items-center gap-2">
@@ -178,10 +188,10 @@ function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   );
 }
 
-export function LessonsList({ 
-  onLessonSelect, 
+export function LessonsList({
+  onLessonSelect,
   showPagination = true,
-  compact = false 
+  compact = false,
 }: LessonsListProps) {
   const {
     lessons,
@@ -206,10 +216,14 @@ export function LessonsList({
   if (isLoadingLessons) {
     const skeletonCount = compact ? 4 : 6;
     return (
-      <div className={cn(
-        'grid gap-4',
-        compact ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-      )}>
+      <div
+        className={cn(
+          "grid gap-4",
+          compact
+            ? "grid-cols-1 md:grid-cols-2"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+        )}
+      >
         {Array.from({ length: skeletonCount }).map((_, index) => (
           <LoadingSkeleton key={index} compact={compact} />
         ))}
@@ -224,9 +238,9 @@ export function LessonsList({
         <AlertCircle className="size-4" />
         <AlertDescription className="flex items-center justify-between">
           <span>{error}</span>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={clearError}
             className="ml-2"
           >
@@ -247,7 +261,8 @@ export function LessonsList({
             No lessons found
           </h3>
           <p className="max-w-md text-center text-slate-600 dark:text-slate-400">
-            Try adjusting your filters to find lessons. Make sure you&apos;ve selected a class, subject, term, and week.
+            Try adjusting your filters to find lessons. Make sure you&apos;ve
+            selected a class, subject, term, and week.
           </p>
         </CardContent>
       </Card>
@@ -266,7 +281,7 @@ export function LessonsList({
             {totalLessons} total
           </Badge>
         </div>
-        
+
         {showPagination && totalPages > 1 && (
           <div className="text-sm text-slate-600 dark:text-slate-400">
             Page {currentPage} of {totalPages}
@@ -275,10 +290,14 @@ export function LessonsList({
       </div>
 
       {/* Lessons grid */}
-      <div className={cn(
-        'grid gap-4',
-        compact ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'
-      )}>
+      <div
+        className={cn(
+          "grid gap-4",
+          compact
+            ? "grid-cols-1 md:grid-cols-2"
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+        )}
+      >
         {lessons.map((lesson) => (
           <LessonCard
             key={lesson.id}
@@ -300,13 +319,15 @@ export function LessonsList({
           >
             Previous
           </Button>
-          
+
           {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter(page => {
+            .filter((page) => {
               // Show first, last, current, and adjacent pages
-              return page === 1 || 
-                     page === totalPages || 
-                     Math.abs(page - currentPage) <= 1;
+              return (
+                page === 1 ||
+                page === totalPages ||
+                Math.abs(page - currentPage) <= 1
+              );
             })
             .map((page, index, array) => (
               <React.Fragment key={page}>
@@ -314,21 +335,21 @@ export function LessonsList({
                 {index > 0 && array[index - 1] + 1 < page && (
                   <span className="px-2 text-slate-400">…</span>
                 )}
-                
+
                 <Button
                   variant={currentPage === page ? "default" : "outline"}
                   size="sm"
                   onClick={() => handlePageChange(page)}
                   className={cn(
-                    'min-w-8',
-                    currentPage === page && 'bg-blue-600 hover:bg-blue-700'
+                    "min-w-8",
+                    currentPage === page && "bg-blue-600 hover:bg-blue-700",
                   )}
                 >
                   {page}
                 </Button>
               </React.Fragment>
             ))}
-          
+
           <Button
             variant="outline"
             size="sm"

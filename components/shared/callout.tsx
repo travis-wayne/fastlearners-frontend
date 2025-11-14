@@ -19,8 +19,7 @@ interface CalloutProps {
 const dataCallout = {
   default: {
     icon: Info,
-    classes:
-      "border-border bg-muted text-foreground",
+    classes: "border-border bg-muted text-foreground",
   },
   danger: {
     icon: CircleAlert,

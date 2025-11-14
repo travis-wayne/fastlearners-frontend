@@ -1,8 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
 
 interface LessonNavigationProps {
   previousUrl?: string | null;
@@ -36,7 +37,7 @@ export function LessonNavigation({
   };
 
   return (
-    <div className="flex items-center justify-between border-t pt-6 mt-6">
+    <div className="mt-6 flex items-center justify-between border-t pt-6">
       <Button
         variant="outline"
         onClick={handlePrevious}
@@ -46,15 +47,10 @@ export function LessonNavigation({
         Previous Lesson
       </Button>
 
-      <Button
-        variant="default"
-        onClick={handleNext}
-        disabled={!nextUrl}
-      >
+      <Button variant="default" onClick={handleNext} disabled={!nextUrl}>
         Next Lesson
         <ArrowRight className="ml-2 size-4" />
       </Button>
     </div>
   );
 }
-

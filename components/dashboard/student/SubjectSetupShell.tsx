@@ -1,12 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { SubjectSetupForm } from "./SubjectSetupForm";
-import { SubjectDashboardShell } from "./SubjectDashboardShell";
+
 import type { SubjectsContent } from "@/lib/types/subjects";
 
+import { SubjectDashboardShell } from "./SubjectDashboardShell";
+import { SubjectSetupForm } from "./SubjectSetupForm";
+
 export function SubjectSetupShell() {
-  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(null);
+  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(
+    null,
+  );
   const [isComplete, setIsComplete] = useState(false);
 
   const handleComplete = (updatedData?: SubjectsContent) => {
@@ -37,4 +41,3 @@ export function SubjectSetupShell() {
     </div>
   );
 }
-

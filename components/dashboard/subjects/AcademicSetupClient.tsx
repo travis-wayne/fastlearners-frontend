@@ -1,7 +1,8 @@
-'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { AcademicSetupForm } from './AcademicSetupForm';
+import { useRouter } from "next/navigation";
+
+import { AcademicSetupForm } from "./AcademicSetupForm";
 
 interface AcademicSetupClientProps {
   token?: string;
@@ -16,4 +17,3 @@ export function AcademicSetupClient({ token }: AcademicSetupClientProps) {
 
   return <AcademicSetupForm token={token} onComplete={handleComplete} />;
 }
-

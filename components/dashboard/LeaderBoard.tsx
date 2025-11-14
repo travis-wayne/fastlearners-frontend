@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface LeaderboardEntryItem {
   rank: number;
@@ -35,7 +36,9 @@ export function LeaderBoard({
               {title}
             </CardTitle>
             {subtitle ? (
-              <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">{subtitle}</p>
+              <p className="mt-1 text-sm text-gray-500 dark:text-slate-400">
+                {subtitle}
+              </p>
             ) : null}
           </div>
           <Button variant="ghost" size="sm" onClick={onViewAll}>
@@ -59,9 +62,7 @@ export function LeaderBoard({
                 {student.avatar ? (
                   <AvatarImage src={student.avatar} alt={student.name} />
                 ) : null}
-                <AvatarFallback>
-                  {student.name?.[0] ?? "U"}
-                </AvatarFallback>
+                <AvatarFallback>{student.name?.[0] ?? "U"}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
                 <div className="text-sm font-medium text-gray-900 dark:text-slate-200">

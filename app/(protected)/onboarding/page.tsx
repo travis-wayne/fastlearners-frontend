@@ -1,39 +1,46 @@
-'use client'
+"use client";
 
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { ArrowRight, BookOpen, Trophy, User } from "lucide-react";
 
-import { useAuthStore } from '@/store/authStore'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
-import { User, BookOpen, Trophy, ArrowRight } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const { user, getProfileCompletionPercentage, isProfileComplete } = useAuthStore()
-  const percentage = user ? getProfileCompletionPercentage() : 0
-  const isComplete = user ? isProfileComplete() : false
+  const router = useRouter();
+  const { user, getProfileCompletionPercentage, isProfileComplete } =
+    useAuthStore();
+  const percentage = user ? getProfileCompletionPercentage() : 0;
+  const isComplete = user ? isProfileComplete() : false;
 
   useEffect(() => {
     if (isComplete) {
-      router.push('/dashboard')
+      router.push("/dashboard");
     }
-  }, [isComplete, router])
+  }, [isComplete, router]);
 
-  if (!user) return null
+  if (!user) return null;
 
   const benefits = [
-    { icon: User, text: 'Personalized learning experience' },
-    { icon: BookOpen, text: 'Access to all courses and activities' },
-    { icon: Trophy, text: 'Track your progress and achievements' },
-  ]
+    { icon: User, text: "Personalized learning experience" },
+    { icon: BookOpen, text: "Access to all courses and activities" },
+    { icon: Trophy, text: "Track your progress and achievements" },
+  ];
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">
-          Welcome, {user.name || user.email?.split('@')[0] || 'there'}!
+          Welcome, {user.name || user.email?.split("@")[0] || "there"}!
         </h1>
         <p className="mt-1 text-muted-foreground">
           Complete your profile to unlock the full Fast Learner experience.
@@ -46,11 +53,14 @@ export default function OnboardingPage() {
             <div>
               <CardTitle>Profile Completion</CardTitle>
               <CardDescription>
-                You&apos;re {percentage}% done! Fill in the remaining details to get started.
+                You&apos;re {percentage}% done! Fill in the remaining details to
+                get started.
               </CardDescription>
             </div>
             <div className="text-right">
-              <div className="text-2xl font-bold text-primary">{percentage}%</div>
+              <div className="text-2xl font-bold text-primary">
+                {percentage}%
+              </div>
               <div className="text-xs text-muted-foreground">Complete</div>
             </div>
           </div>
@@ -71,9 +81,9 @@ export default function OnboardingPage() {
             </ul>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          <div className="flex flex-col gap-3 border-t pt-4 sm:flex-row">
             <Button
-              onClick={() => router.push('/onboarding/complete-profile')}
+              onClick={() => router.push("/onboarding/complete-profile")}
               className="flex-1"
             >
               Complete Profile
@@ -81,7 +91,7 @@ export default function OnboardingPage() {
             </Button>
             <Button
               variant="outline"
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push("/dashboard")}
               className="flex-1"
             >
               Skip for Now
@@ -90,5 +100,5 @@ export default function OnboardingPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

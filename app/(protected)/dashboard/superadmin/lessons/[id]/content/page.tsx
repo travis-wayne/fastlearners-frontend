@@ -3,11 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+
 // NOTE: getLessonContent removed from lessons-api.ts - this page needs admin-only endpoint
 // This superadmin page should use a separate admin client that calls superadmin endpoints directly
 import { getErrorMessage } from "@/lib/api/lessons-api";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function LessonContentPage() {
@@ -30,7 +37,9 @@ export default function LessonContentPage() {
       try {
         // TODO: Replace with admin-only endpoint
         // getLessonContent removed - this superadmin page needs admin-only client
-        setError("Admin endpoint not implemented. getLessonContent() was removed from student app.");
+        setError(
+          "Admin endpoint not implemented. getLessonContent() was removed from student app.",
+        );
         // const res = await getContent(id);
         // if (mounted) {
         //   if (res.success) setContent(res.content);
@@ -43,7 +52,9 @@ export default function LessonContentPage() {
       }
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   return (
@@ -51,7 +62,7 @@ export default function LessonContentPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Lesson Content</h1>
         <div className="flex gap-2">
-{id ? (
+          {id ? (
             <Link href={`/dashboard/superadmin/lessons/${id}`}>
               <Button variant="secondary">Back to Details</Button>
             </Link>
@@ -65,7 +76,9 @@ export default function LessonContentPage() {
       <Card>
         <CardHeader>
           <CardTitle>Content</CardTitle>
-          <CardDescription>Fetched from /api/v1/superadmin/lessons/lesson/{id}/content</CardDescription>
+          <CardDescription>
+            Fetched from /api/v1/superadmin/lessons/lesson/{id}/content
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loading && <p>Loading…</p>}
@@ -78,7 +91,10 @@ export default function LessonContentPage() {
             <div className="space-y-8">
               <div>
                 <h2 className="text-xl font-medium">{content.topic}</h2>
-                <p className="text-sm text-muted-foreground">{content.class} • {content.subject} • {content.term} • Week {content.week}</p>
+                <p className="text-sm text-muted-foreground">
+                  {content.class} • {content.subject} • {content.term} • Week{" "}
+                  {content.week}
+                </p>
               </div>
 
               <Separator />
@@ -90,16 +106,28 @@ export default function LessonContentPage() {
                   {content.concepts?.map((c: any) => (
                     <div key={c.id} className="rounded-lg border p-4">
                       <div className="mb-2 flex items-center justify-between">
-                        <div className="font-medium">{c.order_index}. {c.title}</div>
-                        <div className="text-xs text-muted-foreground">{c.lesson_topic}</div>
+                        <div className="font-medium">
+                          {c.order_index}. {c.title}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {c.lesson_topic}
+                        </div>
                       </div>
                       {c.description?.map((d: any, idx: number) => (
                         <div key={idx} className="space-y-1">
-                          {d.heading ? <div className="text-sm font-medium">{d.heading}</div> : null}
-                          <p className="text-sm leading-relaxed">{d.description}</p>
+                          {d.heading ? (
+                            <div className="text-sm font-medium">
+                              {d.heading}
+                            </div>
+                          ) : null}
+                          <p className="text-sm leading-relaxed">
+                            {d.description}
+                          </p>
                           {Array.isArray(d.points) && d.points.length > 0 ? (
                             <ul className="list-disc pl-5 text-sm">
-                              {d.points.map((p: string, i: number) => <li key={i}>{p}</li>)}
+                              {d.points.map((p: string, i: number) => (
+                                <li key={i}>{p}</li>
+                              ))}
                             </ul>
                           ) : null}
                         </div>
@@ -111,13 +139,24 @@ export default function LessonContentPage() {
                           <div className="text-sm font-medium">Examples</div>
                           <div className="space-y-3">
                             {c.examples.map((ex: any) => (
-                              <div key={ex.id} className="rounded-md bg-muted p-3 text-sm">
+                              <div
+                                key={ex.id}
+                                className="rounded-md bg-muted p-3 text-sm"
+                              >
                                 <div className="font-medium">{ex.title}</div>
-                                <div className="text-muted-foreground">{ex.problem}</div>
+                                <div className="text-muted-foreground">
+                                  {ex.problem}
+                                </div>
                                 <ul className="mt-2 list-decimal pl-5">
-                                  {ex.solution_steps?.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                                  {ex.solution_steps?.map(
+                                    (s: string, i: number) => (
+                                      <li key={i}>{s}</li>
+                                    ),
+                                  )}
                                 </ul>
-                                <div className="mt-2 font-medium">Answer: {ex.answer}</div>
+                                <div className="mt-2 font-medium">
+                                  Answer: {ex.answer}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -130,14 +169,27 @@ export default function LessonContentPage() {
                           <div className="text-sm font-medium">Exercises</div>
                           <div className="space-y-3">
                             {c.exercises.map((ex: any) => (
-                              <div key={ex.id} className="rounded-md bg-muted p-3 text-sm">
+                              <div
+                                key={ex.id}
+                                className="rounded-md bg-muted p-3 text-sm"
+                              >
                                 <div className="font-medium">{ex.title}</div>
-                                <div className="text-muted-foreground">{ex.problem}</div>
+                                <div className="text-muted-foreground">
+                                  {ex.problem}
+                                </div>
                                 <ul className="mt-2 list-decimal pl-5">
-                                  {ex.solution_steps?.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                                  {ex.solution_steps?.map(
+                                    (s: string, i: number) => (
+                                      <li key={i}>{s}</li>
+                                    ),
+                                  )}
                                 </ul>
-                                <div className="mt-2">Options: {ex.answers?.join(", ")}</div>
-                                <div className="mt-1 font-medium">Correct: {ex.correct_answer}</div>
+                                <div className="mt-2">
+                                  Options: {ex.answers?.join(", ")}
+                                </div>
+                                <div className="mt-1 font-medium">
+                                  Correct: {ex.correct_answer}
+                                </div>
                               </div>
                             ))}
                           </div>
@@ -154,13 +206,21 @@ export default function LessonContentPage() {
                 <div className="space-y-3">
                   {content.general_exercises?.map((g: any) => (
                     <div key={g.id} className="rounded-lg border p-4 text-sm">
-                      <div className="font-medium">{g.order_index}. {g.lesson_topic}</div>
+                      <div className="font-medium">
+                        {g.order_index}. {g.lesson_topic}
+                      </div>
                       <div className="text-muted-foreground">{g.problem}</div>
                       <ul className="mt-2 list-decimal pl-5">
-                        {g.solution_steps?.map((s: string, i: number) => <li key={i}>{s}</li>)}
+                        {g.solution_steps?.map((s: string, i: number) => (
+                          <li key={i}>{s}</li>
+                        ))}
                       </ul>
-                      <div className="mt-2">Options: {g.answers?.join(", ")}</div>
-                      <div className="mt-1 font-medium">Correct: {g.correct_answer}</div>
+                      <div className="mt-2">
+                        Options: {g.answers?.join(", ")}
+                      </div>
+                      <div className="mt-1 font-medium">
+                        Correct: {g.correct_answer}
+                      </div>
                     </div>
                   ))}
                 </div>

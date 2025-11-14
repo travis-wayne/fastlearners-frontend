@@ -5,7 +5,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { NavItem, SidebarNavItem } from "@/types";
-import { LogOut, Menu, MessageCircle, PanelLeftClose, PanelRightClose, CreditCard } from "lucide-react";
+import {
+  CreditCard,
+  LogOut,
+  Menu,
+  MessageCircle,
+  PanelLeftClose,
+  PanelRightClose,
+} from "lucide-react";
 
 import { siteConfig } from "@/config/site";
 import { cn } from "@/lib/utils";
@@ -124,7 +131,9 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                 key={`link-${item.title}`}
                                 href={item.disabled ? "#" : item.href}
                                 aria-label={item.title}
-                                aria-current={path === item.href ? "page" : undefined}
+                                aria-current={
+                                  path === item.href ? "page" : undefined
+                                }
                                 className={cn(
                                   "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                                   path === item.href
@@ -137,7 +146,10 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                 <Icon className="size-5" aria-hidden="true" />
                                 {item.title}
                                 {item.badge && (
-                                  <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full" aria-label={`${item.badge} notifications`}>
+                                  <Badge
+                                    className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full"
+                                    aria-label={`${item.badge} notifications`}
+                                  >
                                     {item.badge}
                                   </Badge>
                                 )}
@@ -149,7 +161,9 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     key={`link-tooltip-${item.title}`}
                                     href={item.disabled ? "#" : item.href}
                                     aria-label={item.title}
-                                    aria-current={path === item.href ? "page" : undefined}
+                                    aria-current={
+                                      path === item.href ? "page" : undefined
+                                    }
                                     className={cn(
                                       "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                                       path === item.href
@@ -159,7 +173,10 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                         "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                     )}
                                   >
-                                    <span className="flex size-full items-center justify-center" aria-hidden="true">
+                                    <span
+                                      className="flex size-full items-center justify-center"
+                                      aria-hidden="true"
+                                    >
                                       <Icon className="size-5" />
                                     </span>
                                   </Link>
@@ -311,7 +328,9 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                               }}
                               href={item.disabled ? "#" : item.href}
                               aria-label={item.title}
-                              aria-current={path === item.href ? "page" : undefined}
+                              aria-current={
+                                path === item.href ? "page" : undefined
+                              }
                               className={cn(
                                 "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
                                 path === item.href
@@ -324,7 +343,10 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                               <Icon className="size-5" aria-hidden="true" />
                               {item.title}
                               {item.badge && (
-                                <Badge className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full" aria-label={`${item.badge} notifications`}>
+                                <Badge
+                                  className="ml-auto flex size-5 shrink-0 items-center justify-center rounded-full"
+                                  aria-label={`${item.badge} notifications`}
+                                >
                                   {item.badge}
                                 </Badge>
                               )}

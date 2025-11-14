@@ -18,11 +18,7 @@ import { toast } from "sonner";
 // NOTE: getLessons and trashLesson removed from lesson-service.ts
 // These functions hit non-documented superadmin endpoints and should be in admin-only client
 // This teacher page should use admin-only endpoints or be moved to admin-only app
-import type {
-  ClassInfo,
-  Lesson,
-  SubjectInfo,
-} from "@/lib/api/lesson-service";
+import type { ClassInfo, Lesson, SubjectInfo } from "@/lib/api/lesson-service";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -80,7 +76,9 @@ export default function LessonsPage() {
 
       // TODO: Replace with admin-only endpoint
       // getLessons removed - this teacher page needs admin-only client
-      setError("Admin endpoint not implemented. getLessons() was removed from student app.");
+      setError(
+        "Admin endpoint not implemented. getLessons() was removed from student app.",
+      );
       setLessons([]);
       setClasses([]);
       setSubjects([]);
@@ -126,7 +124,9 @@ export default function LessonsPage() {
     try {
       // TODO: Replace with admin-only endpoint
       // trashLesson removed - this teacher page needs admin-only client
-      toast.error("Admin endpoint not implemented. trashLesson() was removed from student app.");
+      toast.error(
+        "Admin endpoint not implemented. trashLesson() was removed from student app.",
+      );
       // const response = await trashLesson(lessonId);
       // if (response.success) {
       //   toast.success(response.message || "Lesson moved to trash successfully");

@@ -1,30 +1,41 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { Loader2, CheckCircle2, Circle, AlertCircle } from 'lucide-react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { getStudentSubjects } from '@/lib/api/subjects';
-import type { SubjectsContent } from '@/lib/types/subjects';
-import { useAuthStore } from '@/store/authStore';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { AlertCircle, CheckCircle2, Circle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { getStudentSubjects } from "@/lib/api/subjects";
+import type { SubjectsContent } from "@/lib/types/subjects";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export function SimpleSubjectSelector() {
   const router = useRouter();
   const { user } = useAuthStore();
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(null);
-  
+  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(
+    null,
+  );
+
   // Selection state
-  const [selectedCompulsory, setSelectedCompulsory] = useState<number | null>(null);
+  const [selectedCompulsory, setSelectedCompulsory] = useState<number | null>(
+    null,
+  );
   const [selectedSelective, setSelectedSelective] = useState<number[]>([]);
 
   // Check if user is in JSS class
-  const isJSS = user?.class?.toUpperCase().startsWith('JSS') ?? false;
+  const isJSS = user?.class?.toUpperCase().startsWith("JSS") ?? false;
   const requiredSelectiveCount = 4; // Always 4 according to docs
 
   useEffect(() => {
@@ -39,43 +50,45 @@ export function SimpleSubjectSelector() {
       const response = await getStudentSubjects();
       if (response.success && response.content) {
         setSubjectsData(response.content);
-        
+
         // If compulsory selective is already selected, we can't determine which one
         // So we leave it as null and let the user see the status
         setSelectedCompulsory(null);
         setSelectedSelective([]);
       } else {
-        toast.error(response.message || 'Failed to fetch subjects');
+        toast.error(response.message || "Failed to fetch subjects");
       }
     } catch (error: any) {
-      toast.error(error.message || 'Failed to load subjects');
+      toast.error(error.message || "Failed to load subjects");
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleCompulsorySelect = (subjectId: number) => {
-    if (subjectsData?.compulsory_selective_status === 'selected') {
-      toast.info('Compulsory selective subject has already been selected');
+    if (subjectsData?.compulsory_selective_status === "selected") {
+      toast.info("Compulsory selective subject has already been selected");
       return;
     }
     setSelectedCompulsory(subjectId);
   };
 
   const handleSelectiveToggle = (subjectId: number) => {
-    if (subjectsData?.selective_status === 'selected') {
-      toast.info('Selective subjects have already been selected');
+    if (subjectsData?.selective_status === "selected") {
+      toast.info("Selective subjects have already been selected");
       return;
     }
 
-    setSelectedSelective(prev => {
+    setSelectedSelective((prev) => {
       if (prev.includes(subjectId)) {
         // Deselect
-        return prev.filter(id => id !== subjectId);
+        return prev.filter((id) => id !== subjectId);
       } else {
         // Select (max 4)
         if (prev.length >= requiredSelectiveCount) {
-          toast.warning(`You can only select ${requiredSelectiveCount} subjects`);
+          toast.warning(
+            `You can only select ${requiredSelectiveCount} subjects`,
+          );
           return prev;
         }
         return [...prev, subjectId];
@@ -85,32 +98,37 @@ export function SimpleSubjectSelector() {
 
   const handleSubmitCompulsory = async () => {
     if (!selectedCompulsory) {
-      toast.error('Please select a religious study subject');
+      toast.error("Please select a religious study subject");
       return;
     }
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/subjects/update-compulsory-selective', {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+      const response = await fetch(
+        "/api/subjects/update-compulsory-selective",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ subject: selectedCompulsory }),
         },
-        credentials: 'include',
-        body: JSON.stringify({ subject: selectedCompulsory }),
-      });
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to update compulsory selective subject');
+        throw new Error(
+          data.message || "Failed to update compulsory selective subject",
+        );
       }
 
-      toast.success('Compulsory selective subject saved successfully!');
+      toast.success("Compulsory selective subject saved successfully!");
       await fetchSubjects(); // Refresh to get updated status
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save selection');
+      toast.error(error.message || "Failed to save selection");
     } finally {
       setIsSubmitting(false);
     }
@@ -124,27 +142,27 @@ export function SimpleSubjectSelector() {
 
     setIsSubmitting(true);
     try {
-      const response = await fetch('/api/subjects/update-selective', {
-        method: 'POST',
+      const response = await fetch("/api/subjects/update-selective", {
+        method: "POST",
         headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
+          Accept: "application/json",
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify({ subjects: selectedSelective }),
       });
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Failed to update selective subjects');
+        throw new Error(data.message || "Failed to update selective subjects");
       }
 
-      toast.success('Selective subjects saved successfully!');
+      toast.success("Selective subjects saved successfully!");
       await fetchSubjects(); // Refresh to get updated status
       router.refresh();
     } catch (error: any) {
-      toast.error(error.message || 'Failed to save selection');
+      toast.error(error.message || "Failed to save selection");
     } finally {
       setIsSubmitting(false);
     }
@@ -172,8 +190,9 @@ export function SimpleSubjectSelector() {
     );
   }
 
-  const compulsoryComplete = subjectsData.compulsory_selective_status === 'selected';
-  const selectiveComplete = subjectsData.selective_status === 'selected';
+  const compulsoryComplete =
+    subjectsData.compulsory_selective_status === "selected";
+  const selectiveComplete = subjectsData.selective_status === "selected";
 
   return (
     <div className="space-y-6">
@@ -201,7 +220,8 @@ export function SimpleSubjectSelector() {
               <Alert>
                 <CheckCircle2 className="size-4" />
                 <AlertDescription>
-                  Your compulsory selective subject has been selected and cannot be changed.
+                  Your compulsory selective subject has been selected and cannot
+                  be changed.
                 </AlertDescription>
               </Alert>
             ) : (
@@ -211,13 +231,11 @@ export function SimpleSubjectSelector() {
                     <button
                       key={subject.id}
                       onClick={() => handleCompulsorySelect(subject.id)}
-                      className={`
-                        p-4 rounded-lg border-2 text-left transition-all
-                        ${selectedCompulsory === subject.id
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border hover:border-primary/50'
-                        }
-                      `}
+                      className={`rounded-lg border-2 p-4 text-left transition-all ${
+                        selectedCompulsory === subject.id
+                          ? "border-primary bg-primary/10"
+                          : "border-border hover:border-primary/50"
+                      } `}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-medium">{subject.name}</span>
@@ -241,7 +259,7 @@ export function SimpleSubjectSelector() {
                       Saving...
                     </>
                   ) : (
-                    'Save Compulsory Selective Subject'
+                    "Save Compulsory Selective Subject"
                   )}
                 </Button>
               </>
@@ -258,7 +276,8 @@ export function SimpleSubjectSelector() {
               <div>
                 <CardTitle>Selective Subjects</CardTitle>
                 <CardDescription>
-                  Select exactly {requiredSelectiveCount} subjects from the list below
+                  Select exactly {requiredSelectiveCount} subjects from the list
+                  below
                 </CardDescription>
               </div>
               <div className="flex items-center gap-2">
@@ -269,7 +288,7 @@ export function SimpleSubjectSelector() {
                   </Badge>
                 )}
                 {!selectiveComplete && (
-                  <Badge variant="secondary" className="text-lg px-3 py-1">
+                  <Badge variant="secondary" className="px-3 py-1 text-lg">
                     {selectedSelective.length}/{requiredSelectiveCount}
                   </Badge>
                 )}
@@ -281,7 +300,8 @@ export function SimpleSubjectSelector() {
               <Alert>
                 <CheckCircle2 className="size-4" />
                 <AlertDescription>
-                  Your selective subjects have been selected and cannot be changed.
+                  Your selective subjects have been selected and cannot be
+                  changed.
                 </AlertDescription>
               </Alert>
             ) : (
@@ -290,7 +310,9 @@ export function SimpleSubjectSelector() {
                   <Alert>
                     <AlertCircle className="size-4" />
                     <AlertDescription>
-                      Please select {requiredSelectiveCount - selectedSelective.length} more subject(s)
+                      Please select{" "}
+                      {requiredSelectiveCount - selectedSelective.length} more
+                      subject(s)
                     </AlertDescription>
                   </Alert>
                 )}
@@ -298,22 +320,22 @@ export function SimpleSubjectSelector() {
                 <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
                   {subjectsData.selective.map((subject) => {
                     const isSelected = selectedSelective.includes(subject.id);
-                    const isDisabled = !isSelected && selectedSelective.length >= requiredSelectiveCount;
+                    const isDisabled =
+                      !isSelected &&
+                      selectedSelective.length >= requiredSelectiveCount;
 
                     return (
                       <button
                         key={subject.id}
                         onClick={() => handleSelectiveToggle(subject.id)}
                         disabled={isDisabled}
-                        className={`
-                          p-4 rounded-lg border-2 text-left transition-all
-                          ${isSelected
-                            ? 'border-primary bg-primary/10'
+                        className={`rounded-lg border-2 p-4 text-left transition-all ${
+                          isSelected
+                            ? "border-primary bg-primary/10"
                             : isDisabled
-                            ? 'border-border opacity-50 cursor-not-allowed'
-                            : 'border-border hover:border-primary/50'
-                          }
-                        `}
+                              ? "cursor-not-allowed border-border opacity-50"
+                              : "border-border hover:border-primary/50"
+                        } `}
                       >
                         <div className="flex items-center justify-between">
                           <span className="font-medium">{subject.name}</span>
@@ -330,7 +352,10 @@ export function SimpleSubjectSelector() {
 
                 <Button
                   onClick={handleSubmitSelective}
-                  disabled={selectedSelective.length !== requiredSelectiveCount || isSubmitting}
+                  disabled={
+                    selectedSelective.length !== requiredSelectiveCount ||
+                    isSubmitting
+                  }
                   className="w-full"
                   size="lg"
                 >
@@ -342,7 +367,8 @@ export function SimpleSubjectSelector() {
                   ) : (
                     <>
                       <CheckCircle2 className="mr-2 size-4" />
-                      Save Selective Subjects ({selectedSelective.length}/{requiredSelectiveCount})
+                      Save Selective Subjects ({selectedSelective.length}/
+                      {requiredSelectiveCount})
                     </>
                   )}
                 </Button>
@@ -358,14 +384,13 @@ export function SimpleSubjectSelector() {
           <CheckCircle2 className="size-4" />
           <AlertDescription>
             {compulsoryComplete && selectiveComplete
-              ? 'All subject selections are complete!'
+              ? "All subject selections are complete!"
               : compulsoryComplete
-              ? 'Compulsory selective subject is complete. Please select your selective subjects.'
-              : 'Selective subjects are complete. Please select your compulsory selective subject if applicable.'}
+                ? "Compulsory selective subject is complete. Please select your selective subjects."
+                : "Selective subjects are complete. Please select your compulsory selective subject if applicable."}
           </AlertDescription>
         </Alert>
       )}
     </div>
   );
 }
-

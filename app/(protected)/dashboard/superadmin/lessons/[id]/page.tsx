@@ -3,11 +3,18 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+
 // NOTE: getLesson removed from lessons-api.ts - this page needs admin-only endpoint
 // This superadmin page should use a separate admin client that calls superadmin endpoints directly
 import { getErrorMessage } from "@/lib/api/lessons-api";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 
 export default function LessonDetailPage() {
@@ -30,7 +37,9 @@ export default function LessonDetailPage() {
       try {
         // TODO: Replace with admin-only endpoint
         // getLesson removed - this superadmin page needs admin-only client
-        setError("Admin endpoint not implemented. getLesson() was removed from student app.");
+        setError(
+          "Admin endpoint not implemented. getLesson() was removed from student app.",
+        );
         // const res = await getLessonById(id);
         // if (mounted) {
         //   if (res.success) setLesson(res.content);
@@ -43,14 +52,16 @@ export default function LessonDetailPage() {
       }
     }
     load();
-    return () => { mounted = false; };
+    return () => {
+      mounted = false;
+    };
   }, [id]);
 
   return (
     <div className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-semibold">Lesson Detail</h1>
-{id ? (
+        {id ? (
           <Link href={`/dashboard/superadmin/lessons/${id}/content`}>
             <Button variant="secondary">View Full Content</Button>
           </Link>
@@ -60,7 +71,9 @@ export default function LessonDetailPage() {
       <Card>
         <CardHeader>
           <CardTitle>Lesson</CardTitle>
-          <CardDescription>Fetched from /api/v1/superadmin/lessons/lesson/{id}</CardDescription>
+          <CardDescription>
+            Fetched from /api/v1/superadmin/lessons/lesson/{id}
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {loading && <p>Loading…</p>}
@@ -73,7 +86,9 @@ export default function LessonDetailPage() {
             <div className="space-y-4">
               <div>
                 <h2 className="text-xl font-medium">{lesson.topic}</h2>
-                <p className="text-sm text-muted-foreground">Status: {lesson.status}</p>
+                <p className="text-sm text-muted-foreground">
+                  Status: {lesson.status}
+                </p>
               </div>
               <Separator />
               <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -121,10 +136,10 @@ export default function LessonDetailPage() {
       </Card>
 
       <div className="flex gap-3">
-<Link href="/dashboard/superadmin/lessons">
+        <Link href="/dashboard/superadmin/lessons">
           <Button variant="outline">Back to Lessons</Button>
         </Link>
-{id ? (
+        {id ? (
           <Link href={`/dashboard/superadmin/lessons/${id}/content`}>
             <Button>Open Content</Button>
           </Link>

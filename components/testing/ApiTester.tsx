@@ -1,41 +1,42 @@
-'use client';
+"use client";
 
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Separator } from '@/components/ui/separator';
-import { 
-  CheckCircle, 
-  XCircle, 
-  Loader2, 
-  Play, 
+import React, { useState } from "react";
+import {
+  AlertTriangle,
+  CheckCircle,
   Database,
+  Loader2,
+  Play,
   User,
   UserCheck,
   Users,
-  AlertTriangle 
-} from 'lucide-react';
+  XCircle,
+} from "lucide-react";
+
 import {
-  getStudentDashboard,
+  getLessonContentBySlug,
+  getSubjectsWithSlugs,
+  getTopicsBySubjectSlug,
+} from "@/lib/api/lessons";
+import {
+  getErrorMessage,
   getGuardianDashboard,
   getGuestDashboard,
+  getStudentDashboard,
   getStudentSubjects,
   updateCompulsorySelectiveSubject,
   updateSelectiveSubjects,
-  getErrorMessage,
-} from '@/lib/api/lessons-api';
-import {
-  getSubjectsWithSlugs,
-  getTopicsBySubjectSlug,
-  getLessonContentBySlug,
-} from '@/lib/api/lessons';
+} from "@/lib/api/lessons-api";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 interface TestResult {
   endpoint: string;
   method: string;
-  status: 'idle' | 'loading' | 'success' | 'error';
+  status: "idle" | "loading" | "success" | "error";
   message?: string;
   data?: any;
   error?: string;
@@ -47,93 +48,112 @@ export function ApiTester() {
   const [isTestingAll, setIsTestingAll] = useState(false);
 
   const updateResult = (endpoint: string, result: Partial<TestResult>) => {
-    setResults(prev => {
-      const existing = prev.find(r => r.endpoint === endpoint);
+    setResults((prev) => {
+      const existing = prev.find((r) => r.endpoint === endpoint);
       if (existing) {
-        return prev.map(r => r.endpoint === endpoint ? { ...r, ...result } : r);
+        return prev.map((r) =>
+          r.endpoint === endpoint ? { ...r, ...result } : r,
+        );
       } else {
-        return [...prev, { endpoint, method: 'GET', status: 'idle', ...result }];
+        return [
+          ...prev,
+          { endpoint, method: "GET", status: "idle", ...result },
+        ];
       }
     });
   };
 
   const testEndpoint = async (
-    endpoint: string, 
+    endpoint: string,
     testFunction: () => Promise<any>,
-    method: string = 'GET'
+    method: string = "GET",
   ) => {
     const startTime = Date.now();
-    
-    updateResult(endpoint, { 
-      status: 'loading', 
+
+    updateResult(endpoint, {
+      status: "loading",
       method,
-      message: 'Testing...',
+      message: "Testing...",
       error: undefined,
-      data: undefined
+      data: undefined,
     });
 
     try {
       const response = await testFunction();
       const duration = Date.now() - startTime;
-      
+
       updateResult(endpoint, {
-        status: 'success',
+        status: "success",
         message: `Success (${duration}ms)`,
         data: response,
-        duration
+        duration,
       });
-      
+
       return { success: true, response };
     } catch (error) {
       const duration = Date.now() - startTime;
       const errorMessage = getErrorMessage(error);
-      
+
       updateResult(endpoint, {
-        status: 'error',
+        status: "error",
         message: `Failed (${duration}ms)`,
         error: errorMessage,
-        duration
+        duration,
       });
-      
+
       return { success: false, error: errorMessage };
     }
   };
 
   // Individual test functions
   const testGetSubjectsWithSlugs = () =>
-    testEndpoint('Get Subjects With Slugs', getSubjectsWithSlugs, 'GET');
+    testEndpoint("Get Subjects With Slugs", getSubjectsWithSlugs, "GET");
 
   const testGetTopicsBySubjectSlug = () =>
-    testEndpoint('Get Topics By Subject Slug', () => {
-      // Use a test subject slug - adjust based on your test data
-      return getTopicsBySubjectSlug('mathematics');
-    }, 'GET');
+    testEndpoint(
+      "Get Topics By Subject Slug",
+      () => {
+        // Use a test subject slug - adjust based on your test data
+        return getTopicsBySubjectSlug("mathematics");
+      },
+      "GET",
+    );
 
   const testGetLessonContentBySlug = () =>
-    testEndpoint('Get Lesson Content By Slug', () => {
-      // Use test slugs - adjust based on your test data
-      return getLessonContentBySlug('mathematics', 'algebra');
-    }, 'GET');
+    testEndpoint(
+      "Get Lesson Content By Slug",
+      () => {
+        // Use test slugs - adjust based on your test data
+        return getLessonContentBySlug("mathematics", "algebra");
+      },
+      "GET",
+    );
 
   const testStudentDashboard = () =>
-    testEndpoint('Student Dashboard', getStudentDashboard, 'GET');
+    testEndpoint("Student Dashboard", getStudentDashboard, "GET");
 
   const testGuardianDashboard = () =>
-    testEndpoint('Guardian Dashboard', getGuardianDashboard, 'GET');
+    testEndpoint("Guardian Dashboard", getGuardianDashboard, "GET");
 
   const testGuestDashboard = () =>
-    testEndpoint('Guest Dashboard', getGuestDashboard, 'GET');
+    testEndpoint("Guest Dashboard", getGuestDashboard, "GET");
 
   const testStudentSubjects = () =>
-    testEndpoint('Student Subjects', getStudentSubjects, 'GET');
+    testEndpoint("Student Subjects", getStudentSubjects, "GET");
 
   const testUpdateCompulsorySubject = () =>
-    testEndpoint('Update Compulsory Subject', () => 
-      updateCompulsorySelectiveSubject(22), 'POST');
+    testEndpoint(
+      "Update Compulsory Subject",
+      () => updateCompulsorySelectiveSubject(22),
+      "POST",
+    );
 
   const testUpdateSelectiveSubjects = () =>
-    testEndpoint('Update Selective Subjects', () => 
-      updateSelectiveSubjects([31, 7, 8, 36]), 'POST');
+    testEndpoint(
+      "Update Selective Subjects",
+      () => updateSelectiveSubjects([31, 7, 8, 36]),
+      "POST",
+    );
 
   // Test all endpoints
   const testAllEndpoints = async () => {
@@ -156,7 +176,7 @@ export function ApiTester() {
     for (const test of tests) {
       await test();
       // Small delay between tests
-      await new Promise(resolve => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
     setIsTestingAll(false);
@@ -166,34 +186,34 @@ export function ApiTester() {
     setResults([]);
   };
 
-  const getStatusIcon = (status: TestResult['status']) => {
+  const getStatusIcon = (status: TestResult["status"]) => {
     switch (status) {
-      case 'loading':
+      case "loading":
         return <Loader2 className="size-4 animate-spin text-blue-500" />;
-      case 'success':
+      case "success":
         return <CheckCircle className="size-4 text-green-500" />;
-      case 'error':
+      case "error":
         return <XCircle className="size-4 text-red-500" />;
       default:
         return <div className="size-4" />;
     }
   };
 
-  const getStatusColor = (status: TestResult['status']) => {
+  const getStatusColor = (status: TestResult["status"]) => {
     switch (status) {
-      case 'loading':
-        return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
-      case 'success':
-        return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-      case 'error':
-        return 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400';
+      case "loading":
+        return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
+      case "success":
+        return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+      case "error":
+        return "bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400";
       default:
-        return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+        return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
     }
   };
 
-  const successCount = results.filter(r => r.status === 'success').length;
-  const errorCount = results.filter(r => r.status === 'error').length;
+  const successCount = results.filter((r) => r.status === "success").length;
+  const errorCount = results.filter((r) => r.status === "error").length;
   const totalCount = results.length;
 
   return (
@@ -210,7 +230,8 @@ export function ApiTester() {
             <Alert>
               <AlertTriangle className="size-4" />
               <AlertDescription>
-                This tool tests API connectivity. Make sure you have a valid authentication token.
+                This tool tests API connectivity. Make sure you have a valid
+                authentication token.
               </AlertDescription>
             </Alert>
 
@@ -227,17 +248,17 @@ export function ApiTester() {
                 )}
                 Test All Endpoints
               </Button>
-              
+
               <Button variant="outline" onClick={clearResults}>
                 Clear Results
               </Button>
 
               {totalCount > 0 && (
                 <div className="flex items-center gap-2 text-sm">
-                  <Badge className={getStatusColor('success')}>
+                  <Badge className={getStatusColor("success")}>
                     ✓ {successCount}
                   </Badge>
-                  <Badge className={getStatusColor('error')}>
+                  <Badge className={getStatusColor("error")}>
                     ✗ {errorCount}
                   </Badge>
                   <span className="text-muted-foreground">
@@ -393,7 +414,9 @@ export function ApiTester() {
       {/* Update Tests Section */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-orange-600">⚠️ Destructive Tests</CardTitle>
+          <CardTitle className="text-orange-600">
+            ⚠️ Destructive Tests
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -403,7 +426,7 @@ export function ApiTester() {
                 These tests modify data. Use with caution!
               </AlertDescription>
             </Alert>
-            
+
             <div className="flex gap-2">
               <Button
                 variant="destructive"

@@ -1,29 +1,31 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  BookOpen,
-  AlertCircle,
-  Loader2,
-  ChevronRight,
-} from "lucide-react";
+import { useAuthStore } from "@/store/authStore";
+import { AlertCircle, BookOpen, ChevronRight, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardDescription,
-} from "@/components/ui/card";
+import type {
+  TopicItem,
+  TopicItem,
+  TopicsByTerm,
+  TopicsByTerm,
+} from "@/lib/types/lessons";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -31,13 +33,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { TopicsByTerm, TopicItem } from "@/lib/types/lessons";
 import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
-import { useAuthStore } from '@/store/authStore';
-import type { TopicsByTerm, TopicItem } from "@/lib/types/lessons";
 
 // LessonCard removed - lessons are accessed via subject/topic slugs only
 
@@ -57,10 +56,11 @@ export function LessonsDashboard() {
   const [availableSubjects, setAvailableSubjects] = useState<
     Array<{ id: number; name: string; slug?: string }>
   >([]);
-  const [selectedSubjectTopics, setSelectedSubjectTopics] = useState<TopicsByTerm | null>(null);
+  const [selectedSubjectTopics, setSelectedSubjectTopics] =
+    useState<TopicsByTerm | null>(null);
   // Sync selectedSubjectId with URL params
   const [selectedSubjectId, setSelectedSubjectId] = useState<string>(
-    subjectIdParam || "all"
+    subjectIdParam || "all",
   );
 
   // Sync state with URL params when they change (e.g., back/forward navigation)
@@ -69,7 +69,7 @@ export function LessonsDashboard() {
     const urlSubjectId = searchParams.get("subjectId");
     if (urlSubject) {
       // Find subject by slug and set selectedSubjectId to its id
-      const subject = availableSubjects.find(s => s.slug === urlSubject);
+      const subject = availableSubjects.find((s) => s.slug === urlSubject);
       if (subject) {
         setSelectedSubjectId(String(subject.id));
       }
@@ -108,18 +108,21 @@ export function LessonsDashboard() {
 
         // API returns: { success: true, content: { subjects: [...] } }
         if (data.success && data.content?.subjects) {
-          const subjects = data.content.subjects.map((s: { id: number; name: string; slug: string }) => ({
-            id: s.id,
-            name: s.name,
-            slug: s.slug,
-          }));
+          const subjects = data.content.subjects.map(
+            (s: { id: number; name: string; slug: string }) => ({
+              id: s.id,
+              name: s.name,
+              slug: s.slug,
+            }),
+          );
           setAvailableSubjects(subjects);
         } else {
           setError(data.message || "No subjects found");
           setAvailableSubjects([]);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to fetch subjects";
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to fetch subjects";
         setError(errorMessage);
         setAvailableSubjects([]);
       } finally {
@@ -132,7 +135,7 @@ export function LessonsDashboard() {
 
   // Get selected subject
   const selectedSubject = availableSubjects.find(
-    (s) => String(s.id) === selectedSubjectId
+    (s) => String(s.id) === selectedSubjectId,
   );
 
   // Fetch topics when a subject is selected
@@ -144,7 +147,7 @@ export function LessonsDashboard() {
       }
 
       const subject = availableSubjects.find(
-        (s) => String(s.id) === selectedSubjectId
+        (s) => String(s.id) === selectedSubjectId,
       );
 
       if (!subject || !subject.slug) {
@@ -154,7 +157,7 @@ export function LessonsDashboard() {
 
       setIsLoadingTopics(true);
       setError(null);
-      
+
       try {
         // Direct API call to /api/lessons/{subjectSlug} endpoint
         const response = await fetch(`/api/lessons/${subject.slug}`, {
@@ -182,7 +185,8 @@ export function LessonsDashboard() {
           setSelectedSubjectTopics(null);
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to load topics";
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to load topics";
         setError(errorMessage);
         setSelectedSubjectTopics(null);
       } finally {
@@ -204,7 +208,13 @@ export function LessonsDashboard() {
   }, [currentClass, currentTerm]);
 
   // Stats removed - lessons are accessed via subject/topic slugs only
-  const stats = { total: 0, completed: 0, inProgress: 0, notStarted: 0, completionRate: 0 };
+  const stats = {
+    total: 0,
+    completed: 0,
+    inProgress: 0,
+    notStarted: 0,
+    completionRate: 0,
+  };
 
   if (!currentClass || !currentTerm) {
     return (
@@ -231,7 +241,11 @@ export function LessonsDashboard() {
   }
 
   // Show call-to-action if no subjects registered and "all" is selected
-  if (selectedSubjectId === "all" && availableSubjects.length === 0 && !isLoading) {
+  if (
+    selectedSubjectId === "all" &&
+    availableSubjects.length === 0 &&
+    !isLoading
+  ) {
     return (
       <div className="space-y-6">
         <Card>
@@ -257,7 +271,7 @@ export function LessonsDashboard() {
       {/* Error Alert */}
       {error && (
         <Alert variant="destructive">
-          <AlertCircle className="h-4 w-4" />
+          <AlertCircle className="size-4" />
           <AlertTitle>Error</AlertTitle>
           <AlertDescription className="flex items-center justify-between">
             <span>{error}</span>
@@ -304,8 +318,14 @@ export function LessonsDashboard() {
           onValueChange={(value) => {
             setSelectedSubjectId(value);
             // Update URL without causing full page reload
-            const subject = availableSubjects.find(s => String(s.id) === value);
-            const newUrl = subject?.slug ? `/dashboard/lessons?subject=${subject.slug}` : value !== "all" ? `/dashboard/lessons?subjectId=${value}` : "/dashboard/lessons";
+            const subject = availableSubjects.find(
+              (s) => String(s.id) === value,
+            );
+            const newUrl = subject?.slug
+              ? `/dashboard/lessons?subject=${subject.slug}`
+              : value !== "all"
+                ? `/dashboard/lessons?subjectId=${value}`
+                : "/dashboard/lessons";
             router.push(newUrl);
           }}
         >
@@ -324,122 +344,167 @@ export function LessonsDashboard() {
       </div>
 
       {/* Subject Selection - Show topics in accordion */}
-      {selectedSubjectId !== "all" && selectedSubject && selectedSubject.slug && (
-        <Card>
-          <CardHeader>
-            <CardTitle>{selectedSubject.name} Topics</CardTitle>
-            <CardDescription>
-              Select a topic to view the lesson overview and content
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            {isLoadingTopics ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="size-6 animate-spin text-primary mr-2" />
-                <span className="text-muted-foreground">Loading topics...</span>
-              </div>
-            ) : selectedSubjectTopics ? (
-              <Accordion type="single" collapsible className="w-full">
-                {/* First Term */}
-                {selectedSubjectTopics.first_term && selectedSubjectTopics.first_term.length > 0 && (
-                  <AccordionItem value="first_term">
-                    <AccordionTrigger>First Term ({selectedSubjectTopics.first_term.length} topics)</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        {selectedSubjectTopics.first_term.map((topic: TopicItem) => (
-                          <Button
-                            key={topic.id}
-                            variant="ghost"
-                            className="w-full justify-between"
-                            onClick={() => router.push(`/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`)}
-                          >
-                            <span className="text-left">
-                              <span className="font-medium">Week {topic.week}</span> - {topic.topic}
-                            </span>
-                            <ChevronRight className="size-4" />
-                          </Button>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+      {selectedSubjectId !== "all" &&
+        selectedSubject &&
+        selectedSubject.slug && (
+          <Card>
+            <CardHeader>
+              <CardTitle>{selectedSubject.name} Topics</CardTitle>
+              <CardDescription>
+                Select a topic to view the lesson overview and content
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {isLoadingTopics ? (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="mr-2 size-6 animate-spin text-primary" />
+                  <span className="text-muted-foreground">
+                    Loading topics...
+                  </span>
+                </div>
+              ) : selectedSubjectTopics ? (
+                <Accordion type="single" collapsible className="w-full">
+                  {/* First Term */}
+                  {selectedSubjectTopics.first_term &&
+                    selectedSubjectTopics.first_term.length > 0 && (
+                      <AccordionItem value="first_term">
+                        <AccordionTrigger>
+                          First Term ({selectedSubjectTopics.first_term.length}{" "}
+                          topics)
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2">
+                            {selectedSubjectTopics.first_term.map(
+                              (topic: TopicItem) => (
+                                <Button
+                                  key={topic.id}
+                                  variant="ghost"
+                                  className="w-full justify-between"
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`,
+                                    )
+                                  }
+                                >
+                                  <span className="text-left">
+                                    <span className="font-medium">
+                                      Week {topic.week}
+                                    </span>{" "}
+                                    - {topic.topic}
+                                  </span>
+                                  <ChevronRight className="size-4" />
+                                </Button>
+                              ),
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
 
-                {/* Second Term */}
-                {selectedSubjectTopics.second_term && selectedSubjectTopics.second_term.length > 0 && (
-                  <AccordionItem value="second_term">
-                    <AccordionTrigger>Second Term ({selectedSubjectTopics.second_term.length} topics)</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        {selectedSubjectTopics.second_term.map((topic: TopicItem) => (
-                          <Button
-                            key={topic.id}
-                            variant="ghost"
-                            className="w-full justify-between"
-                            onClick={() => router.push(`/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`)}
-                          >
-                            <span className="text-left">
-                              <span className="font-medium">Week {topic.week}</span> - {topic.topic}
-                            </span>
-                            <ChevronRight className="size-4" />
-                          </Button>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+                  {/* Second Term */}
+                  {selectedSubjectTopics.second_term &&
+                    selectedSubjectTopics.second_term.length > 0 && (
+                      <AccordionItem value="second_term">
+                        <AccordionTrigger>
+                          Second Term (
+                          {selectedSubjectTopics.second_term.length} topics)
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2">
+                            {selectedSubjectTopics.second_term.map(
+                              (topic: TopicItem) => (
+                                <Button
+                                  key={topic.id}
+                                  variant="ghost"
+                                  className="w-full justify-between"
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`,
+                                    )
+                                  }
+                                >
+                                  <span className="text-left">
+                                    <span className="font-medium">
+                                      Week {topic.week}
+                                    </span>{" "}
+                                    - {topic.topic}
+                                  </span>
+                                  <ChevronRight className="size-4" />
+                                </Button>
+                              ),
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
 
-                {/* Third Term */}
-                {selectedSubjectTopics.third_term && selectedSubjectTopics.third_term.length > 0 && (
-                  <AccordionItem value="third_term">
-                    <AccordionTrigger>Third Term ({selectedSubjectTopics.third_term.length} topics)</AccordionTrigger>
-                    <AccordionContent>
-                      <div className="space-y-2">
-                        {selectedSubjectTopics.third_term.map((topic: TopicItem) => (
-                          <Button
-                            key={topic.id}
-                            variant="ghost"
-                            className="w-full justify-between"
-                            onClick={() => router.push(`/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`)}
-                          >
-                            <span className="text-left">
-                              <span className="font-medium">Week {topic.week}</span> - {topic.topic}
-                            </span>
-                            <ChevronRight className="size-4" />
-                          </Button>
-                        ))}
-                      </div>
-                    </AccordionContent>
-                  </AccordionItem>
-                )}
+                  {/* Third Term */}
+                  {selectedSubjectTopics.third_term &&
+                    selectedSubjectTopics.third_term.length > 0 && (
+                      <AccordionItem value="third_term">
+                        <AccordionTrigger>
+                          Third Term ({selectedSubjectTopics.third_term.length}{" "}
+                          topics)
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2">
+                            {selectedSubjectTopics.third_term.map(
+                              (topic: TopicItem) => (
+                                <Button
+                                  key={topic.id}
+                                  variant="ghost"
+                                  className="w-full justify-between"
+                                  onClick={() =>
+                                    router.push(
+                                      `/dashboard/lessons/${selectedSubject.slug}/${topic.slug}`,
+                                    )
+                                  }
+                                >
+                                  <span className="text-left">
+                                    <span className="font-medium">
+                                      Week {topic.week}
+                                    </span>{" "}
+                                    - {topic.topic}
+                                  </span>
+                                  <ChevronRight className="size-4" />
+                                </Button>
+                              ),
+                            )}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    )}
 
-                {/* No topics message */}
-                {(!selectedSubjectTopics.first_term || selectedSubjectTopics.first_term.length === 0) &&
-                 (!selectedSubjectTopics.second_term || selectedSubjectTopics.second_term.length === 0) &&
-                 (!selectedSubjectTopics.third_term || selectedSubjectTopics.third_term.length === 0) && (
-                  <div className="py-8 text-center text-muted-foreground">
-                    No topics available for this subject.
-                  </div>
-                )}
-              </Accordion>
-            ) : error ? (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            ) : null}
-          </CardContent>
-        </Card>
-      )}
+                  {/* No topics message */}
+                  {(!selectedSubjectTopics.first_term ||
+                    selectedSubjectTopics.first_term.length === 0) &&
+                    (!selectedSubjectTopics.second_term ||
+                      selectedSubjectTopics.second_term.length === 0) &&
+                    (!selectedSubjectTopics.third_term ||
+                      selectedSubjectTopics.third_term.length === 0) && (
+                      <div className="py-8 text-center text-muted-foreground">
+                        No topics available for this subject.
+                      </div>
+                    )}
+                </Accordion>
+              ) : error ? (
+                <Alert variant="destructive">
+                  <AlertCircle className="size-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              ) : null}
+            </CardContent>
+          </Card>
+        )}
 
       {selectedSubjectId === "all" && (
         <Card>
           <CardContent className="p-8 text-center">
             <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
-            <h3 className="mb-2 text-lg font-semibold">
-              Select a Subject
-            </h3>
+            <h3 className="mb-2 text-lg font-semibold">Select a Subject</h3>
             <p className="mb-4 text-muted-foreground">
-              Choose a subject from the dropdown above to view available topics and lessons.
+              Choose a subject from the dropdown above to view available topics
+              and lessons.
             </p>
           </CardContent>
         </Card>

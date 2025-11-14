@@ -3,19 +3,31 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { ArrowLeft, BookOpen, Loader2, ChevronRight, AlertCircle } from "lucide-react";
+import {
+  AlertCircle,
+  ArrowLeft,
+  BookOpen,
+  ChevronRight,
+  Loader2,
+} from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { getSubjectsWithSlugs } from "@/lib/api/lessons";
+import type { TopicItem, TopicsByTerm } from "@/lib/types/lessons";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import type { TopicsByTerm, TopicItem } from "@/lib/types/lessons";
-import { getSubjectsWithSlugs } from "@/lib/api/lessons";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export default function SubjectDetailPage() {
   const params = useParams();
@@ -37,15 +49,16 @@ export default function SubjectDetailPage() {
       }
 
       // Check if it's a numeric ID
-      const isNumericId = !isNaN(Number(subjectSlug)) && !subjectSlug.includes('-');
-      
+      const isNumericId =
+        !isNaN(Number(subjectSlug)) && !subjectSlug.includes("-");
+
       if (isNumericId) {
         // It's a numeric ID, fetch subjects to get the slug
         try {
           const subjectsResponse = await getSubjectsWithSlugs();
           if (subjectsResponse.success && subjectsResponse.content?.subjects) {
             const subject = subjectsResponse.content.subjects.find(
-              (s) => s.id === Number(subjectSlug)
+              (s) => s.id === Number(subjectSlug),
             );
             if (subject && subject.slug) {
               // Redirect to the slug route
@@ -98,7 +111,8 @@ export default function SubjectDetailPage() {
           setError(data.message || "No topics found");
         }
       } catch (error) {
-        const errorMessage = error instanceof Error ? error.message : "Failed to load topics";
+        const errorMessage =
+          error instanceof Error ? error.message : "Failed to load topics";
         setError(errorMessage);
       } finally {
         setIsLoading(false);
@@ -139,7 +153,10 @@ export default function SubjectDetailPage() {
                 <ArrowLeft className="mr-2 size-4" />
                 Go Back
               </Button>
-              <Button onClick={() => window.location.reload()} variant="default">
+              <Button
+                onClick={() => window.location.reload()}
+                variant="default"
+              >
                 Retry
               </Button>
             </div>
@@ -239,7 +256,10 @@ export default function SubjectDetailPage() {
                           onClick={() => handleTopicClick(topic.slug)}
                         >
                           <span className="text-left">
-                            <span className="font-medium">Week {topic.week}</span> - {topic.topic}
+                            <span className="font-medium">
+                              Week {topic.week}
+                            </span>{" "}
+                            - {topic.topic}
                           </span>
                           <ChevronRight className="size-4" />
                         </Button>
@@ -264,7 +284,10 @@ export default function SubjectDetailPage() {
                           onClick={() => handleTopicClick(topic.slug)}
                         >
                           <span className="text-left">
-                            <span className="font-medium">Week {topic.week}</span> - {topic.topic}
+                            <span className="font-medium">
+                              Week {topic.week}
+                            </span>{" "}
+                            - {topic.topic}
                           </span>
                           <ChevronRight className="size-4" />
                         </Button>
@@ -289,7 +312,10 @@ export default function SubjectDetailPage() {
                           onClick={() => handleTopicClick(topic.slug)}
                         >
                           <span className="text-left">
-                            <span className="font-medium">Week {topic.week}</span> - {topic.topic}
+                            <span className="font-medium">
+                              Week {topic.week}
+                            </span>{" "}
+                            - {topic.topic}
                           </span>
                           <ChevronRight className="size-4" />
                         </Button>
@@ -312,11 +338,14 @@ export default function SubjectDetailPage() {
         <Alert>
           <BookOpen className="size-4" />
           <AlertDescription>
-            Click on any topic above to view its lessons. You can also navigate to{" "}
+            Click on any topic above to view its lessons. You can also navigate
+            to{" "}
             <Button
               variant="link"
               className="h-auto p-0"
-              onClick={() => router.push(`/dashboard/lessons?subject=${subjectSlug}`)}
+              onClick={() =>
+                router.push(`/dashboard/lessons?subject=${subjectSlug}`)
+              }
             >
               the lessons page
             </Button>{" "}
@@ -327,4 +356,3 @@ export default function SubjectDetailPage() {
     </div>
   );
 }
-

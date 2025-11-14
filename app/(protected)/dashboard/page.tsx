@@ -8,10 +8,10 @@ import { Button } from "@/components/ui/button";
 import {
   AdminDashboard,
   GuardianDashboard,
+  GuestDashboard,
   StudentDashboard,
   SuperAdminDashboard,
   TeacherDashboard,
-  GuestDashboard,
 } from "@/components/dashboard/role-dashboards";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 

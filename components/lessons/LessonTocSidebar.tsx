@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { cn } from "@/lib/utils";
 
 interface TocItem {
   id: string;
@@ -74,9 +75,7 @@ export function LessonTocSidebar({ content }: LessonTocSidebarProps) {
           <CardTitle className="text-lg">Table of Contents</CardTitle>
         </CardHeader>
         <CardContent>
-          <p className="text-sm text-muted-foreground">
-            No headings available
-          </p>
+          <p className="text-sm text-muted-foreground">No headings available</p>
         </CardContent>
       </Card>
     );
@@ -96,10 +95,10 @@ export function LessonTocSidebar({ content }: LessonTocSidebarProps) {
                 onClick={() => scrollToHeading(item.id)}
                 className={cn(
                   "block w-full text-left text-sm transition-colors hover:text-primary",
-                  item.level === 2 && "font-medium pl-0",
+                  item.level === 2 && "pl-0 font-medium",
                   item.level === 3 && "pl-4 text-muted-foreground",
                   item.level === 4 && "pl-8 text-muted-foreground",
-                  activeId === item.id && "text-primary font-medium"
+                  activeId === item.id && "font-medium text-primary",
                 )}
               >
                 {item.title}
@@ -111,4 +110,3 @@ export function LessonTocSidebar({ content }: LessonTocSidebarProps) {
     </Card>
   );
 }
-

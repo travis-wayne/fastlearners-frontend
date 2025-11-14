@@ -1,9 +1,16 @@
 "use client";
 
 import * as React from "react";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { ArrowDown, ArrowUp } from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 export interface OverviewChange {
   value: number;
@@ -32,15 +39,24 @@ export function OverviewGrid({
   return (
     <Card className="h-full border bg-card">
       <CardHeader>
-        <CardTitle className="text-xl font-semibold text-gray-900 dark:text-slate-100">{title}</CardTitle>
-        <CardDescription className="text-gray-500 dark:text-slate-400">{description}</CardDescription>
+        <CardTitle className="text-xl font-semibold text-gray-900 dark:text-slate-100">
+          {title}
+        </CardTitle>
+        <CardDescription className="text-gray-500 dark:text-slate-400">
+          {description}
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           {stats.map((stat) => (
-            <div key={stat.label} className="rounded-lg border border-border bg-muted p-3">
+            <div
+              key={stat.label}
+              className="rounded-lg border border-border bg-muted p-3"
+            >
               <div className="mb-2 flex items-center justify-between text-gray-900 dark:text-slate-100">
-                <div className={`rounded-lg bg-muted p-2 ${stat.iconColorClass ?? ""}`}>
+                <div
+                  className={`rounded-lg bg-muted p-2 ${stat.iconColorClass ?? ""}`}
+                >
                   {stat.icon}
                 </div>
                 {stat.change && (
@@ -60,8 +76,12 @@ export function OverviewGrid({
                   </Badge>
                 )}
               </div>
-              <div className="text-sm text-gray-500 dark:text-slate-400">{stat.label}</div>
-              <div className="mt-1 text-lg font-semibold text-gray-900 dark:text-slate-100">{stat.value}</div>
+              <div className="text-sm text-gray-500 dark:text-slate-400">
+                {stat.label}
+              </div>
+              <div className="mt-1 text-lg font-semibold text-gray-900 dark:text-slate-100">
+                {stat.value}
+              </div>
             </div>
           ))}
         </div>

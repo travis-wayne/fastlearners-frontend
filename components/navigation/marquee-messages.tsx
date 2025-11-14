@@ -93,7 +93,6 @@ export function MarqueeMessages({
     }
   }, [apiEndpoint]);
 
-
   const addMessage = async () => {
     // API endpoint removed - marquee messages feature disabled
     console.warn("Marquee messages API is not available");

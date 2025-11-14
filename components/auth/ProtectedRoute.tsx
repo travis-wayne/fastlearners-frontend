@@ -66,13 +66,16 @@ export function ProtectedRoute({
       }
 
       // Guest users with incomplete profiles should be redirected
-      if (user.role[0] === 'guest' && !isProfileComplete()) {
-        router.push('/onboarding');
+      if (user.role[0] === "guest" && !isProfileComplete()) {
+        router.push("/onboarding");
         return;
       }
 
       // Prevent access to onboarding routes if profile is complete
-      if (window.location.pathname.startsWith('/onboarding') && isProfileComplete()) {
+      if (
+        window.location.pathname.startsWith("/onboarding") &&
+        isProfileComplete()
+      ) {
         const userRoute = getRoleBasedRoute(user);
         router.push(userRoute);
         return;

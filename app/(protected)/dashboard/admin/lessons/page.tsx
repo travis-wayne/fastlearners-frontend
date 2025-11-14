@@ -23,16 +23,18 @@ export default function AdminLessonsPage() {
   const canViewLessons = hasPermission("view_lessons");
   const [activeTab, setActiveTab] = useState("overview");
   const [selectedLessonId, setSelectedLessonId] = useState<number | null>(null);
-  const [lessonViewMode, setLessonViewMode] = useState<'list' | 'viewer'>('list');
+  const [lessonViewMode, setLessonViewMode] = useState<"list" | "viewer">(
+    "list",
+  );
 
   const handleLessonSelect = (lessonId: number) => {
     setSelectedLessonId(lessonId);
-    setLessonViewMode('viewer');
+    setLessonViewMode("viewer");
   };
 
   const handleBackToList = () => {
     setSelectedLessonId(null);
-    setLessonViewMode('list');
+    setLessonViewMode("list");
   };
 
   return (
@@ -194,7 +196,9 @@ export default function AdminLessonsPage() {
             <CardContent>
               <div className="grid gap-6 md:grid-cols-2">
                 <div>
-                  <h4 className="mb-3 font-medium text-green-600">✓ Allowed Actions:</h4>
+                  <h4 className="mb-3 font-medium text-green-600">
+                    ✓ Allowed Actions:
+                  </h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <span className="text-green-600">•</span>
@@ -216,7 +220,9 @@ export default function AdminLessonsPage() {
                 </div>
 
                 <div>
-                  <h4 className="mb-3 font-medium text-red-600">✗ Restricted Actions:</h4>
+                  <h4 className="mb-3 font-medium text-red-600">
+                    ✗ Restricted Actions:
+                  </h4>
                   <ul className="space-y-2 text-sm text-muted-foreground">
                     <li className="flex items-start gap-2">
                       <span className="text-red-600">•</span>
@@ -245,7 +251,7 @@ export default function AdminLessonsPage() {
         <TabsContent value="browse">
           {canViewLessons ? (
             <div className="space-y-6">
-              {lessonViewMode === 'viewer' && selectedLessonId ? (
+              {lessonViewMode === "viewer" && selectedLessonId ? (
                 <LessonViewer
                   lessonId={selectedLessonId}
                   onBack={handleBackToList}
@@ -256,13 +262,10 @@ export default function AdminLessonsPage() {
                   {/* Filters Sidebar */}
                   <div className="lg:col-span-1">
                     <div className="sticky top-6">
-                      <LessonFilters
-                        showTitle={true}
-                        compact={false}
-                      />
+                      <LessonFilters showTitle={true} compact={false} />
                     </div>
                   </div>
-                  
+
                   {/* Lessons List */}
                   <div className="lg:col-span-3">
                     <LessonsList

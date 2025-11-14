@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { format, parse } from "date-fns";
 import {
   AlertCircle,
   CheckCircle,
@@ -17,11 +18,8 @@ import {
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { format, parse } from "date-fns";
 
-import { useAcademicContext } from '@/components/providers/academic-context';
-import { getClassLevelById, normalizeClassString } from '@/config/education';
-
+import { getClassLevelById, normalizeClassString } from "@/config/education";
 import {
   getProfile,
   getProfileData,
@@ -41,7 +39,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { DatePicker } from "@/components/date-picker";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -51,14 +56,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { DatePicker } from "@/components/date-picker";
+import { useAcademicContext } from "@/components/providers/academic-context";
 
 // Form validation schema
 const profileSchema = z
@@ -83,7 +82,11 @@ const profileSchema = z
   .refine(
     (data) => {
       // Require discipline for classes starting with SS or SSS
-      if (data.class && (data.class.startsWith("SS") || data.class.startsWith("SSS")) && !data.discipline) {
+      if (
+        data.class &&
+        (data.class.startsWith("SS") || data.class.startsWith("SSS")) &&
+        !data.discipline
+      ) {
         return false;
       }
       return true;
@@ -108,7 +111,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [showClassChangeWarning, setShowClassChangeWarning] = useState(false);
-  const [pendingClassChange, setPendingClassChange] = useState<string | null>(null);
+  const [pendingClassChange, setPendingClassChange] = useState<string | null>(
+    null,
+  );
 
   const {
     register,
@@ -126,10 +131,12 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
 
   const selectedRole = watch("role");
   const selectedClass = watch("class");
-  
+
   // Derive primary role from profile for conditional rendering
-  const primaryRole = profile 
-    ? (Array.isArray(profile.role) ? profile.role[0] : profile.role)
+  const primaryRole = profile
+    ? Array.isArray(profile.role)
+      ? profile.role[0]
+      : profile.role
     : null;
 
   // Load profile data and metadata
@@ -145,25 +152,28 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         setMetadata(metadataData);
 
         // Derive primary role from array
-        const primaryRole = Array.isArray(profileData.role) 
-          ? profileData.role[0] 
+        const primaryRole = Array.isArray(profileData.role)
+          ? profileData.role[0]
           : profileData.role;
-        
+
         // For guest users, set role to empty string to enable selection
         // For student/guardian, set role accordingly
         // For other roles (teacher/admin/superadmin), don't set form role
-        const formRole = primaryRole === "guest" 
-          ? "" 
-          : (primaryRole === "student" || primaryRole === "guardian" 
-              ? primaryRole 
-              : "");
+        const formRole =
+          primaryRole === "guest"
+            ? ""
+            : primaryRole === "student" || primaryRole === "guardian"
+              ? primaryRole
+              : "";
 
         // Populate form with profile data
-        const genderValue: "male" | "female" | undefined = 
-          profileData.gender === "male" ? "male" : 
-          profileData.gender === "female" ? "female" : 
-          undefined;
-        
+        const genderValue: "male" | "female" | undefined =
+          profileData.gender === "male"
+            ? "male"
+            : profileData.gender === "female"
+              ? "female"
+              : undefined;
+
         reset({
           name: profileData.name,
           username: profileData.username || "",
@@ -207,18 +217,20 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           setIsSaving(false);
           return;
         }
-        
+
         // Submit role alone first
         try {
-          const roleUpdateResult = await updateProfile({ role: roleValue as "student" | "guardian" });
-          
+          const roleUpdateResult = await updateProfile({
+            role: roleValue as "student" | "guardian",
+          });
+
           // Refresh profile to get updated role
           const refreshedProfile = await getProfile();
           setProfile(refreshedProfile);
-          
+
           // Update auth store
-          const roles = Array.isArray(roleUpdateResult.role) 
-            ? roleUpdateResult.role 
+          const roles = Array.isArray(roleUpdateResult.role)
+            ? roleUpdateResult.role
             : [roleUpdateResult.role];
           updateUserProfile({
             name: roleUpdateResult.name,
@@ -236,8 +248,10 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
             address: roleUpdateResult.address,
             gender: roleUpdateResult.gender,
           } as any);
-          
-          toast.success("Role updated successfully. You can now update other fields.");
+
+          toast.success(
+            "Role updated successfully. You can now update other fields.",
+          );
         } catch (error: any) {
           toast.error(error.message || "Failed to update role");
           setIsSaving(false);
@@ -264,7 +278,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         child_email: data.child_email,
         child_phone: data.child_phone,
       };
-      
+
       // Only include role if it changed (and user is not guest)
       if (primaryRole !== "guest" && roleValue && roleValue !== primaryRole) {
         submitData.role = roleValue as "student" | "guardian";
@@ -280,7 +294,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
       }
 
       // Validate data
-      const validationErrors = validateProfileData(submitData as ProfileEditData);
+      const validationErrors = validateProfileData(
+        submitData as ProfileEditData,
+      );
       if (validationErrors.length > 0) {
         toast.error(validationErrors[0]);
         return;
@@ -290,8 +306,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
       const updatedProfile = await updateProfile(submitData as ProfileEditData);
 
       // Normalize role to array before updating auth store
-      const roles = Array.isArray(updatedProfile.role) 
-        ? updatedProfile.role 
+      const roles = Array.isArray(updatedProfile.role)
+        ? updatedProfile.role
         : [updatedProfile.role];
 
       // Update auth store with full profile data
@@ -319,8 +335,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
       // Update academic context if class changed
       if (data.class && data.class !== profile?.class) {
         const normalizedClass = normalizeClassString(data.class);
-        const classLevel = normalizedClass 
-          ? getClassLevelById(normalizedClass.toLowerCase().replace(' ', ''))
+        const classLevel = normalizedClass
+          ? getClassLevelById(normalizedClass.toLowerCase().replace(" ", ""))
           : null;
         if (classLevel) {
           setCurrentClass(classLevel);
@@ -392,39 +408,56 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   id="username"
                   {...register("username")}
                   placeholder="Enter your username"
-                  disabled={primaryRole === "guest" || Boolean(profile?.username && typeof profile.username === 'string' && profile.username.trim() !== "")}
+                  disabled={
+                    primaryRole === "guest" ||
+                    Boolean(
+                      profile?.username &&
+                        typeof profile.username === "string" &&
+                        profile.username.trim() !== "",
+                    )
+                  }
                 />
-                {Boolean(profile?.username && typeof profile.username === 'string' && profile.username.trim() !== "") && (
+                {Boolean(
+                  profile?.username &&
+                    typeof profile.username === "string" &&
+                    profile.username.trim() !== "",
+                ) && (
                   <p className="text-xs text-muted-foreground">
                     Username cannot be changed once set.
                   </p>
                 )}
                 {errors.username && (
-                  <p className="text-sm text-red-600">{errors.username.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.username.message}
+                  </p>
                 )}
               </div>
 
-              {primaryRole === "guest" || primaryRole === "student" || primaryRole === "guardian" ? (
+              {primaryRole === "guest" ||
+              primaryRole === "student" ||
+              primaryRole === "guardian" ? (
                 <div className="space-y-2">
                   <Label htmlFor="role">Account Type</Label>
                   <Select
                     value={selectedRole || undefined}
                     onValueChange={async (value) => {
                       setValue("role", value as "student" | "guardian");
-                      
+
                       // If role changed and user is guest, submit role immediately
                       if (primaryRole === "guest") {
                         try {
                           setIsSaving(true);
-                          const updatedProfile = await updateProfile({ role: value as "student" | "guardian" });
-                          
+                          const updatedProfile = await updateProfile({
+                            role: value as "student" | "guardian",
+                          });
+
                           // Refresh profile
                           const refreshedProfile = await getProfile();
                           setProfile(refreshedProfile);
-                          
+
                           // Update auth store
-                          const roles = Array.isArray(updatedProfile.role) 
-                            ? updatedProfile.role 
+                          const roles = Array.isArray(updatedProfile.role)
+                            ? updatedProfile.role
                             : [updatedProfile.role];
                           updateUserProfile({
                             name: updatedProfile.name,
@@ -442,8 +475,10 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                             address: updatedProfile.address,
                             gender: updatedProfile.gender,
                           } as any);
-                          
-                          toast.success("Role updated successfully. You can now update other fields.");
+
+                          toast.success(
+                            "Role updated successfully. You can now update other fields.",
+                          );
                         } catch (error: any) {
                           toast.error(error.message || "Failed to update role");
                           // Reset role selection on error
@@ -469,7 +504,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     </p>
                   )}
                   {errors.role && (
-                    <p className="text-sm text-red-600">{errors.role.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.role.message}
+                    </p>
                   )}
                 </div>
               ) : null}
@@ -500,7 +537,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   )}
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Email cannot be changed here. Please contact support if you need to update your email.
+                  Email cannot be changed here. Please contact support if you
+                  need to update your email.
                 </p>
                 {!profile?.email_verified_at && (
                   <div className="flex items-center gap-1 text-xs text-amber-600">
@@ -555,7 +593,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     disabled={primaryRole === "guest"}
                   />
                   {errors.school && (
-                    <p className="text-sm text-red-600">{errors.school.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.school.message}
+                    </p>
                   )}
                 </div>
 
@@ -564,7 +604,11 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <Select
                     value={selectedClass}
                     onValueChange={(value) => {
-                      if (profile?.class && profile.class.trim() !== "" && profile.class !== value) {
+                      if (
+                        profile?.class &&
+                        profile.class.trim() !== "" &&
+                        profile.class !== value
+                      ) {
                         setPendingClassChange(value);
                         setShowClassChangeWarning(true);
                       } else {
@@ -585,23 +629,34 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     </SelectContent>
                   </Select>
                   {errors.class && (
-                    <p className="text-sm text-red-600">{errors.class.message}</p>
+                    <p className="text-sm text-red-600">
+                      {errors.class.message}
+                    </p>
                   )}
                 </div>
 
-                {(selectedClass?.startsWith("SS") || selectedClass?.startsWith("SSS")) && (
+                {(selectedClass?.startsWith("SS") ||
+                  selectedClass?.startsWith("SSS")) && (
                   <div className="space-y-2">
                     <Label htmlFor="discipline">Discipline</Label>
                     <Select
                       value={watch("discipline")}
                       onValueChange={(value) => setValue("discipline", value)}
-                      disabled={primaryRole === "guest" || Boolean(profile?.discipline && typeof profile.discipline === 'string' && profile.discipline.trim() !== "")}
+                      disabled={
+                        primaryRole === "guest" ||
+                        Boolean(
+                          profile?.discipline &&
+                            typeof profile.discipline === "string" &&
+                            profile.discipline.trim() !== "",
+                        )
+                      }
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select your discipline" />
                       </SelectTrigger>
                       <SelectContent>
-                        {metadata?.discipline && metadata.discipline.length > 0 ? (
+                        {metadata?.discipline &&
+                        metadata.discipline.length > 0 ? (
                           metadata.discipline.map((disc) => (
                             <SelectItem key={disc.name} value={disc.name}>
                               {disc.name}
@@ -611,19 +666,27 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                           // Fallback to hardcoded list if metadata unavailable
                           <>
                             <SelectItem value="Art">Art</SelectItem>
-                            <SelectItem value="Commercial">Commercial</SelectItem>
+                            <SelectItem value="Commercial">
+                              Commercial
+                            </SelectItem>
                             <SelectItem value="Science">Science</SelectItem>
                           </>
                         )}
                       </SelectContent>
                     </Select>
-                    {Boolean(profile?.discipline && typeof profile.discipline === 'string' && profile.discipline.trim() !== "") && (
+                    {Boolean(
+                      profile?.discipline &&
+                        typeof profile.discipline === "string" &&
+                        profile.discipline.trim() !== "",
+                    ) && (
                       <p className="text-xs text-muted-foreground">
                         Discipline cannot be changed once set.
                       </p>
                     )}
                     {errors.discipline && (
-                      <p className="text-sm text-red-600">{errors.discipline.message}</p>
+                      <p className="text-sm text-red-600">
+                        {errors.discipline.message}
+                      </p>
                     )}
                   </div>
                 )}
@@ -638,7 +701,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
               Location
             </div>
 
-              <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
                 <Label htmlFor="country">Country</Label>
                 <Input
@@ -648,7 +711,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   disabled={primaryRole === "guest"}
                 />
                 {errors.country && (
-                  <p className="text-sm text-red-600">{errors.country.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.country.message}
+                  </p>
                 )}
               </div>
 
@@ -687,7 +752,9 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   disabled={primaryRole === "guest"}
                 />
                 {errors.address && (
-                  <p className="text-sm text-red-600">{errors.address.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.address.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -706,20 +773,39 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 <DatePicker
                   selected={watch("date_of_birth")}
                   onSelect={(date) => {
-                    if (!Boolean(profile?.date_of_birth && typeof profile.date_of_birth === 'string' && profile.date_of_birth.trim() !== "")) {
+                    if (
+                      !Boolean(
+                        profile?.date_of_birth &&
+                          typeof profile.date_of_birth === "string" &&
+                          profile.date_of_birth.trim() !== "",
+                      )
+                    ) {
                       setValue("date_of_birth", date);
                     }
                   }}
                   placeholder="Select your date of birth"
-                  disabled={primaryRole === "guest" || Boolean(profile?.date_of_birth && typeof profile.date_of_birth === 'string' && profile.date_of_birth.trim() !== "")}
+                  disabled={
+                    primaryRole === "guest" ||
+                    Boolean(
+                      profile?.date_of_birth &&
+                        typeof profile.date_of_birth === "string" &&
+                        profile.date_of_birth.trim() !== "",
+                    )
+                  }
                 />
-                {Boolean(profile?.date_of_birth && typeof profile.date_of_birth === 'string' && profile.date_of_birth.trim() !== "") && (
+                {Boolean(
+                  profile?.date_of_birth &&
+                    typeof profile.date_of_birth === "string" &&
+                    profile.date_of_birth.trim() !== "",
+                ) && (
                   <p className="text-xs text-muted-foreground">
                     Date of birth cannot be changed once set.
                   </p>
                 )}
                 {errors.date_of_birth && (
-                  <p className="text-sm text-red-600">{errors.date_of_birth.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.date_of_birth.message}
+                  </p>
                 )}
               </div>
 
@@ -732,7 +818,14 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                       setValue("gender", value);
                     }
                   }}
-                  disabled={primaryRole === "guest" || Boolean(profile?.gender && typeof profile.gender === 'string' && profile.gender.trim() !== "")}
+                  disabled={
+                    primaryRole === "guest" ||
+                    Boolean(
+                      profile?.gender &&
+                        typeof profile.gender === "string" &&
+                        profile.gender.trim() !== "",
+                    )
+                  }
                 >
                   <SelectTrigger>
                     <SelectValue placeholder="Select your gender" />
@@ -742,13 +835,19 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     <SelectItem value="female">Female</SelectItem>
                   </SelectContent>
                 </Select>
-                {Boolean(profile?.gender && typeof profile.gender === 'string' && profile.gender.trim() !== "") && (
+                {Boolean(
+                  profile?.gender &&
+                    typeof profile.gender === "string" &&
+                    profile.gender.trim() !== "",
+                ) && (
                   <p className="text-xs text-muted-foreground">
                     Gender cannot be changed once set.
                   </p>
                 )}
                 {errors.gender && (
-                  <p className="text-sm text-red-600">{errors.gender.message}</p>
+                  <p className="text-sm text-red-600">
+                    {errors.gender.message}
+                  </p>
                 )}
               </div>
             </div>
@@ -862,25 +961,35 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         </form>
       </CardContent>
 
-      <Dialog open={showClassChangeWarning} onOpenChange={setShowClassChangeWarning}>
+      <Dialog
+        open={showClassChangeWarning}
+        onOpenChange={setShowClassChangeWarning}
+      >
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Confirm Class Change</DialogTitle>
             <DialogDescription>
-              Changing your class will reset your subject selections. You will need to re-select your subjects for the new class. Are you sure you want to proceed?
+              Changing your class will reset your subject selections. You will
+              need to re-select your subjects for the new class. Are you sure
+              you want to proceed?
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowClassChangeWarning(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setShowClassChangeWarning(false)}
+            >
               Cancel
             </Button>
-            <Button onClick={() => {
-              if (pendingClassChange) {
-                setValue("class", pendingClassChange);
-                setPendingClassChange(null);
-              }
-              setShowClassChangeWarning(false);
-            }}>
+            <Button
+              onClick={() => {
+                if (pendingClassChange) {
+                  setValue("class", pendingClassChange);
+                  setPendingClassChange(null);
+                }
+                setShowClassChangeWarning(false);
+              }}
+            >
               Confirm
             </Button>
           </DialogFooter>

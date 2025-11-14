@@ -1,20 +1,21 @@
-'use client';
+"use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect } from "react";
+import { AlertCircle, Filter, RefreshCw } from "lucide-react";
+
+import { selectCanFetchLessons, useLessonsStore } from "@/lib/store/lessons";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@/components/ui/select';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Skeleton } from '@/components/ui/skeleton';
-import { AlertCircle, Filter, RefreshCw } from 'lucide-react';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { useLessonsStore, selectCanFetchLessons } from '@/lib/store/lessons';
+} from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LessonFiltersProps {
   onFiltersChange?: () => void;
@@ -22,10 +23,10 @@ interface LessonFiltersProps {
   showTitle?: boolean;
 }
 
-export function LessonFilters({ 
-  onFiltersChange, 
+export function LessonFilters({
+  onFiltersChange,
   compact = false,
-  showTitle = true 
+  showTitle = true,
 }: LessonFiltersProps) {
   const {
     classes,
@@ -58,7 +59,7 @@ export function LessonFilters({
 
   const handleFilterChange = (key: keyof typeof filters, value: string) => {
     setFilters({ [key]: value });
-    
+
     // Clear error when user changes filters
     if (error) {
       clearError();
@@ -77,7 +78,7 @@ export function LessonFilters({
   };
 
   const isFiltersSelected = canFetchLessons;
-  const hasAnyFilter = Object.values(filters).some(value => value !== '');
+  const hasAnyFilter = Object.values(filters).some((value) => value !== "");
 
   if (compact) {
     return (
@@ -91,9 +92,9 @@ export function LessonFilters({
           </div>
         ) : (
           <>
-            <Select 
-              value={filters.class} 
-              onValueChange={(value) => handleFilterChange('class', value)}
+            <Select
+              value={filters.class}
+              onValueChange={(value) => handleFilterChange("class", value)}
             >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Class" />
@@ -107,9 +108,9 @@ export function LessonFilters({
               </SelectContent>
             </Select>
 
-            <Select 
-              value={filters.subject} 
-              onValueChange={(value) => handleFilterChange('subject', value)}
+            <Select
+              value={filters.subject}
+              onValueChange={(value) => handleFilterChange("subject", value)}
             >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Subject" />
@@ -123,9 +124,9 @@ export function LessonFilters({
               </SelectContent>
             </Select>
 
-            <Select 
-              value={filters.term} 
-              onValueChange={(value) => handleFilterChange('term', value)}
+            <Select
+              value={filters.term}
+              onValueChange={(value) => handleFilterChange("term", value)}
             >
               <SelectTrigger className="w-32">
                 <SelectValue placeholder="Term" />
@@ -139,9 +140,9 @@ export function LessonFilters({
               </SelectContent>
             </Select>
 
-            <Select 
-              value={filters.week} 
-              onValueChange={(value) => handleFilterChange('week', value)}
+            <Select
+              value={filters.week}
+              onValueChange={(value) => handleFilterChange("week", value)}
             >
               <SelectTrigger className="w-24">
                 <SelectValue placeholder="Week" />
@@ -172,7 +173,7 @@ export function LessonFilters({
               size="sm"
               className="bg-blue-600 hover:bg-blue-700"
             >
-            <Filter className="mr-2 size-4" />
+              <Filter className="mr-2 size-4" />
               Find Lessons
             </Button>
           </>
@@ -191,7 +192,7 @@ export function LessonFilters({
           </CardTitle>
         </CardHeader>
       )}
-      
+
       <CardContent className="space-y-4">
         {error && (
           <Alert variant="destructive">
@@ -225,9 +226,9 @@ export function LessonFilters({
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Class
               </label>
-              <Select 
-                value={filters.class} 
-                onValueChange={(value) => handleFilterChange('class', value)}
+              <Select
+                value={filters.class}
+                onValueChange={(value) => handleFilterChange("class", value)}
               >
                 <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
                   <SelectValue placeholder="Select class" />
@@ -246,9 +247,9 @@ export function LessonFilters({
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Subject
               </label>
-              <Select 
-                value={filters.subject} 
-                onValueChange={(value) => handleFilterChange('subject', value)}
+              <Select
+                value={filters.subject}
+                onValueChange={(value) => handleFilterChange("subject", value)}
               >
                 <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
                   <SelectValue placeholder="Select subject" />
@@ -267,9 +268,9 @@ export function LessonFilters({
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Term
               </label>
-              <Select 
-                value={filters.term} 
-                onValueChange={(value) => handleFilterChange('term', value)}
+              <Select
+                value={filters.term}
+                onValueChange={(value) => handleFilterChange("term", value)}
               >
                 <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
                   <SelectValue placeholder="Select term" />
@@ -288,9 +289,9 @@ export function LessonFilters({
               <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
                 Week
               </label>
-              <Select 
-                value={filters.week} 
-                onValueChange={(value) => handleFilterChange('week', value)}
+              <Select
+                value={filters.week}
+                onValueChange={(value) => handleFilterChange("week", value)}
               >
                 <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
                   <SelectValue placeholder="Select week" />
@@ -324,16 +325,12 @@ export function LessonFilters({
 
           <div className="flex gap-2">
             {hasAnyFilter && (
-              <Button
-                variant="outline"
-                onClick={handleClearFilters}
-                size="sm"
-              >
+              <Button variant="outline" onClick={handleClearFilters} size="sm">
                 <RefreshCw className="mr-2 size-4" />
                 Clear Filters
               </Button>
             )}
-            
+
             <Button
               onClick={handleFetchLessons}
               disabled={!canFetchLessons}

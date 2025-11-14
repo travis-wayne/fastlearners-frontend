@@ -1,16 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Loader2, CheckCircle } from "lucide-react";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { ArrowLeft, BookOpen, CheckCircle, Loader2 } from "lucide-react";
 
+import { getSubjectById } from "@/config/education";
+import {
+  getLessonContentBySlug,
+  getTopicsBySubjectSlug,
+  markLessonComplete,
+} from "@/lib/api/lessons";
+import type { TableOfContents } from "@/lib/toc";
+import { getTopicsForTerm } from "@/lib/types/lessons";
+import type {
+  LessonContent as LessonContentType,
+  TopicOverview as TopicOverviewType,
+} from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { markLessonComplete, getTopicsBySubjectSlug, getLessonContentBySlug } from "@/lib/api/lessons";
-import { getSubjectById } from "@/config/education";
-import { getTopicsForTerm } from "@/lib/types/lessons";
+import { useToast } from "@/components/ui/use-toast";
 import { LessonContent } from "@/components/lessons/LessonContent";
 import { LessonNavigation } from "@/components/lessons/LessonNavigation";
 import { TopicOverview } from "@/components/lessons/TopicOverview";
@@ -18,12 +29,8 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
-import { useToast } from "@/components/ui/use-toast";
-import { cn } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { DashboardTableOfContents } from "@/components/shared/toc";
-import type { LessonContent as LessonContentType, TopicOverview as TopicOverviewType } from "@/lib/types/lessons";
-import type { TableOfContents } from "@/lib/toc";
 
 export default function LessonPage() {
   const params = useParams();
@@ -33,9 +40,12 @@ export default function LessonPage() {
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
 
-  const [lessonContent, setLessonContent] =
-    useState<LessonContentType | null>(null);
-  const [topicOverview, setTopicOverview] = useState<TopicOverviewType | null>(null);
+  const [lessonContent, setLessonContent] = useState<LessonContentType | null>(
+    null,
+  );
+  const [topicOverview, setTopicOverview] = useState<TopicOverviewType | null>(
+    null,
+  );
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingOverview, setIsLoadingOverview] = useState(true);
   const [isMarkingComplete, setIsMarkingComplete] = useState(false);
@@ -51,13 +61,18 @@ export default function LessonPage() {
     const loadLesson = async () => {
       // Handle slug array: [subjectSlug, topicSlug] from catch-all route
       const slugArray = params?.slug as string[] | string;
-      const slugParts = Array.isArray(slugArray) ? slugArray : (slugArray ? [slugArray] : []);
-      
+      const slugParts = Array.isArray(slugArray)
+        ? slugArray
+        : slugArray
+          ? [slugArray]
+          : [];
+
       if (slugParts.length !== 2) {
         if (slugParts.length > 0) {
           toast({
             title: "Error",
-            description: "Invalid lesson URL. Please use format: /dashboard/lessons/{subjectSlug}/{topicSlug}",
+            description:
+              "Invalid lesson URL. Please use format: /dashboard/lessons/{subjectSlug}/{topicSlug}",
             variant: "destructive",
           });
         }
@@ -74,7 +89,7 @@ export default function LessonPage() {
       setIsSlugBased(true);
       setSubjectSlug(subjSlug);
       setTopicSlug(topSlug);
-      
+
       try {
         // Fetch both topic overview and lesson content in parallel using direct API calls
         const [overviewRes, contentRes] = await Promise.all([
@@ -97,7 +112,11 @@ export default function LessonPage() {
         const contentData = await contentRes.json();
 
         // Set topic overview
-        if (overviewRes.ok && overviewData.success && overviewData.content?.overview) {
+        if (
+          overviewRes.ok &&
+          overviewData.success &&
+          overviewData.content?.overview
+        ) {
           setTopicOverview(overviewData.content.overview);
         } else {
           console.warn("Failed to load topic overview:", overviewData.message);
@@ -133,7 +152,15 @@ export default function LessonPage() {
   // Fetch all lessons to determine previous/next - slug-based only
   useEffect(() => {
     const loadLessons = async () => {
-      if (!currentClass || !currentTerm || !lessonContent || !isSlugBased || !subjectSlug || !topicSlug) return;
+      if (
+        !currentClass ||
+        !currentTerm ||
+        !lessonContent ||
+        !isSlugBased ||
+        !subjectSlug ||
+        !topicSlug
+      )
+        return;
 
       try {
         // For slug-based, fetch topics by subject slug
@@ -142,16 +169,27 @@ export default function LessonPage() {
           const topics = topicsResponse.content.topics;
           // Use helper to safely get topics for current term
           const termTopics = getTopicsForTerm(topics, currentTerm.id);
-          const currentIndex = termTopics.findIndex(t => t.slug === topicSlug);
-          
+          const currentIndex = termTopics.findIndex(
+            (t) => t.slug === topicSlug,
+          );
+
           // Compute prev/next within current term
-          let prevSlug: string | null = currentIndex > 0 ? termTopics[currentIndex - 1].slug : null;
-          let nextSlug: string | null = currentIndex >= 0 && currentIndex < termTopics.length - 1 ? termTopics[currentIndex + 1].slug : null;
-          
+          let prevSlug: string | null =
+            currentIndex > 0 ? termTopics[currentIndex - 1].slug : null;
+          let nextSlug: string | null =
+            currentIndex >= 0 && currentIndex < termTopics.length - 1
+              ? termTopics[currentIndex + 1].slug
+              : null;
+
           // If at boundaries within a term, peek into adjacent term arrays for cross-term navigation
           if (!prevSlug && currentIndex === 0) {
             // At start of current term, check previous term
-            const prevTermId = currentTerm.id === 'term2' ? 'term1' : currentTerm.id === 'term3' ? 'term2' : null;
+            const prevTermId =
+              currentTerm.id === "term2"
+                ? "term1"
+                : currentTerm.id === "term3"
+                  ? "term2"
+                  : null;
             if (prevTermId) {
               const prevTermTopics = getTopicsForTerm(topics, prevTermId);
               if (prevTermTopics.length > 0) {
@@ -159,10 +197,15 @@ export default function LessonPage() {
               }
             }
           }
-          
+
           if (!nextSlug && currentIndex === termTopics.length - 1) {
             // At end of current term, check next term
-            const nextTermId = currentTerm.id === 'term1' ? 'term2' : currentTerm.id === 'term2' ? 'term3' : null;
+            const nextTermId =
+              currentTerm.id === "term1"
+                ? "term2"
+                : currentTerm.id === "term2"
+                  ? "term3"
+                  : null;
             if (nextTermId) {
               const nextTermTopics = getTopicsForTerm(topics, nextTermId);
               if (nextTermTopics.length > 0) {
@@ -170,9 +213,13 @@ export default function LessonPage() {
               }
             }
           }
-          
-          setPreviousUrl(prevSlug ? `/dashboard/lessons/${subjectSlug}/${prevSlug}` : null);
-          setNextUrl(nextSlug ? `/dashboard/lessons/${subjectSlug}/${nextSlug}` : null);
+
+          setPreviousUrl(
+            prevSlug ? `/dashboard/lessons/${subjectSlug}/${prevSlug}` : null,
+          );
+          setNextUrl(
+            nextSlug ? `/dashboard/lessons/${subjectSlug}/${nextSlug}` : null,
+          );
         }
       } catch (error) {
         console.error("Failed to load lessons list:", error);
@@ -180,31 +227,39 @@ export default function LessonPage() {
     };
 
     loadLessons();
-  }, [currentClass, currentTerm, lessonContent, isSlugBased, subjectSlug, topicSlug]);
+  }, [
+    currentClass,
+    currentTerm,
+    lessonContent,
+    isSlugBased,
+    subjectSlug,
+    topicSlug,
+  ]);
 
   const handleMarkComplete = async () => {
     if (!lessonContent) return;
     setIsMarkingComplete(true);
     try {
       const result = await markLessonComplete(lessonContent.id);
-      
+
       if (result.success) {
         toast({
           title: "Success!",
           description: result.message || "Lesson marked as complete",
         });
-        
+
         // Optimistically update check markers
         if (lessonContent) {
           setLessonContent({
             ...lessonContent,
-            check_markers: lessonContent.check_markers?.map(marker => ({
-              ...marker,
-              completed: true,
-            })) || [],
+            check_markers:
+              lessonContent.check_markers?.map((marker) => ({
+                ...marker,
+                completed: true,
+              })) || [],
           });
         }
-        
+
         // Refresh lesson content to get latest state
         if (isSlugBased && subjectSlug && topicSlug) {
           const response = await getLessonContentBySlug(subjectSlug, topicSlug);
@@ -218,7 +273,10 @@ export default function LessonPage() {
     } catch (error) {
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Failed to mark lesson as complete",
+        description:
+          error instanceof Error
+            ? error.message
+            : "Failed to mark lesson as complete",
         variant: "destructive",
       });
     } finally {
@@ -227,7 +285,9 @@ export default function LessonPage() {
   };
 
   // Get subject using subject_id from lessonContent
-  const subjectId = lessonContent?.subject_id ? String(lessonContent.subject_id) : null;
+  const subjectId = lessonContent?.subject_id
+    ? String(lessonContent.subject_id)
+    : null;
   const subject = subjectId ? getSubjectById(subjectId) : null;
 
   const isCompleted =
@@ -251,8 +311,8 @@ export default function LessonPage() {
           <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
           <h3 className="mb-2 text-lg font-semibold">Lesson Not Found</h3>
           <p className="mb-4 text-muted-foreground">
-            The lesson you&apos;re looking for doesn&apos;t exist or
-            isn&apos;t available.
+            The lesson you&apos;re looking for doesn&apos;t exist or isn&apos;t
+            available.
           </p>
           <Button onClick={() => router.back()} variant="outline">
             <ArrowLeft className="mr-2 size-4" />
@@ -265,7 +325,8 @@ export default function LessonPage() {
 
   const subjectName = lessonContent.subject || subject?.name || "Subject";
   const lessonTitle = lessonContent.topic || lessonContent.title || "Lesson";
-  const lessonDescription = lessonContent.overview || topicOverview?.introduction || "";
+  const lessonDescription =
+    lessonContent.overview || topicOverview?.introduction || "";
 
   return (
     <>
@@ -283,10 +344,10 @@ export default function LessonPage() {
             </Button>
             {subject && (
               <Link
-                href={`/dashboard/subjects/${subjectSlug || ''}`}
+                href={`/dashboard/subjects/${subjectSlug || ""}`}
                 className={cn(
                   "h-8 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent",
-                  "inline-flex items-center"
+                  "inline-flex items-center",
                 )}
               >
                 {subjectName}
@@ -328,8 +389,8 @@ export default function LessonPage() {
                       Introduction to this lesson topic
                     </p>
                   </div>
-                  <TopicOverview 
-                    overview={topicOverview} 
+                  <TopicOverview
+                    overview={topicOverview}
                     subjectSlug={subjectSlug}
                     topicSlug={topicSlug}
                   />
@@ -357,10 +418,7 @@ export default function LessonPage() {
 
               {/* Navigation */}
               <div className="mt-12 border-t pt-8">
-                <LessonNavigation
-                  previousUrl={previousUrl}
-                  nextUrl={nextUrl}
-                />
+                <LessonNavigation previousUrl={previousUrl} nextUrl={nextUrl} />
               </div>
             </div>
           </div>

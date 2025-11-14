@@ -1,7 +1,8 @@
 "use client";
 
-import { SubjectDashboard } from "./SubjectDashboard";
 import type { SubjectsContent } from "@/lib/types/subjects";
+
+import { SubjectDashboard } from "./SubjectDashboard";
 
 interface SubjectDashboardShellProps {
   subjectsData?: SubjectsContent;
@@ -12,4 +13,3 @@ export function SubjectDashboardShell({
 }: SubjectDashboardShellProps) {
   return <SubjectDashboard initialData={subjectsData} />;
 }
-

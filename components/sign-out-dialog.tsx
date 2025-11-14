@@ -1,7 +1,8 @@
-"use client"
+"use client";
 
-import { useRouter } from 'next/navigation'
-import { useAuthStore } from '@/store/authStore'
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -11,22 +12,22 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from '@/components/ui/alert-dialog'
+} from "@/components/ui/alert-dialog";
 
 interface SignOutDialogProps {
-  open: boolean
-  onOpenChange: (open: boolean) => void
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
 }
 
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
-  const { logout } = useAuthStore()
-  const router = useRouter()
+  const { logout } = useAuthStore();
+  const router = useRouter();
 
   const handleSignOut = async () => {
-    await logout()
-    onOpenChange(false)
-    router.push('/auth/login')
-  }
+    await logout();
+    onOpenChange(false);
+    router.push("/auth/login");
+  };
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
@@ -40,10 +41,11 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleSignOut}>Sign out</AlertDialogAction>
+          <AlertDialogAction onClick={handleSignOut}>
+            Sign out
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
-

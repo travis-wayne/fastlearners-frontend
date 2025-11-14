@@ -59,7 +59,9 @@ export default function LessonDetailPage() {
 
       // TODO: Replace with admin-only endpoint
       // getLessonContent removed - this teacher page needs admin-only client
-      setError("Admin endpoint not implemented. getLessonContent() was removed from student app. Use slug-based endpoints for student-facing features.");
+      setError(
+        "Admin endpoint not implemented. getLessonContent() was removed from student app. Use slug-based endpoints for student-facing features.",
+      );
       // const response = await getLessonContent(lessonId);
       // if (response.success) {
       //   setLesson(response.content);
@@ -92,7 +94,9 @@ export default function LessonDetailPage() {
     try {
       // TODO: Replace with admin-only endpoint
       // trashLesson removed - this teacher page needs admin-only client
-      toast.error("Admin endpoint not implemented. trashLesson() was removed from student app.");
+      toast.error(
+        "Admin endpoint not implemented. trashLesson() was removed from student app.",
+      );
       // const response = await trashLesson(lesson.id);
       // if (response.success) {
       //   toast.success(response.message || "Lesson moved to trash successfully");

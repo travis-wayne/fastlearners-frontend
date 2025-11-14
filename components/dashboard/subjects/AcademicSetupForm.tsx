@@ -1,23 +1,34 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import { toast } from 'sonner';
-import { Loader2, ChevronRight } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { academicTerms, disciplines, getClassCategory } from '@/data/subjects-metadata';
-import { updateProfile } from '@/lib/api/subjects';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import {
+  academicTerms,
+  disciplines,
+  getClassCategory,
+} from "@/data/subjects-metadata";
+import { ChevronRight, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+import { updateProfile } from "@/lib/api/subjects";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 const classes = [
-  { value: 'JSS1', label: 'JSS 1', category: 'jss' },
-  { value: 'JSS2', label: 'JSS 2', category: 'jss' },
-  { value: 'JSS3', label: 'JSS 3', category: 'jss' },
-  { value: 'SSS1', label: 'SSS 1', category: 'sss' },
-  { value: 'SSS2', label: 'SSS 2', category: 'sss' },
-  { value: 'SSS3', label: 'SSS 3', category: 'sss' },
+  { value: "JSS1", label: "JSS 1", category: "jss" },
+  { value: "JSS2", label: "JSS 2", category: "jss" },
+  { value: "JSS3", label: "JSS 3", category: "jss" },
+  { value: "SSS1", label: "SSS 1", category: "sss" },
+  { value: "SSS2", label: "SSS 2", category: "sss" },
+  { value: "SSS3", label: "SSS 3", category: "sss" },
 ];
 
 interface AcademicSetupFormProps {
@@ -25,25 +36,31 @@ interface AcademicSetupFormProps {
   onComplete: () => void;
 }
 
-export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps) {
+export function AcademicSetupForm({
+  token,
+  onComplete,
+}: AcademicSetupFormProps) {
   const router = useRouter();
-  const [selectedClass, setSelectedClass] = useState('');
-  const [selectedTerm, setSelectedTerm] = useState('');
-  const [selectedDiscipline, setSelectedDiscipline] = useState('');
+  const [selectedClass, setSelectedClass] = useState("");
+  const [selectedTerm, setSelectedTerm] = useState("");
+  const [selectedDiscipline, setSelectedDiscipline] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const category = getClassCategory(selectedClass);
-  const isSSS = category === 'sss';
-  const canSubmit = selectedClass && selectedTerm && (!isSSS || selectedDiscipline);
+  const isSSS = category === "sss";
+  const canSubmit =
+    selectedClass && selectedTerm && (!isSSS || selectedDiscipline);
 
   const handleSubmit = async () => {
     if (!canSubmit) return;
 
     // Validate discipline if SSS class
     if (isSSS && selectedDiscipline) {
-      const validDisciplines = ['Art', 'Commercial', 'Science'];
+      const validDisciplines = ["Art", "Commercial", "Science"];
       if (!validDisciplines.includes(selectedDiscipline)) {
-        toast.error(`Invalid discipline. Must be one of: ${validDisciplines.join(', ')}`);
+        toast.error(
+          `Invalid discipline. Must be one of: ${validDisciplines.join(", ")}`,
+        );
         return;
       }
     }
@@ -58,13 +75,13 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
         });
       } else {
         // Otherwise use internal API route
-        const response = await fetch('/api/profile/edit', {
-          method: 'POST',
+        const response = await fetch("/api/profile/edit", {
+          method: "POST",
           headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
+            Accept: "application/json",
+            "Content-Type": "application/json",
           },
-          credentials: 'include',
+          credentials: "include",
           body: JSON.stringify({
             class: selectedClass,
             discipline: isSSS ? selectedDiscipline : undefined,
@@ -73,30 +90,34 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
 
         if (!response.ok) {
           const error = await response.json();
-          
+
           // Extract validation errors if present
           if (error.errors) {
             const errorMessages = Object.entries(error.errors)
               .map(([field, messages]) => {
-                const msgArray = Array.isArray(messages) ? messages : [messages];
-                return `${field}: ${msgArray.join(', ')}`;
+                const msgArray = Array.isArray(messages)
+                  ? messages
+                  : [messages];
+                return `${field}: ${msgArray.join(", ")}`;
               })
-              .join('; ');
-            throw new Error(errorMessages || error.message || 'Validation failed');
+              .join("; ");
+            throw new Error(
+              errorMessages || error.message || "Validation failed",
+            );
           }
-          
-          throw new Error(error.message || 'Failed to update profile');
+
+          throw new Error(error.message || "Failed to update profile");
         }
       }
 
       // Store term in localStorage (not sent to backend)
       // Use the same key as AcademicProvider expects: 'fastlearner-current-term'
       if (selectedTerm) {
-        localStorage.setItem('fastlearner-current-term', selectedTerm);
+        localStorage.setItem("fastlearner-current-term", selectedTerm);
       }
 
-      toast.success('Academic profile updated!');
-      
+      toast.success("Academic profile updated!");
+
       // Reload page to show next step
       if (onComplete) {
         onComplete();
@@ -104,7 +125,7 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
         window.location.reload();
       }
     } catch (error: any) {
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error.message || "Failed to update profile");
     } finally {
       setIsSubmitting(false);
     }
@@ -123,13 +144,17 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
         <div className="space-y-3">
           <Label className="text-base font-semibold">Select Your Class</Label>
           <RadioGroup value={selectedClass} onValueChange={setSelectedClass}>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
               {classes.map((cls) => (
                 <div key={cls.value}>
-                  <RadioGroupItem value={cls.value} id={cls.value} className="peer sr-only" />
+                  <RadioGroupItem
+                    value={cls.value}
+                    id={cls.value}
+                    className="peer sr-only"
+                  />
                   <Label
                     htmlFor={cls.value}
-                    className="flex items-center justify-center p-4 rounded-lg border-2 cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-accent transition-all"
+                    className="flex cursor-pointer items-center justify-center rounded-lg border-2 p-4 transition-all hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
                   >
                     <span className="font-semibold">{cls.label}</span>
                   </Label>
@@ -142,20 +167,31 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
         {/* Discipline Selection (SSS Only) */}
         {isSSS && (
           <div className="space-y-3">
-            <Label className="text-base font-semibold">Select Your Discipline</Label>
-            <RadioGroup value={selectedDiscipline} onValueChange={setSelectedDiscipline}>
+            <Label className="text-base font-semibold">
+              Select Your Discipline
+            </Label>
+            <RadioGroup
+              value={selectedDiscipline}
+              onValueChange={setSelectedDiscipline}
+            >
               <div className="space-y-3">
                 {disciplines.map((disc) => (
                   <div key={disc.value}>
-                    <RadioGroupItem value={disc.value} id={disc.value} className="peer sr-only" />
+                    <RadioGroupItem
+                      value={disc.value}
+                      id={disc.value}
+                      className="peer sr-only"
+                    />
                     <Label
                       htmlFor={disc.value}
-                      className="flex items-start gap-4 p-4 rounded-lg border-2 cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-accent transition-all"
+                      className="flex cursor-pointer items-start gap-4 rounded-lg border-2 p-4 transition-all hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
                     >
                       <span className="text-3xl">{disc.icon}</span>
                       <div>
                         <div className="font-semibold">{disc.label}</div>
-                        <p className="text-sm text-muted-foreground">{disc.description}</p>
+                        <p className="text-sm text-muted-foreground">
+                          {disc.description}
+                        </p>
                       </div>
                     </Label>
                   </div>
@@ -169,16 +205,22 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
         <div className="space-y-3">
           <Label className="text-base font-semibold">Select Current Term</Label>
           <RadioGroup value={selectedTerm} onValueChange={setSelectedTerm}>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
               {academicTerms.map((term) => (
                 <div key={term.id}>
-                  <RadioGroupItem value={term.id} id={`term-${term.id}`} className="peer sr-only" />
+                  <RadioGroupItem
+                    value={term.id}
+                    id={`term-${term.id}`}
+                    className="peer sr-only"
+                  />
                   <Label
                     htmlFor={`term-${term.id}`}
-                    className="flex flex-col items-center justify-center p-4 rounded-lg border-2 cursor-pointer peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5 hover:bg-accent transition-all"
+                    className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 p-4 transition-all hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
                   >
                     <span className="font-semibold">{term.name}</span>
-                    <span className="text-sm text-muted-foreground">{term.description}</span>
+                    <span className="text-sm text-muted-foreground">
+                      {term.description}
+                    </span>
                   </Label>
                 </div>
               ))}
@@ -195,13 +237,13 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
         >
           {isSubmitting ? (
             <>
-              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+              <Loader2 className="mr-2 size-4 animate-spin" />
               Saving...
             </>
           ) : (
             <>
               Continue to Subject Selection
-              <ChevronRight className="w-4 h-4 ml-2" />
+              <ChevronRight className="ml-2 size-4" />
             </>
           )}
         </Button>
@@ -209,4 +251,3 @@ export function AcademicSetupForm({ token, onComplete }: AcademicSetupFormProps)
     </Card>
   );
 }
-

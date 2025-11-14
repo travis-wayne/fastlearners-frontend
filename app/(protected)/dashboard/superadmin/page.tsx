@@ -2,6 +2,17 @@
 
 import { useState } from "react";
 import Link from "next/link";
+// NOTE: getLessonsMetadata removed - this superadmin page needs admin-only endpoint
+// Use getProfileData() from lib/api/profile.ts for metadata or create admin-only client
+import {
+  BarChart3,
+  BookOpen,
+  Search,
+  Settings,
+  Upload,
+  Users,
+} from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,9 +22,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DashboardHeader } from "@/components/dashboard/header";
-// NOTE: getLessonsMetadata removed - this superadmin page needs admin-only endpoint
-// Use getProfileData() from lib/api/profile.ts for metadata or create admin-only client
-import { BookOpen, Upload, Search, Settings, Users, BarChart3 } from "lucide-react";
 
 export default function SuperAdminDashboard() {
   const [apiData, setApiData] = useState<any>(null);
@@ -23,11 +31,13 @@ export default function SuperAdminDashboard() {
   const testAPI = async () => {
     setLoading(true);
     setError(null);
-    
+
     try {
       // TODO: Replace with admin-only endpoint or use getProfileData() from lib/api/profile.ts
       // getLessonsMetadata removed - this superadmin page needs admin-only client
-      setError("Admin endpoint not implemented. getLessonsMetadata() was removed from student app.");
+      setError(
+        "Admin endpoint not implemented. getLessonsMetadata() was removed from student app.",
+      );
       setApiData(null);
       // const data = await getLessonsMetadata();
       // setApiData(data);
@@ -56,39 +66,49 @@ export default function SuperAdminDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1,234</div>
-            <p className="text-xs text-muted-foreground">+10.1% from last month</p>
+            <p className="text-xs text-muted-foreground">
+              +10.1% from last month
+            </p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Lessons</CardTitle>
             <BookOpen className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{apiData?.lessons?.length || "0"}</div>
+            <div className="text-2xl font-bold">
+              {apiData?.lessons?.length || "0"}
+            </div>
             <p className="text-xs text-muted-foreground">Across all subjects</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Classes</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Classes
+            </CardTitle>
             <BarChart3 className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{apiData?.classes?.length || "0"}</div>
+            <div className="text-2xl font-bold">
+              {apiData?.classes?.length || "0"}
+            </div>
             <p className="text-xs text-muted-foreground">From JSS1 to SSS3</p>
           </CardContent>
         </Card>
-        
+
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Subjects</CardTitle>
             <Search className="size-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{apiData?.subjects?.length || "0"}</div>
+            <div className="text-2xl font-bold">
+              {apiData?.subjects?.length || "0"}
+            </div>
             <p className="text-xs text-muted-foreground">Available subjects</p>
           </CardContent>
         </Card>
@@ -97,7 +117,7 @@ export default function SuperAdminDashboard() {
       {/* Lesson Management Section */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight">Lesson Management</h2>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {/* API Test */}
           <Card>
@@ -109,16 +129,18 @@ export default function SuperAdminDashboard() {
               <Button onClick={testAPI} disabled={loading} className="w-full">
                 {loading ? "Testing..." : "Test API"}
               </Button>
-              
+
               {error && (
                 <div className="rounded border border-red-200 bg-red-50 p-3">
                   <p className="text-sm text-red-800">Error: {error}</p>
                 </div>
               )}
-              
+
               {apiData && (
                 <div className="rounded border bg-green-50 p-3">
-                  <p className="mb-1 text-sm font-medium text-green-800">Connected!</p>
+                  <p className="mb-1 text-sm font-medium text-green-800">
+                    Connected!
+                  </p>
                   <div className="space-y-1 text-xs">
                     <p>Classes: {apiData.classes?.length || 0}</p>
                     <p>Subjects: {apiData.subjects?.length || 0}</p>
@@ -167,7 +189,7 @@ export default function SuperAdminDashboard() {
       {/* System Management */}
       <div className="space-y-4">
         <h2 className="text-2xl font-bold tracking-tight">System Management</h2>
-        
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader>

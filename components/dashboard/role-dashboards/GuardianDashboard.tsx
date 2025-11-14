@@ -1,14 +1,19 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { useMemo, useState, useEffect } from "react";
+import { useAuthStore } from "@/store/authStore";
+import { format } from "date-fns";
 import {
   Bell,
   BookOpen,
   Calendar,
   ChevronRight,
   Clock,
+  Medal,
   MessageCircle,
+  ShieldCheck,
+  Smile,
   Star,
   Target,
   TrendingUp,
@@ -16,6 +21,7 @@ import {
   Users,
 } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -25,15 +31,20 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
-import { format } from "date-fns";
-import { Medal, ShieldCheck, Smile } from "lucide-react";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { useAuthStore } from "@/store/authStore";
 
-function formatDisplayName(user?: { name?: string | null; username?: string | null; email?: string | null }) {
+function formatDisplayName(user?: {
+  name?: string | null;
+  username?: string | null;
+  email?: string | null;
+}) {
   if (!user) return "Learner";
   const candidates = [user.name, user.username, user.email].filter(
     (v): v is string => typeof v === "string" && v.trim().length > 0,
@@ -51,7 +62,9 @@ export function GuardianDashboard() {
   const role = (user?.role?.[0] || "guardian") as string;
   const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
 
-  const [timePeriod, setTimePeriod] = useState<"morning" | "afternoon" | "evening" | "night">("morning");
+  const [timePeriod, setTimePeriod] = useState<
+    "morning" | "afternoon" | "evening" | "night"
+  >("morning");
   useEffect(() => {
     const update = () => {
       const h = new Date().getHours();
@@ -100,9 +113,21 @@ export function GuardianDashboard() {
   ];
 
   const achievements = [
-    { id: 1, label: "7-Day Learning Streak", icon: <ShieldCheck className="size-4 text-amber-500" /> },
-    { id: 2, label: "Perfect Score", icon: <Medal className="size-4 text-yellow-500" /> },
-    { id: 3, label: "Perfect Score", icon: <Medal className="size-4 text-yellow-500" /> },
+    {
+      id: 1,
+      label: "7-Day Learning Streak",
+      icon: <ShieldCheck className="size-4 text-amber-500" />,
+    },
+    {
+      id: 2,
+      label: "Perfect Score",
+      icon: <Medal className="size-4 text-yellow-500" />,
+    },
+    {
+      id: 3,
+      label: "Perfect Score",
+      icon: <Medal className="size-4 text-yellow-500" />,
+    },
   ];
 
   const Donut = ({ value }: { value: number }) => (
@@ -133,19 +158,28 @@ export function GuardianDashboard() {
   return (
     <div className="container mx-auto space-y-6 p-4 md:p-6">
       {/* Header banner */}
-      <div className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}>
+      <div
+        className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
+      >
         <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <p className="text-sm text-gray-900 dark:text-white/90">{today}</p>
-            <h2 className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">Good Morning, {displayName}</h2>
+            <h2 className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+              Good Morning, {displayName}
+            </h2>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="h-5 px-2 text-xs">Role: {roleLabel}</Badge>
+              <Badge variant="secondary" className="h-5 px-2 text-xs">
+                Role: {roleLabel}
+              </Badge>
               {user?.email ? (
-                <Badge variant="outline" className="h-5 px-2 text-xs">{user.email}</Badge>
+                <Badge variant="outline" className="h-5 px-2 text-xs">
+                  {user.email}
+                </Badge>
               ) : null}
             </div>
             <p className="mt-2 max-w-xl text-sm text-gray-700 dark:text-white/90">
-              Possible announcements // Possible announcements // Possible announcements.
+              Possible announcements // Possible announcements // Possible
+              announcements.
             </p>
           </div>
           <div className="hidden select-none md:block">
@@ -179,7 +213,10 @@ export function GuardianDashboard() {
           </CardHeader>
           <CardContent className="space-y-2">
             {achievements.map((a) => (
-              <div key={a.id} className="flex items-center justify-between rounded-md border p-2">
+              <div
+                key={a.id}
+                className="flex items-center justify-between rounded-md border p-2"
+              >
                 <div className="flex items-center gap-2 text-sm">
                   {a.icon}
                   <span>{a.label}</span>
@@ -244,15 +281,18 @@ export function GuardianDashboard() {
           <CardTitle className="text-lg">View Performance</CardTitle>
         </CardHeader>
         <CardContent>
-            <div className="rounded-md border">
-              <div className="grid grid-cols-1 items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground md:grid-cols-[220px_1fr]">
+          <div className="rounded-md border">
+            <div className="grid grid-cols-1 items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground md:grid-cols-[220px_1fr]">
               <span>Performance</span>
               <span>Lesson&apos;s Progress</span>
             </div>
             <Separator />
             <div className="divide-y">
               {performance.map((row) => (
-                <div key={row.subject} className="grid grid-cols-1 items-center gap-4 px-4 py-3 md:grid-cols-[220px_1fr]">
+                <div
+                  key={row.subject}
+                  className="grid grid-cols-1 items-center gap-4 px-4 py-3 md:grid-cols-[220px_1fr]"
+                >
                   <span className="text-sm">{row.subject}</span>
                   <div className="flex items-center gap-3">
                     <div className="h-2 w-full rounded bg-muted">

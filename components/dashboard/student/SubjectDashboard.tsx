@@ -1,26 +1,35 @@
 "use client";
 
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   BookOpen,
   Filter,
   Search,
+  Settings,
   Target,
   TrendingUp,
   Users,
-  Settings,
 } from "lucide-react";
 
+import {
+  getCompulsorySubjectsForClass,
+  getConfigSubjectIdFromApiId,
+  getElectiveSubjectsForClass,
+  getSubjectById,
+  getSubjects,
+  type Subject as ConfigSubject,
+} from "@/config/education";
+import { getSubjectsWithSlugs } from "@/lib/api/lessons";
+import { getStudentSubjects } from "@/lib/api/subjects";
+import type {
+  Subject as ApiSubject,
+  SubjectsContent,
+} from "@/lib/types/subjects";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import {
   Select,
@@ -36,34 +45,26 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
-import {
-  getCompulsorySubjectsForClass,
-  getElectiveSubjectsForClass,
-  getSubjectById,
-  getSubjects,
-  getConfigSubjectIdFromApiId,
-  type Subject as ConfigSubject,
-} from "@/config/education";
-import { getStudentSubjects } from "@/lib/api/subjects";
-import { getSubjectsWithSlugs } from "@/lib/api/lessons";
-import type { SubjectsContent, Subject as ApiSubject } from "@/lib/types/subjects";
 
 interface SubjectDashboardProps {
   initialData?: SubjectsContent;
 }
 
 // Mock data for subject progress - this would come from API
-const mockSubjectProgress: Record<string, {
-  totalTopics: number;
-  completedTopics: number;
-  currentWeek: number;
-  totalWeeks: number;
-  upcomingAssessments: number;
-  lastAccessed?: string;
-  termProgress: number;
-  grade?: string;
-  caScore?: number;
-}> = {
+const mockSubjectProgress: Record<
+  string,
+  {
+    totalTopics: number;
+    completedTopics: number;
+    currentWeek: number;
+    totalWeeks: number;
+    upcomingAssessments: number;
+    lastAccessed?: string;
+    termProgress: number;
+    grade?: string;
+    caScore?: number;
+  }
+> = {
   english: {
     totalTopics: 12,
     completedTopics: 8,
@@ -136,7 +137,7 @@ function hashString(str: string): number {
   let hash = 0;
   for (let i = 0; i < str.length; i++) {
     const char = str.charCodeAt(i);
-    hash = ((hash << 5) - hash) + char;
+    hash = (hash << 5) - hash + char;
     hash = hash & hash; // Convert to 32-bit integer
   }
   return Math.abs(hash);
@@ -144,22 +145,49 @@ function hashString(str: string): number {
 
 // Predefined colors and icons for fallback
 const FALLBACK_COLORS = [
-  "#3B82F6", "#10B981", "#8B5CF6", "#F59E0B", "#EF4444",
-  "#06B6D4", "#6366F1", "#DC2626", "#059669", "#16A34A",
-  "#7C3AED", "#B91C1C", "#92400E", "#0F766E", "#0D9488",
+  "#3B82F6",
+  "#10B981",
+  "#8B5CF6",
+  "#F59E0B",
+  "#EF4444",
+  "#06B6D4",
+  "#6366F1",
+  "#DC2626",
+  "#059669",
+  "#16A34A",
+  "#7C3AED",
+  "#B91C1C",
+  "#92400E",
+  "#0F766E",
+  "#0D9488",
 ];
 const FALLBACK_ICONS = [
-  "bookOpen", "calculator", "flask", "users", "wrench",
-  "briefcase", "monitor", "zap", "leaf", "landmark",
-  "scroll", "store", "tractor", "flag", "cross",
+  "bookOpen",
+  "calculator",
+  "flask",
+  "users",
+  "wrench",
+  "briefcase",
+  "monitor",
+  "zap",
+  "leaf",
+  "landmark",
+  "scroll",
+  "store",
+  "tractor",
+  "flag",
+  "cross",
 ];
 
 // Helper function to get fallback color/icon based on subject id/name
-function getFallbackSubjectDisplay(apiSubject: ApiSubject): { color: string; icon: string } {
+function getFallbackSubjectDisplay(apiSubject: ApiSubject): {
+  color: string;
+  icon: string;
+} {
   const hash = hashString(`${apiSubject.id}-${apiSubject.name}`);
   const colorIndex = hash % FALLBACK_COLORS.length;
   const iconIndex = hash % FALLBACK_ICONS.length;
-  
+
   return {
     color: FALLBACK_COLORS[colorIndex],
     icon: FALLBACK_ICONS[iconIndex],
@@ -168,7 +196,10 @@ function getFallbackSubjectDisplay(apiSubject: ApiSubject): { color: string; ico
 
 // Helper function to map API subject to config subject
 // Uses ID-based mapping first, then exact name match, with deterministic fallback
-function mapApiSubjectToConfig(apiSubject: ApiSubject, classLevelId?: string): ConfigSubject | null {
+function mapApiSubjectToConfig(
+  apiSubject: ApiSubject,
+  classLevelId?: string,
+): ConfigSubject | null {
   // First, try ID-based mapping
   const configSubjectId = getConfigSubjectIdFromApiId(apiSubject.id);
   if (configSubjectId) {
@@ -181,7 +212,8 @@ function mapApiSubjectToConfig(apiSubject: ApiSubject, classLevelId?: string): C
   // Fall back to exact name match (case-insensitive)
   const allSubjects = getSubjects();
   const configSubject = allSubjects.find(
-    (s: ConfigSubject) => s.name.toLowerCase() === apiSubject.name.toLowerCase()
+    (s: ConfigSubject) =>
+      s.name.toLowerCase() === apiSubject.name.toLowerCase(),
   );
 
   if (configSubject) {
@@ -190,14 +222,14 @@ function mapApiSubjectToConfig(apiSubject: ApiSubject, classLevelId?: string): C
 
   // Log unmapped subjects and capture in telemetry
   const fallback = getFallbackSubjectDisplay(apiSubject);
-  
+
   if (process.env.NODE_ENV === "development") {
     console.warn(
       `[SubjectDashboard] Unmapped API subject: ID=${apiSubject.id}, Name="${apiSubject.name}". ` +
-      `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`
+        `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`,
     );
   }
-  
+
   // Optional: Send telemetry in production (lightweight POST)
   if (process.env.NODE_ENV === "production" && typeof window !== "undefined") {
     // Lightweight telemetry - could be sent to analytics endpoint
@@ -210,9 +242,11 @@ function mapApiSubjectToConfig(apiSubject: ApiSubject, classLevelId?: string): C
 
 export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(
-    initialData || null
+    initialData || null,
   );
-  const [subjectsWithSlugs, setSubjectsWithSlugs] = useState<Map<number, string>>(new Map());
+  const [subjectsWithSlugs, setSubjectsWithSlugs] = useState<
+    Map<number, string>
+  >(new Map());
   const [isLoading, setIsLoading] = useState(!initialData);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState<string>("all");
@@ -245,7 +279,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
         setIsLoading(false);
       }
     };
-    
+
     if (!initialData) {
       fetchData();
     } else {
@@ -273,25 +307,28 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
     if (!subjectsData) return [];
 
     // Combine all subjects from API
-    const subjects = new Map<number, ApiSubject & { 
-      type: 'regular' | 'compulsory_selective' | 'selective';
-    }>();
+    const subjects = new Map<
+      number,
+      ApiSubject & {
+        type: "regular" | "compulsory_selective" | "selective";
+      }
+    >();
 
     // Add regular subjects
     (subjectsData.subjects || []).forEach((subject) => {
-      subjects.set(subject.id, { ...subject, type: 'regular' });
+      subjects.set(subject.id, { ...subject, type: "regular" });
     });
 
     // Add compulsory selective subjects (for JSS)
     (subjectsData.compulsory_selective || []).forEach((subject) => {
-      subjects.set(subject.id, { ...subject, type: 'compulsory_selective' });
+      subjects.set(subject.id, { ...subject, type: "compulsory_selective" });
     });
 
     // Add selective subjects
     (subjectsData.selective || []).forEach((subject) => {
       // Only add if not already added as regular
       if (!subjects.has(subject.id)) {
-        subjects.set(subject.id, { ...subject, type: 'selective' });
+        subjects.set(subject.id, { ...subject, type: "selective" });
       }
     });
 
@@ -301,15 +338,19 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   // Filter subjects based on search and track
   const filteredSubjects = useMemo(() => {
     return allApiSubjects.filter((subject) => {
-      const matchesSearch = subject.name.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchesSearch = subject.name
+        .toLowerCase()
+        .includes(searchQuery.toLowerCase());
 
       // Try to get config subject for additional filtering
       const configSubject = mapApiSubjectToConfig(subject, currentClass?.id);
-      
+
       const matchesTrack =
         selectedTrack === "all" ||
-        (selectedTrack === "core" && (subject.type === 'regular' || subject.type === 'compulsory_selective')) ||
-        (selectedTrack === "elective" && subject.type === 'selective') ||
+        (selectedTrack === "core" &&
+          (subject.type === "regular" ||
+            subject.type === "compulsory_selective")) ||
+        (selectedTrack === "elective" && subject.type === "selective") ||
         (configSubject && selectedTrack === configSubject.track);
 
       return matchesSearch && matchesTrack;
@@ -317,9 +358,13 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   }, [allApiSubjects, searchQuery, selectedTrack, currentClass]);
 
   // Separate subjects by type for display
-  const regularSubjects = filteredSubjects.filter(s => s.type === 'regular');
-  const compulsorySelectiveSubjects = filteredSubjects.filter(s => s.type === 'compulsory_selective');
-  const selectiveSubjects = filteredSubjects.filter(s => s.type === 'selective');
+  const regularSubjects = filteredSubjects.filter((s) => s.type === "regular");
+  const compulsorySelectiveSubjects = filteredSubjects.filter(
+    (s) => s.type === "compulsory_selective",
+  );
+  const selectiveSubjects = filteredSubjects.filter(
+    (s) => s.type === "selective",
+  );
 
   // Calculate overall stats
   const totalSubjects = allApiSubjects.length;
@@ -334,16 +379,23 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
     allApiSubjects.length > 0
       ? Math.round(
           allApiSubjects.reduce((acc, subject) => {
-            const configSubject = mapApiSubjectToConfig(subject, currentClass?.id);
-            const progress = configSubject ? mockSubjectProgress[configSubject.id] : undefined;
+            const configSubject = mapApiSubjectToConfig(
+              subject,
+              currentClass?.id,
+            );
+            const progress = configSubject
+              ? mockSubjectProgress[configSubject.id]
+              : undefined;
             return acc + (progress?.termProgress || 0);
-          }, 0) / allApiSubjects.length
+          }, 0) / allApiSubjects.length,
         )
       : 0;
 
   const upcomingAssessments = allApiSubjects.reduce((acc, subject) => {
     const configSubject = mapApiSubjectToConfig(subject, currentClass?.id);
-    const progress = configSubject ? mockSubjectProgress[configSubject.id] : undefined;
+    const progress = configSubject
+      ? mockSubjectProgress[configSubject.id]
+      : undefined;
     return acc + (progress?.upcomingAssessments || 0);
   }, 0);
 
@@ -405,7 +457,6 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   }
 
   return (
-    
     <motion.div
       variants={containerVariants}
       initial="hidden"
@@ -521,9 +572,12 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       <motion.div variants={itemVariants}>
         <Tabs defaultValue="all" className="space-y-4">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">All Subjects ({filteredSubjects.length})</TabsTrigger>
+            <TabsTrigger value="all">
+              All Subjects ({filteredSubjects.length})
+            </TabsTrigger>
             <TabsTrigger value="compulsory">
-              Core Subjects ({regularSubjects.length + compulsorySelectiveSubjects.length})
+              Core Subjects (
+              {regularSubjects.length + compulsorySelectiveSubjects.length})
             </TabsTrigger>
             <TabsTrigger value="elective">
               Electives ({selectiveSubjects.length})
@@ -541,16 +595,19 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {regularSubjects.map((apiSubject) => {
-                    const configSubject = mapApiSubjectToConfig(apiSubject, currentClass?.id);
+                    const configSubject = mapApiSubjectToConfig(
+                      apiSubject,
+                      currentClass?.id,
+                    );
                     const progress = configSubject
-                      ? (mockSubjectProgress[configSubject.id] || {
+                      ? mockSubjectProgress[configSubject.id] || {
                           totalTopics: 10,
                           completedTopics: 0,
                           currentWeek: 1,
                           totalWeeks: 12,
                           upcomingAssessments: 0,
                           termProgress: 0,
-                        })
+                        }
                       : {
                           totalTopics: 10,
                           completedTopics: 0,
@@ -559,9 +616,11 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                           upcomingAssessments: 0,
                           termProgress: 0,
                         };
-                    
+
                     // Create a config subject for display if not found, using deterministic fallback
-                    const fallback = !configSubject ? getFallbackSubjectDisplay(apiSubject) : null;
+                    const fallback = !configSubject
+                      ? getFallbackSubjectDisplay(apiSubject)
+                      : null;
                     const displaySubject: ConfigSubject = configSubject || {
                       id: String(apiSubject.id),
                       name: apiSubject.name,
@@ -596,16 +655,19 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {compulsorySelectiveSubjects.map((apiSubject) => {
-                    const configSubject = mapApiSubjectToConfig(apiSubject, currentClass?.id);
+                    const configSubject = mapApiSubjectToConfig(
+                      apiSubject,
+                      currentClass?.id,
+                    );
                     const progress = configSubject
-                      ? (mockSubjectProgress[configSubject.id] || {
+                      ? mockSubjectProgress[configSubject.id] || {
                           totalTopics: 10,
                           completedTopics: 0,
                           currentWeek: 1,
                           totalWeeks: 12,
                           upcomingAssessments: 0,
                           termProgress: 0,
-                        })
+                        }
                       : {
                           totalTopics: 10,
                           completedTopics: 0,
@@ -614,7 +676,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                           upcomingAssessments: 0,
                           termProgress: 0,
                         };
-                    
+
                     const displaySubject: ConfigSubject = configSubject || {
                       id: String(apiSubject.id),
                       name: apiSubject.name,
@@ -649,16 +711,19 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                   {selectiveSubjects.map((apiSubject) => {
-                    const configSubject = mapApiSubjectToConfig(apiSubject, currentClass?.id);
+                    const configSubject = mapApiSubjectToConfig(
+                      apiSubject,
+                      currentClass?.id,
+                    );
                     const progress = configSubject
-                      ? (mockSubjectProgress[configSubject.id] || {
+                      ? mockSubjectProgress[configSubject.id] || {
                           totalTopics: 8,
                           completedTopics: 0,
                           currentWeek: 1,
                           totalWeeks: 10,
                           upcomingAssessments: 0,
                           termProgress: 0,
-                        })
+                        }
                       : {
                           totalTopics: 8,
                           completedTopics: 0,
@@ -667,7 +732,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                           upcomingAssessments: 0,
                           termProgress: 0,
                         };
-                    
+
                     const displaySubject: ConfigSubject = configSubject || {
                       id: String(apiSubject.id),
                       name: apiSubject.name,
@@ -720,61 +785,69 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
 
           <TabsContent value="compulsory" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {[...regularSubjects, ...compulsorySelectiveSubjects].map((apiSubject) => {
-                const configSubject = mapApiSubjectToConfig(apiSubject, currentClass?.id);
-                const progress = configSubject
-                  ? (mockSubjectProgress[configSubject.id] || {
-                      totalTopics: 10,
-                      completedTopics: 0,
-                      currentWeek: 1,
-                      totalWeeks: 12,
-                      upcomingAssessments: 0,
-                      termProgress: 0,
-                    })
-                  : {
-                      totalTopics: 10,
-                      completedTopics: 0,
-                      currentWeek: 1,
-                      totalWeeks: 12,
-                      upcomingAssessments: 0,
-                      termProgress: 0,
-                    };
-                
-                const displaySubject: ConfigSubject = configSubject || {
-                  id: String(apiSubject.id),
-                  name: apiSubject.name,
-                  code: apiSubject.name.substring(0, 3).toUpperCase(),
-                  description: apiSubject.name,
-                  icon: "BookOpen",
-                  color: "#6366f1",
-                  compulsory: true,
-                  levels: [],
-                };
+              {[...regularSubjects, ...compulsorySelectiveSubjects].map(
+                (apiSubject) => {
+                  const configSubject = mapApiSubjectToConfig(
+                    apiSubject,
+                    currentClass?.id,
+                  );
+                  const progress = configSubject
+                    ? mockSubjectProgress[configSubject.id] || {
+                        totalTopics: 10,
+                        completedTopics: 0,
+                        currentWeek: 1,
+                        totalWeeks: 12,
+                        upcomingAssessments: 0,
+                        termProgress: 0,
+                      }
+                    : {
+                        totalTopics: 10,
+                        completedTopics: 0,
+                        currentWeek: 1,
+                        totalWeeks: 12,
+                        upcomingAssessments: 0,
+                        termProgress: 0,
+                      };
 
-                return (
-                  <SubjectCard
-                    key={apiSubject.id}
-                    subject={displaySubject}
-                    progress={progress}
-                  />
-                );
-              })}
+                  const displaySubject: ConfigSubject = configSubject || {
+                    id: String(apiSubject.id),
+                    name: apiSubject.name,
+                    code: apiSubject.name.substring(0, 3).toUpperCase(),
+                    description: apiSubject.name,
+                    icon: "BookOpen",
+                    color: "#6366f1",
+                    compulsory: true,
+                    levels: [],
+                  };
+
+                  return (
+                    <SubjectCard
+                      key={apiSubject.id}
+                      subject={displaySubject}
+                      progress={progress}
+                    />
+                  );
+                },
+              )}
             </div>
           </TabsContent>
 
           <TabsContent value="elective" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
               {selectiveSubjects.map((apiSubject) => {
-                const configSubject = mapApiSubjectToConfig(apiSubject, currentClass?.id);
+                const configSubject = mapApiSubjectToConfig(
+                  apiSubject,
+                  currentClass?.id,
+                );
                 const progress = configSubject
-                  ? (mockSubjectProgress[configSubject.id] || {
+                  ? mockSubjectProgress[configSubject.id] || {
                       totalTopics: 8,
                       completedTopics: 0,
                       currentWeek: 1,
                       totalWeeks: 10,
                       upcomingAssessments: 0,
                       termProgress: 0,
-                    })
+                    }
                   : {
                       totalTopics: 8,
                       completedTopics: 0,
@@ -783,7 +856,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                       upcomingAssessments: 0,
                       termProgress: 0,
                     };
-                
+
                 const displaySubject: ConfigSubject = configSubject || {
                   id: String(apiSubject.id),
                   name: apiSubject.name,

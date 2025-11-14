@@ -1,29 +1,48 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { motion, AnimatePresence } from "framer-motion";
+import { useAuthStore } from "@/store/authStore";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { format, parse } from "date-fns";
+import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
   ArrowRight,
   CheckCircle,
+  Eye,
   Loader2,
+  Mail,
+  MapPin,
+  Phone,
+  Shield,
   User,
   UserCheck,
-  Mail,
-  Phone,
-  MapPin,
-  Shield,
-  Eye,
 } from "lucide-react";
+import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { format, parse } from "date-fns";
 
+import { getClassLevelById, normalizeClassString } from "@/config/education";
+import {
+  getProfile,
+  getProfileData,
+  ProfileEditData,
+  updateProfile,
+  UserProfile,
+} from "@/lib/api/profile";
+import { UserRole } from "@/lib/types/auth";
+import { ProfilePageData } from "@/lib/types/profile";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import {
   Select,
@@ -32,33 +51,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
 import { DatePicker } from "@/components/date-picker";
-import { useAuthStore } from "@/store/authStore";
-import {
-  getProfile,
-  getProfileData,
-  ProfileEditData,
-  updateProfile,
-  UserProfile,
-} from "@/lib/api/profile";
-import { ProfilePageData } from "@/lib/types/profile";
-import { UserRole } from "@/lib/types/auth";
-import { useAcademicContext } from '@/components/providers/academic-context';
-import { getClassLevelById, normalizeClassString } from '@/config/education';
+import { useAcademicContext } from "@/components/providers/academic-context";
 
 // Form validation schema with conditional validation
-type RoleOption = '' | 'student' | 'guardian';
+type RoleOption = "" | "student" | "guardian";
 
 const createOnboardingSchema = (
   primaryRole: string | null,
   profileUsername: string | null,
-  profile: UserProfile | null
+  profile: UserProfile | null,
 ) => {
   return z
     .object({
-      role: z.union([z.enum(["student", "guardian"]), z.literal("")]).optional(),
+      role: z
+        .union([z.enum(["student", "guardian"]), z.literal("")])
+        .optional(),
       name: z.string().min(1, "Name is required"),
       username: z.string().optional(),
       email: z.string().email("Please enter a valid email address"),
@@ -77,7 +85,10 @@ const createOnboardingSchema = (
     })
     .superRefine((data, ctx) => {
       // Require username when profile.username is null
-      if (profileUsername === null && (!data.username || data.username.trim() === "")) {
+      if (
+        profileUsername === null &&
+        (!data.username || data.username.trim() === "")
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Username is required",
@@ -97,7 +108,10 @@ const createOnboardingSchema = (
       const effectiveRole = data.role || primaryRole;
 
       // Require phone for student and guardian roles when empty
-      if ((effectiveRole === "student" || effectiveRole === "guardian") && (!data.phone || data.phone.trim() === "")) {
+      if (
+        (effectiveRole === "student" || effectiveRole === "guardian") &&
+        (!data.phone || data.phone.trim() === "")
+      ) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           message: "Phone number is required",
@@ -144,7 +158,10 @@ const createOnboardingSchema = (
         }
 
         // Require discipline when class starts with SS or SSS
-        if (data.class && (data.class.startsWith("SS") || data.class.startsWith("SSS"))) {
+        if (
+          data.class &&
+          (data.class.startsWith("SS") || data.class.startsWith("SSS"))
+        ) {
           if (!data.discipline || data.discipline.trim() === "") {
             ctx.addIssue({
               code: z.ZodIssueCode.custom,
@@ -174,7 +191,12 @@ const createOnboardingSchema = (
         }
 
         // Require gender when not present in profile
-        if ((profile?.gender === null || profile?.gender === undefined || profile?.gender === "") && !data.gender) {
+        if (
+          (profile?.gender === null ||
+            profile?.gender === undefined ||
+            profile?.gender === "") &&
+          !data.gender
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Gender is required for guardians",
@@ -183,7 +205,12 @@ const createOnboardingSchema = (
         }
 
         // Require country when not present in profile
-        if ((profile?.country === null || profile?.country === undefined || profile?.country === "") && (!data.country || data.country.trim() === "")) {
+        if (
+          (profile?.country === null ||
+            profile?.country === undefined ||
+            profile?.country === "") &&
+          (!data.country || data.country.trim() === "")
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Country is required for guardians",
@@ -192,7 +219,12 @@ const createOnboardingSchema = (
         }
 
         // Require state when not present in profile
-        if ((profile?.state === null || profile?.state === undefined || profile?.state === "") && (!data.state || data.state.trim() === "")) {
+        if (
+          (profile?.state === null ||
+            profile?.state === undefined ||
+            profile?.state === "") &&
+          (!data.state || data.state.trim() === "")
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "State is required for guardians",
@@ -201,7 +233,12 @@ const createOnboardingSchema = (
         }
 
         // Require city when not present in profile
-        if ((profile?.city === null || profile?.city === undefined || profile?.city === "") && (!data.city || data.city.trim() === "")) {
+        if (
+          (profile?.city === null ||
+            profile?.city === undefined ||
+            profile?.city === "") &&
+          (!data.city || data.city.trim() === "")
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "City is required for guardians",
@@ -210,7 +247,12 @@ const createOnboardingSchema = (
         }
 
         // Require address when not present in profile
-        if ((profile?.address === null || profile?.address === undefined || profile?.address === "") && (!data.address || data.address.trim() === "")) {
+        if (
+          (profile?.address === null ||
+            profile?.address === undefined ||
+            profile?.address === "") &&
+          (!data.address || data.address.trim() === "")
+        ) {
           ctx.addIssue({
             code: z.ZodIssueCode.custom,
             message: "Address is required for guardians",
@@ -223,10 +265,26 @@ const createOnboardingSchema = (
 
 const STEPS = [
   { id: 1, title: "Role Selection", description: "Choose your account type" },
-  { id: 2, title: "Basic Information", description: "Your name, username, and contact details" },
-  { id: 3, title: "Personal Details", description: "Date of birth, gender, and location" },
-  { id: 4, title: "Role-Specific Info", description: "Additional information based on your role" },
-  { id: 5, title: "Review", description: "Review your information before completing" },
+  {
+    id: 2,
+    title: "Basic Information",
+    description: "Your name, username, and contact details",
+  },
+  {
+    id: 3,
+    title: "Personal Details",
+    description: "Date of birth, gender, and location",
+  },
+  {
+    id: 4,
+    title: "Role-Specific Info",
+    description: "Additional information based on your role",
+  },
+  {
+    id: 5,
+    title: "Review",
+    description: "Review your information before completing",
+  },
 ] as const;
 
 interface OnboardingWizardProps {
@@ -243,15 +301,22 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [metadata, setMetadata] = useState<ProfilePageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const primaryRole = profile ? (Array.isArray(profile.role) ? profile.role[0] : profile.role) : null;
+  const primaryRole = profile
+    ? Array.isArray(profile.role)
+      ? profile.role[0]
+      : profile.role
+    : null;
 
   // Create schema with current context
   const onboardingSchema = useMemo(
-    () => createOnboardingSchema(primaryRole, profile?.username ?? null, profile),
-    [primaryRole, profile?.username, profile]
+    () =>
+      createOnboardingSchema(primaryRole, profile?.username ?? null, profile),
+    [primaryRole, profile?.username, profile],
   );
 
-  type OnboardingFormData = z.infer<ReturnType<typeof createOnboardingSchema>> & {
+  type OnboardingFormData = z.infer<
+    ReturnType<typeof createOnboardingSchema>
+  > & {
     role?: RoleOption | undefined;
   };
 
@@ -273,12 +338,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const shouldSkipRoleSelection = primaryRole && primaryRole !== "guest";
   const effectiveSteps = useMemo(() => {
     if (shouldSkipRoleSelection) {
-      return STEPS.filter(step => step.id !== 1);
+      return STEPS.filter((step) => step.id !== 1);
     }
     return STEPS;
   }, [shouldSkipRoleSelection]);
 
-  const currentStepIndex = effectiveSteps.findIndex(step => step.id === currentStep);
+  const currentStepIndex = effectiveSteps.findIndex(
+    (step) => step.id === currentStep,
+  );
   const progress = ((currentStepIndex + 1) / effectiveSteps.length) * 100;
 
   // Load profile data and metadata
@@ -294,17 +361,22 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         setMetadata(metadataData);
 
         // Populate form with profile data
-        const genderValue: "male" | "female" | undefined = 
-          profileData.gender === "male" ? "male" : 
-          profileData.gender === "female" ? "female" : 
-          undefined;
+        const genderValue: "male" | "female" | undefined =
+          profileData.gender === "male"
+            ? "male"
+            : profileData.gender === "female"
+              ? "female"
+              : undefined;
 
-        const profileRole = Array.isArray(profileData.role) ? profileData.role[0] : profileData.role;
-        const formRole = profileRole === "guest" 
-          ? "" 
-          : (profileRole === "student" || profileRole === "guardian" 
-              ? profileRole 
-              : "");
+        const profileRole = Array.isArray(profileData.role)
+          ? profileData.role[0]
+          : profileData.role;
+        const formRole =
+          profileRole === "guest"
+            ? ""
+            : profileRole === "student" || profileRole === "guardian"
+              ? profileRole
+              : "";
 
         setValue("name", profileData.name || "");
         setValue("username", profileData.username || "");
@@ -314,9 +386,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         setValue("school", profileData.school || "");
         setValue("class", profileData.class || "");
         setValue("discipline", profileData.discipline || "");
-        setValue("date_of_birth", profileData.date_of_birth
-          ? parse(profileData.date_of_birth, "dd/MM/yyyy", new Date())
-          : undefined);
+        setValue(
+          "date_of_birth",
+          profileData.date_of_birth
+            ? parse(profileData.date_of_birth, "dd/MM/yyyy", new Date())
+            : undefined,
+        );
         setValue("gender", genderValue);
         setValue("country", profileData.country || "");
         setValue("state", profileData.state || "");
@@ -347,19 +422,21 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
     if (currentStep === 1) {
       isValid = await trigger(["role"] as (keyof OnboardingFormData)[]);
-      
+
       // If role is valid and user is guest, submit role immediately
       if (isValid && primaryRole === "guest" && selectedRole) {
         try {
           setIsSubmitting(true);
-          const updatedProfile = await updateProfile({ role: selectedRole as "student" | "guardian" });
-          
+          const updatedProfile = await updateProfile({
+            role: selectedRole as "student" | "guardian",
+          });
+
           // Refresh profile to get updated role
           const refreshedProfile = await getProfile();
           setProfile(refreshedProfile);
-          
+
           // Update auth store
-          const roles: UserRole[] = Array.isArray(updatedProfile.role) 
+          const roles: UserRole[] = Array.isArray(updatedProfile.role)
             ? (updatedProfile.role as UserRole[])
             : ([updatedProfile.role] as UserRole[]);
           updateUserProfile({
@@ -380,7 +457,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             child_email: updatedProfile.child_email,
             child_phone: updatedProfile.child_phone,
           });
-          
+
           toast.success("Role updated successfully");
         } catch (error: any) {
           toast.error(error.message || "Failed to update role");
@@ -391,7 +468,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       }
     } else if (currentStep === 2) {
       // Validate basic info including phone (required for student/guardian)
-      const fieldsToValidate: (keyof OnboardingFormData)[] = ["name", "username", "email"];
+      const fieldsToValidate: (keyof OnboardingFormData)[] = [
+        "name",
+        "username",
+        "email",
+      ];
       if (effectiveRole === "student" || effectiveRole === "guardian") {
         fieldsToValidate.push("phone");
       }
@@ -399,48 +480,79 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     } else if (currentStep === 3) {
       // Validate personal details - conditionally require based on profile state
       const fieldsToValidate: Array<keyof OnboardingFormData> = [];
-      
+
       // Require date_of_birth when it is null in profile (for both roles)
       if (profile?.date_of_birth === null) {
         fieldsToValidate.push("date_of_birth");
       }
-      
+
       // Require gender when it is null in profile (for both roles)
       if (profile?.gender === null) {
         fieldsToValidate.push("gender");
       }
-      
+
       // For guardians, require location fields when not present
       if (effectiveRole === "guardian") {
-        if (profile?.gender === null || profile?.gender === undefined || profile?.gender === "") {
+        if (
+          profile?.gender === null ||
+          profile?.gender === undefined ||
+          profile?.gender === ""
+        ) {
           if (!fieldsToValidate.includes("gender")) {
             fieldsToValidate.push("gender");
           }
         }
-        if (profile?.country === null || profile?.country === undefined || profile?.country === "") {
+        if (
+          profile?.country === null ||
+          profile?.country === undefined ||
+          profile?.country === ""
+        ) {
           fieldsToValidate.push("country");
         }
-        if (profile?.state === null || profile?.state === undefined || profile?.state === "") {
+        if (
+          profile?.state === null ||
+          profile?.state === undefined ||
+          profile?.state === ""
+        ) {
           fieldsToValidate.push("state");
         }
-        if (profile?.city === null || profile?.city === undefined || profile?.city === "") {
+        if (
+          profile?.city === null ||
+          profile?.city === undefined ||
+          profile?.city === ""
+        ) {
           fieldsToValidate.push("city");
         }
-        if (profile?.address === null || profile?.address === undefined || profile?.address === "") {
+        if (
+          profile?.address === null ||
+          profile?.address === undefined ||
+          profile?.address === ""
+        ) {
           fieldsToValidate.push("address");
         }
       }
-      
+
       isValid = await trigger(fieldsToValidate as (keyof OnboardingFormData)[]);
     } else if (currentStep === 4) {
       if (effectiveRole === "student") {
-        isValid = await trigger(["school", "class"] as (keyof OnboardingFormData)[]);
+        isValid = await trigger([
+          "school",
+          "class",
+        ] as (keyof OnboardingFormData)[]);
         // Check for both SS and SSS prefixes
-        if (selectedClass && (selectedClass.startsWith("SS") || selectedClass.startsWith("SSS"))) {
-          isValid = isValid && await trigger(["discipline"] as (keyof OnboardingFormData)[]);
+        if (
+          selectedClass &&
+          (selectedClass.startsWith("SS") || selectedClass.startsWith("SSS"))
+        ) {
+          isValid =
+            isValid &&
+            (await trigger(["discipline"] as (keyof OnboardingFormData)[]));
         }
       } else if (effectiveRole === "guardian") {
-        isValid = await trigger(["child_email", "child_phone"] as (keyof OnboardingFormData)[]);
+        isValid = await trigger([
+          "child_email",
+          "child_phone",
+        ] as (keyof OnboardingFormData)[]);
       } else {
         isValid = true;
       }
@@ -492,7 +604,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       const updatedProfile = await updateProfile(submitData as ProfileEditData);
 
       // Update auth store
-      const roles: UserRole[] = Array.isArray(updatedProfile.role) 
+      const roles: UserRole[] = Array.isArray(updatedProfile.role)
         ? (updatedProfile.role as UserRole[])
         : ([updatedProfile.role] as UserRole[]);
       updateUserProfile({
@@ -517,8 +629,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       // Update academic context with new class if set during onboarding
       if (updatedProfile.class) {
         const normalizedClass = normalizeClassString(updatedProfile.class);
-        const classLevel = normalizedClass 
-          ? getClassLevelById(normalizedClass.toLowerCase().replace(' ', ''))
+        const classLevel = normalizedClass
+          ? getClassLevelById(normalizedClass.toLowerCase().replace(" ", ""))
           : null;
         if (classLevel) {
           setCurrentClass(classLevel);
@@ -526,12 +638,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       }
 
       toast.success("Profile completed successfully!");
-      
+
       // Invoke onComplete callback if provided
       if (onComplete) {
         onComplete();
       }
-      
+
       router.push("/dashboard");
     } catch (error: any) {
       toast.error(error.message || "Failed to complete profile");
@@ -542,10 +654,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
+      <div className="flex min-h-[60vh] items-center justify-center">
         <div className="flex flex-col items-center gap-4">
-          <Loader2 className="size-8 sm:size-12 animate-spin text-primary" />
-          <span className="text-sm sm:text-base text-muted-foreground">Loading...</span>
+          <Loader2 className="size-8 animate-spin text-primary sm:size-12" />
+          <span className="text-sm text-muted-foreground sm:text-base">
+            Loading...
+          </span>
         </div>
       </div>
     );
@@ -567,28 +681,29 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       {/* Step Indicators */}
       <div className="flex justify-center gap-2">
         {effectiveSteps.map((step, index) => (
-          <div
-            key={step.id}
-            className="flex flex-col items-center gap-1.5"
-          >
+          <div key={step.id} className="flex flex-col items-center gap-1.5">
             <div
-              className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium transition-colors ${
+              className={`flex size-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
                 index < currentStepIndex
                   ? "bg-primary text-primary-foreground"
                   : index === currentStepIndex
-                  ? "bg-primary text-primary-foreground ring-2 ring-primary/20"
-                  : "bg-muted text-muted-foreground"
+                    ? "bg-primary text-primary-foreground ring-2 ring-primary/20"
+                    : "bg-muted text-muted-foreground"
               }`}
             >
               {index < currentStepIndex ? (
-                <CheckCircle className="w-4 h-4" />
+                <CheckCircle className="size-4" />
               ) : (
                 step.id
               )}
             </div>
-            <span className={`text-xs text-center max-w-[60px] truncate ${
-              index === currentStepIndex ? "font-medium text-foreground" : "text-muted-foreground"
-            }`}>
+            <span
+              className={`max-w-[60px] truncate text-center text-xs ${
+                index === currentStepIndex
+                  ? "font-medium text-foreground"
+                  : "text-muted-foreground"
+              }`}
+            >
               {step.title}
             </span>
           </div>
@@ -662,7 +777,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Enter your full name"
                     />
                     {errors.name && (
-                      <p className="text-sm text-destructive">{errors.name.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.name.message}
+                      </p>
                     )}
                   </div>
 
@@ -672,15 +789,25 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       id="username"
                       {...register("username")}
                       placeholder="Enter your username"
-                      disabled={Boolean(profile?.username && typeof profile.username === 'string' && profile.username.trim() !== "")}
+                      disabled={Boolean(
+                        profile?.username &&
+                          typeof profile.username === "string" &&
+                          profile.username.trim() !== "",
+                      )}
                     />
-                    {Boolean(profile?.username && typeof profile.username === 'string' && profile.username.trim() !== "") && (
+                    {Boolean(
+                      profile?.username &&
+                        typeof profile.username === "string" &&
+                        profile.username.trim() !== "",
+                    ) && (
                       <p className="text-xs text-muted-foreground">
                         Username cannot be changed once set.
                       </p>
                     )}
                     {errors.username && (
-                      <p className="text-sm text-destructive">{errors.username.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.username.message}
+                      </p>
                     )}
                   </div>
 
@@ -708,7 +835,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="+1 (555) 123-4567"
                     />
                     {errors.phone && (
-                      <p className="text-sm text-destructive">{errors.phone.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.phone.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -730,20 +859,36 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     <DatePicker
                       selected={watch("date_of_birth")}
                       onSelect={(date) => {
-                        if (!Boolean(profile?.date_of_birth && typeof profile.date_of_birth === 'string' && profile.date_of_birth.trim() !== "")) {
+                        if (
+                          !Boolean(
+                            profile?.date_of_birth &&
+                              typeof profile.date_of_birth === "string" &&
+                              profile.date_of_birth.trim() !== "",
+                          )
+                        ) {
                           setValue("date_of_birth", date);
                         }
                       }}
                       placeholder="Select your date of birth"
-                      disabled={Boolean(profile?.date_of_birth && typeof profile.date_of_birth === 'string' && profile.date_of_birth.trim() !== "")}
+                      disabled={Boolean(
+                        profile?.date_of_birth &&
+                          typeof profile.date_of_birth === "string" &&
+                          profile.date_of_birth.trim() !== "",
+                      )}
                     />
-                    {Boolean(profile?.date_of_birth && typeof profile.date_of_birth === 'string' && profile.date_of_birth.trim() !== "") && (
+                    {Boolean(
+                      profile?.date_of_birth &&
+                        typeof profile.date_of_birth === "string" &&
+                        profile.date_of_birth.trim() !== "",
+                    ) && (
                       <p className="text-xs text-muted-foreground">
                         Date of birth cannot be changed once set.
                       </p>
                     )}
                     {errors.date_of_birth && (
-                      <p className="text-sm text-destructive">{errors.date_of_birth.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.date_of_birth.message}
+                      </p>
                     )}
                   </div>
 
@@ -756,7 +901,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                           setValue("gender", value);
                         }
                       }}
-                      disabled={Boolean(profile?.gender && typeof profile.gender === 'string' && profile.gender.trim() !== "")}
+                      disabled={Boolean(
+                        profile?.gender &&
+                          typeof profile.gender === "string" &&
+                          profile.gender.trim() !== "",
+                      )}
                     >
                       <SelectTrigger>
                         <SelectValue placeholder="Select your gender" />
@@ -766,13 +915,19 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                         <SelectItem value="female">Female</SelectItem>
                       </SelectContent>
                     </Select>
-                    {Boolean(profile?.gender && typeof profile.gender === 'string' && profile.gender.trim() !== "") && (
+                    {Boolean(
+                      profile?.gender &&
+                        typeof profile.gender === "string" &&
+                        profile.gender.trim() !== "",
+                    ) && (
                       <p className="text-xs text-muted-foreground">
                         Gender cannot be changed once set.
                       </p>
                     )}
                     {errors.gender && (
-                      <p className="text-sm text-destructive">{errors.gender.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.gender.message}
+                      </p>
                     )}
                   </div>
 
@@ -784,7 +939,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Enter your country"
                     />
                     {errors.country && (
-                      <p className="text-sm text-destructive">{errors.country.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.country.message}
+                      </p>
                     )}
                   </div>
 
@@ -796,7 +953,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Enter your state"
                     />
                     {errors.state && (
-                      <p className="text-sm text-destructive">{errors.state.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.state.message}
+                      </p>
                     )}
                   </div>
 
@@ -808,7 +967,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Enter your city"
                     />
                     {errors.city && (
-                      <p className="text-sm text-destructive">{errors.city.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.city.message}
+                      </p>
                     )}
                   </div>
 
@@ -820,7 +981,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Enter your address"
                     />
                     {errors.address && (
-                      <p className="text-sm text-destructive">{errors.address.message}</p>
+                      <p className="text-sm text-destructive">
+                        {errors.address.message}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -847,7 +1010,9 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                           placeholder="Enter your school name"
                         />
                         {errors.school && (
-                          <p className="text-sm text-destructive">{errors.school.message}</p>
+                          <p className="text-sm text-destructive">
+                            {errors.school.message}
+                          </p>
                         )}
                       </div>
 
@@ -856,7 +1021,11 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                         <Select
                           value={selectedClass}
                           onValueChange={(value) => setValue("class", value)}
-                          disabled={Boolean(profile?.class && typeof profile.class === 'string' && profile.class.trim() !== "")}
+                          disabled={Boolean(
+                            profile?.class &&
+                              typeof profile.class === "string" &&
+                              profile.class.trim() !== "",
+                          )}
                         >
                           <SelectTrigger>
                             <SelectValue placeholder="Select your class" />
@@ -869,29 +1038,43 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                             ))}
                           </SelectContent>
                         </Select>
-                        {Boolean(profile?.class && typeof profile.class === 'string' && profile.class.trim() !== "") && (
+                        {Boolean(
+                          profile?.class &&
+                            typeof profile.class === "string" &&
+                            profile.class.trim() !== "",
+                        ) && (
                           <p className="text-xs text-muted-foreground">
                             Class cannot be changed once set.
                           </p>
                         )}
                         {errors.class && (
-                          <p className="text-sm text-destructive">{errors.class.message}</p>
+                          <p className="text-sm text-destructive">
+                            {errors.class.message}
+                          </p>
                         )}
                       </div>
 
-                      {(selectedClass?.startsWith("SS") || selectedClass?.startsWith("SSS")) && (
+                      {(selectedClass?.startsWith("SS") ||
+                        selectedClass?.startsWith("SSS")) && (
                         <div className="space-y-2">
                           <Label htmlFor="discipline">Discipline</Label>
                           <Select
                             value={watch("discipline")}
-                            onValueChange={(value) => setValue("discipline", value)}
-                            disabled={Boolean(profile?.discipline && typeof profile.discipline === 'string' && profile.discipline.trim() !== "")}
+                            onValueChange={(value) =>
+                              setValue("discipline", value)
+                            }
+                            disabled={Boolean(
+                              profile?.discipline &&
+                                typeof profile.discipline === "string" &&
+                                profile.discipline.trim() !== "",
+                            )}
                           >
                             <SelectTrigger>
                               <SelectValue placeholder="Select your discipline" />
                             </SelectTrigger>
                             <SelectContent>
-                              {metadata?.discipline && metadata.discipline.length > 0 ? (
+                              {metadata?.discipline &&
+                              metadata.discipline.length > 0 ? (
                                 metadata.discipline.map((disc) => (
                                   <SelectItem key={disc.name} value={disc.name}>
                                     {disc.name}
@@ -900,19 +1083,29 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                               ) : (
                                 <>
                                   <SelectItem value="Art">Art</SelectItem>
-                                  <SelectItem value="Commercial">Commercial</SelectItem>
-                                  <SelectItem value="Science">Science</SelectItem>
+                                  <SelectItem value="Commercial">
+                                    Commercial
+                                  </SelectItem>
+                                  <SelectItem value="Science">
+                                    Science
+                                  </SelectItem>
                                 </>
                               )}
                             </SelectContent>
                           </Select>
-                          {Boolean(profile?.discipline && typeof profile.discipline === 'string' && profile.discipline.trim() !== "") && (
+                          {Boolean(
+                            profile?.discipline &&
+                              typeof profile.discipline === "string" &&
+                              profile.discipline.trim() !== "",
+                          ) && (
                             <p className="text-xs text-muted-foreground">
                               Discipline cannot be changed once set.
                             </p>
                           )}
                           {errors.discipline && (
-                            <p className="text-sm text-destructive">{errors.discipline.message}</p>
+                            <p className="text-sm text-destructive">
+                              {errors.discipline.message}
+                            </p>
                           )}
                         </div>
                       )}
@@ -920,7 +1113,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   </>
                 )}
 
-                {(selectedRole === "guardian" || primaryRole === "guardian") && (
+                {(selectedRole === "guardian" ||
+                  primaryRole === "guardian") && (
                   <>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
@@ -977,9 +1171,12 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 <div className="space-y-2">
                   <h4 className="font-medium">Basic Information</h4>
                   <p className="text-sm text-muted-foreground">
-                    Name: {watch("name")}<br />
-                    Username: {watch("username")}<br />
-                    Email: {watch("email")}<br />
+                    Name: {watch("name")}
+                    <br />
+                    Username: {watch("username")}
+                    <br />
+                    Email: {watch("email")}
+                    <br />
                     Phone: {watch("phone")}
                   </p>
                 </div>
@@ -987,15 +1184,19 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                 <div className="space-y-2">
                   <h4 className="font-medium">Personal Details</h4>
                   <p className="text-sm text-muted-foreground">
-                    Date of Birth: {(() => {
+                    Date of Birth:{" "}
+                    {(() => {
                       const dob = watch("date_of_birth");
                       if (dob) {
                         return format(dob as Date, "dd/MM/yyyy");
                       }
                       return "Not set";
-                    })()}<br />
-                    Gender: {watch("gender")}<br />
-                    Location: {watch("country")}, {watch("state")}, {watch("city")}, {watch("address")}
+                    })()}
+                    <br />
+                    Gender: {watch("gender")}
+                    <br />
+                    Location: {watch("country")}, {watch("state")},{" "}
+                    {watch("city")}, {watch("address")}
                   </p>
                 </div>
 
@@ -1003,18 +1204,22 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <div className="space-y-2">
                     <h4 className="font-medium">Student Information</h4>
                     <p className="text-sm text-muted-foreground">
-                      School: {watch("school")}<br />
-                      Class: {watch("class")}<br />
+                      School: {watch("school")}
+                      <br />
+                      Class: {watch("class")}
+                      <br />
                       Discipline: {watch("discipline")}
                     </p>
                   </div>
                 )}
 
-                {(selectedRole === "guardian" || primaryRole === "guardian") && (
+                {(selectedRole === "guardian" ||
+                  primaryRole === "guardian") && (
                   <div className="space-y-2">
                     <h4 className="font-medium">Guardian Information</h4>
                     <p className="text-sm text-muted-foreground">
-                      Child Email: {watch("child_email")}<br />
+                      Child Email: {watch("child_email")}
+                      <br />
                       Child Phone: {watch("child_phone")}
                     </p>
                   </div>
@@ -1026,32 +1231,32 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
       </AnimatePresence>
 
       {/* Navigation Buttons */}
-      <div className="flex items-center justify-between pt-4 border-t">
+      <div className="flex items-center justify-between border-t pt-4">
         <Button
           type="button"
           variant="outline"
           onClick={handleBack}
           disabled={currentStep === effectiveSteps[0].id || isSubmitting}
         >
-          <ArrowLeft className="mr-2 h-4 w-4" />
+          <ArrowLeft className="mr-2 size-4" />
           Back
         </Button>
 
         {currentStep < effectiveSteps[effectiveSteps.length - 1].id ? (
           <Button type="button" onClick={handleNext}>
             Next
-            <ArrowRight className="ml-2 h-4 w-4" />
+            <ArrowRight className="ml-2 size-4" />
           </Button>
         ) : (
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? (
               <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                <Loader2 className="mr-2 size-4 animate-spin" />
                 Completing...
               </>
             ) : (
               <>
-                <CheckCircle className="mr-2 h-4 w-4" />
+                <CheckCircle className="mr-2 size-4" />
                 Complete Profile
               </>
             )}

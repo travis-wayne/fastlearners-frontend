@@ -5,7 +5,6 @@
  * This component is kept for backward compatibility during the transition period.
  * Plan to remove it in a future update.
  */
-
 import { useAuthStore } from "@/store/authStore";
 import {
   Crown,

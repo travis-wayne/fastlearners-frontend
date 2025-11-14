@@ -2,28 +2,6 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-// Mock quizzes removed - replace with real API endpoints when available
-// import {
-//   getAvailableQuizzes,
-//   getBestScore,
-//   getCompletedQuizzes,
-//   getLatestAttempt,
-//   getPendingQuizzes,
-//   getQuizStats,
-//   getQuizzesByClassAndTerm,
-//   type Quiz,
-// } from "@/data/mock-quizzes";
-
-// Temporary types and stubs until real API is implemented
-type Quiz = any;
-
-const getAvailableQuizzes = (): Quiz[] => [];
-const getBestScore = (_quizId?: string) => ({ score: 0, totalPoints: 100, passed: false });
-const getCompletedQuizzes = (): Quiz[] => [];
-const getLatestAttempt = (_quizId?: string) => null;
-const getPendingQuizzes = (): Quiz[] => [];
-const getQuizStats = () => ({ total: 0, completed: 0, average: 0 });
-const getQuizzesByClassAndTerm = (_className?: string, _termName?: string): Quiz[] => [];
 import { motion } from "framer-motion";
 import {
   AlertCircle,
@@ -70,6 +48,36 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
+
+// Mock quizzes removed - replace with real API endpoints when available
+// import {
+//   getAvailableQuizzes,
+//   getBestScore,
+//   getCompletedQuizzes,
+//   getLatestAttempt,
+//   getPendingQuizzes,
+//   getQuizStats,
+//   getQuizzesByClassAndTerm,
+//   type Quiz,
+// } from "@/data/mock-quizzes";
+
+// Temporary types and stubs until real API is implemented
+type Quiz = any;
+
+const getAvailableQuizzes = (): Quiz[] => [];
+const getBestScore = (_quizId?: string) => ({
+  score: 0,
+  totalPoints: 100,
+  passed: false,
+});
+const getCompletedQuizzes = (): Quiz[] => [];
+const getLatestAttempt = (_quizId?: string) => null;
+const getPendingQuizzes = (): Quiz[] => [];
+const getQuizStats = () => ({ total: 0, completed: 0, average: 0 });
+const getQuizzesByClassAndTerm = (
+  _className?: string,
+  _termName?: string,
+): Quiz[] => [];
 
 interface QuizCardProps {
   quiz: Quiz;

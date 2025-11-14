@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { FontProvider } from "@/context/font-provider";
 import { useAuthStore } from "@/store/authStore";
 
 import { sidebarLinks } from "@/config/dashboard";
@@ -19,7 +20,6 @@ import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
 import { ProfileCompletionBanner } from "@/components/onboarding/profile-completion-banner";
 import { AcademicProvider } from "@/components/providers/academic-context";
-import { FontProvider } from "@/context/font-provider";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ProtectedLayoutProps {
@@ -64,41 +64,41 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
     <AcademicProvider>
       <FontProvider>
         <div className="relative flex min-h-screen w-full">
-        <DashboardSidebar links={filteredLinks} />
+          <DashboardSidebar links={filteredLinks} />
 
-        <div className="flex flex-1 flex-col">
-          <header className="sticky top-0 z-50 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8">
-            <MaxWidthWrapper className="flex max-w-full items-center gap-x-3 px-0">
-              <MobileSheetSidebar links={filteredLinks} />
+          <div className="flex flex-1 flex-col">
+            <header className="sticky top-0 z-50 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8">
+              <MaxWidthWrapper className="flex max-w-full items-center gap-x-3 px-0">
+                <MobileSheetSidebar links={filteredLinks} />
 
-              <div className="w-full flex-1">
-                <Breadcrumb />
-              </div>
+                <div className="w-full flex-1">
+                  <Breadcrumb />
+                </div>
 
-              <SearchCommand links={filteredLinks} className="mr-2" />
-              <NetworkStatus className="mr-2" />
-              <NotificationCenter className="mr-2" />
-              <ModeToggle />
-              <UserAccountNav />
-            </MaxWidthWrapper>
-          </header>
+                <SearchCommand links={filteredLinks} className="mr-2" />
+                <NetworkStatus className="mr-2" />
+                <NotificationCenter className="mr-2" />
+                <ModeToggle />
+                <UserAccountNav />
+              </MaxWidthWrapper>
+            </header>
 
-          <div className="sticky top-14 z-40 lg:top-[60px]">
-            <ProfileCompletionBanner />
+            <div className="sticky top-14 z-40 lg:top-[60px]">
+              <ProfileCompletionBanner />
+            </div>
+
+            <main className="flex-1 p-4 pb-16 xl:px-8">
+              <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-0 lg:gap-6">
+                {children}
+              </MaxWidthWrapper>
+            </main>
           </div>
 
-          <main className="flex-1 p-4 pb-16 xl:px-8">
-            <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-0 lg:gap-6">
-              {children}
-            </MaxWidthWrapper>
-          </main>
+          {/* Marquee Messages at bottom - full screen width and sticky */}
+          <div className="fixed inset-x-0 bottom-0 z-40">
+            <MarqueeMessages />
+          </div>
         </div>
-
-        {/* Marquee Messages at bottom - full screen width and sticky */}
-        <div className="fixed inset-x-0 bottom-0 z-40">
-          <MarqueeMessages />
-        </div>
-      </div>
       </FontProvider>
     </AcademicProvider>
   );

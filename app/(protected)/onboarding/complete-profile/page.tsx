@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
-import { useAuthStore } from "@/store/authStore";
 import { calculateProfileCompletion } from "@/lib/utils/profile-completion";
-import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { ArrowLeft, Loader2 } from "lucide-react";
+import { OnboardingWizard } from "@/components/onboarding/onboarding-wizard";
 
 export default function CompleteProfilePage() {
   const { user, isLoading: authLoading } = useAuthStore();
@@ -63,7 +63,9 @@ export default function CompleteProfilePage() {
             Back
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight">Complete Your Profile</h1>
+            <h1 className="text-2xl font-bold tracking-tight">
+              Complete Your Profile
+            </h1>
             <p className="mt-1 text-sm text-muted-foreground">
               Fill in your information to get the most out of Fast Learner
             </p>

@@ -2,15 +2,21 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
 import { AlertTriangle, ArrowLeft, Loader2 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
 import { getProfile } from "@/lib/api/profile";
-import { useAuthStore } from "@/store/authStore";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
 
 export default function ManageSubjectsPage() {
   const router = useRouter();
@@ -22,16 +28,16 @@ export default function ManageSubjectsPage() {
     const checkProfile = async () => {
       setIsLoading(true);
       setProfileError(null);
-      
+
       try {
         // Fetch user profile to verify class and discipline are set
         const profile = await getProfile();
-        
+
         // Check if user has a class set (required for subject selection)
         if (!profile.class) {
           setProfileError(
             "You need to set your class in your profile before selecting subjects. " +
-            "Please update your profile first."
+              "Please update your profile first.",
           );
         }
       } catch (error: any) {
@@ -74,7 +80,8 @@ export default function ManageSubjectsPage() {
         <Alert variant="destructive">
           <AlertTriangle className="size-4" />
           <AlertDescription>
-            {profileError || "Your profile doesn't have a class set. Please update your profile first."}
+            {profileError ||
+              "Your profile doesn't have a class set. Please update your profile first."}
           </AlertDescription>
         </Alert>
 
@@ -123,14 +130,14 @@ export default function ManageSubjectsPage() {
           <CardContent className="text-blue-800 dark:text-blue-200">
             <ul className="list-inside list-disc space-y-1 text-sm">
               <li>
-                Your class ({user.class}) and discipline ({user.discipline || "N/A"}) are taken from your profile
+                Your class ({user.class}) and discipline (
+                {user.discipline || "N/A"}) are taken from your profile
               </li>
               <li>
-                Modifying your subject selections will overwrite your current registration
+                Modifying your subject selections will overwrite your current
+                registration
               </li>
-              <li>
-                You can always come back to modify your selections again
-              </li>
+              <li>You can always come back to modify your selections again</li>
             </ul>
           </CardContent>
         </Card>
@@ -147,4 +154,3 @@ export default function ManageSubjectsPage() {
     </div>
   );
 }
-

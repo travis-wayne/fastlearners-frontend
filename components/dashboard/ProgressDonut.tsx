@@ -1,13 +1,20 @@
 "use client";
 
 import * as React from "react";
-import { ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
-  SelectTrigger,
   SelectContent,
   SelectItem,
+  SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
 
@@ -98,7 +105,13 @@ export function ProgressDonut({
                     <Cell
                       key={`cell-${index}`}
                       fill={entry.color}
-                      opacity={activeIndex === null ? 1 : activeIndex === index ? 1 : 0.7}
+                      opacity={
+                        activeIndex === null
+                          ? 1
+                          : activeIndex === index
+                            ? 1
+                            : 0.7
+                      }
                     />
                   ))}
                 </Pie>
@@ -109,8 +122,12 @@ export function ProgressDonut({
           {/* Center label */}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-4xl font-bold text-gray-900 dark:text-slate-100">{percentage}%</p>
-              <p className="text-sm text-gray-500 dark:text-slate-400">Complete</p>
+              <p className="text-4xl font-bold text-gray-900 dark:text-slate-100">
+                {percentage}%
+              </p>
+              <p className="text-sm text-gray-500 dark:text-slate-400">
+                Complete
+              </p>
             </div>
           </div>
         </div>
@@ -118,7 +135,10 @@ export function ProgressDonut({
         {/* Legend */}
         <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
           <div className="flex items-center gap-2">
-            <div className="size-3 rounded-full" style={{ backgroundColor: subjectColor }} />
+            <div
+              className="size-3 rounded-full"
+              style={{ backgroundColor: subjectColor }}
+            />
             <span className="text-sm text-slate-400">Completed</span>
           </div>
           <div className="flex items-center gap-2">

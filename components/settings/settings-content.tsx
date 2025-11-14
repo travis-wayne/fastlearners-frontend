@@ -1,32 +1,49 @@
 "use client";
 
 import { useState } from "react";
+import {
+  Bell,
+  CreditCard,
+  Menu,
+  Plus,
+  Settings,
+  Shield,
+  Upload,
+  User,
+  X,
+} from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Switch } from "@/components/ui/switch";
-import { Checkbox } from "@/components/ui/checkbox";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue
+  SelectValue,
 } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
-import { User, Shield, Bell, CreditCard, Settings, Upload, Plus, Menu, X } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
 
 const sidebarItems = [
   { id: "profile", label: "Profile", icon: User },
   { id: "security", label: "Security", icon: Shield },
   { id: "notifications", label: "Notification", icon: Bell },
   { id: "billing", label: "Billing", icon: CreditCard },
-  { id: "integrations", label: "Integration", icon: Settings }
+  { id: "integrations", label: "Integration", icon: Settings },
 ];
 
 const integrations = [
@@ -34,50 +51,50 @@ const integrations = [
     name: "Google Drive",
     description: "Upload your files to Google Drive",
     icon: "🟢",
-    enabled: true
+    enabled: true,
   },
   {
     name: "Slack",
     description: "Post to a Slack channel",
     icon: "🟣",
-    enabled: true
+    enabled: true,
   },
   {
     name: "Notion",
     description: "Retrieve notion note to your project",
     icon: "⚫",
-    enabled: false
+    enabled: false,
   },
   {
     name: "Jira",
     description: "Create Jira issues",
     icon: "🔵",
-    enabled: false
+    enabled: false,
   },
   {
     name: "Zendesk",
     description: "Exchange data with Zendesk",
     icon: "🟢",
-    enabled: false
+    enabled: false,
   },
   {
     name: "Dropbox",
     description: "Exchange data with Dropbox",
     icon: "🔵",
-    enabled: false
+    enabled: false,
   },
   {
     name: "Github",
     description: "Exchange files with a GitHub repository",
     icon: "⚫",
-    enabled: false
+    enabled: false,
   },
   {
     name: "Gitlab",
     description: "Exchange files with a Gitlab repository",
     icon: "🟠",
-    enabled: false
-  }
+    enabled: false,
+  },
 ];
 
 const transactions = [
@@ -86,29 +103,29 @@ const transactions = [
     product: "Mock premium pack",
     status: "Pending",
     date: "12/10/2021",
-    amount: "$39.90"
+    amount: "$39.90",
   },
   {
     id: "#34283",
     product: "Business board basic subscription",
     status: "Paid",
     date: "11/13/2021",
-    amount: "$59.90"
+    amount: "$59.90",
   },
   {
     id: "#32234",
     product: "Business board basic subscription",
     status: "Paid",
     date: "10/13/2021",
-    amount: "$59.90"
+    amount: "$59.90",
   },
   {
     id: "#31354",
     product: "Business board basic subscription",
     status: "Paid",
     date: "09/13/2021",
-    amount: "$59.90"
-  }
+    amount: "$59.90",
+  },
 ];
 
 export function SettingsPage() {
@@ -136,7 +153,11 @@ export function SettingsPage() {
     <div className="min-h-screen bg-background">
       {/* Mobile menu button */}
       <div className="fixed left-4 top-4 z-50 lg:hidden">
-        <Button variant="outline" size="icon" onClick={() => setSidebarOpen(!sidebarOpen)}>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+        >
           {sidebarOpen ? <X className="size-4" /> : <Menu className="size-4" />}
         </Button>
       </div>
@@ -145,8 +166,9 @@ export function SettingsPage() {
       <div
         className={cn(
           "fixed inset-y-0 left-0 z-40 w-64 border-r bg-card transition duration-200 ease-in-out lg:translate-x-0",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        )}>
+          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+        )}
+      >
         <div className="p-6">
           <nav className="space-y-2">
             {sidebarItems.map((item) => {
@@ -162,9 +184,10 @@ export function SettingsPage() {
                     "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
                     activeSection === item.id
                       ? "bg-secondary text-secondary-foreground"
-                      : "text-muted-foreground hover:text-foreground hover:bg-secondary/50"
-                  )}>
-                  <Icon className="h-4 w-4" />
+                      : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
+                  )}
+                >
+                  <Icon className="size-4" />
                   {item.label}
                 </button>
               );
@@ -195,14 +218,16 @@ function ProfileSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-balance">Personal information</h1>
+        <h1 className="text-balance text-2xl font-semibold">
+          Personal information
+        </h1>
       </div>
 
       <Card>
         <CardContent className="p-6">
           <div className="space-y-6">
             <div className="flex items-center gap-4">
-              <Avatar className="h-20 w-20">
+              <Avatar className="size-20">
                 <AvatarImage src="https://bundui-images.netlify.app/avatars/10.png" />
                 <AvatarFallback>AG</AvatarFallback>
               </Avatar>
@@ -231,7 +256,11 @@ function ProfileSection() {
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="carolyn_h@hotmail.com" />
+              <Input
+                id="email"
+                type="email"
+                defaultValue="carolyn_h@hotmail.com"
+              />
             </div>
 
             <div className="space-y-2">
@@ -300,9 +329,10 @@ function SecuritySection() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-balance">Password</h1>
-        <p className="text-muted-foreground mt-1">
-          Remember, your password is your digital key to your account. Keep it safe, keep it secure!
+        <h1 className="text-balance text-2xl font-semibold">Password</h1>
+        <p className="mt-1 text-muted-foreground">
+          Remember, your password is your digital key to your account. Keep it
+          safe, keep it secure!
         </p>
       </div>
 
@@ -310,7 +340,11 @@ function SecuritySection() {
         <CardContent className="space-y-4 p-6">
           <div className="space-y-2">
             <Label htmlFor="currentPassword">Current password</Label>
-            <Input id="currentPassword" type="password" defaultValue="••••••••" />
+            <Input
+              id="currentPassword"
+              type="password"
+              defaultValue="••••••••"
+            />
           </div>
 
           <div className="space-y-2">
@@ -320,7 +354,11 @@ function SecuritySection() {
 
           <div className="space-y-2">
             <Label htmlFor="confirmPassword">Confirm new password</Label>
-            <Input id="confirmPassword" type="password" defaultValue="••••••••" />
+            <Input
+              id="confirmPassword"
+              type="password"
+              defaultValue="••••••••"
+            />
           </div>
 
           <div className="flex justify-end">
@@ -333,20 +371,21 @@ function SecuritySection() {
         <CardHeader>
           <CardTitle>2-Step verification</CardTitle>
           <CardDescription>
-            Your account holds great value to hackers. Enable two-step verification to safeguard
-            your account!
+            Your account holds great value to hackers. Enable two-step
+            verification to safeguard your account!
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-red-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-red-100">
                 <span className="text-sm font-semibold text-red-600">G</span>
               </div>
               <div>
                 <h4 className="font-medium">Google Authenticator</h4>
-                <p className="text-muted-foreground text-sm">
-                  Using Google Authenticator app generates time-sensitive codes for secure logins.
+                <p className="text-sm text-muted-foreground">
+                  Using Google Authenticator app generates time-sensitive codes
+                  for secure logins.
                 </p>
               </div>
             </div>
@@ -357,14 +396,14 @@ function SecuritySection() {
 
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-blue-100">
                 <span className="text-sm font-semibold text-blue-600">O</span>
               </div>
               <div>
                 <h4 className="font-medium">Okta Verify</h4>
-                <p className="text-muted-foreground text-sm">
-                  Receive push notifications from Okta Verify app on your phone for quick login
-                  approval.
+                <p className="text-sm text-muted-foreground">
+                  Receive push notifications from Okta Verify app on your phone
+                  for quick login approval.
                 </p>
               </div>
             </div>
@@ -375,12 +414,12 @@ function SecuritySection() {
 
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-orange-100">
+              <div className="flex size-8 items-center justify-center rounded-full bg-orange-100">
                 <span className="text-sm font-semibold text-orange-600">@</span>
               </div>
               <div>
                 <h4 className="font-medium">E Mail verification</h4>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Unique codes sent to email for confirming logins.
                 </p>
               </div>
@@ -399,7 +438,7 @@ function NotificationsSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-balance">Notification</h1>
+        <h1 className="text-balance text-2xl font-semibold">Notification</h1>
       </div>
 
       <Card>
@@ -407,7 +446,7 @@ function NotificationsSection() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Enable desktop notification</h3>
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Decide whether you want to be notified of new message & updates
               </p>
             </div>
@@ -419,8 +458,9 @@ function NotificationsSection() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Enable unread notification badge</h3>
-              <p className="text-muted-foreground text-sm">
-                Display a red indicator on of the notification icon when you have unread message
+              <p className="text-sm text-muted-foreground">
+                Display a red indicator on of the notification icon when you
+                have unread message
               </p>
             </div>
             <Switch />
@@ -438,20 +478,25 @@ function NotificationsSection() {
                   <Label htmlFor="all" className="font-medium">
                     All new messages
                   </Label>
-                  <p className="text-muted-foreground text-sm">
+                  <p className="text-sm text-muted-foreground">
                     Broadcast notifications to the channel for each new message
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start space-x-3">
-                <RadioGroupItem value="mentions" id="mentions" className="mt-1" />
+                <RadioGroupItem
+                  value="mentions"
+                  id="mentions"
+                  className="mt-1"
+                />
                 <div>
                   <Label htmlFor="mentions" className="font-medium">
                     Mentions only
                   </Label>
-                  <p className="text-muted-foreground text-sm">
-                    Only alert me in the channel if someone mentions me in a message
+                  <p className="text-sm text-muted-foreground">
+                    Only alert me in the channel if someone mentions me in a
+                    message
                   </p>
                 </div>
               </div>
@@ -462,7 +507,9 @@ function NotificationsSection() {
                   <Label htmlFor="nothing" className="font-medium">
                     Nothing
                   </Label>
-                  <p className="text-muted-foreground text-sm">Don't notify me anything</p>
+                  <p className="text-sm text-muted-foreground">
+                    Don&apos;t notify me anything
+                  </p>
                 </div>
               </div>
             </RadioGroup>
@@ -473,8 +520,9 @@ function NotificationsSection() {
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-medium">Email notification</h3>
-              <p className="text-muted-foreground text-sm">
-                Substance can send you email notification for any new direct message
+              <p className="text-sm text-muted-foreground">
+                Substance can send you email notification for any new direct
+                message
               </p>
             </div>
             <Switch defaultChecked />
@@ -487,7 +535,7 @@ function NotificationsSection() {
                 <Label htmlFor="news" className="font-medium">
                   News & updates
                 </Label>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   New about product and features update
                 </p>
               </div>
@@ -499,7 +547,7 @@ function NotificationsSection() {
                 <Label htmlFor="tips" className="font-medium">
                   Tips & tutorials
                 </Label>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Tips & trick in order to increase your performance efficiency
                 </p>
               </div>
@@ -511,7 +559,7 @@ function NotificationsSection() {
                 <Label htmlFor="offers" className="font-medium">
                   Offer & promotions
                 </Label>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Promotion about product price & latest discount
                 </p>
               </div>
@@ -523,7 +571,7 @@ function NotificationsSection() {
                 <Label htmlFor="reminders" className="font-medium">
                   Follow up reminder
                 </Label>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Receive notification all the reminder that have been made
                 </p>
               </div>
@@ -539,24 +587,27 @@ function BillingSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-balance">Billing</h1>
+        <h1 className="text-balance text-2xl font-semibold">Billing</h1>
       </div>
 
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-green-100">
+              <div className="flex size-10 items-center justify-center rounded-full bg-green-100">
                 <span className="font-semibold text-green-600">⚡</span>
               </div>
               <div>
                 <div className="flex items-center gap-2">
                   <h3 className="font-semibold">Business board basic</h3>
-                  <Badge variant="secondary" className="bg-green-100 text-green-700">
+                  <Badge
+                    variant="secondary"
+                    className="bg-green-100 text-green-700"
+                  >
                     Active
                   </Badge>
                 </div>
-                <p className="text-muted-foreground text-sm">
+                <p className="text-sm text-muted-foreground">
                   Billing monthly | Next payment on 02/09/2025 for{" "}
                   <span className="font-medium">$59.90</span>
                 </p>
@@ -574,7 +625,7 @@ function BillingSection() {
         <CardContent className="space-y-4">
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-100">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100">
                 <span className="text-xs font-bold text-blue-600">VISA</span>
               </div>
               <div>
@@ -584,7 +635,9 @@ function BillingSection() {
                     Primary
                   </Badge>
                 </div>
-                <p className="text-muted-foreground text-sm">Expired Dec 2025</p>
+                <p className="text-sm text-muted-foreground">
+                  Expired Dec 2025
+                </p>
               </div>
             </div>
             <Button variant="outline" size="sm">
@@ -594,12 +647,14 @@ function BillingSection() {
 
           <div className="flex items-center justify-between rounded-lg border p-4">
             <div className="flex items-center gap-3">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-100">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-orange-100">
                 <span className="text-xs font-bold text-orange-600">MC</span>
               </div>
               <div>
                 <span className="font-medium">Carolyn Perkins •••• 8461</span>
-                <p className="text-muted-foreground text-sm">Expired Jun 2025</p>
+                <p className="text-sm text-muted-foreground">
+                  Expired Jun 2025
+                </p>
               </div>
             </div>
             <Button variant="outline" size="sm">
@@ -608,7 +663,7 @@ function BillingSection() {
           </div>
 
           <Button variant="outline" className="w-full bg-transparent">
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             Add payment method
           </Button>
         </CardContent>
@@ -620,7 +675,7 @@ function BillingSection() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            <div className="text-muted-foreground grid grid-cols-5 gap-4 border-b pb-2 text-sm font-medium">
+            <div className="grid grid-cols-5 gap-4 border-b pb-2 text-sm font-medium text-muted-foreground">
               <div>REFERENCE</div>
               <div>PRODUCT</div>
               <div>STATUS</div>
@@ -629,22 +684,30 @@ function BillingSection() {
             </div>
 
             {transactions.map((transaction) => (
-              <div key={transaction.id} className="grid grid-cols-5 gap-4 py-2 text-sm">
+              <div
+                key={transaction.id}
+                className="grid grid-cols-5 gap-4 py-2 text-sm"
+              >
                 <div className="font-medium">{transaction.id}</div>
                 <div>{transaction.product}</div>
                 <div>
                   <Badge
-                    variant={transaction.status === "Paid" ? "default" : "secondary"}
+                    variant={
+                      transaction.status === "Paid" ? "default" : "secondary"
+                    }
                     className={
                       transaction.status === "Paid"
                         ? "bg-green-100 text-green-700"
                         : "bg-yellow-100 text-yellow-700"
-                    }>
+                    }
+                  >
                     {transaction.status}
                   </Badge>
                 </div>
                 <div>{transaction.date}</div>
-                <div className="text-right font-medium">{transaction.amount}</div>
+                <div className="text-right font-medium">
+                  {transaction.amount}
+                </div>
               </div>
             ))}
           </div>
@@ -658,8 +721,8 @@ function IntegrationsSection() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-semibold text-balance">Integration</h1>
-        <p className="text-muted-foreground mt-1">
+        <h1 className="text-balance text-2xl font-semibold">Integration</h1>
+        <p className="mt-1 text-muted-foreground">
           Supercharge your workflow using these integration
         </p>
       </div>
@@ -673,11 +736,17 @@ function IntegrationsSection() {
                   <div className="text-2xl">{integration.icon}</div>
                   <div>
                     <h3 className="font-semibold">{integration.name}</h3>
-                    <p className="text-muted-foreground text-sm">{integration.description}</p>
+                    <p className="text-sm text-muted-foreground">
+                      {integration.description}
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Button variant="ghost" size="sm" className="text-muted-foreground">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-muted-foreground"
+                  >
                     Learn more
                   </Button>
                   <Switch defaultChecked={integration.enabled} />

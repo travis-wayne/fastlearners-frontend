@@ -55,7 +55,9 @@ export default function LessonTrashPage() {
 
       // TODO: Replace with admin-only endpoint
       // getTrashedLessons removed - this teacher page needs admin-only client
-      setError("Admin endpoint not implemented. getTrashedLessons() was removed from student app.");
+      setError(
+        "Admin endpoint not implemented. getTrashedLessons() was removed from student app.",
+      );
       setTrashedLessons([]);
       // const response = await getTrashedLessons();
       // if (response.success) {

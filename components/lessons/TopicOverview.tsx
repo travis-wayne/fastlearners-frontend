@@ -1,9 +1,22 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { BookOpen, Lightbulb, FileText, Target, CheckCircle2 } from "lucide-react";
+import {
+  BookOpen,
+  CheckCircle2,
+  FileText,
+  Lightbulb,
+  Target,
+} from "lucide-react";
+
 import type { TopicOverview as TopicOverviewType } from "@/lib/types/lessons";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface TopicOverviewProps {
   overview: TopicOverviewType;
@@ -11,7 +24,11 @@ interface TopicOverviewProps {
   topicSlug: string;
 }
 
-export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOverviewProps) {
+export function TopicOverview({
+  overview,
+  subjectSlug,
+  topicSlug,
+}: TopicOverviewProps) {
   return (
     <div className="space-y-6">
       {/* Introduction */}
@@ -24,7 +41,7 @@ export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOvervie
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">
               {overview.introduction}
             </p>
           </CardContent>
@@ -40,12 +57,16 @@ export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOvervie
               Key Concepts
             </CardTitle>
             <CardDescription>
-              This lesson covers {overview.concepts_count} main concept{overview.concepts_count !== 1 ? 's' : ''}
+              This lesson covers {overview.concepts_count} main concept
+              {overview.concepts_count !== 1 ? "s" : ""}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {Array.from({ length: overview.concepts_count }, (_, i) => i + 1).map((conceptNum) => (
+              {Array.from(
+                { length: overview.concepts_count },
+                (_, i) => i + 1,
+              ).map((conceptNum) => (
                 <Badge key={conceptNum} variant="secondary" className="text-sm">
                   Concept {conceptNum}
                 </Badge>
@@ -65,7 +86,7 @@ export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOvervie
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">
               {overview.summary}
             </p>
           </CardContent>
@@ -82,7 +103,7 @@ export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOvervie
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">
               {overview.application}
             </p>
           </CardContent>
@@ -99,7 +120,7 @@ export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOvervie
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-line">
+            <p className="whitespace-pre-line leading-relaxed text-muted-foreground">
               {overview.general_exercises}
             </p>
           </CardContent>
@@ -108,4 +129,3 @@ export function TopicOverview({ overview, subjectSlug, topicSlug }: TopicOvervie
     </div>
   );
 }
-

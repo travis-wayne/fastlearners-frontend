@@ -32,8 +32,9 @@ export function DashboardBlogLayout({
         </div>
       </div>
 
-      <div className={className ? `container ${className}` : "container"}>{children}</div>
+      <div className={className ? `container ${className}` : "container"}>
+        {children}
+      </div>
     </>
   );
 }
-
