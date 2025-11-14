@@ -61,7 +61,10 @@ export function ProfileDropdown() {
             <DropdownMenuItem>New Team</DropdownMenuItem>
           </DropdownMenuGroup>
           <DropdownMenuSeparator />
-          <DropdownMenuItem variant="destructive" onClick={() => setOpen(true)}>
+          <DropdownMenuItem 
+            className="text-destructive focus:bg-destructive/10 focus:text-destructive"
+            onClick={() => setOpen(true)}
+          >
             Sign out
             <DropdownMenuShortcut className="text-current">
               ⇧⌘Q

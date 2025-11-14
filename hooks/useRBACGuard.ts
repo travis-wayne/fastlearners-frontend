@@ -23,8 +23,8 @@ export function useRBACGuard(options: UseRBACGuardOptions = {}) {
   const { user, isAuthenticated } = useAuthStore();
 
   const userRole = user?.role[0];
-  const canAccess = userRole
-    ? RBACUtils.canAccessRoute(userRole, pathname)
+  const canAccess = user
+    ? RBACUtils.canAccessRoute(user, pathname)
     : false;
   const homeRoute = userRole ? RBACUtils.getHomeRoute(userRole) : "/auth/login";
 

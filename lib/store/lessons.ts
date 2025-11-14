@@ -124,7 +124,10 @@ export const useLessonsStore = create<LessonsStore>()(
             
             // Map profile data to metadata format
             set({
-              classes: profileData.classes || [],
+              classes: (profileData.classes || []).map((cls, index) => ({
+                id: index + 1, // Generate temporary ID based on index
+                name: cls.name,
+              })),
               subjects: [], // Subjects should come from getSubjectsWithSlugs()
               terms: [], // Terms should come from academic context
               weeks: [], // Weeks should come from academic context

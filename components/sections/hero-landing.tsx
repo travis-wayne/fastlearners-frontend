@@ -90,8 +90,8 @@ export default function HeroLanding() {
                   href="/auth/register"
                   prefetch={true}
                   className={cn(
-                    buttonVariants({ size: "lg", rounded: "full" }),
-                    "gap-2",
+                    buttonVariants({ size: "lg" }),
+                    "gap-2 rounded-full",
                   )}
                 >
                   <span>Create free account</span>
@@ -112,9 +112,8 @@ export default function HeroLanding() {
                     buttonVariants({
                       variant: "outline",
                       size: "lg",
-                      rounded: "full",
                     }),
-                    "gap-2",
+                    "gap-2 rounded-full",
                   )}
                 >
                   <span>Learn More</span>

@@ -295,7 +295,7 @@ export async function updateSelectiveSubjectsClient(
         content: null,
         code: 400,
         errors: {
-          subjects: "Subject IDs array is empty or contains only invalid values",
+          subjects: ["Subject IDs array is empty or contains only invalid values"],
         },
       };
     }

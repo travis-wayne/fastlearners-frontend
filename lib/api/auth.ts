@@ -13,8 +13,6 @@ import {
   VerifyResetCodeData,
 } from "@/lib/types/auth";
 
-import { api } from "./client";
-
 async function postJson<T>(path: string, body?: any): Promise<T> {
   try {
     const r = await fetch(path, {
