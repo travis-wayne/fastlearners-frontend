@@ -4,6 +4,58 @@ import { UPSTREAM_BASE } from "@/lib/api/client";
 import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 import { validateProfileEdit } from "@/lib/validation/profile-validation";
 
+async function checkUsernameAvailability(
+  username: string,
+  token: string,
+): Promise<{ available: boolean; message?: string }> {
+  try {
+    const response = await fetch(`${UPSTREAM_BASE}/profile/check-username`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ username }),
+      cache: "no-store",
+    });
+
+    if (!response.ok) {
+      // Endpoint might not exist upstream yet; fail open
+      return { available: true };
+    }
+
+    const data = await response.json();
+
+    if (data?.success === false) {
+      return {
+        available: false,
+        message:
+          data?.errors?.username?.[0] ||
+          data?.message ||
+          "Username already taken. Please choose another username.",
+      };
+    }
+
+    if (data?.content?.available === false) {
+      return {
+        available: false,
+        message:
+          data?.content?.message ||
+          data?.message ||
+          "Username already taken. Please choose another username.",
+      };
+    }
+
+    return { available: true };
+  } catch (error) {
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.warn("[profile/edit] Username availability check skipped:", error);
+    }
+    return { available: true };
+  }
+}
+
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -115,6 +167,42 @@ export async function POST(req: NextRequest) {
     // Use cleaned data from validation
     updateData = validationResult.cleanedData;
 
+    const requestedUsername =
+      typeof updateData.username === "string"
+        ? updateData.username.trim()
+        : undefined;
+
+    if (
+      requestedUsername &&
+      (!currentProfile?.username ||
+        requestedUsername.toLowerCase() !==
+          currentProfile.username.toLowerCase())
+    ) {
+      const availability = await checkUsernameAvailability(
+        requestedUsername,
+        auth.token,
+      );
+      if (!availability.available) {
+        return NextResponse.json(
+          {
+            success: false,
+            message:
+              availability.message ||
+              "Username already taken. Please choose another username.",
+            errors: {
+              username: [
+                availability.message ||
+                  "Username already taken. Please choose another username.",
+              ],
+            },
+            requestId,
+          },
+          { status: 422 },
+        );
+      }
+      updateData.username = requestedUsername;
+    }
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
@@ -137,6 +225,21 @@ export async function POST(req: NextRequest) {
       if (!r.ok) {
         // Handle different error status codes according to API documentation
         if (r.status === 422 && data?.errors) {
+          if (
+            typeof data.message === "string" &&
+            data.message.toLowerCase().includes("duplicate entry") &&
+            data.message.includes("users_username_unique")
+          ) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Username already taken. Please choose another username.",
+                errors: { username: ["This username is already in use."] },
+                requestId,
+              },
+              { status: 422 },
+            );
+          }
           // Validation errors - return as-is with proper message
           return NextResponse.json(
             {
@@ -151,6 +254,24 @@ export async function POST(req: NextRequest) {
         
         // Handle specific error messages from backend
         if (data?.message) {
+          if (
+            typeof data.message === "string" &&
+            data.message.toLowerCase().includes("duplicate entry") &&
+            data.message.includes("users_username_unique")
+          ) {
+            return NextResponse.json(
+              {
+                success: false,
+                message: "Username already taken. Please choose another username.",
+                errors: {
+                  username: ["This username is already in use."],
+                },
+                requestId,
+              },
+              { status: 422 },
+            );
+          }
+
           // Check for specific error types and return appropriate status codes
           if (data.message.includes('Username already updated')) {
             return NextResponse.json(
@@ -280,9 +401,24 @@ export async function POST(req: NextRequest) {
 
           const retryData = await retryR.json();
           
-          if (!retryR.ok) {
-            // Handle errors same way as main request
-            if (retryR.status === 422 && retryData?.errors) {
+        if (!retryR.ok) {
+          // Handle errors same way as main request
+          if (retryR.status === 422 && retryData?.errors) {
+            if (
+              typeof retryData.message === "string" &&
+              retryData.message.toLowerCase().includes("duplicate entry") &&
+              retryData.message.includes("users_username_unique")
+            ) {
+              return NextResponse.json(
+                {
+                  success: false,
+                  message: "Username already taken. Please choose another username.",
+                  errors: { username: ["This username is already in use."] },
+                  requestId,
+                },
+                { status: 422 },
+              );
+            }
               return NextResponse.json(
                 {
                   success: false,
@@ -296,6 +432,24 @@ export async function POST(req: NextRequest) {
             
             // Handle specific error messages
             if (retryData?.message) {
+              if (
+                typeof retryData.message === "string" &&
+                retryData.message.toLowerCase().includes("duplicate entry") &&
+                retryData.message.includes("users_username_unique")
+              ) {
+                return NextResponse.json(
+                  {
+                    success: false,
+                    message: "Username already taken. Please choose another username.",
+                    errors: {
+                      username: ["This username is already in use."],
+                    },
+                    requestId,
+                  },
+                  { status: 422 },
+                );
+              }
+
               if (retryData.message.includes('Username already updated')) {
                 return NextResponse.json(
                   { success: false, message: "Username already updated and cannot be changed.", errors: null, requestId },

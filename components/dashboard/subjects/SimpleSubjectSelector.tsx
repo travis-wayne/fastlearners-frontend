@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { AlertCircle, CheckCircle2, Circle, Loader2 } from "lucide-react";
+import { AlertCircle, CheckCircle2, Circle, Loader2, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
 
 import { getStudentSubjects } from "@/lib/api/subjects";
@@ -19,54 +19,105 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-export function SimpleSubjectSelector() {
+interface SimpleSubjectSelectorProps {
+  initialData?: SubjectsContent | null;
+  profileClass?: string | null;
+  profileDiscipline?: string | null;
+}
+
+export function SimpleSubjectSelector({
+  initialData = null,
+  profileClass,
+  profileDiscipline,
+}: SimpleSubjectSelectorProps) {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [isLoading, setIsLoading] = useState(true);
+  const derivedClass = (profileClass ?? user?.class ?? "").toUpperCase();
+  const isJSS = derivedClass.startsWith("JSS");
+  const requiredSelectiveCount = 4; // Always 4 according to docs
+
+  const [isLoading, setIsLoading] = useState(!initialData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(
-    null,
+    initialData,
+  );
+  const [isEditingCompulsory, setIsEditingCompulsory] = useState(
+    initialData?.compulsory_selective_status !== "selected",
+  );
+  const [isEditingSelective, setIsEditingSelective] = useState(
+    initialData?.selective_status !== "selected",
   );
 
   // Selection state
   const [selectedCompulsory, setSelectedCompulsory] = useState<number | null>(
-    null,
+    initialData?.compulsory_selective_status === "selected"
+      ? initialData?.compulsory_selective[0]?.id ?? null
+      : null,
   );
-  const [selectedSelective, setSelectedSelective] = useState<number[]>([]);
-
-  // Check if user is in JSS class
-  const isJSS = user?.class?.toUpperCase().startsWith("JSS") ?? false;
-  const requiredSelectiveCount = 4; // Always 4 according to docs
+  const [selectedSelective, setSelectedSelective] = useState<number[]>(
+    initialData?.selective_status === "selected"
+      ? initialData.selective.map((subject) => subject.id)
+      : [],
+  );
 
   useEffect(() => {
-    fetchSubjects();
+    if (initialData) {
+      setSubjectsData(initialData);
+      setIsLoading(false);
+    }
+  }, [initialData]);
+
+  useEffect(() => {
+    fetchSubjects({ silent: !!initialData });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchSubjects = async () => {
-    setIsLoading(true);
+  useEffect(() => {
+    if (!subjectsData) return;
+
+    if (subjectsData.compulsory_selective_status === "selected") {
+      setSelectedCompulsory(subjectsData.compulsory_selective[0]?.id ?? null);
+      setIsEditingCompulsory(false);
+    } else if (!isEditingCompulsory) {
+      // Only reset when we are not in manual edit mode
+      setSelectedCompulsory(null);
+      setIsEditingCompulsory(true);
+    }
+
+    if (subjectsData.selective_status === "selected") {
+      setSelectedSelective(subjectsData.selective.map((subject) => subject.id));
+      setIsEditingSelective(false);
+    } else if (!isEditingSelective) {
+      setSelectedSelective([]);
+      setIsEditingSelective(true);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [subjectsData]);
+
+  const fetchSubjects = async ({ silent = false }: { silent?: boolean } = {}) => {
+    if (!silent) {
+      setIsLoading(true);
+    }
     try {
       // Fetch subjects from API endpoint: GET /api/v1/subjects
       // Returns: subjects, compulsory_selective, selective, and their statuses
       const response = await getStudentSubjects();
       if (response.success && response.content) {
         setSubjectsData(response.content);
-
-        // If compulsory selective is already selected, we can't determine which one
-        // So we leave it as null and let the user see the status
-        setSelectedCompulsory(null);
-        setSelectedSelective([]);
       } else {
         toast.error(response.message || "Failed to fetch subjects");
       }
     } catch (error: any) {
       toast.error(error.message || "Failed to load subjects");
     } finally {
-      setIsLoading(false);
+      if (!silent) {
+        setIsLoading(false);
+      }
     }
   };
 
   const handleCompulsorySelect = (subjectId: number) => {
-    if (subjectsData?.compulsory_selective_status === "selected") {
+    if (!isEditingCompulsory) {
       toast.info("Compulsory selective subject has already been selected");
       return;
     }
@@ -74,7 +125,7 @@ export function SimpleSubjectSelector() {
   };
 
   const handleSelectiveToggle = (subjectId: number) => {
-    if (subjectsData?.selective_status === "selected") {
+    if (!isEditingSelective) {
       toast.info("Selective subjects have already been selected");
       return;
     }
@@ -193,38 +244,85 @@ export function SimpleSubjectSelector() {
   const compulsoryComplete =
     subjectsData.compulsory_selective_status === "selected";
   const selectiveComplete = subjectsData.selective_status === "selected";
+  const assignedSubjects = subjectsData.subjects || [];
+  const profileSummary = [profileClass, profileDiscipline]
+    .filter(Boolean)
+    .join(" • ");
 
   return (
     <div className="space-y-6">
+      <Card>
+        <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <div>
+            <CardTitle>Your Assigned Subjects</CardTitle>
+            <CardDescription>
+              Retrieved directly from your profile via{" "}
+              {profileSummary ? ` • ${profileSummary}` : ""}
+            </CardDescription>
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => fetchSubjects()}
+            disabled={isLoading || isSubmitting}
+            className="w-full justify-center md:w-auto"
+          >
+            <RefreshCw
+              className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
+            />
+            Refresh data
+          </Button>
+        </CardHeader>
+        <CardContent>
+          {assignedSubjects.length > 0 ? (
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {assignedSubjects.map((subject) => (
+                <div
+                  key={subject.id}
+                  className="rounded-lg border bg-muted/40 p-4"
+                >
+                  <p className="font-semibold">{subject.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    Subject ID: {subject.id}
+                  </p>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <Alert>
+              <AlertCircle className="size-4" />
+              <AlertDescription>
+                No subjects were returned for your profile yet. Complete the
+                selections below to populate this list.
+              </AlertDescription>
+            </Alert>
+          )}
+        </CardContent>
+      </Card>
+
       {/* Compulsory Selective Section - Only for JSS */}
       {isJSS && subjectsData.compulsory_selective.length > 0 && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <CardTitle>Compulsory Selective Subject</CardTitle>
                 <CardDescription>
-                  Select ONE religious study subject (Required for JSS classes)
+                  Select one religious study subject for your class
                 </CardDescription>
               </div>
-              {compulsoryComplete && (
-                <Badge variant="default" className="bg-green-600">
-                  <CheckCircle2 className="mr-1 size-4" />
-                  Completed
-                </Badge>
-              )}
+              <Badge
+                variant={compulsoryComplete ? "default" : "secondary"}
+                className={
+                  compulsoryComplete ? "bg-green-600" : "bg-amber-100 text-amber-900"
+                }
+              >
+                {compulsoryComplete ? "Selected" : "Pending"}
+              </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {compulsoryComplete ? (
-              <Alert>
-                <CheckCircle2 className="size-4" />
-                <AlertDescription>
-                  Your compulsory selective subject has been selected and cannot
-                  be changed.
-                </AlertDescription>
-              </Alert>
-            ) : (
+            {isEditingCompulsory ? (
               <>
                 <div className="grid gap-3 md:grid-cols-2">
                   {subjectsData.compulsory_selective.map((subject) => (
@@ -247,20 +345,61 @@ export function SimpleSubjectSelector() {
                   ))}
                 </div>
 
-                <Button
-                  onClick={handleSubmitCompulsory}
-                  disabled={!selectedCompulsory || isSubmitting}
-                  className="w-full"
-                  size="lg"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    "Save Compulsory Selective Subject"
+                <div className="flex flex-col gap-3 md:flex-row md:justify-end">
+                  {compulsoryComplete && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setIsEditingCompulsory(false)}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
                   )}
+                  <Button
+                    onClick={handleSubmitCompulsory}
+                    disabled={!selectedCompulsory || isSubmitting}
+                    className="w-full md:w-auto"
+                    size="lg"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Save Compulsory Selective Subject"
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid gap-3 md:grid-cols-2">
+                  {subjectsData.compulsory_selective.length > 0 ? (
+                    subjectsData.compulsory_selective.map((subject) => (
+                      <div
+                        key={subject.id}
+                        className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/30"
+                      >
+                        <div className="flex items-center justify-between font-medium">
+                          {subject.name}
+                          <CheckCircle2 className="size-4 text-green-600" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No compulsory selection has been recorded yet.
+                    </p>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditingCompulsory(true)}
+                  className="w-full md:w-auto"
+                >
+                  Change compulsory selective subject
                 </Button>
               </>
             )}
@@ -272,7 +411,7 @@ export function SimpleSubjectSelector() {
       {subjectsData.selective.length > 0 && (
         <Card>
           <CardHeader>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <CardTitle>Selective Subjects</CardTitle>
                 <CardDescription>
@@ -280,31 +419,20 @@ export function SimpleSubjectSelector() {
                   below
                 </CardDescription>
               </div>
-              <div className="flex items-center gap-2">
-                {selectiveComplete && (
-                  <Badge variant="default" className="bg-green-600">
-                    <CheckCircle2 className="mr-1 size-4" />
-                    Completed
-                  </Badge>
-                )}
-                {!selectiveComplete && (
-                  <Badge variant="secondary" className="px-3 py-1 text-lg">
-                    {selectedSelective.length}/{requiredSelectiveCount}
-                  </Badge>
-                )}
-              </div>
+              <Badge
+                variant={selectiveComplete ? "default" : "secondary"}
+                className={
+                  selectiveComplete ? "bg-green-600" : "bg-amber-100 text-amber-900"
+                }
+              >
+                {selectiveComplete
+                  ? "Selected"
+                  : `${selectedSelective.length}/${requiredSelectiveCount} selected`}
+              </Badge>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            {selectiveComplete ? (
-              <Alert>
-                <CheckCircle2 className="size-4" />
-                <AlertDescription>
-                  Your selective subjects have been selected and cannot be
-                  changed.
-                </AlertDescription>
-              </Alert>
-            ) : (
+            {isEditingSelective ? (
               <>
                 {selectedSelective.length < requiredSelectiveCount && (
                   <Alert>
@@ -350,27 +478,68 @@ export function SimpleSubjectSelector() {
                   })}
                 </div>
 
-                <Button
-                  onClick={handleSubmitSelective}
-                  disabled={
-                    selectedSelective.length !== requiredSelectiveCount ||
-                    isSubmitting
-                  }
-                  className="w-full"
-                  size="lg"
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="mr-2 size-4 animate-spin" />
-                      Saving...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="mr-2 size-4" />
-                      Save Selective Subjects ({selectedSelective.length}/
-                      {requiredSelectiveCount})
-                    </>
+                <div className="flex flex-col gap-3 md:flex-row md:justify-end">
+                  {selectiveComplete && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      onClick={() => setIsEditingSelective(false)}
+                      disabled={isSubmitting}
+                    >
+                      Cancel
+                    </Button>
                   )}
+                  <Button
+                    onClick={handleSubmitSelective}
+                    disabled={
+                      selectedSelective.length !== requiredSelectiveCount ||
+                      isSubmitting
+                    }
+                    className="w-full md:w-auto"
+                    size="lg"
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 size-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      <>
+                        <CheckCircle2 className="mr-2 size-4" />
+                        Save Selective Subjects ({selectedSelective.length}/
+                        {requiredSelectiveCount})
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+                  {subjectsData.selective.length > 0 ? (
+                    subjectsData.selective.map((subject) => (
+                      <div
+                        key={subject.id}
+                        className="rounded-lg border border-green-200 bg-green-50 p-4 dark:border-green-900 dark:bg-green-900/30"
+                      >
+                        <div className="flex items-center justify-between font-medium">
+                          {subject.name}
+                          <CheckCircle2 className="size-4 text-green-600" />
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      No selective selections have been recorded yet.
+                    </p>
+                  )}
+                </div>
+                <Button
+                  variant="outline"
+                  onClick={() => setIsEditingSelective(true)}
+                  className="w-full md:w-auto"
+                >
+                  Update selective subjects
                 </Button>
               </>
             )}
@@ -384,7 +553,7 @@ export function SimpleSubjectSelector() {
           <CheckCircle2 className="size-4" />
           <AlertDescription>
             {compulsoryComplete && selectiveComplete
-              ? "All subject selections are complete!"
+              ? "All subject selections are complete! You can still update them by using the change buttons above."
               : compulsoryComplete
                 ? "Compulsory selective subject is complete. Please select your selective subjects."
                 : "Selective subjects are complete. Please select your compulsory selective subject if applicable."}

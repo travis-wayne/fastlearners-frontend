@@ -292,6 +292,26 @@ export default function LessonPage() {
 
   const isCompleted =
     lessonContent?.check_markers?.every((m: any) => m.completed) || false;
+  const lessonTopics =
+    lessonContent?.concepts?.filter((concept) =>
+      Boolean(concept?.title?.trim()),
+    ) || [];
+  const shouldShowAcademicBadge = Boolean(currentClass && currentTerm);
+  const classBadgeLabel =
+    lessonContent?.class?.trim() ||
+    currentClass?.name ||
+    classDisplay.replace(" • ", " ");
+
+  const scrollToLessonTopic = (conceptId: number) => {
+    const element = document.getElementById(`concept-${conceptId}`);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth", block: "start" });
+      element.classList.add("ring-2", "ring-primary/40", "bg-primary/5");
+      setTimeout(() => {
+        element.classList.remove("ring-2", "ring-primary/40", "bg-primary/5");
+      }, 1200);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -353,9 +373,11 @@ export default function LessonPage() {
                 {subjectName}
               </Link>
             )}
-            <Badge variant="outline" className="h-8 rounded-lg">
-              {classDisplay} • {termDisplay}
-            </Badge>
+            {shouldShowAcademicBadge && (
+              <Badge variant="outline" className="h-8 rounded-lg">
+                {classBadgeLabel}  • {termDisplay}
+              </Badge>
+            )}
             {isCompleted && (
               <Badge variant="default" className="h-8 rounded-lg">
                 <CheckCircle className="mr-1 size-3" />
@@ -423,17 +445,38 @@ export default function LessonPage() {
             </div>
           </div>
 
-          <div className="sticky top-20 col-span-1 mt-52 hidden flex-col divide-y divide-muted self-start pb-24 lg:flex">
-            {toc?.items && toc.items.length > 0 ? (
-              <DashboardTableOfContents toc={toc} />
-            ) : (
-              <div className="space-y-2">
-                <p className="text-[15px] font-medium">On This Page</p>
-                <p className="text-sm text-muted-foreground">
-                  Table of contents will appear here
-                </p>
-              </div>
-            )}
+          <div className="sticky top-20 col-span-1 mt-52 hidden flex-col self-start pb-24 lg:flex">
+            <div className="space-y-6">
+              {toc?.items && toc.items.length > 0 ? (
+                <DashboardTableOfContents toc={toc} />
+              ) : (
+                <div className="space-y-2">
+                  <p className="text-[15px] font-medium">On This Page</p>
+                  <p className="text-sm text-muted-foreground">
+                    Table of contents will appear here
+                  </p>
+                </div>
+              )}
+
+              {lessonTopics.length > 0 && (
+                <div className="space-y-2">
+                  <p className="text-[15px] font-medium">Lesson Topics</p>
+                  <ul className="space-y-1">
+                    {lessonTopics.map((concept) => (
+                      <li key={concept.id}>
+                        <button
+                          type="button"
+                          className="text-left text-sm text-primary transition hover:underline"
+                          onClick={() => scrollToLessonTopic(concept.id)}
+                        >
+                          {concept.title}
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
           </div>
         </MaxWidthWrapper>
       </div>

@@ -22,6 +22,8 @@ async function postJson<T>(path: string, body?: any): Promise<T> {
         "Content-Type": "application/json" 
       },
       body: body ? JSON.stringify(body) : undefined,
+      credentials: "include",
+      cache: "no-store",
     });
     
     const data = await r.json();

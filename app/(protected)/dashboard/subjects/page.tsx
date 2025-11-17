@@ -3,10 +3,8 @@ import { redirect } from "next/navigation";
 
 import { getSubjects, getUserProfile } from "@/lib/api/subjects";
 import { SubjectDashboardShell } from "@/components/dashboard/student/SubjectDashboardShell";
-import { AcademicSetupClient } from "@/components/dashboard/subjects/AcademicSetupClient";
 import { ProfileChangeBanner } from "@/components/dashboard/subjects/ProfileChangeBanner";
 import { SimpleSubjectSelector } from "@/components/dashboard/subjects/SimpleSubjectSelector";
-import { SubjectSelectionForm } from "@/components/dashboard/subjects/SubjectSelectionForm";
 
 export const dynamic = "force-dynamic";
 
@@ -41,42 +39,45 @@ export default async function SubjectsPage() {
     redirect("/auth/login");
   }
 
-  // Check registration status
-  const hasClass = !!profile.class;
-  const hasSubjects = hasClass ? await getSubjectsData() : null;
-  const hasRegisteredSubjects =
-    hasSubjects && hasSubjects.subjects && hasSubjects.subjects.length > 0;
+  const subjectsData = await getSubjectsData();
+
+  const hasCompletedSelective =
+    subjectsData?.selective_status === "selected" &&
+    (subjectsData?.selective?.length ?? 0) > 0;
+
+  const hasCompletedCompulsory =
+    // Compulsory selective data is only returned for JSS classes
+    !subjectsData ||
+    !subjectsData.compulsory_selective ||
+    subjectsData.compulsory_selective.length === 0 ||
+    subjectsData.compulsory_selective_status === "selected";
+
+  const hasCoreSubjects = (subjectsData?.subjects?.length ?? 0) > 0;
+
+  const shouldShowDashboard =
+    !!subjectsData && hasCoreSubjects && hasCompletedSelective && hasCompletedCompulsory;
 
   return (
     <div className="container mx-auto max-w-screen-2xl">
       <ProfileChangeBanner />
-      {!hasClass ? (
-        // Step 1: Academic Setup
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-3xl font-bold">
-              Welcome! Let&apos;s Get Started
-            </h1>
-            <p className="mt-2 text-muted-foreground">
-              Set up your academic profile to begin learning
-            </p>
-          </div>
-          <AcademicSetupClient />
-        </div>
-      ) : !hasRegisteredSubjects ? (
-        // Step 2-3: Subject Selection
+      {shouldShowDashboard ? (
+        <SubjectDashboardShell subjectsData={subjectsData} />
+      ) : (
         <div className="space-y-6">
           <div>
             <h1 className="text-3xl font-bold">Subject Registration</h1>
             <p className="mt-2 text-muted-foreground">
-              Select your subjects for {profile.class}
+              We&apos;ve pulled your academic details from your profile
+              {profile.class ? ` (${profile.class}${profile.discipline ? ` • ${profile.discipline}` : ""})` : ""}.
+              Review and confirm your compulsory selective and selective subjects to continue.
             </p>
           </div>
-          <SimpleSubjectSelector />
+          <SimpleSubjectSelector
+            initialData={subjectsData ?? undefined}
+            profileClass={profile.class}
+            profileDiscipline={profile.discipline}
+          />
         </div>
-      ) : (
-        // Step 4: Dashboard
-        <SubjectDashboardShell subjectsData={hasSubjects} />
       )}
     </div>
   );

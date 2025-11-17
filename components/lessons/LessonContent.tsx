@@ -3,16 +3,24 @@
 import { BookOpen, CheckCircle, PlayCircle, Target } from "lucide-react";
 
 import type { LessonContent as LessonContentType } from "@/lib/types/lessons";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { ExerciseModal } from "@/components/lessons/ExerciseModal";
 
 interface LessonContentProps {
   content: LessonContentType;
   onMarkComplete?: () => void;
   isCompleted?: boolean;
 }
+
+export const getKeyConceptAnchorId = (label: string) => {
+  const normalized = label
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+  return `key-concept-${normalized || "item"}`;
+};
 
 export function LessonContent({
   content,
@@ -128,7 +136,11 @@ export function LessonContent({
           <CardContent>
             <div className="space-y-3">
               {Object.entries(content.key_concepts).map(([key, value]) => (
-                <div key={key} className="space-y-1">
+                <div
+                  key={key}
+                  id={getKeyConceptAnchorId(key)}
+                  className="scroll-mt-32 space-y-1 rounded-lg border border-transparent p-2 transition-all"
+                >
                   <h4 className="font-medium">{key}</h4>
                   <p className="text-sm text-muted-foreground">{value}</p>
                 </div>
@@ -236,54 +248,15 @@ export function LessonContent({
                 {concept.exercises && concept.exercises.length > 0 && (
                   <div className="space-y-3">
                     <h4 className="font-semibold">Exercises</h4>
-                    {concept.exercises.map((exercise, index) => (
-                      <div
-                        key={exercise.id || index}
-                        className="space-y-2 rounded-lg border p-4"
-                      >
-                        {exercise.title && (
-                          <h5 className="font-medium">{exercise.title}</h5>
-                        )}
-                        {exercise.problem && (
-                          <p className="text-sm text-muted-foreground">
-                            <strong>Problem:</strong> {exercise.problem}
-                          </p>
-                        )}
-                        {exercise.solution_steps &&
-                          exercise.solution_steps.length > 0 && (
-                            <div className="space-y-1">
-                              <strong className="text-sm">
-                                Solution Steps:
-                              </strong>
-                              <ol className="ml-2 list-inside list-decimal space-y-1 text-sm text-muted-foreground">
-                                {exercise.solution_steps.map(
-                                  (step, stepIndex) => (
-                                    <li key={stepIndex}>{step}</li>
-                                  ),
-                                )}
-                              </ol>
-                            </div>
-                          )}
-                        {exercise.answers && exercise.answers.length > 0 && (
-                          <div className="space-y-1">
-                            <strong className="text-sm">Options:</strong>
-                            <ul className="ml-2 list-inside list-disc space-y-1 text-sm text-muted-foreground">
-                              {exercise.answers.map((answer, answerIndex) => (
-                                <li key={answerIndex}>{answer}</li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        {exercise.correct_answer && (
-                          <p className="text-sm">
-                            <strong>Correct Answer:</strong>{" "}
-                            <span className="text-green-600">
-                              {exercise.correct_answer}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-                    ))}
+                    <div className="space-y-2">
+                      {concept.exercises.map((exercise, index) => (
+                        <ExerciseModal
+                          key={exercise.id || index}
+                          exercise={exercise}
+                          index={index}
+                        />
+                      ))}
+                    </div>
                   </div>
                 )}
               </CardContent>
