@@ -46,7 +46,9 @@ export async function POST(req: NextRequest) {
     requiredFields.forEach((field) => {
       const file = formData.get(field) as File;
       if (file) {
-        upstreamFormData.append(field, file);
+        // Map check_markers_file to check_marker_file for API compatibility
+        const upstreamField = field === "check_markers_file" ? "check_marker_file" : field;
+        upstreamFormData.append(upstreamField, file);
       }
     });
 

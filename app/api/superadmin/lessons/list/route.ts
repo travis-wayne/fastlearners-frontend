@@ -3,6 +3,7 @@ import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
 
+// This endpoint only supports POST method (as per API docs: Post /api/v1/superadmin/lessons/lessons/)
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -13,52 +14,56 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const formData = await req.formData();
-    const checkMarkersFile = formData.get("check_markers_file") as File;
+    const body = await req.json();
+    const { class: classId, subject, term, week } = body;
 
-    if (!checkMarkersFile) {
+    // Validate required fields
+    if (!classId || !subject || !term || !week) {
       return NextResponse.json(
         {
           success: false,
           message: "Validation failed.",
           errors: {
-            check_markers_file: ["The check markers file field is required."],
+            class: !classId ? ["The class field is required."] : [],
+            subject: !subject ? ["The subject field is required."] : [],
+            term: !term ? ["The term field is required."] : [],
+            week: !week ? ["The week field is required."] : [],
           },
-          content: null,
           code: 422,
         },
         { status: 422 }
       );
     }
 
-    // Create new FormData for upstream
-    // Note: API expects "check_marker_file" (singular) but we accept "check_markers_file" (plural) for consistency
-    const upstreamFormData = new FormData();
-    upstreamFormData.append("check_marker_file", checkMarkersFile);
-
-    const upstream = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/uploads/check-markers`,
+    const response = await fetch(
+      `${UPSTREAM_BASE}/superadmin/lessons/lessons/`,
       {
         method: "POST",
         headers: {
           Accept: "application/json",
+          "Content-Type": "application/json",
           Authorization: `Bearer ${auth.token}`,
         },
-        body: upstreamFormData,
+        body: JSON.stringify({
+          class: classId,
+          subject,
+          term,
+          week,
+        }),
         cache: "no-store",
       }
     );
 
-    const data = await upstream.json();
-    return NextResponse.json(data, { status: upstream.status });
+    const data = await response.json();
+    return NextResponse.json(data, { status: response.status });
   } catch (err: any) {
     if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-      console.error("Check markers upload API error:", err);
+      console.error("Superadmin lessons list API error:", err);
     }
     return NextResponse.json(
       {
         success: false,
-        message: err?.message || "Server error",
+        message: err?.message || "An error occurred while fetching lessons",
         content: null,
         code: 500,
       },

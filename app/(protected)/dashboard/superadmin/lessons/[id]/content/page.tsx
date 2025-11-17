@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-// NOTE: getLessonContent removed from lessons-api.ts - this page needs admin-only endpoint
-// This superadmin page should use a separate admin client that calls superadmin endpoints directly
-import { getErrorMessage } from "@/lib/api/lessons-api";
+import {
+  getLessonContent,
+  getErrorMessage,
+  type LessonContent,
+} from "@/lib/api/superadmin-lessons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +18,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { DashboardHeader } from "@/components/dashboard/header";
 
 export default function LessonContentPage() {
   const params = useParams<{ id: string }>();
   const id = Number(params?.id);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [content, setContent] = useState<any>(null);
+  const [content, setContent] = useState<LessonContent | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -35,16 +38,14 @@ export default function LessonContentPage() {
       setLoading(true);
       setError(null);
       try {
-        // TODO: Replace with admin-only endpoint
-        // getLessonContent removed - this superadmin page needs admin-only client
-        setError(
-          "Admin endpoint not implemented. getLessonContent() was removed from student app.",
-        );
-        // const res = await getContent(id);
-        // if (mounted) {
-        //   if (res.success) setContent(res.content);
-        //   else setError(res.message || "Failed to load content");
-        // }
+        const res = await getLessonContent(id);
+        if (mounted) {
+          if (res.success && res.content) {
+            setContent(res.content);
+          } else {
+            setError(res.message || "Failed to load content");
+          }
+        }
       } catch (e: any) {
         if (mounted) setError(getErrorMessage(e));
       } finally {
@@ -60,7 +61,10 @@ export default function LessonContentPage() {
   return (
     <div className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Lesson Content</h1>
+        <DashboardHeader
+          heading="Lesson Content"
+          text={content ? content.topic : "Loading lesson content..."}
+        />
         <div className="flex gap-2">
           {id ? (
             <Link href={`/dashboard/superadmin/lessons/${id}`}>

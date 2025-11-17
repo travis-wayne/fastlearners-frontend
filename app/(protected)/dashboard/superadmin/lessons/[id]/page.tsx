@@ -4,9 +4,11 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 
-// NOTE: getLesson removed from lessons-api.ts - this page needs admin-only endpoint
-// This superadmin page should use a separate admin client that calls superadmin endpoints directly
-import { getErrorMessage } from "@/lib/api/lessons-api";
+import {
+  getLessonById,
+  getErrorMessage,
+  type LessonDetail,
+} from "@/lib/api/superadmin-lessons";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -16,13 +18,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { DashboardHeader } from "@/components/dashboard/header";
 
 export default function LessonDetailPage() {
   const params = useParams<{ id: string }>();
   const id = Number(params?.id);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [lesson, setLesson] = useState<any>(null);
+  const [lesson, setLesson] = useState<LessonDetail | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -35,16 +38,14 @@ export default function LessonDetailPage() {
       setLoading(true);
       setError(null);
       try {
-        // TODO: Replace with admin-only endpoint
-        // getLesson removed - this superadmin page needs admin-only client
-        setError(
-          "Admin endpoint not implemented. getLesson() was removed from student app.",
-        );
-        // const res = await getLessonById(id);
-        // if (mounted) {
-        //   if (res.success) setLesson(res.content);
-        //   else setError(res.message || "Failed to load lesson");
-        // }
+        const res = await getLessonById(id);
+        if (mounted) {
+          if (res.success && res.content) {
+            setLesson(res.content);
+          } else {
+            setError(res.message || "Failed to load lesson");
+          }
+        }
       } catch (e: any) {
         if (mounted) setError(getErrorMessage(e));
       } finally {
@@ -60,7 +61,10 @@ export default function LessonDetailPage() {
   return (
     <div className="container mx-auto space-y-6 p-4 md:p-6">
       <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-semibold">Lesson Detail</h1>
+        <DashboardHeader
+          heading="Lesson Detail"
+          text={lesson ? lesson.topic : "Loading lesson details..."}
+        />
         {id ? (
           <Link href={`/dashboard/superadmin/lessons/${id}/content`}>
             <Button variant="secondary">View Full Content</Button>
@@ -122,6 +126,38 @@ export default function LessonDetailPage() {
                 <div className="text-sm font-medium">Overview</div>
                 <p className="text-sm leading-relaxed">{lesson.overview}</p>
               </div>
+              {lesson.objectives && lesson.objectives.length > 0 && (
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Objectives</div>
+                  {lesson.objectives.map((obj, idx) => (
+                    <div key={idx} className="space-y-1">
+                      {obj.description && (
+                        <p className="text-sm leading-relaxed">{obj.description}</p>
+                      )}
+                      {obj.points && obj.points.length > 0 && (
+                        <ul className="list-disc pl-5 text-sm">
+                          {obj.points.map((point, i) => (
+                            <li key={i}>{point}</li>
+                          ))}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+              {lesson.key_concepts && Object.keys(lesson.key_concepts).length > 0 && (
+                <div className="space-y-2">
+                  <div className="text-sm font-medium">Key Concepts</div>
+                  <div className="space-y-2">
+                    {Object.entries(lesson.key_concepts).map(([key, value]) => (
+                      <div key={key} className="rounded-lg border p-3">
+                        <div className="text-sm font-medium">{key}</div>
+                        <p className="text-sm text-muted-foreground">{value}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
               <div className="space-y-2">
                 <div className="text-sm font-medium">Summary</div>
                 <p className="text-sm leading-relaxed">{lesson.summary}</p>

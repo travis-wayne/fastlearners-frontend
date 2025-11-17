@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-// NOTE: getLessonsMetadata removed - this superadmin page needs admin-only endpoint
-// Use getProfileData() from lib/api/profile.ts for metadata or create admin-only client
 import {
   BarChart3,
   BookOpen,
@@ -12,6 +10,8 @@ import {
   Upload,
   Users,
 } from "lucide-react";
+
+import { getLessonsMetadata } from "@/lib/api/superadmin-lessons";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -33,18 +33,18 @@ export default function SuperAdminDashboard() {
     setError(null);
 
     try {
-      // TODO: Replace with admin-only endpoint or use getProfileData() from lib/api/profile.ts
-      // getLessonsMetadata removed - this superadmin page needs admin-only client
-      setError(
-        "Admin endpoint not implemented. getLessonsMetadata() was removed from student app.",
-      );
-      setApiData(null);
-      // const data = await getLessonsMetadata();
-      // setApiData(data);
-      // console.log("API Response:", data);
+      const res = await getLessonsMetadata();
+      if (res.success && res.content) {
+        setApiData(res.content);
+        console.log("API Response:", res.content);
+      } else {
+        setError(res.message || "Failed to fetch metadata");
+        setApiData(null);
+      }
     } catch (err: any) {
       setError(err.message || "Failed to fetch data");
       console.error("API Error:", err);
+      setApiData(null);
     } finally {
       setLoading(false);
     }
