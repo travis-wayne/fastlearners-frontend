@@ -106,6 +106,7 @@ export default function QuizTakePage() {
     setIsStarted(true);
     setStartTime(new Date());
     // Modal will open automatically when isStarted is true
+    // Modal will open automatically when isStarted is true
   };
 
   const handleAnswerSelect = (questionId: string, answer: string | number) => {
@@ -323,6 +324,10 @@ export default function QuizTakePage() {
           }
           onNext={handleNextQuestion}
           onPrevious={handlePreviousQuestion}
+          onClose={() => {
+            // Prevent closing during quiz - could show confirmation dialog
+            // For now, just keep it open
+          }}
           onClose={() => {
             // Prevent closing during quiz - could show confirmation dialog
             // For now, just keep it open

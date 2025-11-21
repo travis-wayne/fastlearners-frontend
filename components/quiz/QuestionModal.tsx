@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { X, CheckCircle2, XCircle, ArrowLeft, ArrowRight } from "lucide-react";
+import { X, CheckCircle2, XCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -210,9 +211,12 @@ export function QuestionModal({
                   {question.options.map((option, index) => {
                     const isSelected = selectedAnswer === index;
                     const isCorrectOption = question.correctAnswer === index;
+                    const isSelected = selectedAnswer === index;
+                    const isCorrectOption = question.correctAnswer === index;
 
                     return (
                       <div
+                        key={index}
                         key={index}
                         className={cn(
                           "flex items-center space-x-3 rounded-lg border p-4 transition-colors",
@@ -232,9 +236,12 @@ export function QuestionModal({
                         <RadioGroupItem
                           value={String(index)}
                           id={`option-${index}`}
+                          value={String(index)}
+                          id={`option-${index}`}
                           className="mt-0.5"
                         />
                         <Label
+                          htmlFor={`option-${index}`}
                           htmlFor={`option-${index}`}
                           className="flex-1 cursor-pointer text-base"
                         >
@@ -264,7 +271,9 @@ export function QuestionModal({
                 >
                   {["True", "False"].map((option) => {
                     const isSelected = selectedAnswer === option;
+                    const isSelected = selectedAnswer === option;
                     const isCorrectOption =
+                      question.correctAnswer === option;
                       question.correctAnswer === option;
 
                     return (
@@ -286,7 +295,9 @@ export function QuestionModal({
                         )}
                       >
                         <RadioGroupItem value={option} id={option} />
+                        <RadioGroupItem value={option} id={option} />
                         <Label
+                          htmlFor={option}
                           htmlFor={option}
                           className="flex-1 cursor-pointer text-base"
                         >
