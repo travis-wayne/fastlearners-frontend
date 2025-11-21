@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { useCallback, startTransition } from "react";
 
 import {
   AlertDialog,
@@ -23,11 +24,16 @@ export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const { logout } = useAuthStore();
   const router = useRouter();
 
-  const handleSignOut = async () => {
-    await logout();
-    onOpenChange(false);
-    router.push("/auth/login");
-  };
+  const handleSignOut = useCallback(async () => {
+    // Defer logout to avoid blocking UI
+    startTransition(() => {
+      // Start the async operation but don't block
+      logout().then(() => {
+        onOpenChange(false);
+        router.push("/auth/login");
+      });
+    });
+  }, [logout, onOpenChange, router]);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

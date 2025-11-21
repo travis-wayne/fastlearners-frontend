@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, startTransition } from "react";
 import { Bell, Check, Trash2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -73,31 +73,39 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
 
   const unreadCount = notifications.filter((n) => !n.isRead).length;
 
-  const markAsRead = (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.map((notification) =>
-        notification.id === notificationId
-          ? { ...notification, isRead: true }
-          : notification,
-      ),
-    );
-  };
+  const markAsRead = useCallback((notificationId: string) => {
+    startTransition(() => {
+      setNotifications((prev) =>
+        prev.map((notification) =>
+          notification.id === notificationId
+            ? { ...notification, isRead: true }
+            : notification,
+        ),
+      );
+    });
+  }, []);
 
-  const markAllAsRead = () => {
-    setNotifications((prev) =>
-      prev.map((notification) => ({ ...notification, isRead: true })),
-    );
-  };
+  const markAllAsRead = useCallback(() => {
+    startTransition(() => {
+      setNotifications((prev) =>
+        prev.map((notification) => ({ ...notification, isRead: true })),
+      );
+    });
+  }, []);
 
-  const removeNotification = (notificationId: string) => {
-    setNotifications((prev) =>
-      prev.filter((notification) => notification.id !== notificationId),
-    );
-  };
+  const removeNotification = useCallback((notificationId: string) => {
+    startTransition(() => {
+      setNotifications((prev) =>
+        prev.filter((notification) => notification.id !== notificationId),
+      );
+    });
+  }, []);
 
-  const clearAllNotifications = () => {
-    setNotifications([]);
-  };
+  const clearAllNotifications = useCallback(() => {
+    startTransition(() => {
+      setNotifications([]);
+    });
+  }, []);
 
   const formatTimeAgo = (timestamp: Date) => {
     const now = new Date();

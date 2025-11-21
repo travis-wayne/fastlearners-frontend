@@ -91,7 +91,7 @@ export default function QuizDetailPage() {
             <HelpCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
             <h3 className="mb-2 text-lg font-semibold">Quiz Not Found</h3>
             <p className="mb-4 text-muted-foreground">
-              The quiz you're looking for doesn't exist.
+              The quiz you&apos;re looking for doesn&apos;t exist.
             </p>
             <Button onClick={() => router.back()}>Go Back</Button>
           </CardContent>
@@ -128,7 +128,7 @@ export default function QuizDetailPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Quiz Info */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           <Card>
             <CardHeader>
               <div className="flex items-start justify-between">
@@ -297,7 +297,7 @@ export default function QuizDetailPage() {
               </Button>
 
               {!quiz.isAvailable && (
-                <p className="text-sm text-muted-foreground text-center">
+                <p className="text-center text-sm text-muted-foreground">
                   This quiz is not available at the moment.
                 </p>
               )}

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { FontProvider } from "@/context/font-provider";
 import { useAuthStore } from "@/store/authStore";
@@ -37,28 +37,21 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
     }
   }, [isInitialized, isAuthenticated, router]);
 
-  if (isLoading) {
-    return (
-      <div className="flex h-screen items-center justify-center">
-        <div className="size-32 animate-spin rounded-full border-b-2 border-gray-900"></div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return null;
-  }
-
-  const filteredLinks = sidebarLinks.map((section) => ({
-    ...section,
-    items: section.items.filter(({ authorizeOnly }) => {
-      if (!authorizeOnly) return true;
-      if (!user.role) return false;
-      // Convert enum to string for comparison with user.role array from API
-      const roleString = authorizeOnly.toLowerCase();
-      return user.role.includes(roleString as any);
-    }),
-  }));
+  // Memoize filtered links to prevent recalculation on every render
+  const filteredLinks = useMemo(() => {
+    if (!user) return sidebarLinks;
+    
+    return sidebarLinks.map((section) => ({
+      ...section,
+      items: section.items.filter(({ authorizeOnly }) => {
+        if (!authorizeOnly) return true;
+        if (!user.role) return false;
+        // Convert enum to string for comparison with user.role array from API
+        const roleString = authorizeOnly.toLowerCase();
+        return user.role.includes(roleString as any);
+      }),
+    }));
+  }, [user]);
 
   return (
     <AcademicProvider>

@@ -22,6 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 export interface QuizQuestion {
   id: string;
@@ -37,6 +38,12 @@ export interface QuizQuestion {
   };
 }
 
+export type QuestionContestant = {
+  userId: string;
+  username: string;
+  avatar?: string;
+};
+
 interface QuestionModalProps {
   question: QuizQuestion;
   questionNumber: number;
@@ -51,6 +58,7 @@ interface QuestionModalProps {
   timeLeft?: number;
   totalTime?: number;
   showTimer?: boolean;
+  contestants?: QuestionContestant[];
 }
 
 export function QuestionModal({
@@ -67,6 +75,7 @@ export function QuestionModal({
   timeLeft,
   totalTime,
   showTimer = false,
+  contestants = [],
 }: QuestionModalProps) {
   const [showExplanation, setShowExplanation] = useState(false);
 
@@ -91,16 +100,48 @@ export function QuestionModal({
 
   const showTimerBlock =
     showTimer && typeof timeLeft === "number" && typeof totalTime === "number";
+  const getInitials = (name: string) =>
+    name
+      .split(" ")
+      .map((part) => part[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center justify-between gap-4">
             <DialogTitle className="text-xl">
               Question {questionNumber} of {totalQuestions}
             </DialogTitle>
             <div className="flex items-center gap-3">
+              {contestants?.length ? (
+                <div className="flex items-center gap-2">
+                  <div className="flex -space-x-2">
+                    {contestants.slice(0, 5).map((contestant) => (
+                      <Avatar
+                        key={contestant.userId}
+                        className="size-8 border-2 border-background shadow-sm"
+                      >
+                        <AvatarImage
+                          src={contestant.avatar}
+                          alt={contestant.username}
+                        />
+                        <AvatarFallback>
+                          {getInitials(contestant.username)}
+                        </AvatarFallback>
+                      </Avatar>
+                    ))}
+                  </div>
+                  {contestants.length > 5 && (
+                    <span className="text-xs text-muted-foreground">
+                      +{contestants.length - 5} more
+                    </span>
+                  )}
+                </div>
+              ) : null}
               {showTimerBlock && (
                 <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 font-mono text-sm">
                   <Clock className="size-4 text-muted-foreground" />
@@ -111,7 +152,7 @@ export function QuestionModal({
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8"
+                className="size-8"
               >
                 <X className="size-4" />
               </Button>

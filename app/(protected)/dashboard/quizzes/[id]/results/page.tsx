@@ -131,7 +131,7 @@ export default function QuizResultsPage() {
 
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Main Results */}
-        <div className="lg:col-span-2 space-y-6">
+        <div className="space-y-6 lg:col-span-2">
           {/* Score Card */}
           <Card>
             <CardHeader>

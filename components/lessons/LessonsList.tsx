@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useCallback, startTransition } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
@@ -34,9 +34,12 @@ interface LessonCardProps {
 }
 
 function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
-  const handleClick = () => {
-    onSelect?.(lesson.id);
-  };
+  const handleClick = useCallback(() => {
+    // Use startTransition to avoid blocking UI
+    startTransition(() => {
+      onSelect?.(lesson.id);
+    });
+  }, [onSelect, lesson.id]);
 
   const statusColor =
     lesson.status === "active"
@@ -204,13 +207,19 @@ export function LessonsList({
     clearError,
   } = useLessonsStore();
 
-  const handleLessonSelect = (lessonId: number) => {
-    onLessonSelect?.(lessonId);
-  };
+  const handleLessonSelect = useCallback((lessonId: number) => {
+    // Use startTransition to avoid blocking UI
+    startTransition(() => {
+      onLessonSelect?.(lessonId);
+    });
+  }, [onLessonSelect]);
 
-  const handlePageChange = (page: number) => {
-    fetchLessons(page);
-  };
+  const handlePageChange = useCallback((page: number) => {
+    // Use startTransition to avoid blocking UI
+    startTransition(() => {
+      fetchLessons(page);
+    });
+  }, [fetchLessons]);
 
   // Show loading skeleton
   if (isLoadingLessons) {

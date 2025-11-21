@@ -11,6 +11,7 @@ import {
   LogOut,
   Sparkles,
 } from "lucide-react";
+import { useCallback, startTransition } from "react";
 
 import useDialogState from "@/hooks/use-dialog-state";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -44,10 +45,15 @@ export function NavUser({ user }: NavUserProps) {
   const router = useRouter();
   const [open, setOpen] = useDialogState();
 
-  const handleLogout = async () => {
-    await logout();
-    router.push("/auth/login");
-  };
+  const handleLogout = useCallback(async () => {
+    // Defer logout to avoid blocking UI
+    startTransition(() => {
+      // Start the async operation but don't block
+      logout().then(() => {
+        router.push("/auth/login");
+      });
+    });
+  }, [logout, router]);
 
   const getInitials = (name?: string | null, email?: string | null) => {
     const safeName = (name || "").trim();
@@ -167,7 +173,12 @@ export function NavUser({ user }: NavUserProps) {
               </DropdownMenuGroup>
               <DropdownMenuSeparator />
               <DropdownMenuItem
-                onClick={() => setOpen(true)}
+                onClick={() => {
+                  // Use startTransition to avoid blocking UI
+                  startTransition(() => {
+                    setOpen(true);
+                  });
+                }}
                 className="flex items-center text-destructive focus:text-destructive"
               >
                 <LogOut className="mr-2 size-4" />

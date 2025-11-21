@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback, startTransition } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
@@ -101,7 +101,10 @@ export function UserAccountNav() {
                 className="rounded-lg text-foreground hover:bg-muted"
                 onClick={(event) => {
                   event.preventDefault();
-                  logout();
+                  // Defer logout to avoid blocking UI
+                  startTransition(() => {
+                    logout();
+                  });
                 }}
               >
                 <div className="flex w-full items-center gap-3 px-2.5 py-2">
@@ -168,7 +171,10 @@ export function UserAccountNav() {
           className="cursor-pointer"
           onSelect={(event) => {
             event.preventDefault();
-            logout();
+            // Defer logout to avoid blocking UI
+            startTransition(() => {
+              logout();
+            });
           }}
         >
           <div className="flex items-center space-x-2.5">

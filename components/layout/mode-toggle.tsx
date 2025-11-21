@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { useTheme } from "next-themes";
+import { startTransition } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -15,6 +16,13 @@ import { Icons } from "@/components/shared/icons";
 export function ModeToggle() {
   const { setTheme } = useTheme();
 
+  const handleThemeChange = React.useCallback((theme: "light" | "dark" | "system") => {
+    // Use startTransition to mark theme change as non-urgent
+    startTransition(() => {
+      setTheme(theme);
+    });
+  }, [setTheme]);
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -25,15 +33,15 @@ export function ModeToggle() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           <Icons.sun className="mr-2 size-4" />
           <span>Light</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
           <Icons.moon className="mr-2 size-4" />
           <span>Dark</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           <Icons.laptop className="mr-2 size-4" />
           <span>System</span>
         </DropdownMenuItem>

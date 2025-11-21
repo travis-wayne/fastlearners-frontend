@@ -8,7 +8,11 @@ import { CheckCircle2, XCircle, Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { QuestionModal, QuizQuestion } from "@/components/quiz/QuestionModal";
+import {
+  QuestionModal,
+  QuizQuestion,
+  QuestionContestant,
+} from "@/components/quiz/QuestionModal";
 import { Timer } from "@/components/quiz/Timer";
 import { ScoreDisplay } from "@/components/quiz/ScoreDisplay";
 import { Leaderboard } from "@/components/quiz/Leaderboard";
@@ -41,6 +45,7 @@ export default function QuizTakePage() {
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
+  const contestants = mockQuizData.competitors as QuestionContestant[];
 
   useEffect(() => {
     if (quizId) {
@@ -53,6 +58,27 @@ export default function QuizTakePage() {
       }
     }
   }, [quizId]);
+
+  const handleSubmitQuiz = useCallback(() => {
+    if (!quiz) return;
+
+    setIsCompleted(true);
+    setShowFeedback(false);
+
+    let calculatedScore = 0;
+    quiz.questions.forEach((question) => {
+      const userAnswer = answers[question.id];
+      if (
+        userAnswer !== null &&
+        String(userAnswer).toLowerCase() ===
+          String(question.correctAnswer).toLowerCase()
+      ) {
+        calculatedScore += question.points;
+      }
+    });
+
+    setScore(calculatedScore);
+  }, [answers, quiz]);
 
   // Timer effect
   useEffect(() => {
@@ -71,7 +97,7 @@ export default function QuizTakePage() {
     return () => {
       if (interval) clearInterval(interval);
     };
-  }, [isStarted, isCompleted, timeLeft]);
+  }, [isStarted, isCompleted, timeLeft, handleSubmitQuiz]);
 
   const handleStartQuiz = () => {
     setIsStarted(true);
@@ -98,27 +124,6 @@ export default function QuizTakePage() {
       setShowFeedback(false);
     }
   };
-
-  const handleSubmitQuiz = useCallback(() => {
-    if (!quiz) return;
-
-    setIsCompleted(true);
-    setShowFeedback(false);
-
-    let calculatedScore = 0;
-    quiz.questions.forEach((question) => {
-      const userAnswer = answers[question.id];
-      if (
-        userAnswer !== null &&
-        String(userAnswer).toLowerCase() ===
-          String(question.correctAnswer).toLowerCase()
-      ) {
-        calculatedScore += question.points;
-      }
-    });
-
-    setScore(calculatedScore);
-  }, [answers, quiz]);
 
   const handleTimeUp = () => {
     handleSubmitQuiz();
@@ -155,7 +160,7 @@ export default function QuizTakePage() {
       >
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Results Card */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="space-y-6 lg:col-span-2">
             <Card>
               <CardContent className="p-6">
                 <div className="mb-6 text-center">
@@ -243,7 +248,7 @@ export default function QuizTakePage() {
             <Trophy className="mx-auto mb-4 size-16 text-primary" />
             <h1 className="mb-2 text-2xl font-bold">{quiz.title}</h1>
             <p className="mb-6 text-muted-foreground">
-              Are you ready to start? Click the button below when you're ready.
+              Are you ready to start? Click the button below when you&apos;re ready.
             </p>
             <Button onClick={handleStartQuiz} size="lg">
               Start Quiz
@@ -321,6 +326,7 @@ export default function QuizTakePage() {
           showTimer={quiz.timeLimit > 0}
           timeLeft={quiz.timeLimit > 0 ? timeLeft : undefined}
           totalTime={quiz.timeLimit > 0 ? quiz.timeLimit * 60 : undefined}
+          contestants={contestants}
         />
       )}
 
@@ -328,7 +334,7 @@ export default function QuizTakePage() {
         <Card>
           <CardContent className="flex flex-col gap-4 text-center">
             <p className="text-lg font-semibold">Quiz paused</p>
-            <p className="text-muted-foreground text-sm">
+            <p className="text-sm text-muted-foreground">
               Resume to continue answering or exit to leave this attempt.
             </p>
             <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">

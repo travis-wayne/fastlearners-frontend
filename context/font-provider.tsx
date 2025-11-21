@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useState, useMemo, useCallback, startTransition } from 'react'
 import { fonts } from '@/config/fonts'
 import { getCookie, setCookie, removeCookie } from '@/lib/cookies'
 
@@ -23,28 +23,63 @@ export function FontProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const applyFont = (font: string) => {
-      const root = document.documentElement
-      root.classList.forEach((cls) => {
-        if (cls.startsWith('font-')) root.classList.remove(cls)
+      // Use requestAnimationFrame to batch DOM updates
+      requestAnimationFrame(() => {
+        const root = document.documentElement
+        // More efficient: track previous font class instead of iterating all classes
+        const prevFontClass = root.dataset.fontClass
+        if (prevFontClass) {
+          root.classList.remove(prevFontClass)
+        }
+        const newFontClass = `font-${font}`
+        root.classList.add(newFontClass)
+        root.dataset.fontClass = newFontClass
       })
-      root.classList.add(`font-${font}`)
     }
 
     applyFont(font)
   }, [font])
 
-  const setFont = (font: Font) => {
-    setCookie(FONT_COOKIE_NAME, font, FONT_COOKIE_MAX_AGE)
-    _setFont(font)
-  }
+  const setFont = useCallback((font: Font) => {
+    // Use startTransition to mark this as non-urgent update
+    startTransition(() => {
+      _setFont(font)
+    })
+    // Defer cookie operation to avoid blocking UI
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => {
+        setCookie(FONT_COOKIE_NAME, font, FONT_COOKIE_MAX_AGE)
+      })
+    } else {
+      setTimeout(() => {
+        setCookie(FONT_COOKIE_NAME, font, FONT_COOKIE_MAX_AGE)
+      }, 0)
+    }
+  }, [])
 
-  const resetFont = () => {
-    removeCookie(FONT_COOKIE_NAME)
-    _setFont(fonts[0])
-  }
+  const resetFont = useCallback(() => {
+    startTransition(() => {
+      _setFont(fonts[0])
+    })
+    // Defer cookie operation to avoid blocking UI
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => {
+        removeCookie(FONT_COOKIE_NAME)
+      })
+    } else {
+      setTimeout(() => {
+        removeCookie(FONT_COOKIE_NAME)
+      }, 0)
+    }
+  }, [])
+
+  const contextValue = useMemo(
+    () => ({ font, setFont, resetFont }),
+    [font, setFont, resetFont]
+  )
 
   return (
-    <FontContext.Provider value={{ font, setFont, resetFont }}>
+    <FontContext.Provider value={contextValue}>
       {children}
     </FontContext.Provider>
   )

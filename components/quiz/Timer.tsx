@@ -47,7 +47,7 @@ export function Timer({ timeLeft, totalTime, onTimeUp, className }: TimerProps) 
         <span
           className={cn(
             "font-mono text-lg font-semibold transition-colors",
-            isWarning && "text-red-600 animate-pulse"
+            isWarning && "animate-pulse text-red-600"
           )}
         >
           {formatTime(timeLeft)}

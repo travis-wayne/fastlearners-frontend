@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useCallback, startTransition } from "react";
 import { useTheme } from "@/context/theme-provider";
 import { Check, Moon, Sun } from "lucide-react";
 
@@ -17,10 +17,20 @@ export function ThemeSwitch() {
   /* Update theme-color meta tag
    * when theme is updated */
   useEffect(() => {
-    const themeColor = theme === "dark" ? "#020817" : "#fff";
-    const metaThemeColor = document.querySelector("meta[name='theme-color']");
-    if (metaThemeColor) metaThemeColor.setAttribute("content", themeColor);
+    // Use requestAnimationFrame to batch DOM updates
+    requestAnimationFrame(() => {
+      const themeColor = theme === "dark" ? "#020817" : "#fff";
+      const metaThemeColor = document.querySelector("meta[name='theme-color']");
+      if (metaThemeColor) metaThemeColor.setAttribute("content", themeColor);
+    });
   }, [theme]);
+
+  const handleThemeChange = useCallback((newTheme: "light" | "dark" | "system") => {
+    // Use startTransition to mark theme change as non-urgent
+    startTransition(() => {
+      setTheme(newTheme);
+    });
+  }, [setTheme]);
 
   return (
     <DropdownMenu modal={false}>
@@ -32,21 +42,21 @@ export function ThemeSwitch() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setTheme("light")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("light")}>
           Light{" "}
           <Check
             size={14}
             className={cn("ms-auto", theme !== "light" && "hidden")}
           />
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("dark")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("dark")}>
           Dark
           <Check
             size={14}
             className={cn("ms-auto", theme !== "dark" && "hidden")}
           />
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
+        <DropdownMenuItem onClick={() => handleThemeChange("system")}>
           System
           <Check
             size={14}
