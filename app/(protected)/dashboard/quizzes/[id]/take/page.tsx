@@ -40,7 +40,6 @@ export default function QuizTakePage() {
   const [score, setScore] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
-  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   useEffect(() => {
     if (quizId) {
@@ -76,7 +75,7 @@ export default function QuizTakePage() {
   const handleStartQuiz = () => {
     setIsStarted(true);
     setStartTime(new Date());
-    setIsQuestionModalOpen(true);
+    // Modal will open automatically when isStarted is true
   };
 
   const handleAnswerSelect = (questionId: string, answer: string | number) => {
@@ -315,35 +314,13 @@ export default function QuizTakePage() {
           }
           onNext={handleNextQuestion}
           onPrevious={handlePreviousQuestion}
-          onClose={() => setIsQuestionModalOpen(false)}
+          onClose={() => {
+            // Prevent closing during quiz - could show confirmation dialog
+            // For now, just keep it open
+          }}
           showFeedback={showFeedback}
-          isOpen={isQuestionModalOpen}
-          showTimer={quiz.timeLimit > 0}
-          timeLeft={quiz.timeLimit > 0 ? timeLeft : undefined}
-          totalTime={quiz.timeLimit > 0 ? quiz.timeLimit * 60 : undefined}
+          isOpen={true}
         />
-      )}
-
-      {isStarted && !isCompleted && !isQuestionModalOpen && (
-        <Card>
-          <CardContent className="flex flex-col gap-4 text-center">
-            <p className="text-lg font-semibold">Quiz paused</p>
-            <p className="text-muted-foreground text-sm">
-              Resume to continue answering or exit to leave this attempt.
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
-              <Button onClick={() => setIsQuestionModalOpen(true)}>
-                Resume Quiz
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() => router.push("/dashboard/quizzes")}
-              >
-                Exit Quiz
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       )}
 
       {/* Action Buttons */}
@@ -375,4 +352,3 @@ export default function QuizTakePage() {
     </div>
   );
 }
-
