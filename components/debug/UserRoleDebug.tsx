@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useAuthStore } from "@/store/authStore";
 import { Eye, EyeOff, RefreshCw } from "lucide-react";
 
+import { Z_INDEX } from "@/config/z-index";
 import { profileApi } from "@/lib/api/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,7 +43,8 @@ export function UserRoleDebug() {
         variant="outline"
         size="sm"
         onClick={() => setShowDebug(true)}
-        className="fixed bottom-4 right-4 z-50"
+        className="fixed bottom-4 right-4"
+        style={{ zIndex: Z_INDEX.debugTools }}
       >
         <Eye className="mr-2 size-4" />
         Show Debug
@@ -51,7 +53,10 @@ export function UserRoleDebug() {
   }
 
   return (
-    <Card className="fixed bottom-4 right-4 z-50 max-h-96 w-96 overflow-auto">
+    <Card
+      className="fixed bottom-4 right-4 max-h-96 w-96 overflow-auto"
+      style={{ zIndex: Z_INDEX.debugTools }}
+    >
       <CardHeader>
         <div className="flex items-center justify-between">
           <CardTitle className="text-sm">User Role Debug</CardTitle>

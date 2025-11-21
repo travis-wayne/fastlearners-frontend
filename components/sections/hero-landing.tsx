@@ -106,7 +106,7 @@ export default function HeroLanding() {
                 }}
               >
                 <Link
-                  href="/#"
+                  href="/pricing"
                   prefetch={true}
                   className={cn(
                     buttonVariants({

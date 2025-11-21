@@ -1,10 +1,13 @@
 "use client";
 
-import { useState, useCallback, startTransition } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
 import { Drawer } from "vaul";
+
+import { Z_INDEX } from "@/config/z-index";
 
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
@@ -18,6 +21,7 @@ import { UserAvatar } from "@/components/shared/user-avatar";
 
 export function UserAccountNav() {
   const { user, logout } = useAuthStore();
+  const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
   const closeDrawer = () => {
@@ -26,6 +30,11 @@ export function UserAccountNav() {
 
   const { isMobile } = useMediaQuery();
 
+  // Close drawer on route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
+
   if (!user)
     return (
       <div className="size-8 animate-pulse rounded-full border bg-muted" />
@@ -33,7 +42,7 @@ export function UserAccountNav() {
 
   if (isMobile) {
     return (
-      <Drawer.Root open={open} onClose={closeDrawer}>
+      <Drawer.Root open={open} onOpenChange={setOpen}>
         <Drawer.Trigger onClick={() => setOpen(true)}>
           <UserAvatar
             user={{ name: user.name || null, image: user.image || null }}
@@ -42,10 +51,14 @@ export function UserAccountNav() {
         </Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay
-            className="fixed inset-0 z-40 h-full bg-background/80 backdrop-blur-sm"
+            className="fixed inset-0 h-full bg-background/80 backdrop-blur-sm"
+            style={{ zIndex: Z_INDEX.drawerOverlay }}
             onClick={closeDrawer}
           />
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm">
+          <Drawer.Content
+            className="fixed inset-x-0 bottom-0 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm"
+            style={{ zIndex: Z_INDEX.drawerOverlay + 1 }}
+          >
             <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
               <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
             </div>
@@ -101,6 +114,7 @@ export function UserAccountNav() {
                 className="rounded-lg text-foreground hover:bg-muted"
                 onClick={(event) => {
                   event.preventDefault();
+                  closeDrawer();
                   // Defer logout to avoid blocking UI
                   startTransition(() => {
                     logout();
@@ -114,7 +128,6 @@ export function UserAccountNav() {
               </li>
             </ul>
           </Drawer.Content>
-          <Drawer.Overlay />
         </Drawer.Portal>
       </Drawer.Root>
     );

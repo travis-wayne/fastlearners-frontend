@@ -44,11 +44,7 @@ export default function QuizTakePage() {
   const [score, setScore] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
-<<<<<<< HEAD
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
-  const contestants = mockQuizData.competitors as QuestionContestant[];
-=======
->>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
 
   useEffect(() => {
     if (quizId) {
@@ -105,8 +101,7 @@ export default function QuizTakePage() {
   const handleStartQuiz = () => {
     setIsStarted(true);
     setStartTime(new Date());
-    // Modal will open automatically when isStarted is true
-    // Modal will open automatically when isStarted is true
+    setIsQuestionModalOpen(true);
   };
 
   const handleAnswerSelect = (questionId: string, answer: string | number) => {
@@ -119,6 +114,7 @@ export default function QuizTakePage() {
       setShowFeedback(false);
     } else {
       handleSubmitQuiz();
+      setIsQuestionModalOpen(false);
     }
   };
 
@@ -128,6 +124,27 @@ export default function QuizTakePage() {
       setShowFeedback(false);
     }
   };
+
+  const handleSubmitQuiz = useCallback(() => {
+    if (!quiz) return;
+
+    setIsCompleted(true);
+    setShowFeedback(false);
+
+    let calculatedScore = 0;
+    quiz.questions.forEach((question) => {
+      const userAnswer = answers[question.id];
+      if (
+        userAnswer !== null &&
+        String(userAnswer).toLowerCase() ===
+        String(question.correctAnswer).toLowerCase()
+      ) {
+        calculatedScore += question.points;
+      }
+    });
+
+    setScore(calculatedScore);
+  }, [answers, quiz]);
 
   const handleTimeUp = () => {
     handleSubmitQuiz();
@@ -169,11 +186,10 @@ export default function QuizTakePage() {
               <CardContent className="p-6">
                 <div className="mb-6 text-center">
                   <div
-                    className={`mx-auto mb-4 flex size-20 items-center justify-center rounded-full ${
-                      passed
+                    className={`mx-auto mb-4 flex size-20 items-center justify-center rounded-full ${passed
                         ? "bg-green-100 text-green-600"
                         : "bg-orange-100 text-orange-600"
-                    }`}
+                      }`}
                   >
                     {passed ? (
                       <CheckCircle2 className="size-10" />
@@ -298,13 +314,12 @@ export default function QuizTakePage() {
                 setCurrentQuestionIndex(idx);
                 setShowFeedback(false);
               }}
-              className={`rounded-lg border p-2 text-sm transition-colors ${
-                isCurrent
+              className={`rounded-lg border p-2 text-sm transition-colors ${isCurrent
                   ? "border-primary bg-primary text-primary-foreground"
                   : isAnswered
                     ? "border-green-500 bg-green-50 text-green-700"
                     : "border-muted hover:border-primary"
-              }`}
+                }`}
             >
               {idx + 1}
             </button>
@@ -322,18 +337,11 @@ export default function QuizTakePage() {
           onAnswerSelect={(answer) =>
             handleAnswerSelect(currentQuestion.id, answer)
           }
+
           onNext={handleNextQuestion}
           onPrevious={handlePreviousQuestion}
-          onClose={() => {
-            // Prevent closing during quiz - could show confirmation dialog
-            // For now, just keep it open
-          }}
-          onClose={() => {
-            // Prevent closing during quiz - could show confirmation dialog
-            // For now, just keep it open
-          }}
+          onClose={() => setIsQuestionModalOpen(false)}
           showFeedback={showFeedback}
-<<<<<<< HEAD
           isOpen={isQuestionModalOpen}
           showTimer={quiz.timeLimit > 0}
           timeLeft={quiz.timeLimit > 0 ? timeLeft : undefined}
@@ -342,7 +350,7 @@ export default function QuizTakePage() {
         />
       )}
 
-      {isStarted && !isCompleted && !isQuestionModalOpen && (
+       {isStarted && !isCompleted && !isQuestionModalOpen && (
         <Card>
           <CardContent className="flex flex-col gap-4 text-center">
             <p className="text-lg font-semibold">Quiz paused</p>
@@ -364,12 +372,6 @@ export default function QuizTakePage() {
         </Card>
       )}
 
-=======
-          isOpen={true}
-        />
-      )}
-
->>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
       {/* Action Buttons */}
       <div className="flex justify-between">
         <Button
@@ -399,4 +401,3 @@ export default function QuizTakePage() {
     </div>
   );
 }
-

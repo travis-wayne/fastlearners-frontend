@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
+import { Z_INDEX } from "@/config/z-index";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -152,7 +153,7 @@ export function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile menu button */}
-      <div className="fixed left-4 top-4 z-50 lg:hidden">
+      <div className="fixed left-4 top-4 lg:hidden" style={{ zIndex: Z_INDEX.navbar + 1 }}>
         <Button
           variant="outline"
           size="icon"
@@ -165,9 +166,10 @@ export function SettingsPage() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 z-40 w-64 border-r bg-card transition duration-200 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 w-64 border-r bg-card transition duration-200 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
+        style={{ zIndex: Z_INDEX.drawerOverlay + 1 }}
       >
         <div className="p-6">
           <nav className="space-y-2">
@@ -206,7 +208,8 @@ export function SettingsPage() {
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 z-30 bg-black/50 lg:hidden"
+          className="fixed inset-0 bg-black/50 lg:hidden"
+          style={{ zIndex: Z_INDEX.drawerOverlay }}
           onClick={() => setSidebarOpen(false)}
         />
       )}

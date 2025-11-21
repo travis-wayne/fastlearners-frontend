@@ -270,10 +270,15 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
 }
 
 export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
-  const path = usePathname();
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const { isSm, isMobile } = useMediaQuery();
   const { user, isAuthenticated } = useAuthStore();
+
+  // Close sheet on route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   // Determine if user is a guest
   const isGuest = user?.role[0] === "guest" || !isAuthenticated;
@@ -329,11 +334,11 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                               href={item.disabled ? "#" : item.href}
                               aria-label={item.title}
                               aria-current={
-                                path === item.href ? "page" : undefined
+                                pathname === item.href ? "page" : undefined
                               }
                               className={cn(
                                 "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
-                                path === item.href
+                                pathname === item.href
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",
                                 item.disabled &&
@@ -382,7 +387,5 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
     );
   }
 
-  return (
-    <div className="flex size-9 animate-pulse rounded-lg bg-muted md:hidden" />
-  );
+  return null;
 }

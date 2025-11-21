@@ -182,33 +182,19 @@ export function StudentDashboard() {
     }
   };
 
-  // Mock data - replace with real data from your API
-  const todaysLessons = [
-    {
-      id: 1,
-      subject: "Mathematics",
-      lesson: "Algebra Basics",
-      duration: "45 min",
-      progress: 0,
-      new: true,
-    },
-    {
-      id: 2,
-      subject: "Science",
-      lesson: "Physics: Motion",
-      duration: "30 min",
-      progress: 75,
-      new: false,
-    },
-    {
-      id: 3,
-      subject: "English",
-      lesson: "Grammar Review",
-      duration: "25 min",
-      progress: 100,
-      new: false,
-    },
-  ];
+  const headerGradientClass = useMemo(() => {
+    switch (timeData?.period) {
+      case "morning":
+        return "bg-gradient-to-br from-blue-200 via-cyan-200 to-yellow-100 dark:from-blue-400 dark:via-cyan-300 dark:to-yellow-200";
+      case "afternoon":
+        return "bg-gradient-to-br from-blue-300 via-purple-200 to-orange-200 dark:from-blue-500 dark:via-purple-400 dark:to-orange-300";
+      case "evening":
+        return "bg-gradient-to-br from-purple-300 via-pink-300 to-orange-200 dark:from-purple-500 dark:via-pink-500 dark:to-orange-400";
+      case "night":
+      default:
+        return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
+    }
+  }, [timeData?.period]);
 
   const weeklyProgress = [
     { subject: "Mathematics", progress: 68, target: 80 },
@@ -223,6 +209,13 @@ export function StudentDashboard() {
     { title: "Fast Learner", icon: "⚡", earned: false },
     { title: "Subject Master", icon: "🏆", earned: false },
   ];
+
+  const achievementHighlights = achievements.slice(0, 3).map(
+    ({ title, icon }) => ({
+      title,
+      icon,
+    }),
+  );
 
   const stats = [
     { label: "Lessons Completed", value: "24", change: "+12%", positive: true },
@@ -297,19 +290,7 @@ export function StudentDashboard() {
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
         <div
-          className={`relative overflow-hidden rounded-2xl p-8 ${useMemo(() => {
-            switch (timeData?.period) {
-              case "morning":
-                return "bg-gradient-to-br from-blue-200 via-cyan-200 to-yellow-100 dark:from-blue-400 dark:via-cyan-300 dark:to-yellow-200";
-              case "afternoon":
-                return "bg-gradient-to-br from-blue-300 via-purple-200 to-orange-200 dark:from-blue-500 dark:via-purple-400 dark:to-orange-300";
-              case "evening":
-                return "bg-gradient-to-br from-purple-300 via-pink-300 to-orange-200 dark:from-purple-500 dark:via-pink-500 dark:to-orange-400";
-              case "night":
-              default:
-                return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
-            }
-          }, [timeData?.period])} transition-all duration-700 ease-in-out`}
+          className={`relative overflow-hidden rounded-2xl p-8 ${headerGradientClass} transition-all duration-700 ease-in-out`}
         >
           <div className="relative z-10 max-w-lg">
             {/* Header with date and time */}
@@ -491,13 +472,7 @@ export function StudentDashboard() {
         />
 
         {/* Achievements (3 cards) - extracted */}
-        <AchievementsSection
-          items={[
-            { title: "7-Day Streak", icon: "🔥" },
-            { title: "Perfect Score", icon: "⭐" },
-            { title: "Perfect Score", icon: "🏆" },
-          ]}
-        />
+        <AchievementsSection items={achievementHighlights} />
 
         {/* Overview grid - extracted */}
         {isLoadingDashboard ? (
@@ -625,8 +600,47 @@ export function StudentDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="w-full overflow-x-auto">
-              <Table className="min-w-[680px]">
+            <div className="space-y-3 sm:hidden">
+              {todaysLessonsTable.map((lesson) => (
+                <div
+                  key={`lesson-card-${lesson.id}`}
+                  className="rounded-2xl border bg-background p-4 shadow-sm"
+                >
+                  <div className="flex items-start justify-between gap-3">
+                    <div>
+                      <p className="text-sm font-semibold">{lesson.subject}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {lesson.lesson}
+                      </p>
+                    </div>
+                    <Badge variant="outline">{lesson.duration}</Badge>
+                  </div>
+                  <div className="mt-4 flex flex-col gap-3">
+                    {lesson.progress > 0 ? (
+                      <div className="flex items-center gap-2">
+                        <Progress value={lesson.progress} className="w-24" />
+                        <span className="text-sm font-medium">
+                          {lesson.progress}%
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="text-sm text-muted-foreground">
+                        Not started
+                      </span>
+                    )}
+                    <Button
+                      size="sm"
+                      variant={lesson.progress === 0 ? "default" : "outline"}
+                    >
+                      {lesson.status}
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="hidden w-full overflow-x-auto sm:block">
+              <Table className="min-w-[560px] lg:min-w-[680px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Subject</TableHead>
