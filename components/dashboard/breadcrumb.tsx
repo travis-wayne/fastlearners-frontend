@@ -7,22 +7,38 @@ import { ChevronRight, Home } from "lucide-react";
 
 import { cn } from "@/lib/utils";
 
+const SEGMENT_TITLE_MAP: Record<string, string> = {
+  "past-questions": "Past Questions",
+  superadmin: "Super Admin",
+  onboarding: "Onboarding",
+  settings: "Settings",
+  profile: "Profile",
+};
+
 interface BreadcrumbItem {
   title: string;
   href: string;
   isLast?: boolean;
 }
 
-export function Breadcrumb({ className }: { className?: string }) {
+interface BreadcrumbProps {
+  className?: string;
+  rootLabel?: string;
+  rootHref?: string;
+}
+
+export function Breadcrumb({
+  className,
+  rootLabel = "Dashboard",
+  rootHref = "/dashboard",
+}: BreadcrumbProps) {
   const pathname = usePathname();
 
   const generateBreadcrumbs = (): BreadcrumbItem[] => {
     const pathSegments = pathname.split("/").filter(Boolean);
 
     // Start with home
-    const breadcrumbs: BreadcrumbItem[] = [
-      { title: "Dashboard", href: "/dashboard" },
-    ];
+    const breadcrumbs: BreadcrumbItem[] = [{ title: rootLabel, href: rootHref }];
 
     // Build breadcrumbs from path segments
     let currentPath = "";
@@ -33,10 +49,12 @@ export function Breadcrumb({ className }: { className?: string }) {
       if (segment === "dashboard") return;
 
       // Format segment title
-      const title = segment
-        .split("-")
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(" ");
+      const title =
+        SEGMENT_TITLE_MAP[segment] ||
+        segment
+          .split("-")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join(" ");
 
       breadcrumbs.push({
         title,

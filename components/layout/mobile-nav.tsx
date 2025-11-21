@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useSelectedLayoutSegment } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
@@ -9,11 +9,13 @@ import { Menu, X } from "lucide-react";
 import { docsConfig } from "@/config/docs";
 import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
+import { Z_INDEX } from "@/config/z-index";
 import { cn } from "@/lib/utils";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
 import { ClientOnly } from "@/components/shared/client-only";
 import { Icons } from "@/components/shared/icons";
 
+import { useLockBody } from "@/hooks/use-lock-body";
 import { ModeToggle } from "./mode-toggle";
 
 export function NavMobile() {
@@ -29,23 +31,17 @@ export function NavMobile() {
   const links =
     (selectedLayout && configMap[selectedLayout]) || marketingConfig.mainNav;
 
-  // prevent body scroll when modal is open
-  useEffect(() => {
-    if (open) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [open]);
+  useLockBody(open);
 
   return (
     <>
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed right-2 top-2.5 z-50 rounded-full p-2 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted md:hidden",
+          "fixed right-2 top-2.5 rounded-full p-2 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted md:hidden",
           open && "hover:bg-muted active:bg-muted",
         )}
+        style={{ zIndex: Z_INDEX.floatingToggle }}
       >
         {open ? (
           <X className="size-5 text-muted-foreground" />

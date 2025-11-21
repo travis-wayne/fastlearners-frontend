@@ -1,8 +1,13 @@
+import { Z_INDEX } from "@/config/z-index";
+
 export function TailwindIndicator() {
   if (process.env.NODE_ENV === "production") return null;
 
   return (
-    <div className="fixed bottom-1 left-1 z-50 flex size-6 items-center justify-center rounded-full bg-gray-800 p-3 font-mono text-xs text-white">
+    <div
+      className="fixed bottom-1 left-1 flex size-6 items-center justify-center rounded-full bg-gray-800 p-3 font-mono text-xs text-white"
+      style={{ zIndex: Z_INDEX.indicator }}
+    >
       <div className="block sm:hidden">xs</div>
       <div className="hidden sm:max-md:block">sm</div>
       <div className="hidden md:max-lg:block">md</div>

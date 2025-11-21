@@ -2,9 +2,11 @@ import {
   Dispatch,
   SetStateAction,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
+import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
 import { toast } from "sonner";
 
@@ -20,8 +22,14 @@ function DeleteAccountModal({
   showDeleteAccountModal: boolean;
   setShowDeleteAccountModal: Dispatch<SetStateAction<boolean>>;
 }) {
+  const pathname = usePathname();
   const { user, logout } = useAuthStore();
   const [deleting, setDeleting] = useState(false);
+
+  // Close modal on route changes
+  useEffect(() => {
+    setShowDeleteAccountModal(false);
+  }, [pathname, setShowDeleteAccountModal]);
 
   async function deleteAccount() {
     setDeleting(true);

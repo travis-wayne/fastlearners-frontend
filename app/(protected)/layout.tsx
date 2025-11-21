@@ -6,6 +6,7 @@ import { FontProvider } from "@/context/font-provider";
 import { useAuthStore } from "@/store/authStore";
 
 import { sidebarLinks } from "@/config/dashboard";
+import { Z_INDEX } from "@/config/z-index";
 import { useAuthInit } from "@/hooks/useAuthInit";
 import { Breadcrumb } from "@/components/dashboard/breadcrumb";
 import { SearchCommand } from "@/components/dashboard/search-command";
@@ -15,7 +16,6 @@ import {
 } from "@/components/layout/dashboard-sidebar";
 import { ModeToggle } from "@/components/layout/mode-toggle";
 import { UserAccountNav } from "@/components/layout/user-account-nav";
-import { MarqueeMessages } from "@/components/navigation/marquee-messages";
 import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
 import { ProfileCompletionBanner } from "@/components/onboarding/profile-completion-banner";
@@ -46,7 +46,21 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
   }
 
   if (!user) {
-    return null;
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+        <div className="flex flex-col items-center gap-4 rounded-2xl border bg-card px-8 py-10 text-center shadow-sm">
+          <div className="size-10 animate-spin rounded-full border-2 border-primary/60 border-t-transparent" />
+          <div>
+            <p className="text-lg font-semibold text-foreground">
+              Securing your workspace
+            </p>
+            <p className="text-sm text-muted-foreground">
+              Hang tight while we redirect you to the correct destination.
+            </p>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const filteredLinks = sidebarLinks.map((section) => ({
@@ -67,7 +81,10 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
           <DashboardSidebar links={filteredLinks} />
 
           <div className="flex flex-1 flex-col">
-            <header className="sticky top-0 z-50 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8">
+            <header
+              className="sticky top-0 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8"
+              style={{ zIndex: Z_INDEX.navbar }}
+            >
               <MaxWidthWrapper className="flex max-w-full items-center gap-x-3 px-0">
                 <MobileSheetSidebar links={filteredLinks} />
 
@@ -83,7 +100,10 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
               </MaxWidthWrapper>
             </header>
 
-            <div className="sticky top-14 z-40 lg:top-[60px]">
+            <div
+              className="sticky top-14 lg:top-[60px]"
+              style={{ zIndex: Z_INDEX.stickyBanner }}
+            >
               <ProfileCompletionBanner />
             </div>
 
@@ -94,10 +114,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
             </main>
           </div>
 
-          {/* Marquee Messages at bottom - full screen width and sticky */}
-          <div className="fixed inset-x-0 bottom-0 z-40">
-            <MarqueeMessages />
-          </div>
+          {/* TODO: Reintroduce the MarqueeMessages banner once the API is restored. */}
         </div>
       </FontProvider>
     </AcademicProvider>

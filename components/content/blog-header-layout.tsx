@@ -1,23 +1,30 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, usePathname } from "next/navigation";
 import { Check, List } from "lucide-react";
 import { Drawer } from "vaul";
 
 import { BLOG_CATEGORIES } from "@/config/blog";
 import { cn } from "@/lib/utils";
+import { Z_INDEX } from "@/config/z-index";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 export function BlogHeaderLayout() {
   const [open, setOpen] = useState(false);
+  const pathname = usePathname();
   const { slug } = useParams() as { slug?: string };
   const data = BLOG_CATEGORIES.find((category) => category.slug === slug);
 
   const closeDrawer = () => {
     setOpen(false);
   };
+
+  // Close drawer on route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -51,7 +58,7 @@ export function BlogHeaderLayout() {
         </nav>
       </MaxWidthWrapper>
 
-      <Drawer.Root open={open} onClose={closeDrawer}>
+      <Drawer.Root open={open} onOpenChange={setOpen}>
         <Drawer.Trigger
           onClick={() => setOpen(true)}
           className="mb-8 flex w-full items-center border-y p-3 text-foreground/90 md:hidden"
@@ -60,11 +67,15 @@ export function BlogHeaderLayout() {
           <p className="ml-2.5 text-sm font-medium">Categories</p>
         </Drawer.Trigger>
         <Drawer.Overlay
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm"
+          className="fixed inset-0 bg-background/80 backdrop-blur-sm"
+          style={{ zIndex: Z_INDEX.drawerOverlay }}
           onClick={closeDrawer}
         />
         <Drawer.Portal>
-          <Drawer.Content className="fixed inset-x-0 bottom-0 z-50 mt-24 overflow-hidden rounded-t-[10px] border bg-background">
+          <Drawer.Content
+            className="fixed inset-x-0 bottom-0 mt-24 overflow-hidden rounded-t-[10px] border bg-background"
+            style={{ zIndex: Z_INDEX.drawerOverlay + 1 }}
+          >
             <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
               <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
             </div>

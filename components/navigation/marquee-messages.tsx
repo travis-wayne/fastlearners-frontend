@@ -145,6 +145,7 @@ export function MarqueeMessages({
     }
   };
 
+  // TODO: Wire this component back into the dashboard layout when the marquee API is available.
   // Marquee messages feature disabled - hide UI until backend endpoint exists
   return null;
 }

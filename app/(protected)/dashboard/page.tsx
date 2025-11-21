@@ -15,6 +15,15 @@ import {
 } from "@/components/dashboard/role-dashboards";
 import { EmptyPlaceholder } from "@/components/shared/empty-placeholder";
 
+const KNOWN_ROLES = new Set([
+  "student",
+  "guardian",
+  "teacher",
+  "admin",
+  "superadmin",
+  "guest",
+]);
+
 // Loading component with nice animation
 function DashboardLoading() {
   return (
@@ -98,8 +107,21 @@ export default function UnifiedDashboardPage() {
     return <DashboardLoading />;
   }
 
-  // Get the user's primary role (first role in the array)
-  const primaryRole = user.role[0] || "guest";
+  const normalizedRoles = Array.isArray(user.role)
+    ? user.role
+        .filter((role): role is string => typeof role === "string")
+        .map((role) => role.toLowerCase())
+    : [];
+
+  const primaryRole = normalizedRoles.find((role) => KNOWN_ROLES.has(role));
+
+  if (!primaryRole && process.env.NODE_ENV !== "production") {
+    console.warn(
+      "[dashboard] Unable to resolve user role from",
+      user.role,
+      "— rendering fallback UI.",
+    );
+  }
 
   return (
     <motion.div
@@ -108,7 +130,7 @@ export default function UnifiedDashboardPage() {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-background"
     >
-      <RoleDashboard userRole={primaryRole} />
+      <RoleDashboard userRole={primaryRole ?? "unrecognized"} />
     </motion.div>
   );
 }

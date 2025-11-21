@@ -2,10 +2,11 @@ import {
   Dispatch,
   SetStateAction,
   useCallback,
+  useEffect,
   useMemo,
   useState,
 } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
@@ -20,7 +21,13 @@ function SignInModal({
   setShowSignInModal: Dispatch<SetStateAction<boolean>>;
 }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [signInClicked, setSignInClicked] = useState(false);
+
+  // Close modal on route changes
+  useEffect(() => {
+    setShowSignInModal(false);
+  }, [pathname, setShowSignInModal]);
 
   return (
     <Modal showModal={showSignInModal} setShowModal={setShowSignInModal}>
