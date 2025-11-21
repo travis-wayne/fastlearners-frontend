@@ -1,14 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  X,
-  CheckCircle2,
-  XCircle,
-  ArrowLeft,
-  ArrowRight,
-  Clock,
-} from "lucide-react";
+import { X, CheckCircle2, XCircle, ArrowLeft, ArrowRight } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -55,10 +48,13 @@ interface QuestionModalProps {
   onClose: () => void;
   showFeedback?: boolean;
   isOpen: boolean;
+<<<<<<< HEAD
   timeLeft?: number;
   totalTime?: number;
   showTimer?: boolean;
   contestants?: QuestionContestant[];
+=======
+>>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
 }
 
 export function QuestionModal({
@@ -72,10 +68,13 @@ export function QuestionModal({
   showFeedback = false,
   isOpen,
   onClose,
+<<<<<<< HEAD
   timeLeft,
   totalTime,
   showTimer = false,
   contestants = [],
+=======
+>>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
 }: QuestionModalProps) {
   const [showExplanation, setShowExplanation] = useState(false);
 
@@ -89,9 +88,16 @@ export function QuestionModal({
   const isLastQuestion = questionNumber === totalQuestions;
 
   const handleAnswerChange = (value: string) => {
-    onAnswerSelect(value);
+    if (question.type === "multiple-choice") {
+      onAnswerSelect(parseInt(value));
+    } else if (question.type === "true-false") {
+      onAnswerSelect(value);
+    } else {
+      onAnswerSelect(value);
+    }
   };
 
+<<<<<<< HEAD
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -108,10 +114,13 @@ export function QuestionModal({
       .toUpperCase()
       .slice(0, 2);
 
+=======
+>>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
         <DialogHeader>
+<<<<<<< HEAD
           <div className="flex items-center justify-between gap-4">
             <DialogTitle className="text-xl">
               Question {questionNumber} of {totalQuestions}
@@ -158,6 +167,11 @@ export function QuestionModal({
               </Button>
             </div>
           </div>
+=======
+          <DialogTitle className="text-xl">
+            Question {questionNumber} of {totalQuestions}
+          </DialogTitle>
+>>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
         </DialogHeader>
 
         <div className="space-y-6">
@@ -194,18 +208,12 @@ export function QuestionModal({
                   disabled={showFeedback}
                 >
                   {question.options.map((option, index) => {
-                    const optionValue = String(index);
-                    const optionId = `${question.id}-option-${index}`;
-                    const isSelected =
-                      selectedAnswer !== null &&
-                      String(selectedAnswer) === optionValue;
-                    const isCorrectOption =
-                      String(question.correctAnswer).toLowerCase() ===
-                      optionValue.toLowerCase();
+                    const isSelected = selectedAnswer === index;
+                    const isCorrectOption = question.correctAnswer === index;
 
                     return (
                       <div
-                        key={optionId}
+                        key={index}
                         className={cn(
                           "flex items-center space-x-3 rounded-lg border p-4 transition-colors",
                           showFeedback &&
@@ -222,12 +230,12 @@ export function QuestionModal({
                         )}
                       >
                         <RadioGroupItem
-                          value={optionValue}
-                          id={optionId}
+                          value={String(index)}
+                          id={`option-${index}`}
                           className="mt-0.5"
                         />
                         <Label
-                          htmlFor={optionId}
+                          htmlFor={`option-${index}`}
                           className="flex-1 cursor-pointer text-base"
                         >
                           {option}
@@ -255,14 +263,9 @@ export function QuestionModal({
                   disabled={showFeedback}
                 >
                   {["True", "False"].map((option) => {
-                    const optionId = `${question.id}-${option.toLowerCase()}`;
-                    const isSelected =
-                      selectedAnswer !== null &&
-                      String(selectedAnswer).toLowerCase() ===
-                        option.toLowerCase();
+                    const isSelected = selectedAnswer === option;
                     const isCorrectOption =
-                      String(question.correctAnswer).toLowerCase() ===
-                      option.toLowerCase();
+                      question.correctAnswer === option;
 
                     return (
                       <div
@@ -282,9 +285,9 @@ export function QuestionModal({
                           !showFeedback && "hover:bg-muted/50"
                         )}
                       >
-                        <RadioGroupItem value={option} id={optionId} />
+                        <RadioGroupItem value={option} id={option} />
                         <Label
-                          htmlFor={optionId}
+                          htmlFor={option}
                           className="flex-1 cursor-pointer text-base"
                         >
                           {option}

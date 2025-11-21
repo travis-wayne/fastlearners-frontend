@@ -44,8 +44,11 @@ export default function QuizTakePage() {
   const [score, setScore] = useState(0);
   const [showFeedback, setShowFeedback] = useState(false);
   const [startTime, setStartTime] = useState<Date | null>(null);
+<<<<<<< HEAD
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
   const contestants = mockQuizData.competitors as QuestionContestant[];
+=======
+>>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
 
   useEffect(() => {
     if (quizId) {
@@ -102,7 +105,7 @@ export default function QuizTakePage() {
   const handleStartQuiz = () => {
     setIsStarted(true);
     setStartTime(new Date());
-    setIsQuestionModalOpen(true);
+    // Modal will open automatically when isStarted is true
   };
 
   const handleAnswerSelect = (questionId: string, answer: string | number) => {
@@ -320,8 +323,12 @@ export default function QuizTakePage() {
           }
           onNext={handleNextQuestion}
           onPrevious={handlePreviousQuestion}
-          onClose={() => setIsQuestionModalOpen(false)}
+          onClose={() => {
+            // Prevent closing during quiz - could show confirmation dialog
+            // For now, just keep it open
+          }}
           showFeedback={showFeedback}
+<<<<<<< HEAD
           isOpen={isQuestionModalOpen}
           showTimer={quiz.timeLimit > 0}
           timeLeft={quiz.timeLimit > 0 ? timeLeft : undefined}
@@ -352,6 +359,12 @@ export default function QuizTakePage() {
         </Card>
       )}
 
+=======
+          isOpen={true}
+        />
+      )}
+
+>>>>>>> parent of 67531e5 (Add quiz pause/resume and timer display)
       {/* Action Buttons */}
       <div className="flex justify-between">
         <Button
