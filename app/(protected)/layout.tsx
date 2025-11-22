@@ -108,7 +108,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
             </div>
 
             <main className="flex-1 p-4 pb-16 xl:px-8">
-              <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-0 lg:gap-6">
+              <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-4 lg:gap-6 lg:px-0">
                 {children}
               </MaxWidthWrapper>
             </main>

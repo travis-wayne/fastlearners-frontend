@@ -285,7 +285,7 @@ export function StudentDashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto space-y-8 p-4 md:p-6"
+      className="space-y-8"
     >
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
@@ -706,7 +706,7 @@ export function StudentDashboard() {
       </motion.div>
 
       {/* Performance (bars) + Achievements - Original */}
-      <div className="grid gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Weekly Progress - extracted (takes 2 columns) */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <PerformanceSection

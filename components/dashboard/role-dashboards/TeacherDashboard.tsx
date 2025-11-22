@@ -86,7 +86,7 @@ export function TeacherDashboard() {
   return (
     <div className="space-y-8">
       {/* Classes Overview */}
-      <div className="grid gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
         {classes.map((classItem) => (
           <Card key={classItem.id}>
             <CardHeader>
@@ -145,7 +145,7 @@ export function TeacherDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Today's Tasks */}
         <Card>
           <CardHeader>
@@ -252,7 +252,7 @@ export function TeacherDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="cursor-pointer transition-shadow hover:shadow-lg">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
