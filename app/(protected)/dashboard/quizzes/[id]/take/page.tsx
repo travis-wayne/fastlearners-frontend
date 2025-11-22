@@ -11,7 +11,6 @@ import { Progress } from "@/components/ui/progress";
 import {
   QuestionModal,
   QuizQuestion,
-  QuestionContestant,
 } from "@/components/quiz/QuestionModal";
 import { Timer } from "@/components/quiz/Timer";
 import { ScoreDisplay } from "@/components/quiz/ScoreDisplay";
@@ -124,27 +123,6 @@ export default function QuizTakePage() {
       setShowFeedback(false);
     }
   };
-
-  const handleSubmitQuiz = useCallback(() => {
-    if (!quiz) return;
-
-    setIsCompleted(true);
-    setShowFeedback(false);
-
-    let calculatedScore = 0;
-    quiz.questions.forEach((question) => {
-      const userAnswer = answers[question.id];
-      if (
-        userAnswer !== null &&
-        String(userAnswer).toLowerCase() ===
-        String(question.correctAnswer).toLowerCase()
-      ) {
-        calculatedScore += question.points;
-      }
-    });
-
-    setScore(calculatedScore);
-  }, [answers, quiz]);
 
   const handleTimeUp = () => {
     handleSubmitQuiz();
@@ -346,7 +324,6 @@ export default function QuizTakePage() {
           showTimer={quiz.timeLimit > 0}
           timeLeft={quiz.timeLimit > 0 ? timeLeft : undefined}
           totalTime={quiz.timeLimit > 0 ? quiz.timeLimit * 60 : undefined}
-          contestants={contestants}
         />
       )}
 

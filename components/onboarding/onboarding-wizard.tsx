@@ -311,7 +311,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const onboardingSchema = useMemo(
     () =>
       createOnboardingSchema(primaryRole, profile?.username ?? null, profile),
-    [primaryRole, profile?.username, profile],
+    [primaryRole, profile],
   );
 
   type OnboardingFormData = z.infer<

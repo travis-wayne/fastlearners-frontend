@@ -75,7 +75,7 @@ export default function LessonDetailPage() {
     } finally {
       setLoading(false);
     }
-  }, [lessonId]);
+  }, []);
 
   useEffect(() => {
     if (lessonId) {

@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { BookOpen, CheckCircle, PlayCircle, Target } from "lucide-react";
 
 import type { LessonContent as LessonContentType } from "@/lib/types/lessons";
@@ -178,10 +179,13 @@ export function LessonContent({
                           )}
                           {desc.image_path && (
                             <div className="my-2">
-                              <img
+                              <Image
                                 src={desc.image_path}
                                 alt={desc.heading || "Concept illustration"}
+                                width={800}
+                                height={450}
                                 className="h-auto max-w-full rounded-lg"
+                                style={{ width: "100%", height: "auto" }}
                               />
                             </div>
                           )}

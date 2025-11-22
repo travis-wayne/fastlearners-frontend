@@ -101,7 +101,7 @@ export default function LessonsPage() {
     } finally {
       setLoading(false);
     }
-  }, [filters.classId, filters.subjectId]);
+  }, []);
 
   useEffect(() => {
     fetchLessons();

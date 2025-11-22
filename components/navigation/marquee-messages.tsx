@@ -91,7 +91,7 @@ export function MarqueeMessages({
     } finally {
       setLoading(false);
     }
-  }, [apiEndpoint]);
+  }, []);
 
   const addMessage = async () => {
     // API endpoint removed - marquee messages feature disabled

@@ -46,6 +46,16 @@ interface QuestionModalProps {
   timeLeft?: number;
   totalTime?: number;
   showTimer?: boolean;
+  contestants?: QuestionContestant[];
+}
+
+function getInitials(name: string) {
+  return name
+    .split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
 }
 
 export function QuestionModal({
@@ -62,6 +72,7 @@ export function QuestionModal({
   timeLeft,
   totalTime,
   showTimer = false,
+  contestants,
 }: QuestionModalProps) {
   const [showExplanation, setShowExplanation] = useState(false);
 

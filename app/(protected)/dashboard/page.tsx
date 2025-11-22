@@ -109,7 +109,7 @@ export default function UnifiedDashboardPage() {
 
   const normalizedRoles = Array.isArray(user.role)
     ? user.role
-        .filter((role): role is string => typeof role === "string")
+        .filter((role) => typeof role === "string")
         .map((role) => role.toLowerCase())
     : [];
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   getSelectiveRequirement,
@@ -57,18 +57,7 @@ export function SubjectSelectionForm({
   const requiredElectives = getSelectiveRequirement(classLevel);
   const { user } = useAuthStore();
 
-  useEffect(() => {
-    fetchSubjects();
-  }, []);
-
-  useEffect(() => {
-    // Refetch subjects when user's class changes
-    if (user?.class !== classLevel) {
-      fetchSubjects();
-    }
-  }, [user?.class]);
-
-  const fetchSubjects = async () => {
+  const fetchSubjects = useCallback(async () => {
     try {
       let data;
 
@@ -106,7 +95,20 @@ export function SubjectSelectionForm({
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    fetchSubjects();
+  }, [fetchSubjects]);
+
+  useEffect(() => {
+    // Refetch subjects when user's class changes
+    if (user?.class !== classLevel) {
+      fetchSubjects();
+    }
+  }, [user?.class, classLevel, fetchSubjects]);
+
+
 
   const handleSubmitCompulsory = async () => {
     if (!selectedCompulsory) {
