@@ -1,6 +1,6 @@
 import { NavMobile } from "@/components/layout/mobile-nav";
 import { NavBar } from "@/components/layout/navbar";
-import { SiteFooter } from "@/components/layout/site-footer";
+import FooterSection from "@/components/sections/footer-section";
 
 interface MarketingLayoutProps {
   children: React.ReactNode;
@@ -8,11 +8,11 @@ interface MarketingLayoutProps {
 
 export default function MarketingLayout({ children }: MarketingLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-slate-950">
       <NavMobile />
       <NavBar scroll={true} />
       <main className="flex-1">{children}</main>
-      <SiteFooter />
+      <FooterSection />
     </div>
   );
 }
