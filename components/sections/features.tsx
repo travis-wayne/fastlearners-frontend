@@ -13,9 +13,8 @@ export default function Features() {
         <MaxWidthWrapper>
           <HeaderSection
             label="Features"
-            title="Discover all features."
-            subtitle="Harum quae dolore inventore repudiandae? orrupti aut temporibus
-          ariatur."
+            title="Everything You Need to Excel"
+            subtitle="From progress tracking to past questions, leaderboards to personalized learning — discover the powerful features that make Fastlearners the ultimate study companion for Nigerian students."
           />
 
           <div className="mt-12 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

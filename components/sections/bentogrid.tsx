@@ -27,7 +27,7 @@ export default function BentoGrid() {
                 </span>
               </div>
               <h2 className="mt-6 text-center font-heading text-3xl md:text-4xl lg:text-[40px]">
-                Customizable
+                Curriculum Coverage
               </h2>
             </div>
           </div>
@@ -90,11 +90,10 @@ export default function BentoGrid() {
               </div>
               <div className="relative z-10 mt-8 space-y-1.5 text-center">
                 <h2 className="text-lg font-medium text-foreground">
-                  Secure by default
+                  Secure & Private
                 </h2>
                 <p className="text-muted-foreground">
-                  Provident fugit and vero voluptate. magnam magni doloribus
-                  dolores voluptates a sapiente nisi.
+                  Your data is protected with end-to-end encryption, secure authentication, and role-based access control. We take student privacy seriously.
                 </p>
               </div>
             </div>
@@ -187,11 +186,10 @@ export default function BentoGrid() {
               </div>
               <div className="relative z-10 mt-8 space-y-1.5 text-center">
                 <h2 className="text-lg font-medium text-foreground">
-                  Faster than light
+                  Performance Analytics
                 </h2>
                 <p className="text-muted-foreground">
-                  Provident fugit vero voluptate. magnam magni doloribus dolores
-                  voluptates inventore nisi.
+                  Detailed insights into your learning journey with visual progress charts, mastery heatmaps, and performance breakdowns by topic and subject.
                 </p>
               </div>
             </div>
@@ -219,11 +217,10 @@ export default function BentoGrid() {
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-lg font-medium text-foreground">
-                    Faster than light
+                    Real-Time Progress
                   </h2>
                   <p className="text-muted-foreground">
-                    Provident fugit vero voluptate. Voluptates a sapiente
-                    inventore nisi.
+                    Track your learning in real-time with live updates on completed lessons, quiz scores, and topic mastery across all subjects.
                   </p>
                 </div>
               </div>
@@ -304,11 +301,10 @@ export default function BentoGrid() {
                 </div>
                 <div className="space-y-2">
                   <h2 className="text-lg font-medium text-foreground">
-                    Keep your loved ones safe
+                    Collaborative Learning
                   </h2>
                   <p className="text-muted-foreground">
-                    Voluptate. magnam magni doloribus dolores voluptates a
-                    sapiente.
+                    Connect with classmates, compete on leaderboards, and learn together in a supportive community of Nigerian students.
                   </p>
                 </div>
               </div>

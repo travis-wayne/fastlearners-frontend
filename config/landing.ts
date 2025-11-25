@@ -2,50 +2,50 @@ import { FeatureLdg, InfoLdg, TestimonialType } from "types";
 
 export const infos: InfoLdg[] = [
   {
-    title: "Empower your projects",
+    title: "Curriculum-Perfect Learning",
     description:
-      "Unlock the full potential of your projects with our open-source SaaS platform. Collaborate seamlessly, innovate effortlessly, and scale limitlessly.",
+      "Every lesson, quiz, and study pack is mapped to the Nigerian Secondary School Curriculum (JSS1–SS3). Learn exactly what matters for your exams with content created by expert educators and aligned with WAEC, NECO, and JAMB standards.",
     image: "/_static/illustrations/work-from-home.jpg",
     list: [
       {
-        title: "Collaborative",
-        description: "Work together with your team members in real-time.",
+        title: "Complete Coverage",
+        description: "All subjects and topics from JSS1 to SS3 fully covered.",
         icon: "laptop",
       },
       {
-        title: "Innovative",
-        description: "Stay ahead of the curve with access constant updates.",
+        title: "Exam-Aligned",
+        description: "Practice questions and lessons mirror actual exam formats.",
         icon: "settings",
       },
       {
-        title: "Scalable",
+        title: "Expert Content",
         description:
-          "Our platform offers the scalability needed to adapt to your needs.",
+          "Developed by experienced Nigerian educators and curriculum specialists.",
         icon: "search",
       },
     ],
   },
   {
-    title: "Seamless Integration",
+    title: "Personalized Learning Experience",
     description:
-      "Integrate our open-source SaaS seamlessly into your existing workflows. Effortlessly connect with your favorite tools and services for a streamlined experience.",
+      "Our platform adapts to how you learn. Get personalized recommendations, adaptive quizzes that match your skill level, and smart study reminders that keep you on track. Track your progress with detailed analytics and see exactly where you excel and where you need more practice.",
     image: "/_static/illustrations/work-from-home.jpg",
     list: [
       {
-        title: "Flexible",
+        title: "Adaptive Quizzes",
         description:
-          "Customize your integrations to fit your unique requirements.",
+          "Difficulty adjusts automatically as you improve and master topics.",
         icon: "laptop",
       },
       {
-        title: "Efficient",
-        description: "Streamline your processes and reducing manual effort.",
+        title: "Progress Tracking",
+        description: "Visual dashboards show mastery levels across all subjects.",
         icon: "search",
       },
       {
-        title: "Reliable",
+        title: "Smart Recommendations",
         description:
-          "Rely on our robust infrastructure and comprehensive documentation.",
+          "AI-powered suggestions guide you to the right content at the right time.",
         icon: "settings",
       },
     ],
@@ -54,97 +54,104 @@ export const infos: InfoLdg[] = [
 
 export const features: FeatureLdg[] = [
   {
-    title: "Feature 1",
+    title: "Progress Tracking",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "nextjs",
+      "Stay on top of your learning journey with intelligent progress tracking. Every lesson, quiz, and topic is automatically recorded to show how far you've come.",
+    link: "/features",
+    icon: "barChart3",
   },
   {
-    title: "Feature 2",
+    title: "Quiz Platform",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "google",
+      "Turn learning into fun challenges. Test your knowledge across subjects, compete with classmates, and earn badges for excellence.",
+    link: "/features",
+    icon: "testTube",
   },
   {
-    title: "Feature 3",
+    title: "Past Questions",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "gitHub",
+      "Access comprehensive library of WAEC, NECO, and JAMB past questions organized by subject and year to build exam confidence.",
+    link: "/features",
+    icon: "fileCheck",
   },
   {
-    title: "Feature 4",
+    title: "Leaderboard",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "laptop",
+      "Learn, compete, and rise to the top! Rankings based on quiz performance, activity level, and consistency inspire engagement.",
+    link: "/features",
+    icon: "trophy",
   },
   {
-    title: "Feature 5",
+    title: "Personalized Learning",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "user",
+      "Our platform learns how you study and tailors content accordingly with adaptive quizzes and smart recommendations.",
+    link: "/features",
+    icon: "graduationCap",
   },
   {
-    title: "Feature 6",
+    title: "Guardian Dashboard",
     description:
-      "Amet praesentium deserunt ex commodi tempore fuga voluptatem. Sit, sapiente.",
-    link: "/",
-    icon: "copy",
+      "Parents and guardians get clear visibility into student progress with detailed reports and performance insights.",
+    link: "/features",
+    icon: "users",
   },
 ];
 
 export const testimonials: TestimonialType[] = [
   {
-    name: "John Doe",
-    job: "Full Stack Developer",
-    image: "https://randomuser.me/api/portraits/men/1.jpg",
+    name: "Chioma Okafor",
+    job: "SS3 Student, Lagos",
+    image: "https://randomuser.me/api/portraits/women/1.jpg",
     review:
-      "The next-saas-stripe-starter repo has truly revolutionized my development workflow. With its comprehensive features and seamless integration with Stripe, I've been able to build and deploy projects faster than ever before. The documentation is clear and concise, making it easy to navigate through the setup process. I highly recommend next-saas-stripe-starter to any developer.",
+      "Fastlearners completely changed how I prepare for WAEC. The past questions are organized perfectly, and the adaptive quizzes helped me identify my weak areas in Mathematics. I improved my mock exam scores by 40% in just two months!",
   },
   {
-    name: "Alice Smith",
-    job: "UI/UX Designer",
-    image: "https://randomuser.me/api/portraits/women/2.jpg",
+    name: "Ibrahim Musa",
+    job: "JSS2 Student, Abuja",
+    image: "https://randomuser.me/api/portraits/men/2.jpg",
     review:
-      "Thanks to next-saas-stripe-starter, I've been able to create modern and attractive user interfaces in record time. The starter kit provides a solid foundation for building sleek and intuitive designs, allowing me to focus more on the creative aspects of my work.",
+      "I love the leaderboard feature! Competing with my classmates makes studying fun. The lessons are easy to understand, and I can learn at my own pace. My grades have improved significantly since I started using Fastlearners.",
   },
   {
-    name: "David Johnson",
-    job: "DevOps Engineer",
-    image: "https://randomuser.me/api/portraits/men/3.jpg",
+    name: "Mrs. Adebayo",
+    job: "Parent & Guardian, Ibadan",
+    image: "https://randomuser.me/api/portraits/women/3.jpg",
     review:
-      "Thanks to next-saas-stripe-starter, I was able to streamline the entire process and get payments up and running in no time. ",
+      "As a parent, the Guardian Dashboard gives me peace of mind. I can see exactly what my daughter is studying, track her progress, and know where she needs extra support. It's like having a window into her learning journey.",
   },
   {
-    name: "Michael Wilson",
-    job: "Project Manager",
-    image: "https://randomuser.me/api/portraits/men/5.jpg",
+    name: "Mr. Okonkwo",
+    job: "Secondary School Teacher, Port Harcourt",
+    image: "https://randomuser.me/api/portraits/men/4.jpg",
     review:
-      "I'm impressed by the quality of code and clear documentation of next-saas-stripe-starter. Kudos to the team!",
+      "Fastlearners has been an invaluable teaching aid. I can assign lessons to my students, monitor their performance in real-time, and identify who needs extra help. The curriculum alignment is perfect — everything matches what we teach in class.",
   },
   {
-    name: "Sophia Garcia",
-    job: "Data Analyst",
-    image: "https://randomuser.me/api/portraits/women/6.jpg",
+    name: "Blessing Okoro",
+    job: "SS1 Student, Enugu",
+    image: "https://randomuser.me/api/portraits/women/5.jpg",
     review:
-      "next-saas-stripe-starter provided me with the tools I needed to efficiently manage user data. Thank you so much!",
+      "The personalized recommendations are amazing! Fastlearners knows exactly what topics I struggle with and suggests the right lessons. I went from failing Chemistry to getting B's consistently. Thank you, Fastlearners!",
   },
   {
-    name: "Emily Brown",
-    job: "Marketing Manager",
-    image: "https://randomuser.me/api/portraits/women/4.jpg",
+    name: "Tunde Adeyemi",
+    job: "SS2 Student, Ogun State",
+    image: "https://randomuser.me/api/portraits/men/6.jpg",
     review:
-      "next-saas-stripe-starter has been an invaluable asset in my role as a marketing manager. With its seamless integration with Stripe, I've been able to launch targeted marketing campaigns with built-in payment functionality, allowing us to monetize our products and services more effectively.",
+      "Preparing for JAMB used to stress me out, but Fastlearners made it manageable. The timed mock exams simulate real exam conditions, and the detailed explanations help me understand my mistakes. I feel confident and ready!",
   },
   {
-    name: "Jason Stan",
-    job: "Web Designer",
-    image: "https://randomuser.me/api/portraits/men/9.jpg",
+    name: "Mrs. Nwosu",
+    job: "School Administrator, Anambra",
+    image: "https://randomuser.me/api/portraits/women/7.jpg",
     review:
-      "Thanks to next-saas-stripe-starter, I've been able to create modern and attractive user interfaces in record time. The starter kit provides a solid foundation for building sleek and intuitive designs, allowing me to focus more on the creative aspects of my work.",
+      "We integrated Fastlearners across our entire school, and the results have been outstanding. Student engagement is up, exam scores are improving, and teachers have powerful tools to track progress. It's a complete digital learning solution.",
+  },
+  {
+    name: "David Eze",
+    job: "O'Level Continuing Student, Kaduna",
+    image: "https://randomuser.me/api/portraits/men/8.jpg",
+    review:
+      "I'm retaking my WAEC exams, and Fastlearners has been my study partner. The structured lessons and comprehensive past questions helped me focus on what really matters. I can study anywhere, anytime — perfect for adult learners like me.",
   },
 ];
