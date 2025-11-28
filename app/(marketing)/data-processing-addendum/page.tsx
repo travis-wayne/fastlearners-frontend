@@ -21,10 +21,10 @@ export default function DataProcessingAddendumPage() {
             1. Parties
           </h2>
           <p className="text-muted-foreground">This Data Processing Addendum (“DPA”) is between:</p>
-          <div className="pl-6 border-l-2 border-muted space-y-2">
-            <p className="text-foreground font-medium">Fastlearners Limited (“Processor”)</p>
+          <div className="space-y-2 border-l-2 border-muted pl-6">
+            <p className="font-medium text-foreground">Fastlearners Limited (“Processor”)</p>
             <p className="text-muted-foreground">and</p>
-            <p className="text-foreground font-medium">[School/NGO/Partner] (“Controller”)</p>
+            <p className="font-medium text-foreground">[School/NGO/Partner] (“Controller”)</p>
           </div>
         </section>
 
@@ -91,7 +91,7 @@ export default function DataProcessingAddendumPage() {
             <li>Cloud hosting</li>
             <li>Analytics services</li>
           </ul>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             All sub-processors are bound by GDPR/NDPR-compliant agreements.
           </p>
         </section>

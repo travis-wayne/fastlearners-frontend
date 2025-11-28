@@ -19,7 +19,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             1. Purpose
           </h2>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="leading-relaxed text-muted-foreground">
             This policy explains how Fastlearners protects children’s personal data under GDPR Article 8 and NDPR 2.5.
           </p>
         </section>
@@ -29,11 +29,11 @@ export default function ChildrensDataProtectionPolicyPage() {
             2. Definition of a Child
           </h2>
           <p className="text-muted-foreground">A child is:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Under 18 years (NDPR)</li>
             <li>Under 16 years (GDPR default; varies by region)</li>
           </ul>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Fastlearners applies the highest protection standard across all regions.
           </p>
         </section>
@@ -42,7 +42,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             3. Types of Data Collected
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Name</li>
             <li>Age/class</li>
             <li>Address (Limited to Location)</li>
@@ -56,7 +56,7 @@ export default function ChildrensDataProtectionPolicyPage() {
             4. Parental Consent
           </h2>
           <p className="text-muted-foreground">We use verifiable parental consent methods:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Email verification</li>
             <li>SMS verification</li>
             <li>School-issued codes</li>
@@ -67,7 +67,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             5. Parents/Guardians Have Rights To:
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Access their child’s data</li>
             <li>Correct inaccurate data</li>
             <li>Request deletion</li>
@@ -88,7 +88,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             7. Data Retention
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Children’s accounts are deleted upon parent request</li>
             <li>Data older than 24 months is automatically deleted</li>
           </ul>
@@ -98,7 +98,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             8. Security Measures
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Strict encryption</li>
             <li>Access control</li>
             <li>Staff background checks</li>

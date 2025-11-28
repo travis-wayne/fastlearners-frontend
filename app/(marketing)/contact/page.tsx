@@ -44,8 +44,8 @@ export default function ContactPage() {
               Touch
             </span>
           </h1>
-          <p className="mx-auto max-w-3xl text-lg text-muted-foreground leading-relaxed">
-            Have questions or need support? We're here to help! Reach out to us through any of the channels below.
+          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
+            Have questions or need support? We&apos;re here to help! Reach out to us through any of the channels below.
           </p>
         </div>
 
@@ -57,7 +57,7 @@ export default function ContactPage() {
                 Send Us a Message
               </h2>
               <p className="text-muted-foreground">
-                Fill out the form below and we'll get back to you as soon as possible.
+                Fill out the form below and we&apos;ll get back to you as soon as possible.
               </p>
             </div>
 
@@ -127,20 +127,20 @@ export default function ContactPage() {
                   onChange={handleChange}
                   required
                   rows={6}
-                  className="w-full rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 resize-none"
+                  className="w-full resize-none rounded-lg border border-border bg-background px-4 py-3 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20"
                   placeholder="Tell us how we can help you..."
                 />
               </div>
 
               {submitStatus === "success" && (
-                <div className="rounded-lg bg-green-500/10 border border-green-500/20 p-4 text-green-600 dark:text-green-400">
+                <div className="rounded-lg border border-green-500/20 bg-green-500/10 p-4 text-green-600 dark:text-green-400">
                   <p className="font-medium">Message sent successfully!</p>
-                  <p className="text-sm">We'll get back to you within 24 hours.</p>
+                  <p className="text-sm">We&apos;ll get back to you within 24 hours.</p>
                 </div>
               )}
 
               {submitStatus === "error" && (
-                <div className="rounded-lg bg-destructive/10 border border-destructive/20 p-4 text-destructive">
+                <div className="rounded-lg border border-destructive/20 bg-destructive/10 p-4 text-destructive">
                   <p className="font-medium">Something went wrong!</p>
                   <p className="text-sm">Please try again or contact us directly via email.</p>
                 </div>
@@ -149,7 +149,7 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50"
               >
                 {isSubmitting ? "Sending..." : "Send Message"}
               </button>
@@ -169,10 +169,10 @@ export default function ContactPage() {
 
             <div className="space-y-6">
               {/* Email */}
-              <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary">
+              <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-md">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <svg className="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <svg className="size-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
                   </div>
@@ -189,10 +189,10 @@ export default function ContactPage() {
               </div>
 
               {/* Phone */}
-              <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary">
+              <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-md">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <svg className="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <svg className="size-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
                     </svg>
                   </div>
@@ -209,10 +209,10 @@ export default function ContactPage() {
               </div>
 
               {/* Address */}
-              <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-md hover:border-primary">
+              <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-md">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
-                    <svg className="h-6 w-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-primary/10">
+                    <svg className="size-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                     </svg>
@@ -234,8 +234,8 @@ export default function ContactPage() {
               <h3 className="mb-4 text-xl font-semibold text-foreground">Other Support Channels</h3>
               <div className="space-y-3">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                    <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+                    <svg className="size-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                   </div>
@@ -245,8 +245,8 @@ export default function ContactPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                    <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+                    <svg className="size-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
@@ -256,8 +256,8 @@ export default function ContactPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/10">
-                    <svg className="h-4 w-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
+                    <svg className="size-4 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                     </svg>
                   </div>
@@ -283,19 +283,19 @@ export default function ContactPage() {
             <div className="flex flex-wrap justify-center gap-4">
               <a
                 href="/features"
-                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:shadow-md hover:border-primary"
+                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
               >
                 View Features
               </a>
               <a
                 href="/pricing"
-                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:shadow-md hover:border-primary"
+                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
               >
                 Pricing Plans
               </a>
               <a
                 href="/about"
-                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:shadow-md hover:border-primary"
+                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
               >
                 About Us
               </a>

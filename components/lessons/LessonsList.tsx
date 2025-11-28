@@ -42,7 +42,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
   }, [onSelect, lesson.id]);
 
   const statusColor =
-    lesson.status === "active"
+    lesson.status === "in_progress"
       ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
       : "bg-slate-100 text-slate-800 dark:bg-slate-900/20 dark:text-slate-400";
 

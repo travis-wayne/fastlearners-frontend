@@ -56,7 +56,7 @@ export default function CookiePolicyPage() {
           <div className="space-y-3">
             <h3 className="text-xl font-medium text-foreground">a. Strictly Necessary Cookies</h3>
             <p className="text-muted-foreground">Required for the app to function.</p>
-            <div className="pl-4 border-l-2 border-muted">
+            <div className="border-l-2 border-muted pl-4">
               <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
               <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 <li>User authentication cookies</li>
@@ -72,7 +72,7 @@ export default function CookiePolicyPage() {
           <div className="space-y-3 pt-2">
             <h3 className="text-xl font-medium text-foreground">b. Functional Cookies</h3>
             <p className="text-muted-foreground">Improve app usability.</p>
-            <div className="pl-4 border-l-2 border-muted">
+            <div className="border-l-2 border-muted pl-4">
               <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
               <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 <li>Saving login state</li>
@@ -84,7 +84,7 @@ export default function CookiePolicyPage() {
           <div className="space-y-3 pt-2">
             <h3 className="text-xl font-medium text-foreground">c. Analytics Cookies</h3>
             <p className="text-muted-foreground">Used to understand how users interact with the app.</p>
-            <div className="pl-4 border-l-2 border-muted">
+            <div className="border-l-2 border-muted pl-4">
               <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
               <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 <li>Google Analytics (if used)</li>

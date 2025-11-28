@@ -15,12 +15,17 @@ export interface SubjectWithSlug {
 
 export interface Lesson {
   id: number;
-  title: string;
+  title?: string; // Optional for backward compatibility
+  topic?: string; // API returns this
   description?: string;
-  subject_id: number;
-  class_id: number;
-  term_id: number;
-  week_id: number;
+  subject_id?: number; // Optional - API may return subject as string
+  class_id?: number; // Optional - API may return class as string
+  term_id?: number; // Optional - API may return term as string
+  week_id?: number; // Optional - API may return week as number
+  class?: string; // API returns this
+  subject?: string; // API returns this
+  term?: string; // API returns this
+  week?: number | string; // API returns this
   created_at: string;
   updated_at: string;
   status?: "not_started" | "in_progress" | "completed";
@@ -211,4 +216,33 @@ export interface TopicOverviewResponse {
   message: string;
   content: { overview: TopicOverview } | null;
   code: number;
+}
+
+export interface LessonCheckResponse {
+  success: boolean;
+  message: string;
+  content: {
+    check?: {
+      is_completed: boolean;
+      [key: string]: any;
+    };
+    [key: string]: any;
+  } | null;
+  code: number;
+}
+
+export interface ExerciseCheckResponse {
+  success: boolean;
+  message: string;
+  content: any | null;
+  code: number;
+  isCorrect?: boolean;
+  errors?: any;
+}
+
+export interface LessonFilters {
+  class: string;
+  subject: string;
+  term: string;
+  week: string;
 }
