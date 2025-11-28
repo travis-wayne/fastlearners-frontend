@@ -177,7 +177,7 @@ export function LessonContent({
                               {desc.description}
                             </p>
                           )}
-                          {desc.image_path && (
+                          {desc.image_path && (desc.image_path.startsWith('/') || desc.image_path.startsWith('http')) && (
                             <div className="my-2">
                               <Image
                                 src={desc.image_path}

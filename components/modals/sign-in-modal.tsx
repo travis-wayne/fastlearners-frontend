@@ -47,7 +47,6 @@ function SignInModal({
           <Button
             variant="default"
             onClick={() => {
-              setShowSignInModal(false);
               router.push("/auth/register");
             }}
           >
@@ -56,7 +55,6 @@ function SignInModal({
           <Button
             variant="outline"
             onClick={() => {
-              setShowSignInModal(false);
               router.push("/auth/login");
             }}
           >

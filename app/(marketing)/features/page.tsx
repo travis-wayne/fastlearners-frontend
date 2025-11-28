@@ -17,7 +17,7 @@ export default function FeaturesPage() {
               Every Learner
             </span>
           </h1>
-          <p className="mx-auto max-w-3xl text-lg text-muted-foreground leading-relaxed">
+          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
             From personalized learning paths to exam preparation tools, Fastlearners provides everything you need to excel academically.
           </p>
         </div>
@@ -29,15 +29,15 @@ export default function FeaturesPage() {
               Why Choose Fastlearners App
             </h2>
             <p className="mx-auto max-w-3xl text-muted-foreground">
-              Fastlearners isn't just another study tool — it's a purpose-built learning ecosystem created for Nigerian secondary school students, teachers, and guardians.
+              Fastlearners isn&apos;t just another study tool — it&apos;s a purpose-built learning ecosystem created for Nigerian secondary school students, teachers, and guardians.
             </p>
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {/* Feature 1 */}
             <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
-                <svg className="h-7 w-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 mb-4">
+                <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -63,8 +63,8 @@ export default function FeaturesPage() {
 
             {/* Feature 2 */}
             <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
-                <svg className="h-7 w-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 mb-4">
+                <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </div>
@@ -90,8 +90,8 @@ export default function FeaturesPage() {
 
             {/* Feature 3 */}
             <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
-                <svg className="h-7 w-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 mb-4">
+                <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
@@ -117,14 +117,14 @@ export default function FeaturesPage() {
 
             {/* Feature 4 */}
             <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
-                <svg className="h-7 w-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 mb-4">
+                <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
               <h3 className="mb-3 text-xl font-semibold text-foreground">Actionable Insights</h3>
               <p className="mb-4 text-muted-foreground">
-                Clear dashboards showing what's mastered, what's weak, and where to focus next with visual progress charts and mastery heatmaps.
+                Clear dashboards showing what&apos;s mastered, what&apos;s weak, and where to focus next with visual progress charts and mastery heatmaps.
               </p>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start">
@@ -144,8 +144,8 @@ export default function FeaturesPage() {
 
             {/* Feature 5 */}
             <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
-                <svg className="h-7 w-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 mb-4">
+                <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
               </div>
@@ -171,8 +171,8 @@ export default function FeaturesPage() {
 
             {/* Feature 6 */}
             <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:shadow-lg hover:border-primary">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
-                <svg className="h-7 w-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 mb-4">
+                <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                 </svg>
               </div>
@@ -213,7 +213,7 @@ export default function FeaturesPage() {
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Progress Tracking</h3>
               <p className="text-muted-foreground">
-                Stay on top of your learning journey with intelligent progress tracking. Every lesson, quiz, and topic is automatically recorded to show how far you've come.
+                Stay on top of your learning journey with intelligent progress tracking. Every lesson, quiz, and topic is automatically recorded to show how far you&apos;ve come.
               </p>
             </div>
 
@@ -288,8 +288,8 @@ export default function FeaturesPage() {
 
           <div className="grid gap-8 lg:grid-cols-3">
             <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-8 shadow-lg">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <svg className="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
@@ -318,14 +318,14 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-8 shadow-lg">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <svg className="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
               <h3 className="mb-3 text-2xl font-bold text-foreground">Guardian Dashboard</h3>
               <p className="mb-4 text-muted-foreground">
-                Stay connected with your child's learning progress with clear, actionable insights.
+                Stay connected with your child&apos;s learning progress with clear, actionable insights.
               </p>
               <ul className="space-y-2 text-sm text-muted-foreground">
                 <li className="flex items-start">
@@ -348,8 +348,8 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-8 shadow-lg">
-              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-                <svg className="h-8 w-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                 </svg>
@@ -392,7 +392,7 @@ export default function FeaturesPage() {
           </div>
 
           <div className="relative">
-            <div className="absolute left-8 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent hidden md:block"></div>
+            <div className="absolute inset-y-0 left-8 hidden w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent md:block"></div>
             
             <div className="space-y-8">
               {[
@@ -407,7 +407,7 @@ export default function FeaturesPage() {
                 { num: 9, title: "Leaderboard", desc: "Compete with peers and climb the ranks to celebrate academic excellence." },
               ].map((step) => (
                 <div key={step.num} className="relative flex items-start gap-6">
-                  <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-2xl font-bold text-primary-foreground shadow-lg">
+                  <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-2xl font-bold text-primary-foreground shadow-lg">
                     {step.num}
                   </div>
                   <div className="flex-1 pt-2">
@@ -433,8 +433,8 @@ export default function FeaturesPage() {
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
@@ -445,20 +445,20 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
               </div>
               <h3 className="mb-2 font-semibold text-foreground">Guardians</h3>
               <p className="text-sm text-muted-foreground">
-                Monitor your child's learning activities and celebrate milestones together.
+                Monitor your child&apos;s learning activities and celebrate milestones together.
               </p>
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
               </div>
@@ -469,8 +469,8 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                 </svg>
               </div>
@@ -481,20 +481,20 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <h3 className="mb-2 font-semibold text-foreground">O'Level Learners</h3>
+              <h3 className="mb-2 font-semibold text-foreground">O&apos;Level Learners</h3>
               <p className="text-sm text-muted-foreground">
                 Study anywhere, anytime with structured lessons and revision packs.
               </p>
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
               </div>
@@ -505,8 +505,8 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
@@ -517,8 +517,8 @@ export default function FeaturesPage() {
             </div>
 
             <div className="rounded-lg border-2 border-primary/20 bg-card p-6 text-center shadow-sm">
-              <div className="mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 mx-auto">
-                <svg className="h-7 w-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="mx-auto mb-4 flex size-14 items-center justify-center rounded-full bg-primary/10">
+                <svg className="size-7 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>

@@ -23,10 +23,10 @@ export default function CookiePolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             1. Introduction
           </h2>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="leading-relaxed text-muted-foreground">
             Fastlearners Limited (“Fastlearners”, “we”, “our”) uses cookies and similar tracking technologies on the Fastlearners App and website to improve functionality, analyze performance, and enhance user experience.
           </p>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="leading-relaxed text-muted-foreground">
             This Cookie Policy explains what cookies are, why we use them, and how users can control them.
           </p>
         </section>
@@ -35,12 +35,12 @@ export default function CookiePolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             2. What Are Cookies?
           </h2>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="leading-relaxed text-muted-foreground">
             Cookies are small text files stored on your device when you access our app or website. They help us remember your preferences and understand how you use our services.
           </p>
           <div className="space-y-2">
-            <p className="text-muted-foreground font-medium">We also use:</p>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+            <p className="font-medium text-muted-foreground">We also use:</p>
+            <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Local storage</li>
               <li>Session storage</li>
               <li>SDK/device identifiers (only for app functionality)</li>
@@ -57,14 +57,14 @@ export default function CookiePolicyPage() {
             <h3 className="text-xl font-medium text-foreground">a. Strictly Necessary Cookies</h3>
             <p className="text-muted-foreground">Required for the app to function.</p>
             <div className="pl-4 border-l-2 border-muted">
-              <p className="text-sm font-medium text-foreground mb-2">Examples:</p>
-              <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-sm">
+              <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
+              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 <li>User authentication cookies</li>
                 <li>Security and fraud-prevention cookies</li>
                 <li>Session management</li>
               </ul>
             </div>
-            <p className="text-sm font-medium text-red-500 flex items-center gap-2">
+            <p className="flex items-center gap-2 text-sm font-medium text-red-500">
               <span>🛑</span> Cannot be disabled.
             </p>
           </div>
@@ -73,8 +73,8 @@ export default function CookiePolicyPage() {
             <h3 className="text-xl font-medium text-foreground">b. Functional Cookies</h3>
             <p className="text-muted-foreground">Improve app usability.</p>
             <div className="pl-4 border-l-2 border-muted">
-              <p className="text-sm font-medium text-foreground mb-2">Examples:</p>
-              <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-sm">
+              <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
+              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 <li>Saving login state</li>
                 <li>Storing preferences (theme, language, class level)</li>
               </ul>
@@ -85,13 +85,13 @@ export default function CookiePolicyPage() {
             <h3 className="text-xl font-medium text-foreground">c. Analytics Cookies</h3>
             <p className="text-muted-foreground">Used to understand how users interact with the app.</p>
             <div className="pl-4 border-l-2 border-muted">
-              <p className="text-sm font-medium text-foreground mb-2">Examples:</p>
-              <ul className="list-disc pl-4 space-y-1 text-muted-foreground text-sm">
+              <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
+              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
                 <li>Google Analytics (if used)</li>
                 <li>App crash/usage analytics</li>
               </ul>
             </div>
-            <p className="text-sm text-muted-foreground italic">We anonymize IP addresses where possible.</p>
+            <p className="text-sm italic text-muted-foreground">We anonymize IP addresses where possible.</p>
           </div>
 
           <div className="space-y-3 pt-2">
@@ -102,7 +102,7 @@ export default function CookiePolicyPage() {
           <div className="space-y-3 pt-2">
             <h3 className="text-xl font-medium text-foreground">e. Third-Party Cookies</h3>
             <p className="text-muted-foreground">These may come from:</p>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+            <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Hosting providers</li>
               <li>Analytics services</li>
               <li>Payment gateways (if added later)</li>
@@ -115,7 +115,7 @@ export default function CookiePolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             4. Why We Use Cookies
           </h2>
-          <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+          <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
             <li>To keep you signed in</li>
             <li>To personalize educational content</li>
             <li>To analyze app performance</li>
@@ -129,7 +129,7 @@ export default function CookiePolicyPage() {
             5. Legal Basis for Using Cookies
           </h2>
           <p className="text-muted-foreground">Under NDPR & GDPR, our legal bases include:</p>
-          <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+          <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
             <li><span className="font-medium text-foreground">Legitimate interest</span> (security, functionality)</li>
             <li><span className="font-medium text-foreground">Consent</span> (for optional cookies such as analytics)</li>
           </ul>
@@ -140,12 +140,12 @@ export default function CookiePolicyPage() {
             6. How to Manage or Disable Cookies
           </h2>
           <p className="text-muted-foreground">Users can:</p>
-          <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+          <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
             <li>Disable cookies through device/app settings</li>
             <li>Disable analytics in the app privacy settings (if available)</li>
             <li>Clear stored cookies from browser or device cache</li>
           </ul>
-          <div className="bg-muted/50 p-4 rounded-lg border border-border">
+          <div className="rounded-lg border border-border bg-muted/50 p-4">
             <p className="text-sm text-muted-foreground">
               <span className="font-semibold text-foreground">Note:</span> Disabling essential cookies may limit app functionality.
             </p>
@@ -165,8 +165,8 @@ export default function CookiePolicyPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             8. Contact
           </h2>
-          <div className="bg-card p-6 rounded-lg border border-border shadow-sm">
-            <p className="font-medium text-foreground mb-2">Fastlearners Limited</p>
+          <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
+            <p className="mb-2 font-medium text-foreground">Fastlearners Limited</p>
             <div className="space-y-1 text-muted-foreground">
               <p>Email: <a href="mailto:info@fastlearnersapp.com" className="text-primary hover:underline">info@fastlearnersapp.com</a></p>
               <p>Address: 3 Chief Aaron Nteubong Street Easter Obolo, Akwa Ibom State.</p>

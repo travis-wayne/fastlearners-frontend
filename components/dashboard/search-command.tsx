@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { SidebarNavItem } from "@/types";
 
 import { cn } from "@/lib/utils";
@@ -25,6 +25,11 @@ export function SearchCommand({
 }) {
   const [open, setOpen] = React.useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+
+  React.useEffect(() => {
+    setOpen(false);
+  }, [pathname]);
 
   React.useEffect(() => {
     const down = (e: KeyboardEvent) => {
@@ -38,7 +43,6 @@ export function SearchCommand({
   }, []);
 
   const runCommand = React.useCallback((command: () => unknown) => {
-    setOpen(false);
     command();
   }, []);
 

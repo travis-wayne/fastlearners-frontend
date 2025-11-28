@@ -1,5 +1,5 @@
 import React from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import { ArrowRight, ChevronRight, Laptop, Moon, Sun } from 'lucide-react'
 import { useSearch } from '@/context/search-provider'
 import { useTheme } from '@/context/theme-provider'
@@ -19,13 +19,17 @@ export function CommandMenu() {
   const router = useRouter()
   const { setTheme } = useTheme()
   const { open, setOpen } = useSearch()
+  const pathname = usePathname()
+
+  React.useEffect(() => {
+    setOpen(false)
+  }, [pathname, setOpen])
 
   const runCommand = React.useCallback(
     (command: () => unknown) => {
-      setOpen(false)
       command()
     },
-    [setOpen]
+    []
   )
 
   return (

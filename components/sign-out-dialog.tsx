@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { useCallback, startTransition } from "react";
+import { useCallback, startTransition, useEffect } from "react";
 
 import {
   AlertDialog,
@@ -23,17 +23,21 @@ interface SignOutDialogProps {
 export function SignOutDialog({ open, onOpenChange }: SignOutDialogProps) {
   const { logout } = useAuthStore();
   const router = useRouter();
+  const pathname = usePathname();
+
+  useEffect(() => {
+    onOpenChange(false);
+  }, [pathname, onOpenChange]);
 
   const handleSignOut = useCallback(async () => {
     // Defer logout to avoid blocking UI
     startTransition(() => {
       // Start the async operation but don't block
       logout().then(() => {
-        onOpenChange(false);
         router.push("/auth/login");
       });
     });
-  }, [logout, onOpenChange, router]);
+  }, [logout, router]);
 
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>

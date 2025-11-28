@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 
 import { useLessonsStore } from "@/lib/store/lessons";
-import { Lesson } from "@/lib/api/lessons-api";
+import { Lesson } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";

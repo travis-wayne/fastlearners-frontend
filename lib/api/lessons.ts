@@ -5,6 +5,8 @@ import type {
   SubjectsWithSlugsResponse,
   TopicsResponse,
   TopicOverviewResponse,
+  LessonCheckResponse,
+  ExerciseCheckResponse,
 } from "@/lib/types/lessons";
 
 
@@ -189,6 +191,186 @@ export async function getLessonContentBySlug(subjectSlug: string, topicSlug: str
       message: err?.message || "Network error",
       content: null,
       code: 500,
+    };
+  }
+}
+
+// Lesson Completion Check Endpoints
+
+export async function checkLessonOverview(lessonId: number): Promise<LessonCheckResponse> {
+  try {
+    const res = await fetch(`/api/lessons/check/overview/${lessonId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to verify overview completion",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as LessonCheckResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+export async function checkLessonConcept(lessonId: number, conceptId: number): Promise<LessonCheckResponse> {
+  try {
+    const res = await fetch(`/api/lessons/check/concept/${lessonId}/${conceptId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to verify concept completion",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as LessonCheckResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+export async function checkLessonSummaryAndApplication(lessonId: number): Promise<LessonCheckResponse> {
+  try {
+    const res = await fetch(`/api/lessons/check/summary-and-application/${lessonId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to verify summary and application completion",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as LessonCheckResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+export async function checkLessonGeneralExercises(lessonId: number): Promise<LessonCheckResponse> {
+  try {
+    const res = await fetch(`/api/lessons/check/general-exercises/${lessonId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to verify general exercises completion",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as LessonCheckResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+// Exercise Answer Checking
+
+export async function checkExerciseAnswer(
+  exerciseId: number,
+  answer: string,
+  isGeneral: boolean = false
+): Promise<ExerciseCheckResponse> {
+  try {
+    const body = isGeneral
+      ? { general_exercise_id: exerciseId, answer }
+      : { exercise_id: exerciseId, answer };
+
+    const res = await fetch("/api/lessons/check-exercise-answer", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Wrong answer. Try again!",
+        content: null,
+        code: data.code || res.status,
+        isCorrect: false,
+        errors: data.errors,
+      };
+    }
+
+    return {
+      ...data,
+      isCorrect: true,
+    } as ExerciseCheckResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+      isCorrect: false,
     };
   }
 }

@@ -33,7 +33,7 @@ export default function DataProcessingAddendumPage() {
             2. Purpose of Processing
           </h2>
           <p className="text-muted-foreground">Fastlearners processes personal data to:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Create student accounts</li>
             <li>Deliver educational content</li>
             <li>Track academic progress</li>
@@ -44,7 +44,7 @@ export default function DataProcessingAddendumPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             3. Categories of Data Subjects
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Students</li>
             <li>Teachers</li>
             <li>Parents/guardians</li>
@@ -56,7 +56,7 @@ export default function DataProcessingAddendumPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             4. Types of Data
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Names</li>
             <li>Contact information</li>
             <li>Location</li>
@@ -71,7 +71,7 @@ export default function DataProcessingAddendumPage() {
             5. Processor Obligations (Fastlearners)
           </h2>
           <p className="text-muted-foreground">Fastlearners shall:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Process data only on documented instructions</li>
             <li>Maintain confidentiality</li>
             <li>Apply strong technical and organizational security measures</li>
@@ -87,7 +87,7 @@ export default function DataProcessingAddendumPage() {
             6. Sub-processors
           </h2>
           <p className="text-muted-foreground">Fastlearners may use:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Cloud hosting</li>
             <li>Analytics services</li>
           </ul>
@@ -101,7 +101,7 @@ export default function DataProcessingAddendumPage() {
             7. International Transfers
           </h2>
           <p className="text-muted-foreground">Permitted only with:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>NDPR-approved safeguards</li>
             <li>GDPR Standard Contractual Clauses</li>
           </ul>
@@ -112,7 +112,7 @@ export default function DataProcessingAddendumPage() {
             8. Termination
           </h2>
           <p className="text-muted-foreground">Upon termination:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>All personal data must be deleted or returned</li>
             <li>Backups purged securely within 90 days</li>
           </ul>
@@ -122,7 +122,7 @@ export default function DataProcessingAddendumPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             9. Governing Law
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>NDPR (Nigeria)</li>
             <li>GDPR (European Union)</li>
             <li>Applicable national law of the controller</li>

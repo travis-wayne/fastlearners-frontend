@@ -7,14 +7,11 @@ import { ArrowLeft, BookOpen, CheckCircle, Loader2 } from "lucide-react";
 
 import { getSubjectById } from "@/config/education";
 import {
-  getLessonContentBySlug,
   getTopicsBySubjectSlug,
-  markLessonComplete,
 } from "@/lib/api/lessons";
 import type { TableOfContents } from "@/lib/toc";
 import { getTopicsForTerm } from "@/lib/types/lessons";
 import type {
-  LessonContent as LessonContentType,
   TopicOverview as TopicOverviewType,
 } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
@@ -22,7 +19,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
-import { LessonContent } from "@/components/lessons/LessonContent";
+import { LessonViewer } from "@/components/lessons/LessonViewer";
 import { LessonNavigation } from "@/components/lessons/LessonNavigation";
 import { TopicOverview } from "@/components/lessons/TopicOverview";
 import {
@@ -31,24 +28,20 @@ import {
 } from "@/components/providers/academic-context";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 import { DashboardTableOfContents } from "@/components/shared/toc";
+import { useLessonsStore } from "@/lib/store/lessons";
 
 export default function LessonPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { currentClass, currentTerm } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
+  const { selectedLesson, isLoadingLessonContent } = useLessonsStore();
 
-  const [lessonContent, setLessonContent] = useState<LessonContentType | null>(
-    null,
-  );
   const [topicOverview, setTopicOverview] = useState<TopicOverviewType | null>(
     null,
   );
-  const [isLoading, setIsLoading] = useState(true);
   const [isLoadingOverview, setIsLoadingOverview] = useState(true);
-  const [isMarkingComplete, setIsMarkingComplete] = useState(false);
   const [isSlugBased, setIsSlugBased] = useState(false);
   const [subjectSlug, setSubjectSlug] = useState<string | null>(null);
   const [topicSlug, setTopicSlug] = useState<string | null>(null);
@@ -76,14 +69,12 @@ export default function LessonPage() {
             variant: "destructive",
           });
         }
-        setIsLoading(false);
         if (slugParts.length > 0) {
           router.push("/dashboard/lessons");
         }
         return;
       }
 
-      setIsLoading(true);
       setIsLoadingOverview(true);
       const [subjSlug, topSlug] = slugParts;
       setIsSlugBased(true);
@@ -91,25 +82,15 @@ export default function LessonPage() {
       setTopicSlug(topSlug);
 
       try {
-        // Fetch both topic overview and lesson content in parallel using direct API calls
-        const [overviewRes, contentRes] = await Promise.all([
-          fetch(`/api/lessons/${subjSlug}/${topSlug}/overview`, {
+        // Fetch topic overview
+        const overviewRes = await fetch(`/api/lessons/${subjSlug}/${topSlug}/overview`, {
             method: "GET",
             headers: { Accept: "application/json" },
             credentials: "include",
             cache: "no-store",
-          }),
-          fetch(`/api/lessons/${subjSlug}/${topSlug}/content`, {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            credentials: "include",
-            cache: "no-store",
-          }),
-        ]);
+          });
 
-        // Parse responses
         const overviewData = await overviewRes.json();
-        const contentData = await contentRes.json();
 
         // Set topic overview
         if (
@@ -121,27 +102,9 @@ export default function LessonPage() {
         } else {
           console.warn("Failed to load topic overview:", overviewData.message);
         }
-
-        // Set lesson content
-        if (contentRes.ok && contentData.success && contentData.content) {
-          // Handle both content.lesson and content formats
-          const lesson = contentData.content.lesson || contentData.content;
-          setLessonContent(lesson);
-        } else {
-          toast({
-            title: "Error",
-            description: contentData.message || "Failed to load lesson",
-            variant: "destructive",
-          });
-        }
       } catch (error) {
-        toast({
-          title: "Error",
-          description: "Failed to load lesson content",
-          variant: "destructive",
-        });
+        console.error("Failed to load topic overview", error);
       } finally {
-        setIsLoading(false);
         setIsLoadingOverview(false);
       }
     };
@@ -155,7 +118,7 @@ export default function LessonPage() {
       if (
         !currentClass ||
         !currentTerm ||
-        !lessonContent ||
+        !selectedLesson ||
         !isSlugBased ||
         !subjectSlug ||
         !topicSlug
@@ -230,75 +193,30 @@ export default function LessonPage() {
   }, [
     currentClass,
     currentTerm,
-    lessonContent,
+    selectedLesson,
     isSlugBased,
     subjectSlug,
     topicSlug,
   ]);
 
-  const handleMarkComplete = async () => {
-    if (!lessonContent) return;
-    setIsMarkingComplete(true);
-    try {
-      const result = await markLessonComplete(lessonContent.id);
-
-      if (result.success) {
-        toast({
-          title: "Success!",
-          description: result.message || "Lesson marked as complete",
-        });
-
-        // Optimistically update check markers
-        if (lessonContent) {
-          setLessonContent({
-            ...lessonContent,
-            check_markers:
-              lessonContent.check_markers?.map((marker) => ({
-                ...marker,
-                completed: true,
-              })) || [],
-          });
-        }
-
-        // Refresh lesson content to get latest state
-        if (isSlugBased && subjectSlug && topicSlug) {
-          const response = await getLessonContentBySlug(subjectSlug, topicSlug);
-          if (response.success && response.content) {
-            setLessonContent(response.content);
-          }
-        }
-      } else {
-        throw new Error(result.message);
-      }
-    } catch (error) {
-      toast({
-        title: "Error",
-        description:
-          error instanceof Error
-            ? error.message
-            : "Failed to mark lesson as complete",
-        variant: "destructive",
-      });
-    } finally {
-      setIsMarkingComplete(false);
-    }
-  };
-
-  // Get subject using subject_id from lessonContent
-  const subjectId = lessonContent?.subject_id
-    ? String(lessonContent.subject_id)
+  // Get subject using subject_id from selectedLesson
+  const subjectId = selectedLesson?.subject_id
+    ? String(selectedLesson.subject_id)
     : null;
   const subject = subjectId ? getSubjectById(subjectId) : null;
 
   const isCompleted =
-    lessonContent?.check_markers?.every((m: any) => m.completed) || false;
+    selectedLesson?.check_markers?.every((m: any) => m.completed) || false;
+  
+  // Update TOC from selectedLesson concepts
   const lessonTopics =
-    lessonContent?.concepts?.filter((concept) =>
+    selectedLesson?.concepts?.filter((concept) =>
       Boolean(concept?.title?.trim()),
     ) || [];
+    
   const shouldShowAcademicBadge = Boolean(currentClass && currentTerm);
   const classBadgeLabel =
-    lessonContent?.class?.trim() ||
+    selectedLesson?.class?.trim() ||
     currentClass?.name ||
     classDisplay.replace(" • ", " ");
 
@@ -313,7 +231,7 @@ export default function LessonPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoadingOverview && !selectedLesson) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
         <div className="space-y-4 text-center">
@@ -324,29 +242,10 @@ export default function LessonPage() {
     );
   }
 
-  if (!lessonContent) {
-    return (
-      <Card>
-        <CardContent className="p-8 text-center">
-          <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
-          <h3 className="mb-2 text-lg font-semibold">Lesson Not Found</h3>
-          <p className="mb-4 text-muted-foreground">
-            The lesson you&apos;re looking for doesn&apos;t exist or isn&apos;t
-            available.
-          </p>
-          <Button onClick={() => router.back()} variant="outline">
-            <ArrowLeft className="mr-2 size-4" />
-            Go Back
-          </Button>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const subjectName = lessonContent.subject || subject?.name || "Subject";
-  const lessonTitle = lessonContent.topic || lessonContent.title || "Lesson";
+  const subjectName = selectedLesson?.subject || subject?.name || "Subject";
+  const lessonTitle = selectedLesson?.topic || selectedLesson?.title || "Lesson";
   const lessonDescription =
-    lessonContent.overview || topicOverview?.introduction || "";
+    selectedLesson?.overview || topicOverview?.introduction || "";
 
   return (
     <>
@@ -419,8 +318,8 @@ export default function LessonPage() {
                 </div>
               )}
 
-              {/* Lesson Content */}
-              {lessonContent && (
+              {/* Lesson Viewer */}
+              {subjectSlug && topicSlug && (
                 <div className="space-y-6">
                   {topicOverview && (
                     <div className="border-b pb-2">
@@ -430,10 +329,9 @@ export default function LessonPage() {
                       </p>
                     </div>
                   )}
-                  <LessonContent
-                    content={lessonContent}
-                    onMarkComplete={handleMarkComplete}
-                    isCompleted={isCompleted}
+                  <LessonViewer
+                    subjectSlug={subjectSlug}
+                    topicSlug={topicSlug}
                   />
                 </div>
               )}

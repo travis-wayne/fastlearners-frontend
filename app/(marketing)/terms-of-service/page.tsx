@@ -22,7 +22,7 @@ export default function TermsOfServicePage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             1. Acceptance of Terms
           </h2>
-          <p className="text-muted-foreground leading-relaxed">
+          <p className="leading-relaxed text-muted-foreground">
             By using the Fastlearners App, you agree to these Terms of Service.
           </p>
         </section>
@@ -31,9 +31,9 @@ export default function TermsOfServicePage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             2. Eligibility
           </h2>
-          <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+          <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
             <li>Users under 18 require parental/guardian consent (consent is assumed after payment is made).</li>
-            <li>Parents are responsible for monitoring minor children's activities.</li>
+            <li>Parents are responsible for monitoring minor children&apos;s activities.</li>
           </ul>
         </section>
 
@@ -42,14 +42,14 @@ export default function TermsOfServicePage() {
             3. User Responsibilities
           </h2>
           <div className="space-y-3">
-            <p className="text-muted-foreground font-medium">You agree to:</p>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+            <p className="font-medium text-muted-foreground">You agree to:</p>
+            <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Provide accurate information</li>
               <li>Keep login credentials secure</li>
               <li>Use the app lawfully</li>
             </ul>
-            <p className="text-muted-foreground font-medium pt-2">You must not:</p>
-            <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+            <p className="pt-2 font-medium text-muted-foreground">You must not:</p>
+            <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Copy or redistribute our content</li>
               <li>Interfere with the app</li>
               <li>Use Fastlearners for cheating or academic malpractice</li>
@@ -62,13 +62,13 @@ export default function TermsOfServicePage() {
             4. Intellectual Property
           </h2>
           <p className="text-muted-foreground">All:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Logos</li>
             <li>Designs</li>
             <li>Educational content</li>
             <li>Software</li>
           </ul>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Are the property of Fastlearners Limited.
           </p>
           <p className="text-muted-foreground">
@@ -93,7 +93,7 @@ export default function TermsOfServicePage() {
             6. Termination
           </h2>
           <p className="text-muted-foreground">We may suspend or terminate accounts for:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Violation of terms</li>
             <li>Fraudulent activity</li>
             <li>Abuse of the platform</li>
@@ -114,12 +114,12 @@ export default function TermsOfServicePage() {
             8. Limitation of Liability
           </h2>
           <p className="text-muted-foreground">Fastlearners is not liable for:</p>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Data loss</li>
             <li>App interruptions</li>
             <li>Third-party actions</li>
           </ul>
-          <p className="text-muted-foreground mt-2">
+          <p className="mt-2 text-muted-foreground">
             Maximum liability is limited to the amount paid for services (if any).
           </p>
         </section>
@@ -128,7 +128,7 @@ export default function TermsOfServicePage() {
           <h2 className="text-2xl font-semibold tracking-tight text-foreground">
             9. Governing Law
           </h2>
-          <ul className="list-disc pl-6 space-y-1 text-muted-foreground">
+          <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Nigeria Data Protection Regulation (NDPR)</li>
             <li>GDPR</li>
             <li>Laws of the Federal Republic of Nigeria</li>
