@@ -1,20 +1,24 @@
 "use client";
 
+import { useState } from "react";
+
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { SectionColumns } from "@/components/dashboard/section-columns";
-import { useDeleteAccountModal } from "@/components/modals/delete-account-modal";
+import { DeleteAccountModal } from "@/components/modals/delete-account-modal";
 import { Icons } from "@/components/shared/icons";
 
 export function DeleteAccountSection() {
-  const { setShowDeleteAccountModal, DeleteAccountModal } =
-    useDeleteAccountModal();
+  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
 
   const userPaidPlan = true;
 
   return (
     <>
-      <DeleteAccountModal />
+      <DeleteAccountModal
+        showDeleteAccountModal={showDeleteAccountModal}
+        setShowDeleteAccountModal={setShowDeleteAccountModal}
+      />
       <SectionColumns
         title="Delete Account"
         description="This is a danger zone - Be careful !"

@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dispatch,
   SetStateAction,
@@ -13,7 +15,7 @@ import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { Icons } from "@/components/shared/icons";
 
-function SignInModal({
+export function SignInModal({
   showSignInModal,
   setShowSignInModal,
 }: {
@@ -63,26 +65,5 @@ function SignInModal({
         </div>
       </div>
     </Modal>
-  );
-}
-
-export function useSignInModal() {
-  const [showSignInModal, setShowSignInModal] = useState(false);
-
-  const SignInModalCallback = useCallback(() => {
-    return (
-      <SignInModal
-        showSignInModal={showSignInModal}
-        setShowSignInModal={setShowSignInModal}
-      />
-    );
-  }, [showSignInModal, setShowSignInModal]);
-
-  return useMemo(
-    () => ({
-      setShowSignInModal,
-      SignInModal: SignInModalCallback,
-    }),
-    [setShowSignInModal, SignInModalCallback],
   );
 }

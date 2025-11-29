@@ -1,3 +1,5 @@
+"use client";
+
 import {
   Dispatch,
   SetStateAction,
@@ -15,7 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { UserAvatar } from "@/components/shared/user-avatar";
 
-function DeleteAccountModal({
+export function DeleteAccountModal({
   showDeleteAccountModal,
   setShowDeleteAccountModal,
 }: {
@@ -116,26 +118,5 @@ function DeleteAccountModal({
         </Button>
       </form>
     </Modal>
-  );
-}
-
-export function useDeleteAccountModal() {
-  const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
-
-  const DeleteAccountModalCallback = useCallback(() => {
-    return (
-      <DeleteAccountModal
-        showDeleteAccountModal={showDeleteAccountModal}
-        setShowDeleteAccountModal={setShowDeleteAccountModal}
-      />
-    );
-  }, [showDeleteAccountModal, setShowDeleteAccountModal]);
-
-  return useMemo(
-    () => ({
-      setShowDeleteAccountModal,
-      DeleteAccountModal: DeleteAccountModalCallback,
-    }),
-    [setShowDeleteAccountModal, DeleteAccountModalCallback],
   );
 }
