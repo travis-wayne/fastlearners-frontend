@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
+import { CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Exercise, GeneralExercise } from "@/lib/types/lessons";
+import { useLessonsStore } from "@/lib/store/lessons";
 
 interface ExerciseCardProps {
   exercise: Exercise | GeneralExercise;
@@ -13,12 +16,27 @@ interface ExerciseCardProps {
 }
 
 export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
+  const { exerciseProgress } = useLessonsStore();
   const [selectedAnswer, setSelectedAnswer] = useState<string>("");
   const [isRevealed, setIsRevealed] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSolution, setShowSolution] = useState(false);
+
+  // Check if exercise is already completed
+  const exerciseData = exerciseProgress[exercise.id];
+  const isAlreadyCompleted = exerciseData?.isCompleted && exerciseData?.isCorrect;
+
+  // Auto-populate if already answered correctly
+  useEffect(() => {
+    if (isAlreadyCompleted && exerciseData?.userAnswer) {
+      setSelectedAnswer(exerciseData.userAnswer);
+      setIsRevealed(true);
+      setIsCorrect(true);
+      setFeedbackMessage("Already answered correctly!");
+    }
+  }, [isAlreadyCompleted, exerciseData]);
 
   const handleSubmit = async () => {
     if (!onAnswer) return;

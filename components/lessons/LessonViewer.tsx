@@ -21,6 +21,7 @@ import { LessonOverview } from "./sections/LessonOverview";
 import { LessonConcept } from "./sections/LessonConcept";
 import { LessonSummaryApplication } from "./sections/LessonSummaryApplication";
 import { LessonGeneralExercises } from "./sections/LessonGeneralExercises";
+import { SectionBreadcrumb } from "./SectionBreadcrumb";
 import { useLessonsStore } from "@/lib/store/lessons";
 import { LessonContent } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
@@ -112,7 +113,61 @@ export function LessonViewer({
     clearError,
     setError,
     setIsLoadingLessonContent,
+    // Adaptive learning actions
+    sectionProgress,
+    getNextIncompleteSection,
+    autoAdvanceToNextSection,
   } = useLessonsStore();
+
+  // Auto-skip logic: Navigate to next incomplete section on mount
+  useEffect(() => {
+    if (!selectedLesson || isLoadingLessonContent) return;
+
+    // Get current section ID
+    const conceptsCount = selectedLesson.concepts?.length || 0;
+    let currentSectionId = '';
+
+    if (currentStepIndex === 0) {
+      currentSectionId = 'overview';
+    } else if (currentStepIndex <= conceptsCount) {
+      const conceptIndex = currentStepIndex - 1;
+      const concept = selectedLesson.concepts?.[conceptIndex];
+      if (concept) currentSectionId = `concept_${concept.id}`;
+    } else if (currentStepIndex === conceptsCount + 1) {
+      currentSectionId = 'summary_application';
+    } else if (currentStepIndex === conceptsCount + 2) {
+      currentSectionId = 'general_exercises';
+    }
+
+    // Check if current section is already completed
+    const currentProgress = sectionProgress[currentSectionId];
+    
+    if (currentProgress?.isCompleted) {
+      // Get next incomplete section
+      const nextSectionId = getNextIncompleteSection();
+
+      if (nextSectionId && nextSectionId !== currentSectionId) {
+        // Show toast notification
+        const { toast } = require('sonner');
+        toast.info('Resuming where you left off...', {
+          description: 'Skipping completed sections',
+        });
+
+        // Auto-advance after 1 second
+        const timer = setTimeout(() => {
+          autoAdvanceToNextSection();
+        }, 1000);
+
+        return () => clearTimeout(timer);
+      } else if (!nextSectionId) {
+        // All sections completed
+        const { toast } = require('sonner');
+        toast.success('Lesson completed!', {
+          description: 'You\'ve finished all sections. Great work!',
+        });
+      }
+    }
+  }, [selectedLesson, currentStepIndex, isLoadingLessonContent, sectionProgress, getNextIncompleteSection, autoAdvanceToNextSection]);
 
   useEffect(() => {
     // Debugging or side effects if needed
@@ -174,6 +229,33 @@ export function LessonViewer({
 
   const handlePrev = () => {
     prevStep();
+  };
+
+  const handleNavigateToSection = (stepIndex: number) => {
+    // Allow navigation to completed sections or current section
+    const { sectionProgress } = useLessonsStore.getState();
+    const concepts = selectedLesson?.concepts || [];
+    
+    let sectionId = '';
+    if (stepIndex === 0) {
+      sectionId = 'overview';
+    } else if (stepIndex <= concepts.length) {
+      const concept = concepts[stepIndex - 1];
+      if (concept) sectionId = `concept_${concept.id}`;
+    } else if (stepIndex === concepts.length + 1) {
+      sectionId = 'summary_application';
+    } else if (stepIndex === concepts.length + 2) {
+      sectionId = 'general_exercises';
+    }
+
+    const progress = sectionProgress[sectionId];
+    const isCurrent = stepIndex === currentStepIndex;
+    const isCompleted = progress?.isCompleted;
+
+    // Allow navigation if section is completed or is current
+    if (isCompleted || isCurrent || stepIndex === 0) {
+      useLessonsStore.setState({ currentStepIndex: stepIndex });
+    }
   };
 
   const handleBack = () => {
@@ -238,6 +320,14 @@ export function LessonViewer({
 
   return (
     <div className="space-y-6">
+      {/* Section Breadcrumb Navigation */}
+      <SectionBreadcrumb
+        lessonId={lesson.id}
+        concepts={concepts}
+        currentStepIndex={currentStepIndex}
+        onNavigate={handleNavigateToSection}
+      />
+
       {/* Progress */}
       {progress > 0 && (
         <div className="mb-6 space-y-2">
