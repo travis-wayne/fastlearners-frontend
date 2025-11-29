@@ -1,18 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import {
-  clearRegTokenServer,
-  setAuthCookiesServer,
-} from "@/lib/server/auth-cookies";
-import { AUTH_TOKEN_COOKIE, REG_TOKEN_COOKIE } from "@/lib/server/cookie-constants";
-
-const BASE = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
+import { BASE_API_URL } from "@/lib/api/client";
+import { parseAuthCookiesServer, setAuthCookiesServer, clearRegTokenServer, parseRegTokenServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   try {
-    const cookies = req.cookies;
-    const regToken = cookies.get(REG_TOKEN_COOKIE)?.value;
-    const mainToken = cookies.get(AUTH_TOKEN_COOKIE)?.value;
+    const auth = parseAuthCookiesServer(req);
+    const regToken = parseRegTokenServer(req);
+    const mainToken = auth?.token;
+    
     const token = mainToken || regToken;
     if (!token) {
       return NextResponse.json({ success: false, message: "Unauthorized", code: 401 }, { status: 401 });
@@ -20,7 +15,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const r = await fetch(`${BASE}/set-role`, {
+    const r = await fetch(`${BASE_API_URL}/set-role`, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -34,7 +29,7 @@ export async function POST(req: NextRequest) {
     if (!r.ok) return NextResponse.json(data, { status: r.status });
 
     // Fetch profile to obtain user, then set main session cookies using existing token
-    const prof = await fetch(`${BASE}/profile`, {
+    const prof = await fetch(`${BASE_API_URL}/profile`, {
       headers: { Accept: "application/json", Authorization: `Bearer ${token}` },
     });
     const profData = await prof.json();

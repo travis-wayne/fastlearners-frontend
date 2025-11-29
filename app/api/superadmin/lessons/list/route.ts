@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
+import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
-
-// This endpoint only supports POST method (as per API docs: Post /api/v1/superadmin/lessons/lessons/)
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -36,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/lessons/`,
+      `${BASE_API_URL}/superadmin/lessons/lessons/`,
       {
         method: "POST",
         headers: {
@@ -71,4 +69,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

@@ -529,19 +529,6 @@ Custom hook for permission checking:
 
 ---
 
-## API Architecture
-
-### API Client (`lib/api/client.ts`)
-
-#### Base Configuration
-```typescript
-API_BASE = process.env.NEXT_PUBLIC_API_URL || 
-           'https://fastlearnersapp.com/api/v1'
-```
-
-#### Header Building
-- `buildApiHeaders(token)` - For external API calls
-- `buildInternalApiHeaders()` - For internal Next.js routes
 
 ### API Route Pattern
 

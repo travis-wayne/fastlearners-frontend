@@ -43,7 +43,7 @@ function GoogleCallbackContent() {
         }
 
         const callbackUrl = new URL(
-          "https://fastlearnersapp.com/api/v1/google/callback",
+          "https://api.fastlearnersapp.com/api/v1/google/callback",
         );
         callbackUrl.searchParams.set("code", code);
         if (scope) callbackUrl.searchParams.set("scope", scope);

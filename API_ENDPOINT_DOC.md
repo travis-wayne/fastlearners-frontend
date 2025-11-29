@@ -1,5 +1,5 @@
 Authentication System
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Registration
 Endpoint: POST /api/v1/register
@@ -633,7 +633,7 @@ Code Expired Error (400)
 }
 
 User Management
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Profile Details
 Endpoint: Get /api/v1/profile
@@ -989,7 +989,7 @@ Unauthorized Access
 }
 
 Guest Management
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Dashboard
 Endpoint: Get /api/v1/guest
@@ -1025,7 +1025,7 @@ Error Message
 }
 
 Student Management
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Dashboard
 Endpoint: Get /api/v1/dashboard
@@ -1070,7 +1070,7 @@ Error Message
 }
 
 Student's Subject
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 List Student's Subjects
 Endpoint: Get /api/v1/subjects
@@ -1306,7 +1306,7 @@ Server Error Response
 }
 
 Student's Subject
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Student's Subject
 Endpoint: Get /api/v1/lessons/
@@ -1407,7 +1407,7 @@ Server Error Response
 }
 
 Topics
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Get Topics
 Endpoint: Get /api/v1/lessons/economics
@@ -1494,7 +1494,7 @@ Server Error Response
 }
 
 Topics Overview
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Get Topics Overview
 Endpoint: Get /api/v1/lessons/economics/meaning-of-economics-and-related-concepts/overview
@@ -1552,7 +1552,7 @@ Server Error Response
 }
 
 Lesson Content
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Get Lesson Content
 Endpoint: Get /api/v1/lessons/economics/meaning-of-economics-and-related-concepts/content
@@ -1743,7 +1743,7 @@ Server Error Response
 }
 
 Guardian Management
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Dashboard
 Endpoint: Get /api/v1/guardian
@@ -1780,7 +1780,7 @@ Error Message
 }
 
 All Lessons Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 All In One Lesson Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/all-lesson-files
@@ -1901,7 +1901,7 @@ Unauthorized Access
 }
 
 Lessons Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Lessons Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/lessons
@@ -1994,7 +1994,7 @@ Unauthorized Access
 }
 
 Concepts Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Concepts Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/concepts
@@ -2066,7 +2066,7 @@ Unauthorized Access
 }
 
 Examples Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Examples Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/examples
@@ -2138,7 +2138,7 @@ Unauthorized Access
 }
 
 Exercises Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Exercises Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/exercises
@@ -2210,7 +2210,7 @@ Unauthorized Access
 }
 
 General Exercises Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 General Exercises Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/general-exercises
@@ -2282,7 +2282,7 @@ Unauthorized Access
 }
 
 Check Markers Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Check Markers Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/check-markers
@@ -2347,7 +2347,7 @@ Unauthorized Access
 }
 
 Scheme Of Work Upload
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Scheme Of Work Upload
 Endpoint: Post /api/v1/superadmin/lessons/uploads/scheme-of-work
@@ -2440,7 +2440,7 @@ Unauthorized Access
 }
 
 Get Lessons
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Get Classes, Subjects, Terms And Weeks
 Endpoint: Get /api/v1/superadmin/lessons/get-classes-subjects-terms-weeks
@@ -2844,7 +2844,7 @@ Unauthorized Access
 }
 
 Get Specific Lesson
-Base Url: https://fastlearnersapp.com
+Base Url: https://api.fastlearnersapp.com
 
 Get Specific Lesson
 Endpoint: Get /api/v1/superadmin/lessons/lesson/2

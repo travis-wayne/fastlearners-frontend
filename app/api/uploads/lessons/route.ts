@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
+      { success: false, message: "Unauthorized", code: 401 },
       { status: 401 }
     );
   }
@@ -33,7 +32,7 @@ export async function POST(req: NextRequest) {
     upstreamFormData.append("lessons_file", lessonsFile);
 
     const upstream = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/uploads/lessons`,
+      `${BASE_API_URL}/superadmin/lessons/uploads/lessons`,
       {
         method: "POST",
         headers: {
@@ -62,4 +61,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

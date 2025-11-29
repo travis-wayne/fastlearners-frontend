@@ -1,27 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
-
+import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
-const BASE = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
-const REQUEST_TIMEOUT = 7000; // 7 seconds
+const REQUEST_TIMEOUT = 7000;
 
-/**
- * Fetches user session data from the backend API.
- * This route retrieves the authenticated user's profile information, including the full user object with role details.
- * It is primarily used by client-side components to obtain session data; middleware calls the backend directly instead.
- * The request has a 7-second timeout to balance responsiveness with allowing sufficient time for backend processing.
- *
- * @param req - The NextRequest object containing the request details.
- * @returns A NextResponse with session data or error information.
- *
- * Response structure:
- * - `OK`: Session is valid, returns user object.
- * - `NO_AUTH_COOKIES`: No authentication cookies found.
- * - `TOKEN_EXPIRED`: Authentication token has expired.
- * - `FORBIDDEN`: Access is forbidden.
- * - `UPSTREAM_TIMEOUT`: Request to backend timed out after 7 seconds.
- * - `SESSION_FETCH_FAILED`: General failure in fetching session data.
- */
 export async function GET(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -40,7 +22,7 @@ export async function GET(req: NextRequest) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), REQUEST_TIMEOUT);
 
-    const r = await fetch(`${BASE}/profile`, {
+    const r = await fetch(`${BASE_API_URL}/profile`, {
       headers: {
         Accept: "application/json",
         Authorization: `Bearer ${auth.token}`,

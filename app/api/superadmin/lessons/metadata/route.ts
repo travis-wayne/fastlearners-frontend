@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
+import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
 
 export async function GET(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -14,7 +13,7 @@ export async function GET(req: NextRequest) {
 
   try {
     const response = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/get-classes-subjects-terms-weeks`,
+      `${BASE_API_URL}/superadmin/lessons/get-classes-subjects-terms-weeks`,
       {
         method: "GET",
         headers: {
@@ -42,4 +41,3 @@ export async function GET(req: NextRequest) {
     );
   }
 }
-

@@ -40,19 +40,6 @@ All upload endpoints use POST method and are correctly mapped:
 5. **General Exercises Upload**: `POST /api/uploads/general-exercises` → `POST /api/v1/superadmin/lessons/uploads/general-exercises`
 6. **Check Markers Upload**: `POST /api/uploads/check-markers` → `POST /api/v1/superadmin/lessons/uploads/check-markers`
 7. **Scheme of Work Upload**: `POST /api/uploads/scheme-of-work` → `POST /api/v1/superadmin/lessons/uploads/scheme-of-work`
-8. **All Lesson Files Upload**: `POST /api/uploads/all-lesson-files` → `POST /api/v1/superadmin/lessons/uploads/all-lesson-files`
-
-## Important Notes
-
-- The "Get Lessons" endpoint (`/api/v1/superadmin/lessons/lessons/`) **requires POST method**, not GET
-- All routes use HttpOnly cookies for authentication via `parseAuthCookiesServer`
-- All routes forward requests to the upstream API at `https://fastlearnersapp.com/api/v1`
-- Error handling is consistent across all routes
-
-## Troubleshooting
-
-If you see an error like "The GET method is not supported for route api/v1/superadmin/lessons/lessons":
-- This means a GET request is being made to the upstream API
 - Check that the frontend is calling `/api/superadmin/lessons/list` with POST method
 - Verify that no direct calls are being made to the upstream API endpoint
 - Check browser network tab to see what method is actually being used

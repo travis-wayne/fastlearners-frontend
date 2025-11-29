@@ -1,22 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
+      { success: false, message: "Unauthorized", code: 401 },
       { status: 401 }
     );
   }
 
   try {
     const formData = await req.formData();
-    const checkMarkersFile = formData.get("check_markers_file") as File;
+    const file = formData.get("check_markers_file") as File;
 
-    if (!checkMarkersFile) {
+    if (!file) {
       return NextResponse.json(
         {
           success: false,
@@ -34,10 +33,10 @@ export async function POST(req: NextRequest) {
     // Create new FormData for upstream
     // Note: API expects "check_marker_file" (singular) but we accept "check_markers_file" (plural) for consistency
     const upstreamFormData = new FormData();
-    upstreamFormData.append("check_marker_file", checkMarkersFile);
+    upstreamFormData.append("check_marker_file", file);
 
     const upstream = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/uploads/check-markers`,
+      `${BASE_API_URL}/superadmin/lessons/uploads/check-markers`,
       {
         method: "POST",
         headers: {
@@ -66,4 +65,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

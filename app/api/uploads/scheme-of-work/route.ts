@@ -1,22 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const UPSTREAM_BASE = "https://fastlearnersapp.com/api/v1";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized", content: null, code: 401 },
+      { success: false, message: "Unauthorized", code: 401 },
       { status: 401 }
     );
   }
 
   try {
     const formData = await req.formData();
-    const schemeOfWorkFile = formData.get("scheme_of_work_file") as File;
+    const file = formData.get("scheme_of_work_file") as File;
 
-    if (!schemeOfWorkFile) {
+    if (!file) {
       return NextResponse.json(
         {
           success: false,
@@ -30,10 +29,10 @@ export async function POST(req: NextRequest) {
 
     // Create new FormData for upstream
     const upstreamFormData = new FormData();
-    upstreamFormData.append("scheme_of_work_file", schemeOfWorkFile);
+    upstreamFormData.append("scheme_of_work_file", file);
 
     const upstream = await fetch(
-      `${UPSTREAM_BASE}/superadmin/lessons/uploads/scheme-of-work`,
+      `${BASE_API_URL}/superadmin/lessons/uploads/scheme-of-work`,
       {
         method: "POST",
         headers: {
@@ -62,4 +61,3 @@ export async function POST(req: NextRequest) {
     );
   }
 }
-

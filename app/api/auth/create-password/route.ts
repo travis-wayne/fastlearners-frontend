@@ -1,19 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import {
-  clearRegTokenServer,
-  parseAuthCookiesServer,
-  setAuthCookiesServer,
-} from "@/lib/server/auth-cookies";
-import { AUTH_TOKEN_COOKIE } from "@/lib/server/cookie-constants";
-
-const BASE = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
+import { BASE_API_URL } from "@/lib/api/client";
+import { parseAuthCookiesServer, parseRegTokenServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   try {
-    const cookies = req.cookies;
-    const regToken = cookies.get("reg_token")?.value;
-    const mainToken = cookies.get(AUTH_TOKEN_COOKIE)?.value;
+    const auth = parseAuthCookiesServer(req);
+    const regToken = parseRegTokenServer(req);
+    const mainToken = auth?.token;
 
     // Prefer main session token, otherwise use reg token during onboarding
     const token = mainToken || regToken;
@@ -26,7 +19,7 @@ export async function POST(req: NextRequest) {
 
     const body = await req.json();
 
-    const r = await fetch(`${BASE}/create-password`, {
+    const r = await fetch(`${BASE_API_URL}/create-password`, {
       method: "POST",
       headers: {
         Accept: "application/json",

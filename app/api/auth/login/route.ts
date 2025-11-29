@@ -1,15 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-
+import { BASE_API_URL } from "@/lib/api/client";
 import { setAuthCookiesServer } from "@/lib/server/auth-cookies";
-import { LoginCredentials } from "@/lib/types/auth";
-
-const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
 
 export async function POST(req: NextRequest) {
   try {
-    const body = (await req.json()) as LoginCredentials;
-    
-    // Validate required fields
+    const body = await req.json();
+
     if (!body?.email_phone || !body?.password) {
       return NextResponse.json(
         { success: false, message: "Email and password are required", code: 422 },

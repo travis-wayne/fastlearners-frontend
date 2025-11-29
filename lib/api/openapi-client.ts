@@ -10,7 +10,7 @@ export type User = components["schemas"]["User"];
 export type AuthTokens = components["schemas"]["AuthTokens"];
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com",
+  baseURL: process.env.NEXT_PUBLIC_API_URL || "https://api.fastlearnersapp.com/api/v1",
   headers: { Accept: "application/json" },
 });
 

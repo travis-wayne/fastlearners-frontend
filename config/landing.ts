@@ -101,56 +101,56 @@ export const testimonials: TestimonialType[] = [
   {
     name: "Chioma Okafor",
     job: "SS3 Student, Lagos",
-    image: "https://randomuser.me/api/portraits/women/1.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "Fastlearners completely changed how I prepare for WAEC. The past questions are organized perfectly, and the adaptive quizzes helped me identify my weak areas in Mathematics. I improved my mock exam scores by 40% in just two months!",
   },
   {
     name: "Ibrahim Musa",
     job: "JSS2 Student, Abuja",
-    image: "https://randomuser.me/api/portraits/men/2.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "I love the leaderboard feature! Competing with my classmates makes studying fun. The lessons are easy to understand, and I can learn at my own pace. My grades have improved significantly since I started using Fastlearners.",
   },
   {
     name: "Mrs. Adebayo",
     job: "Parent & Guardian, Ibadan",
-    image: "https://randomuser.me/api/portraits/women/3.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "As a parent, the Guardian Dashboard gives me peace of mind. I can see exactly what my daughter is studying, track her progress, and know where she needs extra support. It's like having a window into her learning journey.",
   },
   {
     name: "Mr. Okonkwo",
     job: "Secondary School Teacher, Port Harcourt",
-    image: "https://randomuser.me/api/portraits/men/4.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "Fastlearners has been an invaluable teaching aid. I can assign lessons to my students, monitor their performance in real-time, and identify who needs extra help. The curriculum alignment is perfect — everything matches what we teach in class.",
   },
   {
     name: "Blessing Okoro",
     job: "SS1 Student, Enugu",
-    image: "https://randomuser.me/api/portraits/women/5.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "The personalized recommendations are amazing! Fastlearners knows exactly what topics I struggle with and suggests the right lessons. I went from failing Chemistry to getting B's consistently. Thank you, Fastlearners!",
   },
   {
     name: "Tunde Adeyemi",
     job: "SS2 Student, Ogun State",
-    image: "https://randomuser.me/api/portraits/men/6.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "Preparing for JAMB used to stress me out, but Fastlearners made it manageable. The timed mock exams simulate real exam conditions, and the detailed explanations help me understand my mistakes. I feel confident and ready!",
   },
   {
     name: "Mrs. Nwosu",
     job: "School Administrator, Anambra",
-    image: "https://randomuser.me/api/portraits/women/7.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "We integrated Fastlearners across our entire school, and the results have been outstanding. Student engagement is up, exam scores are improving, and teachers have powerful tools to track progress. It's a complete digital learning solution.",
   },
   {
     name: "David Eze",
     job: "O'Level Continuing Student, Kaduna",
-    image: "https://randomuser.me/api/portraits/men/8.jpg",
+    image: "https://avatar.iran.liara.run/public/12",
     review:
       "I'm retaking my WAEC exams, and Fastlearners has been my study partner. The structured lessons and comprehensive past questions helped me focus on what really matters. I can study anywhere, anytime — perfect for adult learners like me.",
   },

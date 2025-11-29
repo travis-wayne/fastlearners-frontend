@@ -75,7 +75,7 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_API_URL=https://api.fastlearnersapp.com/api/v1
 NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
 # Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
 # Client-side cookie readers are disabled and all auth is handled server-side.
@@ -244,7 +244,7 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_API_URL=https://api.fastlearnersapp.com/api/v1
 NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
 # Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
 # Client-side cookie readers are disabled and all auth is handled server-side.
@@ -423,7 +423,7 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_API_URL=https://api.fastlearnersapp.com/api/v1
 NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
 # Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
 # Client-side cookie readers are disabled and all auth is handled server-side.
@@ -495,7 +495,7 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_API_URL=https://api.fastlearnersapp.com/api/v1
 NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
 # Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
 # Client-side cookie readers are disabled and all auth is handled server-side.
@@ -567,7 +567,7 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_API_URL=https://api.fastlearnersapp.com/api/v1
 NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
 # Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
 # Client-side cookie readers are disabled and all auth is handled server-side.
@@ -639,7 +639,7 @@ This project uses environment variables (see `env.mjs`). Create a `.env.local` f
 
 ```text
 # .env.local (example)
-NEXT_PUBLIC_API_URL=https://fastlearnersapp.com/api/v1
+NEXT_PUBLIC_API_URL=https://api.fastlearnersapp.com/api/v1
 NEXT_PUBLIC_USE_HTTPONLY_AUTH=true
 # Note: NEXT_PUBLIC_USE_HTTPONLY_AUTH=true enables HttpOnly cookie-based authentication.
 # Client-side cookie readers are disabled and all auth is handled server-side.

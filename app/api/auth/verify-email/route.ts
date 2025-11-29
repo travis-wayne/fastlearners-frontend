@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-
-import { clearRegTokenServer, setRegTokenServer } from "@/lib/server/auth-cookies";
-
-const BASE = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
+import { BASE_API_URL } from "@/lib/api/client";
+import { setRegTokenServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const r = await fetch(`${BASE}/verify-email`, {
+    const r = await fetch(`${BASE_API_URL}/verify-email`, {
       method: "POST",
       headers: { Accept: "application/json", "Content-Type": "application/json" },
       body: JSON.stringify(body),

@@ -31,37 +31,27 @@ function validateApiEnv() {
     if (process.env.NODE_ENV === 'development') {
       console.warn('[API Config] Environment validation failed, using defaults:', error);
     }
-    return { NEXT_PUBLIC_API_URL: undefined };
+    return {};
   }
 }
 
-// Get validated API base URL
-export const API_BASE = (() => {
-  const env = validateApiEnv();
-  return env?.NEXT_PUBLIC_API_URL || 'https://fastlearnersapp.com/api/v1';
-})();
+// Get API URL from environment or default
+const env = validateApiEnv();
+export const BASE_API_URL = env?.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
-// Helper to build request headers with auth
-export function buildApiHeaders(token?: string): HeadersInit {
+// Helper to build request headers for internal API routes (uses cookies)
+export function buildInternalApiHeaders(token?: string): HeadersInit {
   const headers: HeadersInit = {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
   };
   
   if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+    (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
   }
   
   return headers;
 }
 
-// Helper to build request headers for internal API routes (uses cookies)
-export function buildInternalApiHeaders(): HeadersInit {
-  return {
-    'Accept': 'application/json',
-    'Content-Type': 'application/json',
-  };
-}
-
 // Export for use in API routes
-export const UPSTREAM_BASE = API_BASE;
+export const UPSTREAM_BASE = BASE_API_URL;

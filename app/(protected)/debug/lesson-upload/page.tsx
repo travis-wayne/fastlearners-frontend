@@ -231,7 +231,7 @@ export default function DebugLessonUploadPage() {
             <div>
               <h4 className="mb-2 font-medium">Base URL:</h4>
               <code className="rounded bg-muted px-2 py-1 text-sm">
-                https://fastlearnersapp.com/api/v1
+            <p>Base URL: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}</p>
               </code>
             </div>
 

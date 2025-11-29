@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
-
+import { BASE_API_URL } from "@/lib/api/client";
 import { setAuthCookiesServer } from "@/lib/server/auth-cookies";
-
-const BASE = process.env.NEXT_PUBLIC_API_URL || "https://fastlearnersapp.com/api/v1";
 
 export async function GET(req: NextRequest) {
   try {
-    const search = req.nextUrl.search || "";
-    const r = await fetch(`${BASE}/google/callback${search}`, {
-      method: "GET",
-      headers: { Accept: "application/json" },
+    const { searchParams } = new URL(req.url);
+    const code = searchParams.get("code");
+    
+    if (!code) {
+      return NextResponse.json({ success: false, message: "No code provided", code: 400 }, { status: 400 });
+    }
+
+    const r = await fetch(`${BASE_API_URL}/auth/google/callback?code=${code}`, {
+       method: "GET",
+       headers: { Accept: "application/json" },
     });
     const data = await r.json();
 

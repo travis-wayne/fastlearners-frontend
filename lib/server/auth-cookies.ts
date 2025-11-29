@@ -41,18 +41,6 @@ export function clearRegTokenServer(res: NextResponse): void {
  *
  * @param req - The NextRequest object containing the cookies.
  * @returns An AuthCookieData object with token and expiresAt, or null if cookies are invalid or expired.
- *
- * @example
- * ```typescript
- * const authData = parseAuthCookiesServer(request);
- * if (authData) {
- *   // Use the token to fetch user data from backend
- *   const userRole = await getUserRoleFromBackend(authData.token);
- *   // Proceed with role-based logic
- * }
- * ```
- *
- * @see {@link getUserRoleFromBackend} in `middleware.ts` for an example of fetching user role using the token.
  */
 export function parseAuthCookiesServer(
   req: NextRequest,
@@ -69,4 +57,8 @@ export function parseAuthCookiesServer(
   } catch {
     return null;
   }
+}
+
+export function parseRegTokenServer(req: NextRequest): string | undefined {
+  return req.cookies.get(REG_TOKEN_COOKIE)?.value;
 }
