@@ -9,7 +9,7 @@ import type {
   SubjectItem
 } from "@/lib/types/subjects";
 
-import { API_BASE } from './client';
+import { BASE_API_URL as API_BASE } from './client';
 
 // Get user profile (direct backend call with token)
 export async function getUserProfile(token: string): Promise<ProfileData> {

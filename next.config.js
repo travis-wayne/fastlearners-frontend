@@ -20,6 +20,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "randomuser.me",
       },
+      {
+        protocol: "https",
+        hostname: "avatar.iran.liara.run",
+      },
     ],
   },
   // Fix Contentlayer file-watching on Windows

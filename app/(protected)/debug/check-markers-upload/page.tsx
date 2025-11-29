@@ -559,7 +559,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
-                  <p className="text-sm text-muted-foreground mt-1">Endpoint: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}/superadmin/lessons/uploads/check-markers</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Endpoint: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}/superadmin/lessons/uploads/check-markers</p>
                 </div>
 
                 <div>
@@ -589,7 +589,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
-                  <p className="text-sm text-muted-foreground mt-1">Endpoint: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}/superadmin/lessons/uploads/all-lesson-files</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Endpoint: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}/superadmin/lessons/uploads/all-lesson-files</p>
                 </div>
 
                 <div>
