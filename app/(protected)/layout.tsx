@@ -20,7 +20,6 @@ import { NetworkStatus } from "@/components/navigation/network-status";
 import { NotificationCenter } from "@/components/navigation/notification-center";
 import { ProfileCompletionBanner } from "@/components/onboarding/profile-completion-banner";
 import { AcademicProvider } from "@/components/providers/academic-context";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 interface ProtectedLayoutProps {
   children: React.ReactNode;
@@ -85,7 +84,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
               className="sticky top-0 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8"
               style={{ zIndex: Z_INDEX.navbar }}
             >
-              <MaxWidthWrapper className="flex max-w-full items-center gap-x-3 px-0">
+              <div className="flex w-full items-center gap-x-3">
                 <MobileSheetSidebar links={filteredLinks} />
 
                 <div className="w-full flex-1">
@@ -97,7 +96,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
                 <NotificationCenter className="mr-2" />
                 <ModeToggle />
                 <UserAccountNav />
-              </MaxWidthWrapper>
+              </div>
             </header>
 
             <div
@@ -107,10 +106,10 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
               <ProfileCompletionBanner />
             </div>
 
-            <main className="flex-1 p-4 pb-16 xl:px-8">
-              <MaxWidthWrapper className="flex h-full max-w-full flex-col gap-4 px-4 lg:gap-6 lg:px-0">
+            <main className="flex-1 px-4 pb-16 pt-4 xl:px-8">
+              <div className="flex h-full w-full flex-col gap-4 lg:gap-6">
                 {children}
-              </MaxWidthWrapper>
+              </div>
             </main>
           </div>
 

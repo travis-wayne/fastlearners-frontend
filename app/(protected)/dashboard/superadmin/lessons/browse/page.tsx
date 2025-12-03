@@ -1,16 +1,7 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
-import {
-  ArrowLeft,
-  BookOpen,
-  Filter,
-  Search,
-  Target,
-  TrendingUp,
-} from "lucide-react";
 
 import {
   getLessonsMetadata,
@@ -27,7 +18,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -35,7 +25,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardHeader } from "@/components/dashboard/header";
 
 export default function BrowseLessonsPage() {
@@ -48,7 +37,6 @@ export default function BrowseLessonsPage() {
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [selectedTerm, setSelectedTerm] = useState<string>("");
   const [selectedWeek, setSelectedWeek] = useState<string>("");
-  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     (async () => {
@@ -101,7 +89,6 @@ export default function BrowseLessonsPage() {
   };
 
   const clearFilters = () => {
-    setSearchQuery("");
     if (metadata) {
       setSelectedClass(metadata.classes?.[0]?.id?.toString() || "");
       setSelectedSubject(metadata.subjects?.[0]?.id?.toString() || "");
@@ -112,129 +99,42 @@ export default function BrowseLessonsPage() {
     setError(null);
   };
 
-  const filteredLessons = useMemo(() => {
-    if (!searchQuery) return lessons;
-    const q = searchQuery.toLowerCase();
-    return lessons.filter((l) =>
-      [l.topic, l.class, l.subject, l.term].some((v) =>
-        v?.toLowerCase?.().includes(q),
-      ),
-    );
-  }, [lessons, searchQuery]);
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
-  };
-  const itemVariants = {
-    hidden: { y: 12, opacity: 0 },
-    visible: { y: 0, opacity: 1 },
-  };
-
   return (
-    <motion.div
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="container mx-auto space-y-6 p-4 md:p-6"
-    >
-      <motion.div variants={itemVariants} className="flex items-center gap-4">
-        <Link href="/dashboard/superadmin">
-          <Button variant="ghost" size="sm">
-            <ArrowLeft className="mr-2 size-4" /> Back to Dashboard
-          </Button>
-        </Link>
+    <div className="container mx-auto space-y-6 p-4 md:p-6">
+      <div className="flex items-center justify-between gap-4">
         <DashboardHeader
           heading="Browse Lessons"
-          text="Search and view all lesson content"
+          text="Filter and open uploaded lessons."
         />
-      </motion.div>
-
-      {/* Stats */}
-      <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <BookOpen className="size-4 text-blue-600" />
-                <span className="text-sm text-muted-foreground">Results</span>
-              </div>
-              <p className="mt-1 text-2xl font-bold">
-                {filteredLessons.length}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Target className="size-4 text-green-600" />
-                <span className="text-sm text-muted-foreground">
-                  Selected Subject
-                </span>
-              </div>
-              <p className="mt-1 text-2xl font-bold">
-                {metadata?.subjects?.find(
-                  (s) => s.id.toString() === selectedSubject,
-                )?.name || "-"}
-              </p>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="size-4 text-purple-600" />
-                <span className="text-sm text-muted-foreground">
-                  Term • Week
-                </span>
-              </div>
-              <p className="mt-1 text-2xl font-bold">
-                {metadata?.terms?.find((t) => t.id.toString() === selectedTerm)
-                  ?.name || "-"}{" "}
-                •{" "}
-                {metadata?.weeks?.find((w) => w.id.toString() === selectedWeek)
-                  ?.name || "-"}
-              </p>
-            </CardContent>
-          </Card>
+        <Link href="/dashboard/superadmin/lessons">
+          <Button variant="outline" size="sm">
+            Back to Lessons
+          </Button>
+        </Link>
         </div>
-      </motion.div>
 
-      {/* Search + Filters */}
-      <motion.div variants={itemVariants}>
+      {/* Filters */}
         <Card>
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="size-5" />
-              Filter Lessons
-            </CardTitle>
+          <CardTitle>Query lessons</CardTitle>
             <CardDescription>
-              Select class, subject, term and week to find lessons
+            Select class, subject, term and week, then click fetch to load
+            lessons.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex flex-col gap-4 md:flex-row">
-              <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search lessons..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-              <div className="flex gap-2">
+          <div className="flex flex-wrap gap-2">
                 <Button onClick={onSearch} disabled={loading}>
-                  {loading ? "Searching..." : "Search"}
+              {loading ? "Fetching lessons..." : "Fetch lessons"}
                 </Button>
                 <Button variant="outline" onClick={clearFilters}>
-                  Clear
+              Reset
                 </Button>
-              </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Class</label>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Class</p>
                 <Select value={selectedClass} onValueChange={setSelectedClass}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select class" />
@@ -248,8 +148,8 @@ export default function BrowseLessonsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Subject</label>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Subject</p>
                 <Select
                   value={selectedSubject}
                   onValueChange={setSelectedSubject}
@@ -266,8 +166,8 @@ export default function BrowseLessonsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Term</label>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Term</p>
                 <Select value={selectedTerm} onValueChange={setSelectedTerm}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select term" />
@@ -281,8 +181,8 @@ export default function BrowseLessonsPage() {
                   </SelectContent>
                 </Select>
               </div>
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Week</label>
+            <div className="space-y-1">
+              <p className="text-sm font-medium">Week</p>
                 <Select value={selectedWeek} onValueChange={setSelectedWeek}>
                   <SelectTrigger>
                     <SelectValue placeholder="Select week" />
@@ -299,170 +199,62 @@ export default function BrowseLessonsPage() {
             </div>
 
             {error && (
-              <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-red-800">
+            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-800">
                 {error}
               </div>
             )}
           </CardContent>
         </Card>
-      </motion.div>
 
       {/* Results */}
-      <motion.div variants={itemVariants}>
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-1 md:grid-cols-3">
-            <TabsTrigger value="all">
-              All Results ({filteredLessons.length})
-            </TabsTrigger>
-            <TabsTrigger value="by-subject">Group by Subject</TabsTrigger>
-            <TabsTrigger value="by-week">Group by Week</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all">
-            {filteredLessons.length === 0 ? (
               <Card>
-                <CardContent className="py-12 text-center">
-                  <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
-                  <h3 className="mb-2 text-lg font-semibold">
-                    No lessons found
-                  </h3>
-                  <p className="text-muted-foreground">
-                    Try different filter combinations to find lessons.
+        <CardHeader>
+          <CardTitle>Results</CardTitle>
+          <CardDescription>
+            {lessons.length} lesson
+            {lessons.length === 1 ? "" : "s"} found.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {lessons.length === 0 ? (
+            <p className="text-sm text-muted-foreground">
+              No lessons to show yet. Select class, subject, term and week, then
+              click &quot;Fetch lessons&quot;.
                   </p>
-                </CardContent>
-              </Card>
             ) : (
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {filteredLessons.map((lesson) => (
-                  <Card
+            <div className="space-y-3">
+              {lessons.map((lesson) => (
+                <div
                     key={lesson.id}
-                    className="transition-shadow hover:shadow-md"
+                  className="flex items-center justify-between gap-3 rounded-md border p-3 text-sm"
                   >
-                    <CardHeader>
-                      <CardTitle className="text-lg">{lesson.topic}</CardTitle>
-                      <CardDescription>
+                  <div>
+                    <p className="font-medium">{lesson.topic}</p>
+                    <p className="text-xs text-muted-foreground">
                         {lesson.class} • {lesson.subject} • {lesson.term} • Week{" "}
                         {lesson.week}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex justify-between gap-2">
+                    </p>
+                  </div>
+                  <div className="flex gap-2">
                       <Link href={`/dashboard/superadmin/lessons/${lesson.id}`}>
-                        <Button size="sm">Open</Button>
+                      <Button size="sm" variant="outline">
+                        Details
+                      </Button>
                       </Link>
                       <Link
                         href={`/dashboard/superadmin/lessons/${lesson.id}/content`}
                       >
-                        <Button size="sm" variant="outline">
-                          Content
-                        </Button>
+                      <Button size="sm">Content</Button>
                       </Link>
-                    </CardContent>
-                  </Card>
-                ))}
               </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="by-subject">
-            {Object.entries(
-              filteredLessons.reduce(
-                (acc: Record<string, typeof filteredLessons>, l) => {
-                  (acc[l.subject] ||= []).push(l);
-                  return acc;
-                },
-                {},
-              ),
-            ).map(([subject, items]) => (
-              <div key={subject} className="mb-6 space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  {subject}
-                </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {items.map((lesson) => (
-                    <Card
-                      key={lesson.id}
-                      className="transition-shadow hover:shadow-md"
-                    >
-                      <CardHeader>
-                        <CardTitle className="text-lg">
-                          {lesson.topic}
-                        </CardTitle>
-                        <CardDescription>
-                          {lesson.class} • {lesson.term} • Week {lesson.week}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex justify-between gap-2">
-                        <Link
-                          href={`/dashboard/superadmin/lessons/${lesson.id}`}
-                        >
-                          <Button size="sm">Open</Button>
-                        </Link>
-                        <Link
-                          href={`/dashboard/superadmin/lessons/${lesson.id}/content`}
-                        >
-                          <Button size="sm" variant="outline">
-                            Content
-                          </Button>
-                        </Link>
+                </div>
+              ))}
+              </div>
+          )}
                       </CardContent>
                     </Card>
-                  ))}
-                </div>
               </div>
-            ))}
-          </TabsContent>
-
-          <TabsContent value="by-week">
-            {Object.entries(
-              filteredLessons.reduce(
-                (acc: Record<string, typeof filteredLessons>, l) => {
-                  const key = `Week ${l.week}`;
-                  (acc[key] ||= []).push(l);
-                  return acc;
-                },
-                {},
-              ),
-            ).map(([week, items]) => (
-              <div key={week} className="mb-6 space-y-3">
-                <h3 className="text-sm font-semibold text-muted-foreground">
-                  {week}
-                </h3>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
-                  {items.map((lesson) => (
-                    <Card
-                      key={lesson.id}
-                      className="transition-shadow hover:shadow-md"
-                    >
-                      <CardHeader>
-                        <CardTitle className="text-lg">
-                          {lesson.topic}
-                        </CardTitle>
-                        <CardDescription>
-                          {lesson.class} • {lesson.subject} • {lesson.term}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="flex justify-between gap-2">
-                        <Link
-                          href={`/dashboard/superadmin/lessons/${lesson.id}`}
-                        >
-                          <Button size="sm">Open</Button>
-                        </Link>
-                        <Link
-                          href={`/dashboard/superadmin/lessons/${lesson.id}/content`}
-                        >
-                          <Button size="sm" variant="outline">
-                            Content
-                          </Button>
-                        </Link>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </TabsContent>
-        </Tabs>
-      </motion.div>
-    </motion.div>
   );
 }
+
+

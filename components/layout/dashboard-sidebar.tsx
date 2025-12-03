@@ -79,7 +79,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
         <ScrollArea className="h-full overflow-y-auto border-r">
           <aside
             className={cn(
-              isSidebarExpanded ? "w-[220px] xl:w-[260px]" : "w-[68px]",
+              isSidebarExpanded ? "w-56 lg:w-60 xl:w-64" : "w-[68px]",
               "hidden h-screen md:block",
             )}
           >

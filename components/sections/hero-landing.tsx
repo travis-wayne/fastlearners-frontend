@@ -6,6 +6,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
 import BlurImage from "@/components/shared/blur-image";
+import { SectionWrapper } from "@/components/shared/section-wrapper";
 
 import { Icons } from "../shared/icons";
 
@@ -49,110 +50,105 @@ const InfiniteLogoSlider = () => {
 
 export default function HeroLanding() {
   return (
-    <section className="py-12 md:py-20">
-      {/* Main hero container */}
-      <div className="container max-w-7xl">
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Left content */}
-          <div className="relative z-10 flex flex-col justify-center space-y-8">
-            <div className="space-y-6">
-              <h1 className="text-balance font-urban text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-[66px]">
-                Built for{" "}
-                <span className="text-gradient_indigo-purple font-extrabold">
-                  Learners{" "}
-                </span>
-                Powered by Passion
-              </h1>
+    <SectionWrapper
+      as="section"
+      className="space-y-16 pt-16 md:space-y-20 md:pt-20 lg:pt-24"
+    >
+      <div className="grid grid-cols-1 gap-10 lg:gap-12 xl:gap-16 lg:grid-cols-2">
+        {/* Left content */}
+        <div className="relative z-10 flex flex-col justify-center space-y-8">
+          <div className="space-y-6">
+            <h1 className="text-balance font-urban text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-[66px]">
+              Built for{" "}
+              <span className="text-gradient_indigo-purple font-extrabold">
+                Learners{" "}
+              </span>
+              Powered by Passion
+            </h1>
 
-              <p
-                className="max-w-2xl text-balance leading-normal text-muted-foreground sm:text-xl sm:leading-8"
-                style={{
-                  animationDelay: "0.35s",
-                  animationFillMode: "forwards",
-                }}
-              >
-                Fastlearners is a smart digital platform that makes learning
-                faster, easier, and more engaging for students, professionals,
-                and institutions; all in one place.
-              </p>
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
-              <div
-                className="flex justify-center space-x-2 md:space-x-4"
-                style={{
-                  animationDelay: "0.4s",
-                  animationFillMode: "forwards",
-                }}
-              >
-                <Link
-                  href="/auth/register"
-                  prefetch={true}
-                  className={cn(
-                    buttonVariants({ size: "lg" }),
-                    "gap-2 rounded-full",
-                  )}
-                >
-                  <span>Create free account</span>
-                </Link>
-              </div>
-
-              <div
-                className="flex justify-center space-x-2 md:space-x-4"
-                style={{
-                  animationDelay: "0.4s",
-                  animationFillMode: "forwards",
-                }}
-              >
-                <Link
-                  href="/pricing"
-                  prefetch={true}
-                  className={cn(
-                    buttonVariants({
-                      variant: "outline",
-                      size: "lg",
-                    }),
-                    "gap-2 rounded-full",
-                  )}
-                >
-                  <span>Learn More</span>
-                  <Icons.arrowRight className="size-4" />
-                </Link>
-              </div>
-            </div>
+            <p
+              className="max-w-2xl text-balance leading-normal text-muted-foreground sm:text-xl sm:leading-8"
+              style={{
+                animationDelay: "0.35s",
+                animationFillMode: "forwards",
+              }}
+            >
+              Fastlearners is a smart digital platform that makes learning
+              faster, easier, and more engaging for students, professionals, and
+              institutions; all in one place.
+            </p>
           </div>
 
-          {/* Right image */}
-          <div className="relative">
-            <div className="absolute inset-0 -z-10">
-              <BlurImage
-                src="/OBJECTS.jpg"
-                alt="Abstract background"
-                fill
-                className="object-cover object-center"
-                sizes="(max-width: 768px) 100vw, 50vw"
-              />
+          {/* CTA Buttons */}
+          <div className="flex flex-col gap-4 sm:flex-row sm:gap-6">
+            <div
+              className="flex justify-center space-x-2 md:space-x-4"
+              style={{
+                animationDelay: "0.4s",
+                animationFillMode: "forwards",
+              }}
+            >
+              <Link
+                href="/auth/register"
+                prefetch={true}
+                className={cn(
+                  buttonVariants({ size: "lg" }),
+                  "gap-2 rounded-full",
+                )}
+              >
+                <span>Create free account</span>
+              </Link>
             </div>
 
-            {/* Placeholder for main hero image if needed */}
-            <div className="aspect-square opacity-20 lg:aspect-[4/3]" />
+            <div
+              className="flex justify-center space-x-2 md:space-x-4"
+              style={{
+                animationDelay: "0.4s",
+                animationFillMode: "forwards",
+              }}
+            >
+              <Link
+                href="/pricing"
+                prefetch={true}
+                className={cn(
+                  buttonVariants({
+                    variant: "outline",
+                    size: "lg",
+                  }),
+                  "gap-2 rounded-full",
+                )}
+              >
+                <span>Learn More</span>
+                <Icons.arrowRight className="size-4" />
+              </Link>
+            </div>
           </div>
+        </div>
+
+        {/* Right image */}
+        <div className="relative min-h-[320px]">
+          <div className="absolute inset-0 -z-10">
+            <BlurImage
+              src="/OBJECTS.jpg"
+              alt="Abstract background"
+              fill
+              className="object-cover object-center"
+              sizes="(max-width: 768px) 100vw, 50vw"
+            />
+          </div>
+
+          <div className="aspect-square opacity-20 lg:aspect-[4/3]" />
         </div>
       </div>
 
       {/* Powered by section */}
-      <div className="mt-16 md:mt-24">
-        <div className="container max-w-7xl">
-          <div className="space-y-8">
-            <p className="text-center text-sm font-medium text-muted-foreground">
-              Powered by the tools you love
-            </p>
+      <div className="space-y-8">
+        <p className="text-center text-sm font-medium text-muted-foreground">
+          Powered by the tools you love
+        </p>
 
-            <InfiniteLogoSlider />
-          </div>
-        </div>
+        <InfiniteLogoSlider />
       </div>
-    </section>
+    </SectionWrapper>
   );
 }

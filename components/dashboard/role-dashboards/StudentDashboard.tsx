@@ -639,7 +639,7 @@ export function StudentDashboard() {
               ))}
             </div>
 
-            <div className="hidden w-full overflow-x-auto sm:block">
+            <div className="hidden w-full sm:block">
               <Table className="min-w-[560px] lg:min-w-[680px]">
                 <TableHeader>
                   <TableRow>

@@ -17,7 +17,9 @@ export default function LessonUploadPage() {
   );
 
   // Check permissions
-  const canManageLessons = hasPermission("manage_lessons");
+  // Note: Although the RBAC system allows teachers/admins to manage lessons,
+  // this superadmin upload page is intentionally restricted to superadmins only.
+  const canManageLessons = userRole === "superadmin";
 
   const handleUploadSuccess = (configKey: string) => {
     setCompletedUploads((prev) => new Set([...Array.from(prev), configKey]));
@@ -43,9 +45,9 @@ export default function LessonUploadPage() {
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
           <AlertDescription>
-            <strong>Access Restricted:</strong> Only Teachers, Admins, and
-            SuperAdmins can upload lesson content. Your current role ({userRole}
-            ) does not have permission to manage lessons.
+            <strong>Access Restricted:</strong> Only SuperAdmins can upload
+            lesson content from this page. Your current role ({userRole}) does
+            not have permission to manage lessons here.
           </AlertDescription>
         </Alert>
       </div>

@@ -30,13 +30,15 @@ export function TopicOverview({
   topicSlug,
 }: TopicOverviewProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Introduction */}
       {overview.introduction && (
-        <Card>
+        <Card className="border-2 bg-gradient-to-br from-background to-muted/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="size-5" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                <BookOpen className="size-4.5 text-primary" />
+              </div>
               Introduction
             </CardTitle>
           </CardHeader>
@@ -50,13 +52,15 @@ export function TopicOverview({
 
       {/* Concepts Count */}
       {overview.concepts_count > 0 && (
-        <Card>
+        <Card className="border-2 bg-gradient-to-br from-background to-muted/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Lightbulb className="size-5" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                <Lightbulb className="size-4.5 text-primary" />
+              </div>
               Key Concepts
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="mt-1">
               This lesson covers {overview.concepts_count} main concept
               {overview.concepts_count !== 1 ? "s" : ""}
             </CardDescription>
@@ -67,7 +71,11 @@ export function TopicOverview({
                 { length: overview.concepts_count },
                 (_, i) => i + 1,
               ).map((conceptNum) => (
-                <Badge key={conceptNum} variant="secondary" className="text-sm">
+                <Badge
+                  key={conceptNum}
+                  variant="secondary"
+                  className="border-2 text-sm font-medium shadow-sm"
+                >
                   Concept {conceptNum}
                 </Badge>
               ))}
@@ -78,10 +86,12 @@ export function TopicOverview({
 
       {/* Summary */}
       {overview.summary && (
-        <Card>
+        <Card className="border-2 bg-gradient-to-br from-background to-muted/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <FileText className="size-5" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                <FileText className="size-4.5 text-primary" />
+              </div>
               Summary
             </CardTitle>
           </CardHeader>
@@ -95,10 +105,12 @@ export function TopicOverview({
 
       {/* Application */}
       {overview.application && overview.application !== "Null" && (
-        <Card>
+        <Card className="border-2 bg-gradient-to-br from-background to-muted/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="size-5" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                <Target className="size-4.5 text-primary" />
+              </div>
               Application
             </CardTitle>
           </CardHeader>
@@ -112,10 +124,12 @@ export function TopicOverview({
 
       {/* General Exercises */}
       {overview.general_exercises && overview.general_exercises !== "Null" && (
-        <Card>
+        <Card className="border-2 bg-gradient-to-br from-background to-muted/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle2 className="size-5" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10">
+                <CheckCircle2 className="size-4.5 text-primary" />
+              </div>
               General Exercises
             </CardTitle>
           </CardHeader>

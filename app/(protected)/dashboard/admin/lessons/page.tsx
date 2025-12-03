@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HorizontalScroll } from "@/components/shared/horizontal-scroll";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { LessonFilters } from "@/components/lessons/LessonFilters";
 import { LessonsList } from "@/components/lessons/LessonsList";
@@ -46,16 +47,18 @@ export default function AdminLessonsPage() {
 
       {/* Tabbed Interface */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="overview" className="flex items-center gap-2">
-            <BookOpen className="size-4" />
-            Overview
-          </TabsTrigger>
-          <TabsTrigger value="browse" className="flex items-center gap-2">
-            <Eye className="size-4" />
-            Browse Lessons
-          </TabsTrigger>
-        </TabsList>
+        <HorizontalScroll className="block">
+          <TabsList className="grid min-w-full grid-cols-2">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BookOpen className="size-4" />
+              Overview
+            </TabsTrigger>
+            <TabsTrigger value="browse" className="flex items-center gap-2">
+              <Eye className="size-4" />
+              Browse Lessons
+            </TabsTrigger>
+          </TabsList>
+        </HorizontalScroll>
 
         {/* Overview Tab */}
         <TabsContent value="overview" className="space-y-6">

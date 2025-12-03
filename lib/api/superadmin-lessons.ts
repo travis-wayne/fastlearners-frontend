@@ -114,6 +114,7 @@ export interface Exercise {
   solution_steps: string[];
   answers: string[];
   correct_answer: string;
+  correct_answer_option: string;
   created_at: string;
   updated_at: string;
 }
@@ -126,6 +127,7 @@ export interface GeneralExercise {
   solution_steps: string[];
   answers: string[];
   correct_answer: string;
+  correct_answer_option?: string;
   created_at: string;
   updated_at: string;
 }
@@ -192,7 +194,7 @@ export async function getLessons(filters: {
   week: string;
 }): Promise<ApiResponse<LessonsListResponse>> {
   try {
-    const response = await fetch("/api/superadmin/lessons/list", {
+    const response = await fetch("/api/superadmin/lessons/lessons", {
       method: "POST",
       credentials: "include",
       headers: {

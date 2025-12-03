@@ -1,49 +1,58 @@
 import { useEffect, useState } from "react";
 
+const BREAKPOINTS = {
+  sm: 640,
+  md: 768,
+  lg: 1024,
+} as const;
+
+type DeviceType = "mobile" | "sm" | "tablet" | "desktop" | null;
+
 export function useMediaQuery() {
-  const [device, setDevice] = useState<
-    "mobile" | "sm" | "tablet" | "desktop" | null
-  >(null);
+  const [device, setDevice] = useState<DeviceType>(null);
   const [dimensions, setDimensions] = useState<{
     width: number;
     height: number;
   } | null>(null);
 
   useEffect(() => {
-    const checkDevice = () => {
-      if (window.matchMedia("(max-width: 640px)").matches) {
-        setDevice("mobile");
-      } else if (window.matchMedia("(max-width: 768px)").matches) {
-        setDevice("sm");
-      } else if (
-        window.matchMedia("(min-width: 641px) and (max-width: 1024px)").matches
-      ) {
-        setDevice("tablet");
-      } else {
-        setDevice("desktop");
-      }
-      setDimensions({ width: window.innerWidth, height: window.innerHeight });
+    const classifyDevice = (width: number): Exclude<DeviceType, null> => {
+      if (width < BREAKPOINTS.sm) return "mobile";
+      if (width < BREAKPOINTS.md) return "sm";
+      if (width < BREAKPOINTS.lg) return "tablet";
+      return "desktop";
     };
 
-    // Initial detection
-    checkDevice();
+    const updateViewportState = () => {
+      const { innerWidth, innerHeight } = window;
+      setDimensions({ width: innerWidth, height: innerHeight });
+      setDevice(classifyDevice(innerWidth));
+    };
 
-    // Listener for windows resize
-    window.addEventListener("resize", checkDevice);
+    updateViewportState();
+    window.addEventListener("resize", updateViewportState);
 
-    // Cleanup listener
     return () => {
-      window.removeEventListener("resize", checkDevice);
+      window.removeEventListener("resize", updateViewportState);
     };
   }, []);
 
+  const width = dimensions?.width ?? null;
+
+  const isMobile = width !== null && width < BREAKPOINTS.sm;
+  const isSm =
+    width !== null && width >= BREAKPOINTS.sm && width < BREAKPOINTS.md;
+  const isTablet =
+    width !== null && width >= BREAKPOINTS.md && width < BREAKPOINTS.lg;
+  const isDesktop = width !== null && width >= BREAKPOINTS.lg;
+
   return {
     device,
-    width: dimensions?.width,
-    height: dimensions?.height,
-    isMobile: device === "mobile",
-    isSm: device === "sm",
-    isTablet: device === "tablet",
-    isDesktop: device === "desktop",
+    width,
+    height: dimensions?.height ?? null,
+    isMobile,
+    isSm,
+    isTablet,
+    isDesktop,
   };
 }

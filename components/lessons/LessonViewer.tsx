@@ -15,6 +15,7 @@ import {
   Play,
   Target,
   Trophy,
+  ChevronRight,
 } from "lucide-react";
 
 import { LessonOverview } from "./sections/LessonOverview";
@@ -119,55 +120,64 @@ export function LessonViewer({
     autoAdvanceToNextSection,
   } = useLessonsStore();
 
-  // Auto-skip logic: Navigate to next incomplete section on mount
+  // Auto-skip logic: Navigate to next incomplete section only on initial load
+  const [hasAutoAdvanced, setHasAutoAdvanced] = useState(false);
+  
+  // Reset auto-advance flag when lesson changes
   useEffect(() => {
-    if (!selectedLesson || isLoadingLessonContent) return;
+    setHasAutoAdvanced(false);
+  }, [selectedLesson?.id]);
+  
+  useEffect(() => {
+    if (!selectedLesson || isLoadingLessonContent || hasAutoAdvanced) return;
 
-    // Get current section ID
-    const conceptsCount = selectedLesson.concepts?.length || 0;
-    let currentSectionId = '';
-
-    if (currentStepIndex === 0) {
-      currentSectionId = 'overview';
-    } else if (currentStepIndex <= conceptsCount) {
-      const conceptIndex = currentStepIndex - 1;
-      const concept = selectedLesson.concepts?.[conceptIndex];
-      if (concept) currentSectionId = `concept_${concept.id}`;
-    } else if (currentStepIndex === conceptsCount + 1) {
-      currentSectionId = 'summary_application';
-    } else if (currentStepIndex === conceptsCount + 2) {
-      currentSectionId = 'general_exercises';
+    // Only auto-advance when we're on the overview section (step 0)
+    // This ensures auto-advance only happens on initial load/view of overview
+    if (currentStepIndex !== 0) {
+      // User is not on overview - don't auto-advance, but don't mark as checked
+      // This allows auto-advance to run if user returns to overview later
+      return;
     }
 
-    // Check if current section is already completed
+    // Get current section ID (should be 'overview' at this point)
+    const currentSectionId = 'overview';
     const currentProgress = sectionProgress[currentSectionId];
-    
-    if (currentProgress?.isCompleted) {
-      // Get next incomplete section
-      const nextSectionId = getNextIncompleteSection();
 
-      if (nextSectionId && nextSectionId !== currentSectionId) {
-        // Show toast notification
-        const { toast } = require('sonner');
-        toast.info('Resuming where you left off...', {
-          description: 'Skipping completed sections',
-        });
-
-        // Auto-advance after 1 second
-        const timer = setTimeout(() => {
-          autoAdvanceToNextSection();
-        }, 1000);
-
-        return () => clearTimeout(timer);
-      } else if (!nextSectionId) {
-        // All sections completed
-        const { toast } = require('sonner');
-        toast.success('Lesson completed!', {
-          description: 'You\'ve finished all sections. Great work!',
-        });
-      }
+    // Only auto-advance if overview is completed
+    if (!currentProgress?.isCompleted) {
+      // Overview not completed yet - don't auto-advance, but don't mark as checked
+      // This allows auto-advance to run when overview becomes completed
+      return;
     }
-  }, [selectedLesson, currentStepIndex, isLoadingLessonContent, sectionProgress, getNextIncompleteSection, autoAdvanceToNextSection]);
+
+    // Overview is completed - check if we should auto-advance to next incomplete section
+    const nextSectionId = getNextIncompleteSection();
+
+    if (nextSectionId && nextSectionId !== currentSectionId) {
+      // Show toast notification
+      const { toast } = require('sonner');
+      toast.info('Resuming where you left off...', {
+        description: 'Skipping completed sections',
+      });
+
+      // Auto-advance after 1 second
+      const timer = setTimeout(() => {
+        autoAdvanceToNextSection();
+        setHasAutoAdvanced(true);
+      }, 1000);
+
+      return () => clearTimeout(timer);
+    } else if (!nextSectionId) {
+      // All sections completed - mark as checked since no auto-advance needed
+      const { toast } = require('sonner');
+      toast.success('Lesson completed!', {
+        description: 'You\'ve finished all sections. Great work!',
+      });
+      setHasAutoAdvanced(true);
+    }
+    // If nextSectionId === currentSectionId (shouldn't happen for overview, but handle it)
+    // Don't set hasAutoAdvanced - allow re-checking if needed
+  }, [selectedLesson, isLoadingLessonContent, sectionProgress, getNextIncompleteSection, autoAdvanceToNextSection, currentStepIndex, hasAutoAdvanced]);
 
   useEffect(() => {
     // Debugging or side effects if needed
@@ -235,7 +245,7 @@ export function LessonViewer({
     // Allow navigation to completed sections or current section
     const { sectionProgress } = useLessonsStore.getState();
     const concepts = selectedLesson?.concepts || [];
-    
+
     let sectionId = '';
     if (stepIndex === 0) {
       sectionId = 'overview';
@@ -269,10 +279,10 @@ export function LessonViewer({
 
   if (error) {
     return (
-      <Alert variant="destructive">
+      <Alert variant="destructive" className="border-2">
         <AlertCircle className="size-4" />
         <AlertDescription className="flex items-center justify-between">
-          <span>{error}</span>
+          <span className="font-medium">{error}</span>
           <div className="flex gap-2">
             <Button variant="outline" size="sm" onClick={clearError}>
               Dismiss
@@ -290,17 +300,19 @@ export function LessonViewer({
 
   if (!selectedLesson) {
     return (
-      <Card className="border-dashed border-border bg-muted">
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <BookOpen className="mb-4 size-12 text-slate-400" />
-          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
+      <Card className="border-2 border-dashed">
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-muted">
+            <BookOpen className="size-10 text-muted-foreground" />
+          </div>
+          <h3 className="mb-2 text-2xl font-bold text-foreground">
             No lesson selected
           </h3>
-          <p className="mb-4 max-w-md text-center text-slate-600 dark:text-slate-400">
+          <p className="mb-6 max-w-md text-center text-muted-foreground">
             Select a lesson from the list to view its content.
           </p>
           {onBack && (
-            <Button variant="outline" onClick={handleBack}>
+            <Button size="lg" variant="outline" onClick={handleBack}>
               <ArrowLeft className="mr-2 size-4" />
               Go Back
             </Button>
@@ -319,28 +331,51 @@ export function LessonViewer({
   const key_concepts = lesson.key_concepts || {};
 
   return (
-    <div className="space-y-6">
-      {/* Section Breadcrumb Navigation */}
-      <SectionBreadcrumb
-        lessonId={lesson.id}
-        concepts={concepts}
-        currentStepIndex={currentStepIndex}
-        onNavigate={handleNavigateToSection}
-      />
-
-      {/* Progress */}
+    <div className="space-y-8">
+      {/* Progress Card */}
       {progress > 0 && (
-        <div className="mb-6 space-y-2">
-          <div className="flex items-center justify-between text-sm text-muted-foreground">
-            <span>Lesson Progress</span>
-            <span>{progress}%</span>
-          </div>
-          <Progress value={progress} className="h-2" />
-        </div>
+        <Card className="border-2 bg-gradient-to-r from-primary/5 via-primary/5 to-background">
+          <CardContent className="p-6">
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary/20">
+                    <Target className="size-5 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-muted-foreground">
+                      Lesson Progress
+                    </p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {progress}%
+                    </p>
+                  </div>
+                </div>
+                <Badge variant="secondary" className="text-sm font-medium">
+                  {currentStepIndex + 1} of{" "}
+                  {concepts.length + 3} sections
+                </Badge>
+              </div>
+              <Progress value={progress} className="h-3" />
+            </div>
+          </CardContent>
+        </Card>
       )}
 
+      {/* Section Breadcrumb Navigation */}
+      <Card className="border-2">
+        <CardContent className="p-4">
+          <SectionBreadcrumb
+            lessonId={lesson.id}
+            concepts={concepts}
+            currentStepIndex={currentStepIndex}
+            onNavigate={handleNavigateToSection}
+          />
+        </CardContent>
+      </Card>
+
       {/* Main Content */}
-      <div className="min-h-[600px] flex-1">
+      <div className="min-h-[600px] flex-1 rounded-xl">
         {/* Overview Step */}
         {currentStepIndex === 0 && (
           <LessonOverview lesson={lesson} />
@@ -371,18 +406,44 @@ export function LessonViewer({
       </div>
 
       {/* Navigation Controls */}
-      <div className="mt-8 flex justify-between border-t pt-6">
-        <Button
-          variant="outline"
-          onClick={handlePrev}
-          disabled={currentStepIndex === 0}
-        >
-          Previous
-        </Button>
-        <Button onClick={handleNext}>
-          {currentStepIndex === concepts.length + 2 ? "Finish Lesson" : "Continue"}
-        </Button>
-      </div>
+      <Card className="border-2">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-between gap-4">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={handlePrev}
+              disabled={currentStepIndex === 0}
+              className="font-medium"
+            >
+              <ArrowLeft className="mr-2 size-4" />
+              Previous
+            </Button>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <span>
+                Section {currentStepIndex + 1} of {concepts.length + 3}
+              </span>
+            </div>
+            <Button
+              size="lg"
+              onClick={handleNext}
+              className="bg-primary font-medium hover:bg-primary/90"
+            >
+              {currentStepIndex === concepts.length + 2 ? (
+                <>
+                  <Trophy className="mr-2 size-4" />
+                  Finish Lesson
+                </>
+              ) : (
+                <>
+                  Continue
+                  <ChevronRight className="ml-2 size-4" />
+                </>
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

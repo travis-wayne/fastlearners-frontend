@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type CSSProperties } from "react";
 import {
   Bell,
   CreditCard,
@@ -133,6 +133,10 @@ export function SettingsPage() {
   const [activeSection, setActiveSection] = useState("profile");
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const layoutVariables = {
+    "--settings-sidebar-width": "16rem",
+  } as CSSProperties;
+
   const renderContent = () => {
     switch (activeSection) {
       case "profile":
@@ -151,7 +155,7 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background" style={layoutVariables}>
       {/* Mobile menu button */}
       <div className="fixed left-4 top-4 lg:hidden" style={{ zIndex: Z_INDEX.navbar + 1 }}>
         <Button
@@ -166,7 +170,7 @@ export function SettingsPage() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed inset-y-0 left-0 w-64 border-r bg-card transition duration-200 ease-in-out lg:translate-x-0",
+          "fixed inset-y-0 left-0 w-[var(--settings-sidebar-width)] border-r bg-card transition duration-200 ease-in-out lg:translate-x-0",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
         style={{ zIndex: Z_INDEX.drawerOverlay + 1 }}
@@ -199,7 +203,7 @@ export function SettingsPage() {
       </div>
 
       {/* Main content */}
-      <div className="lg:ml-64">
+      <div className="lg:ml-[var(--settings-sidebar-width)]">
         <div className="p-6 lg:p-8">
           <div className="mx-auto max-w-4xl">{renderContent()}</div>
         </div>

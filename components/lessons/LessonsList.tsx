@@ -10,6 +10,11 @@ import {
   Clock,
   FileText,
   Users,
+  PlayCircle,
+  CheckCircle2,
+  TrendingUp,
+  Award,
+  Sparkles,
 } from "lucide-react";
 
 import { useLessonsStore } from "@/lib/store/lessons";
@@ -19,7 +24,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface LessonsListProps {
   onLessonSelect?: (lessonId: number) => void;
@@ -35,7 +47,6 @@ interface LessonCardProps {
 
 function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
   const handleClick = useCallback(() => {
-    // Use startTransition to avoid blocking UI
     startTransition(() => {
       onSelect?.(lesson.id);
     });
@@ -43,34 +54,51 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
 
   const statusColor =
     lesson.status === "in_progress"
-      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400"
-      : "bg-slate-100 text-slate-800 dark:bg-slate-900/20 dark:text-slate-400";
+      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/20 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800"
+      : "bg-slate-100 text-slate-800 dark:bg-slate-900/20 dark:text-slate-400 border-slate-200 dark:border-slate-700";
+
+  const isCompleted = lesson.status === "completed";
 
   if (compact) {
     return (
       <Card
-        className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-md"
+          className={cn(
+            "group relative cursor-pointer border-2 bg-gradient-to-br from-card to-muted/30 transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-lg",
+          )}
         onClick={handleClick}
       >
         <CardContent className="p-4">
-          <div className="flex items-start justify-between">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
-              <h3 className="truncate font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100">
+              <div className="mb-2 flex items-center gap-2">
+                {isCompleted ? (
+                  <CheckCircle2 className="size-4 text-emerald-600" />
+                ) : (
+                  <PlayCircle className="size-4 text-primary" />
+                )}
+                <Badge
+                  variant="outline"
+                  className={cn("text-xs font-medium", statusColor)}
+                >
+                  {lesson.status === "in_progress" ? "In Progress" : lesson.status}
+                </Badge>
+              </div>
+              <h3 className="line-clamp-2 font-semibold text-foreground transition-colors group-hover:text-primary">
                 {lesson.topic}
               </h3>
-              <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+              <p className="mt-1.5 text-sm text-muted-foreground">
                 {lesson.class} • {lesson.subject}
               </p>
               <div className="mt-2 flex items-center gap-2">
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="secondary" className="text-xs">
                   {lesson.term} Term
                 </Badge>
-                <Badge variant="outline" className="text-xs">
+                <Badge variant="secondary" className="text-xs">
                   Week {lesson.week}
                 </Badge>
               </div>
             </div>
-            <ChevronRight className="size-5 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
+            <ChevronRight className="size-5 shrink-0 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-primary" />
           </div>
         </CardContent>
       </Card>
@@ -78,67 +106,139 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
   }
 
   return (
-    <Card
-      className="group cursor-pointer border-border bg-card transition-all duration-200 hover:shadow-lg"
-      onClick={handleClick}
-    >
-      <CardHeader className="pb-4">
-        <div className="flex items-start justify-between">
-          <div className="min-w-0 flex-1">
-            <div className="mb-2 flex items-center gap-2">
-              <BookOpen className="size-5 text-blue-600" />
-              <Badge className={cn("text-xs", statusColor)}>
-                {lesson.status}
-              </Badge>
-            </div>
-            <h3 className="line-clamp-2 text-lg font-semibold text-slate-900 transition-colors group-hover:text-blue-600 dark:text-slate-100">
-              {lesson.topic}
-            </h3>
-          </div>
-          <ChevronRight className="mt-1 size-5 shrink-0 text-slate-400 transition-colors group-hover:text-blue-600" />
-        </div>
-      </CardHeader>
-
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          {/* Subject and Class Info */}
-          <div className="flex items-center gap-4 text-sm text-slate-600 dark:text-slate-400">
-            <div className="flex items-center gap-1">
-              <Users className="size-4" />
-              <span>{lesson.class}</span>
-            </div>
-            <div className="flex items-center gap-1">
-              <FileText className="size-4" />
-              <span>{lesson.subject}</span>
-            </div>
-          </div>
-
-          {/* Term and Week Info */}
-          <div className="flex items-center gap-2">
-            <Badge variant="secondary" className="text-xs">
-              <Calendar className="mr-1 size-3" />
-              {lesson.term} Term
-            </Badge>
-            <Badge variant="secondary" className="text-xs">
-              <Clock className="mr-1 size-3" />
-              Week {lesson.week}
-            </Badge>
-          </div>
-
-          {/* Dates */}
-          <div className="flex items-center justify-between border-t border-slate-200 pt-2 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-500">
-            <span>
-              Created: {new Date(lesson.created_at).toLocaleDateString()}
-            </span>
-            {lesson.updated_at !== lesson.created_at && (
-              <span>
-                Updated: {new Date(lesson.updated_at).toLocaleDateString()}
-              </span>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Card
+            className={cn(
+              "group relative cursor-pointer border-2 bg-gradient-to-br from-card via-card to-muted/20 transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-xl",
+              isCompleted && "ring-2 ring-emerald-500/20",
             )}
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+            onClick={handleClick}
+          >
+            {/* Status indicator bar */}
+            <div
+              className={cn(
+                "absolute left-0 top-0 h-1 w-full rounded-t-lg",
+                isCompleted
+                  ? "bg-emerald-500"
+                  : lesson.status === "in_progress"
+                    ? "bg-primary"
+                    : "bg-muted",
+              )}
+            />
+
+            <CardHeader className="pb-4">
+              <div className="flex items-start justify-between gap-4">
+                <div className="min-w-0 flex-1">
+                  <div className="mb-3 flex items-center gap-2">
+                    <div
+                      className={cn(
+                        "flex size-10 items-center justify-center rounded-xl transition-colors",
+                        isCompleted
+                          ? "bg-emerald-100 dark:bg-emerald-900/30"
+                          : "bg-primary/10 group-hover:bg-primary/20",
+                      )}
+                    >
+                      {isCompleted ? (
+                        <Award className="size-5 text-emerald-600 dark:text-emerald-400" />
+                      ) : (
+                        <PlayCircle className="size-5 text-primary" />
+                      )}
+                    </div>
+                    <Badge
+                      className={cn(
+                        "text-xs font-medium",
+                        statusColor,
+                      )}
+                    >
+                      {lesson.status === "in_progress" ? (
+                        <span className="flex items-center gap-1">
+                          <TrendingUp className="size-3" />
+                          In Progress
+                        </span>
+                      ) : lesson.status === "completed" ? (
+                        <span className="flex items-center gap-1">
+                          <CheckCircle2 className="size-3" />
+                          Completed
+                        </span>
+                      ) : (
+                        lesson.status
+                      )}
+                    </Badge>
+                  </div>
+                  <h3 className="line-clamp-2 text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+                    {lesson.topic}
+                  </h3>
+                </div>
+                <div className="flex shrink-0 items-center gap-2">
+                  {isCompleted && (
+                    <div className="flex size-8 items-center justify-center rounded-full bg-emerald-100 dark:bg-emerald-900/30">
+                      <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
+                    </div>
+                  )}
+                  <ChevronRight className="size-5 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-primary" />
+                </div>
+              </div>
+            </CardHeader>
+
+            <CardContent className="space-y-4 pt-0">
+              {/* Subject and Class Info */}
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-1.5">
+                  <Users className="size-4 text-muted-foreground" />
+                  <span className="font-medium">{lesson.class}</span>
+                </div>
+                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-1.5">
+                  <FileText className="size-4 text-muted-foreground" />
+                  <span className="font-medium">{lesson.subject}</span>
+                </div>
+              </div>
+
+              {/* Term and Week Info */}
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="text-xs font-medium">
+                  <Calendar className="mr-1.5 size-3" />
+                  {lesson.term} Term
+                </Badge>
+                <Badge variant="outline" className="text-xs font-medium">
+                  <Clock className="mr-1.5 size-3" />
+                  Week {lesson.week}
+                </Badge>
+              </div>
+
+              {/* Progress indicator for in-progress lessons */}
+              {lesson.status === "in_progress" && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
+                    <span>Progress</span>
+                    <span className="font-medium">In Progress</span>
+                  </div>
+                  <Progress value={50} className="h-2" />
+                </div>
+              )}
+
+              {/* Dates */}
+              <div className="flex items-center justify-between border-t pt-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <Calendar className="size-3" />
+                  {new Date(lesson.created_at).toLocaleDateString()}
+                </span>
+                {lesson.updated_at !== lesson.created_at && (
+                  <span className="flex items-center gap-1">
+                    <Sparkles className="size-3" />
+                    Updated {new Date(lesson.updated_at).toLocaleDateString()}
+                  </span>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        </TooltipTrigger>
+        <TooltipContent>
+          <p>Click to view lesson</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
@@ -263,13 +363,15 @@ export function LessonsList({
   // Show empty state
   if (!lessons || lessons.length === 0) {
     return (
-      <Card className="border-dashed border-slate-300 bg-slate-50 dark:border-slate-700 dark:bg-slate-900">
-        <CardContent className="flex flex-col items-center justify-center py-12">
-          <BookOpen className="mb-4 size-12 text-slate-400" />
-          <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
+      <Card className="border-2 border-dashed">
+        <CardContent className="flex flex-col items-center justify-center py-16">
+          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-muted">
+            <BookOpen className="size-10 text-muted-foreground" />
+          </div>
+          <h3 className="mb-2 text-2xl font-bold text-foreground">
             No lessons found
           </h3>
-          <p className="max-w-md text-center text-slate-600 dark:text-slate-400">
+          <p className="max-w-md text-center text-muted-foreground">
             Try adjusting your filters to find lessons. Make sure you&apos;ve
             selected a class, subject, term, and week.
           </p>
@@ -281,19 +383,24 @@ export function LessonsList({
   return (
     <div className="space-y-6">
       {/* Results header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-lg font-semibold text-slate-900 dark:text-slate-100">
-            Lessons
-          </h3>
-          <Badge variant="secondary" className="text-sm">
-            {totalLessons} total
-          </Badge>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+            <BookOpen className="size-5 text-primary" />
+          </div>
+          <div>
+            <h3 className="text-2xl font-bold text-foreground">Lessons</h3>
+            <p className="text-sm text-muted-foreground">
+              {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"} available
+            </p>
+          </div>
         </div>
 
         {showPagination && totalPages > 1 && (
-          <div className="text-sm text-slate-600 dark:text-slate-400">
-            Page {currentPage} of {totalPages}
+          <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
+            <Badge variant="secondary" className="text-sm font-medium">
+              Page {currentPage} of {totalPages}
+            </Badge>
           </div>
         )}
       </div>
@@ -301,7 +408,7 @@ export function LessonsList({
       {/* Lessons grid */}
       <div
         className={cn(
-          "grid gap-4",
+          "grid gap-6",
           compact
             ? "grid-cols-1 md:grid-cols-2"
             : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
@@ -319,51 +426,54 @@ export function LessonsList({
 
       {/* Pagination */}
       {showPagination && totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 pt-4">
+        <div className="flex items-center justify-center gap-2 pt-6">
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1}
+            className="font-medium"
           >
             Previous
           </Button>
 
-          {Array.from({ length: totalPages }, (_, i) => i + 1)
-            .filter((page) => {
-              // Show first, last, current, and adjacent pages
-              return (
-                page === 1 ||
-                page === totalPages ||
-                Math.abs(page - currentPage) <= 1
-              );
-            })
-            .map((page, index, array) => (
-              <React.Fragment key={page}>
-                {/* Add ellipsis if there's a gap */}
-                {index > 0 && array[index - 1] + 1 < page && (
-                  <span className="px-2 text-slate-400">…</span>
-                )}
-
-                <Button
-                  variant={currentPage === page ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => handlePageChange(page)}
-                  className={cn(
-                    "min-w-8",
-                    currentPage === page && "bg-blue-600 hover:bg-blue-700",
+          <div className="flex items-center gap-1">
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((page) => {
+                return (
+                  page === 1 ||
+                  page === totalPages ||
+                  Math.abs(page - currentPage) <= 1
+                );
+              })
+              .map((page, index, array) => (
+                <React.Fragment key={page}>
+                  {index > 0 && array[index - 1] + 1 < page && (
+                    <span className="px-2 text-muted-foreground">…</span>
                   )}
-                >
-                  {page}
-                </Button>
-              </React.Fragment>
-            ))}
+
+                  <Button
+                    variant={currentPage === page ? "default" : "outline"}
+                    size="lg"
+                    onClick={() => handlePageChange(page)}
+                    className={cn(
+                      "min-w-10 font-medium",
+                      currentPage === page &&
+                        "bg-primary shadow-md hover:bg-primary/90",
+                    )}
+                  >
+                    {page}
+                  </Button>
+                </React.Fragment>
+              ))}
+          </div>
 
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
+            className="font-medium"
           >
             Next
           </Button>

@@ -194,18 +194,22 @@ export const uploadGeneralExercisesFile = async (
   return await response.json();
 };
 
+const debugUploads = process.env.NEXT_PUBLIC_DEBUG_UPLOADS === "true";
+
 export const uploadCheckMarkersFile = async (
   file: File,
 ): Promise<ApiResponse> => {
   const formData = new FormData();
   formData.append("check_markers_file", file);
 
-  console.log("FormData contents:", formData.get("check_markers_file"));
-  console.log("File details:", {
-    name: file.name,
-    size: file.size,
-    type: file.type,
-  });
+  if (debugUploads) {
+    console.log("FormData contents:", formData.get("check_markers_file"));
+    console.log("File details:", {
+      name: file.name,
+      size: file.size,
+      type: file.type,
+    });
+  }
 
   const response = await fetch("/api/uploads/check-markers", {
     method: "POST",
@@ -380,7 +384,9 @@ export interface UploadResult {
 export const uploadLessonsFileWithValidation = async (
   file: File,
 ): Promise<UploadResult> => {
-  console.log("Starting upload validation for lessons file:", file.name);
+  if (debugUploads) {
+    console.log("Starting upload validation for lessons file:", file.name);
+  }
 
   try {
     // First, validate the file
@@ -389,7 +395,9 @@ export const uploadLessonsFileWithValidation = async (
       requiredColumns: LESSON_REQUIRED_COLUMNS,
     });
 
-    console.log("Validation result:", validation);
+    if (debugUploads) {
+      console.log("Validation result:", validation);
+    }
 
     if (!validation.isValid) {
       return {
@@ -404,9 +412,11 @@ export const uploadLessonsFileWithValidation = async (
     let triedFormats = [validation.format];
 
     if (!uploadResult.success) {
-      console.log(
-        `Upload failed with ${validation.format} format, trying alternative format`,
-      );
+      if (debugUploads) {
+        console.log(
+          `Upload failed with ${validation.format} format, trying alternative format`,
+        );
+      }
 
       // Try the alternative format
       const alternativeFormat =
@@ -431,7 +441,9 @@ export const uploadLessonsFileWithValidation = async (
       triedFormats,
     };
   } catch (error) {
-    console.error("Upload error:", error);
+    if (debugUploads) {
+      console.error("Upload error:", error);
+    }
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -447,7 +459,9 @@ const tryUploadLessonsFile = async (
     const apiResponse = await uploadLessonsFile(file);
     return { success: true, apiResponse };
   } catch (error: any) {
-    console.error("Upload API error:", error);
+    if (debugUploads) {
+      console.error("Upload API error:", error);
+    }
 
     let errorMessage = "Upload failed";
 
@@ -539,16 +553,20 @@ const smartUploadWithValidation = async (
   uploadFunction: (file: File) => Promise<ApiResponse>,
   fileType: string,
 ): Promise<UploadResult> => {
-  console.log(`Starting upload validation for ${fileType} file:`, file.name);
+  if (debugUploads) {
+    console.log(`Starting upload validation for ${fileType} file:`, file.name);
+  }
 
   try {
     // Log file content for debugging
     const fileContent = await file.text();
-    console.log(
-      `${fileType} file content preview:`,
-      fileContent.substring(0, 500),
-    );
-    console.log(`${fileType} file size:`, file.size, "bytes");
+    if (debugUploads) {
+      console.log(
+        `${fileType} file content preview:`,
+        fileContent.substring(0, 500),
+      );
+      console.log(`${fileType} file size:`, file.size, "bytes");
+    }
 
     // Validate the file
     const validation = await validateCSVFile({
@@ -556,7 +574,9 @@ const smartUploadWithValidation = async (
       requiredColumns,
     });
 
-    console.log("Validation result:", validation);
+    if (debugUploads) {
+      console.log("Validation result:", validation);
+    }
 
     if (!validation.isValid) {
       return {
@@ -567,27 +587,31 @@ const smartUploadWithValidation = async (
     }
 
     // Convert file to API format before upload
-    console.log("Converting file to API format...");
+    if (debugUploads) {
+      console.log("Converting file to API format...");
+    }
     const apiFormattedFile = createAPIFormattedFile(file, fileContent);
-    console.log(
-      "API formatted file created:",
-      apiFormattedFile.name,
-      apiFormattedFile.size,
-      "bytes",
-    );
+    if (debugUploads) {
+      console.log(
+        "API formatted file created:",
+        apiFormattedFile.name,
+        apiFormattedFile.size,
+        "bytes",
+      );
+    }
 
     // Try uploading with API format
     let uploadResult = await tryUpload(apiFormattedFile, uploadFunction);
     let triedFormats = [`api_${validation.format}`];
 
-    if (!uploadResult.success) {
+    if (!uploadResult.success && debugUploads) {
       console.log(`Upload failed with API format, trying original file`);
 
       // Fallback: try uploading the original file
       uploadResult = await tryUpload(file, uploadFunction);
       triedFormats.push(validation.format);
 
-      if (!uploadResult.success) {
+      if (!uploadResult.success && debugUploads) {
         console.log(
           `Upload failed with original format, trying alternative format`,
         );
@@ -618,7 +642,9 @@ const smartUploadWithValidation = async (
       triedFormats,
     };
   } catch (error) {
-    console.error(`${fileType} upload error:`, error);
+    if (debugUploads) {
+      console.error(`${fileType} upload error:`, error);
+    }
     return {
       success: false,
       error: error instanceof Error ? error.message : "Unknown error occurred",
@@ -632,30 +658,36 @@ const tryUpload = async (
   uploadFunction: (file: File) => Promise<ApiResponse>,
 ): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
   try {
-    console.log("Attempting upload with file:", {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-      lastModified: file.lastModified,
-    });
+    if (debugUploads) {
+      console.log("Attempting upload with file:", {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        lastModified: file.lastModified,
+      });
 
-    // Log a preview of the file content being sent
-    const fileContent = await file.text();
-    console.log(
-      "File content being uploaded (first 1000 chars):",
-      fileContent.substring(0, 1000),
-    );
+      // Log a preview of the file content being sent
+      const fileContent = await file.text();
+      console.log(
+        "File content being uploaded (first 1000 chars):",
+        fileContent.substring(0, 1000),
+      );
+    }
 
     const apiResponse = await uploadFunction(file);
-    console.log("Upload successful! API Response:", apiResponse);
+    if (debugUploads) {
+      console.log("Upload successful! API Response:", apiResponse);
+    }
     return { success: true, apiResponse };
   } catch (error: any) {
-    console.error("=== UPLOAD API ERROR DETAILS ===");
-    console.error("Error object:", error);
-    console.error("Response status:", error.response?.status);
-    console.error("Response status text:", error.response?.statusText);
-    console.error("Response headers:", error.response?.headers);
-    console.error("Full response data:", error.response?.data);
+    if (debugUploads) {
+      console.error("=== UPLOAD API ERROR DETAILS ===");
+      console.error("Error object:", error);
+      console.error("Response status:", error.response?.status);
+      console.error("Response status text:", error.response?.statusText);
+      console.error("Response headers:", error.response?.headers);
+      console.error("Full response data:", error.response?.data);
+    }
 
     // Try to extract more detailed error information
     let errorMessage = "Upload failed";
@@ -695,11 +727,13 @@ const tryUpload = async (
       errorMessage = error.message;
     }
 
-    console.error("Processed error message:", errorMessage);
-    if (validationDetails) {
-      console.error("Validation details:", validationDetails);
+    if (debugUploads) {
+      console.error("Processed error message:", errorMessage);
+      if (validationDetails) {
+        console.error("Validation details:", validationDetails);
+      }
+      console.error("=== END ERROR DETAILS ===");
     }
-    console.error("=== END ERROR DETAILS ===");
 
     return {
       success: false,

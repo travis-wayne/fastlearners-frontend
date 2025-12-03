@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { HorizontalScroll } from "@/components/shared/horizontal-scroll";
 
 import { UploadLog, UploadLogs } from "./UploadLogs";
 
@@ -537,28 +538,30 @@ export function SmartCSVUpload({
       </Card>
 
       <Tabs defaultValue="lessons" className="w-full">
-        <TabsList className="mb-8 flex h-12 w-full gap-1 overflow-x-auto bg-muted/40 dark:bg-muted/20 md:grid md:grid-cols-7">
-          {mainConfigs.map((config) => (
+        <HorizontalScroll className="mb-8 md:mb-10 md:pb-0">
+          <TabsList className="flex h-12 min-w-full gap-1 bg-muted/40 dark:bg-muted/20 md:grid md:w-full md:grid-cols-7">
+            {mainConfigs.map((config) => (
+              <TabsTrigger
+                key={config.key}
+                value={config.key}
+                className={cn(
+                  "px-3 py-2 text-xs font-medium transition-all",
+                  "data-[state=active]:bg-background data-[state=active]:shadow-sm",
+                  "disabled:cursor-not-allowed disabled:opacity-50",
+                )}
+                disabled={!isUploadEnabled(config)}
+              >
+                {config.title}
+              </TabsTrigger>
+            ))}
             <TabsTrigger
-              key={config.key}
-              value={config.key}
-              className={cn(
-                "px-3 py-2 text-xs font-medium transition-all",
-                "data-[state=active]:bg-background data-[state=active]:shadow-sm",
-                "disabled:cursor-not-allowed disabled:opacity-50",
-              )}
-              disabled={!isUploadEnabled(config)}
+              value="scheme_of_work"
+              className="px-3 py-2 text-xs font-medium transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm"
             >
-              {config.title}
+              Scheme of Work
             </TabsTrigger>
-          ))}
-          <TabsTrigger
-            value="scheme_of_work"
-            className="px-3 py-2 text-xs font-medium transition-all data-[state=active]:bg-background data-[state=active]:shadow-sm"
-          >
-            Scheme of Work
-          </TabsTrigger>
-        </TabsList>
+          </TabsList>
+        </HorizontalScroll>
 
         {/* Main upload tabs */}
         {mainConfigs.map((config) => (

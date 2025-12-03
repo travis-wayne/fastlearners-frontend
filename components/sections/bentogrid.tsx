@@ -1,14 +1,13 @@
 import Image from "next/image";
 
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
+import { SectionWrapper } from "@/components/shared/section-wrapper";
 
 export default function BentoGrid() {
   return (
-    <section className="py-32">
-      <MaxWidthWrapper>
-        <div className="relative z-10 grid grid-cols-6 gap-3">
+    <SectionWrapper as="section" className="py-20 lg:py-28">
+      <div className="relative z-10 grid grid-cols-1 gap-4 md:grid-cols-6">
           {/* First card */}
-          <div className="relative col-span-full flex overflow-hidden rounded-2xl border bg-background p-8 lg:col-span-2">
+        <div className="relative col-span-full flex overflow-hidden rounded-2xl border bg-background p-8 md:col-span-3 lg:col-span-2">
             <div className="relative m-auto size-fit">
               <div className="relative flex h-24 w-56 items-center">
                 <svg
@@ -33,7 +32,7 @@ export default function BentoGrid() {
           </div>
 
           {/* Second card */}
-          <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 sm:col-span-3 lg:col-span-2">
+        <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 sm:col-span-3 lg:col-span-2">
             <div>
               <div className="relative mx-auto flex aspect-square size-32 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border before:bg-muted/20 dark:before:border-white/5">
                 <svg
@@ -100,7 +99,7 @@ export default function BentoGrid() {
           </div>
 
           {/* Third card */}
-          <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 sm:col-span-3 lg:col-span-2">
+        <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 sm:col-span-3 lg:col-span-2">
             <div>
               <div>
                 <svg
@@ -196,7 +195,7 @@ export default function BentoGrid() {
           </div>
 
           {/* Second row */}
-          <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 lg:col-span-3">
+        <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 lg:col-span-3">
             <div className="grid sm:grid-cols-2">
               <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                 <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:bg-white/5 dark:before:border-white/5 dark:before:bg-white/5">
@@ -274,7 +273,7 @@ export default function BentoGrid() {
             </div>
           </div>
 
-          <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 lg:col-span-3">
+        <div className="relative col-span-full overflow-hidden rounded-2xl border bg-background p-8 lg:col-span-3">
             <div className="grid h-full sm:grid-cols-2">
               <div className="relative z-10 flex flex-col justify-between space-y-12 lg:space-y-6">
                 <div className="relative flex aspect-square size-12 rounded-full border before:absolute before:-inset-2 before:rounded-full before:border dark:border-white/10 dark:bg-white/5 dark:before:border-white/5 dark:before:bg-white/5">
@@ -356,8 +355,7 @@ export default function BentoGrid() {
               </div>
             </div>
           </div>
-        </div>
-      </MaxWidthWrapper>
-    </section>
+      </div>
+    </SectionWrapper>
   );
 }

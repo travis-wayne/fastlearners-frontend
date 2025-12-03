@@ -36,7 +36,9 @@ export function useRBACGuard(options: UseRBACGuardOptions = {}) {
 
     // Check if user can access current route
     if (!canAccess) {
-      console.log("🚫 Client RBAC: Access denied for", { userRole, pathname });
+      if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+        console.log("🚫 Client RBAC: Access denied for", { userRole, pathname });
+      }
 
       if (showToast) {
         toast.error("Access Denied", {
@@ -98,46 +100,64 @@ export function usePermissionCheck() {
   const userRole = user?.role[0];
 
   // DEBUG: Log user and role info
-  console.log("🔍 [PERMISSION DEBUG] usePermissionCheck called:");
-  console.log("  User:", user ? { email: user.email, roles: user.role } : null);
-  console.log("  Primary Role:", userRole);
+  const debugAuth = process.env.NEXT_PUBLIC_DEBUG_AUTH === "true";
+  if (debugAuth) {
+    console.log("🔍 [PERMISSION DEBUG] usePermissionCheck called:");
+    console.log(
+      "  User:",
+      user ? { email: user.email, roles: user.role } : null,
+    );
+    console.log("  Primary Role:", userRole);
+  }
 
   const hasPermission = (permission: string): boolean => {
     if (!userRole) {
-      console.log(
-        `❌ [PERMISSION DEBUG] No userRole for permission "${permission}"`,
-      );
+      if (debugAuth) {
+        console.log(
+          `❌ [PERMISSION DEBUG] No userRole for permission "${permission}"`,
+        );
+      }
       return false;
     }
 
-    console.log(
-      `🔍 [PERMISSION DEBUG] Checking permission "${permission}" for role "${userRole}"`,
-    );
+    if (debugAuth) {
+      console.log(
+        `🔍 [PERMISSION DEBUG] Checking permission "${permission}" for role "${userRole}"`,
+      );
+    }
 
     let result = false;
     // Map permissions to RBAC utilities
     switch (permission) {
       case "manage_lessons":
         result = RBACUtils.hasPermission(userRole, "TEACHER");
-        console.log(
-          `   - RBACUtils.hasPermission(${userRole}, 'TEACHER') = ${result}`,
-        );
+        if (debugAuth) {
+          console.log(
+            `   - RBACUtils.hasPermission(${userRole}, 'TEACHER') = ${result}`,
+          );
+        }
         break;
       case "manage_users":
         result = RBACUtils.hasPermission(userRole, "ADMIN");
-        console.log(
-          `   - RBACUtils.hasPermission(${userRole}, 'ADMIN') = ${result}`,
-        );
+        if (debugAuth) {
+          console.log(
+            `   - RBACUtils.hasPermission(${userRole}, 'ADMIN') = ${result}`,
+          );
+        }
         break;
       case "system_config":
         result = RBACUtils.hasPermission(userRole, "SUPERADMIN");
-        console.log(
-          `   - RBACUtils.hasPermission(${userRole}, 'SUPERADMIN') = ${result}`,
-        );
+        if (debugAuth) {
+          console.log(
+            `   - RBACUtils.hasPermission(${userRole}, 'SUPERADMIN') = ${result}`,
+          );
+        }
         break;
       case "assign_roles":
         result = userRole === "superadmin";
-        console.log(`   - userRole === 'superadmin' = ${result}`);
+        if (debugAuth) {
+          console.log(`   - userRole === 'superadmin' = ${result}`);
+        }
         break;
       case "view_progress":
         result = [
@@ -147,33 +167,47 @@ export function usePermissionCheck() {
           "admin",
           "superadmin",
         ].includes(userRole);
-        console.log(`   - userRole in allowed roles = ${result}`);
+        if (debugAuth) {
+          console.log(`   - userRole in allowed roles = ${result}`);
+        }
         break;
       case "switch_roles":
         result = RBACUtils.canSwitchRoles(userRole);
-        console.log(`   - RBACUtils.canSwitchRoles(${userRole}) = ${result}`);
+        if (debugAuth) {
+          console.log(
+            `   - RBACUtils.canSwitchRoles(${userRole}) = ${result}`,
+          );
+        }
         break;
       case "view_admin_panel":
         result = RBACUtils.hasPermission(userRole, "ADMIN");
-        console.log(
-          `   - RBACUtils.hasPermission(${userRole}, 'ADMIN') for admin panel = ${result}`,
-        );
+        if (debugAuth) {
+          console.log(
+            `   - RBACUtils.hasPermission(${userRole}, 'ADMIN') for admin panel = ${result}`,
+          );
+        }
         break;
       case "create_user":
         result = RBACUtils.hasPermission(userRole, "ADMIN");
-        console.log(
-          `   - RBACUtils.hasPermission(${userRole}, 'ADMIN') for user creation = ${result}`,
-        );
+        if (debugAuth) {
+          console.log(
+            `   - RBACUtils.hasPermission(${userRole}, 'ADMIN') for user creation = ${result}`,
+          );
+        }
         break;
       default:
         result = false;
-        console.log(`   - Unknown permission "${permission}" = ${result}`);
+        if (debugAuth) {
+          console.log(`   - Unknown permission "${permission}" = ${result}`);
+        }
         break;
     }
 
-    console.log(
-      `🎯 [PERMISSION DEBUG] Final result for "${permission}": ${result}`,
-    );
+    if (debugAuth) {
+      console.log(
+        `🎯 [PERMISSION DEBUG] Final result for "${permission}": ${result}`,
+      );
+    }
     return result;
   };
 

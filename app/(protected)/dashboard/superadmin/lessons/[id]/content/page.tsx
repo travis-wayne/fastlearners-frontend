@@ -193,6 +193,9 @@ export default function LessonContentPage() {
                                 </div>
                                 <div className="mt-1 font-medium">
                                   Correct: {ex.correct_answer}
+                                  {ex.correct_answer_option
+                                    ? ` (${ex.correct_answer_option})`
+                                    : null}
                                 </div>
                               </div>
                             ))}
@@ -224,6 +227,9 @@ export default function LessonContentPage() {
                       </div>
                       <div className="mt-1 font-medium">
                         Correct: {g.correct_answer}
+                        {g.correct_answer_option
+                          ? ` (${g.correct_answer_option})`
+                          : null}
                       </div>
                     </div>
                   ))}

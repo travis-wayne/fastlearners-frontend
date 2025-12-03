@@ -33,6 +33,7 @@ export interface BulkUploadFiles {
   check_markers_file: File;
 }
 
+const debugUploads = process.env.NEXT_PUBLIC_DEBUG_UPLOADS === "true";
 
 /**
  * Upload all lesson files in one request
@@ -42,7 +43,9 @@ export const uploadAllLessonFilesBulk = async (
   files: BulkUploadFiles,
 ): Promise<BulkUploadResult> => {
   try {
-    console.log("🚀 Starting bulk upload of all lesson files...");
+    if (debugUploads) {
+      console.log("🚀 Starting bulk upload of all lesson files...");
+    }
 
     // Validate that all required files are provided
     const requiredFields = [
@@ -67,10 +70,12 @@ export const uploadAllLessonFilesBulk = async (
     }
 
     // Log file details for debugging
-    console.log("📁 Files to upload:");
-    Object.entries(files).forEach(([key, file]) => {
-      console.log(`  ${key}: ${file.name} (${file.size} bytes, ${file.type})`);
-    });
+    if (debugUploads) {
+      console.log("📁 Files to upload:");
+      Object.entries(files).forEach(([key, file]) => {
+        console.log(`  ${key}: ${file.name} (${file.size} bytes, ${file.type})`);
+      });
+    }
 
     // Create FormData with all files
     const formData = new FormData();
@@ -79,15 +84,17 @@ export const uploadAllLessonFilesBulk = async (
     });
 
     // Log FormData contents
-    console.log("📤 FormData entries:");
-    const entries = Array.from(formData.entries());
-    for (let [key, value] of entries) {
-      if (value instanceof File) {
-        console.log(`  ${key}: ${value.name} (${value.size} bytes)`);
+    if (debugUploads) {
+      console.log("📤 FormData entries:");
+      const entries = Array.from(formData.entries());
+      for (let [key, value] of entries) {
+        if (value instanceof File) {
+          console.log(`  ${key}: ${value.name} (${value.size} bytes)`);
+        }
       }
-    }
 
-    console.log("🎯 Uploading to: /api/uploads/all-lesson-files");
+      console.log("🎯 Uploading to: /api/uploads/all-lesson-files");
+    }
 
     // Make the API request
     const response = await fetch("/api/uploads/all-lesson-files", {
@@ -99,10 +106,12 @@ export const uploadAllLessonFilesBulk = async (
     const data = await response.json();
 
     if (!response.ok) {
-      console.error("❌ Bulk upload failed:", data);
-      console.error("🔍 Error details:");
-      console.error("  Status:", response.status);
-      console.error("  Response Data:", data);
+      if (debugUploads) {
+        console.error("❌ Bulk upload failed:", data);
+        console.error("🔍 Error details:");
+        console.error("  Status:", response.status);
+        console.error("  Response Data:", data);
+      }
 
       let errorMessage = "Bulk upload failed";
       let validationErrors: Record<string, string[]> | undefined;
@@ -151,7 +160,9 @@ export const uploadAllLessonFilesBulk = async (
       };
     }
 
-    console.log("✅ Bulk upload successful!", data);
+    if (debugUploads) {
+      console.log("✅ Bulk upload successful!", data);
+    }
 
     return {
       success: true,
@@ -159,8 +170,10 @@ export const uploadAllLessonFilesBulk = async (
       apiResponse: data,
     };
   } catch (error: any) {
-    console.error("❌ Bulk upload failed:", error);
-    console.error("🔍 Error details:", error);
+    if (debugUploads) {
+      console.error("❌ Bulk upload failed:", error);
+      console.error("🔍 Error details:", error);
+    }
 
     let errorMessage = "Bulk upload failed";
     if (error.message) {

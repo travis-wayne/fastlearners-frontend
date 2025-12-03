@@ -1,4 +1,8 @@
 // Client-side lesson upload service - uses internal API routes for security
+import {
+  uploadAllLessonFilesBulk,
+  type BulkUploadFiles,
+} from "@/lib/api/bulk-lesson-upload";
 
 // Types
 export interface ApiResponse {
@@ -15,6 +19,7 @@ export interface UploadResult {
   error?: string;
 }
 
+const debugUploads = process.env.NEXT_PUBLIC_DEBUG_UPLOADS === "true";
 
 // Generic upload function
 const uploadFile = async (
@@ -26,12 +31,14 @@ const uploadFile = async (
     const formData = new FormData();
     formData.append(fieldName, file);
 
-    console.log(`Generic upload - ${fieldName}:`, formData.get(fieldName));
-    console.log(`Generic upload - File details:`, {
-      name: file.name,
-      size: file.size,
-      type: file.type,
-    });
+    if (debugUploads) {
+      console.log(`Generic upload - ${fieldName}:`, formData.get(fieldName));
+      console.log(`Generic upload - File details:`, {
+        name: file.name,
+        size: file.size,
+        type: file.type,
+      });
+    }
 
     const response = await fetch(endpoint, {
       method: "POST",
@@ -72,6 +79,9 @@ const uploadFile = async (
       message: data.message || "Upload successful",
     };
   } catch (error: any) {
+    if (debugUploads) {
+      console.error("Upload error:", error);
+    }
     return {
       success: false,
       message: "Upload failed",
@@ -102,7 +112,13 @@ export const uploadCheckMarkers = (file: File): Promise<UploadResult> =>
 export const uploadSchemeOfWork = (file: File): Promise<UploadResult> =>
   uploadFile("/api/uploads/scheme-of-work", file, "scheme_of_work_file");
 
-// Bulk upload function
+/**
+ * Bulk upload helper (deprecated in favor of uploadAllLessonFilesBulk)
+ *
+ * This function is kept for backward compatibility and delegates to the
+ * canonical bulk helper `uploadAllLessonFilesBulk`, adapting its result
+ * to the simpler `UploadResult` shape.
+ */
 export const uploadAllLessonFiles = async (files: {
   lessons_file: File;
   concepts_file: File;
@@ -111,40 +127,14 @@ export const uploadAllLessonFiles = async (files: {
   general_exercises_file: File;
   check_markers_file: File;
 }): Promise<UploadResult> => {
-  try {
-    const formData = new FormData();
+  const bulkFiles: BulkUploadFiles = files;
+  const result = await uploadAllLessonFilesBulk(bulkFiles);
 
-    Object.entries(files).forEach(([key, file]) => {
-      formData.append(key, file);
-    });
-
-    const response = await fetch("/api/uploads/all-lesson-files", {
-      method: "POST",
-      credentials: "include",
-      body: formData,
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      return {
-        success: false,
-        message: "Bulk upload failed",
-        error: data?.message || "Unknown error occurred",
-      };
-    }
-
-    return {
-      success: true,
-      message: data.message || "All files uploaded successfully",
-    };
-  } catch (error: any) {
-    return {
-      success: false,
-      message: "Bulk upload failed",
-      error: error.message || "Unknown error occurred",
-    };
-  }
+  return {
+    success: result.success,
+    message: result.message,
+    error: result.error,
+  };
 };
 
 // Upload configuration

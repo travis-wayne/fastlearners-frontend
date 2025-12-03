@@ -1,29 +1,62 @@
 import { NextRequest, NextResponse } from "next/server";
 import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+import { handleApiError, handleUpstreamError } from "@/lib/api/error-handler";
+import {
+  isValidUploadFile,
+  MAX_UPLOAD_SIZE_BYTES,
+} from "@/lib/server/upload-validation";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
     return NextResponse.json(
-      { success: false, message: "Unauthorized", code: 401 },
+      { success: false, message: "Unauthorized", code: 401, content: null },
       { status: 401 }
     );
   }
 
   try {
     const formData = await req.formData();
-    const file = formData.get("exercises_file") as File;
+    const file = formData.get("exercises_file") as File | null;
 
     if (!file) {
       return NextResponse.json(
         {
           success: false,
-          message: "Missing exercises_file",
+          message: "Validation failed.",
+          errors: {
+            exercises_file: ["The exercises file field is required."],
+          },
           content: null,
-          code: 400,
+          code: 422,
         },
-        { status: 400 }
+        { status: 422 }
+      );
+    }
+
+    if (!isValidUploadFile(file) || file.size > MAX_UPLOAD_SIZE_BYTES) {
+      const errors: Record<string, string[]> = {};
+      const messages: string[] = [];
+
+      if (!isValidUploadFile(file)) {
+        messages.push("File type must be CSV or TXT.");
+      }
+      if (file.size > MAX_UPLOAD_SIZE_BYTES) {
+        messages.push("File size must be less than 10MB.");
+      }
+
+      errors.exercises_file = messages;
+
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Validation failed.",
+          errors,
+          content: null,
+          code: 422,
+        },
+        { status: 422 }
       );
     }
 
@@ -45,19 +78,13 @@ export async function POST(req: NextRequest) {
     );
 
     const data = await upstream.json();
+
+    if (!upstream.ok) {
+      return handleUpstreamError(upstream, data);
+    }
+
     return NextResponse.json(data, { status: upstream.status });
   } catch (err: any) {
-    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-      console.error("Exercises upload API error:", err);
-    }
-    return NextResponse.json(
-      {
-        success: false,
-        message: err?.message || "Server error",
-        content: null,
-        code: 500,
-      },
-      { status: 500 }
-    );
+    return handleApiError(err, "Error processing upload");
   }
 }

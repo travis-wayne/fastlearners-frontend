@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useEffect } from "react";
-import { AlertCircle, Filter, RefreshCw } from "lucide-react";
+import {
+  AlertCircle,
+  Filter,
+  RefreshCw,
+  Search,
+  Sparkles,
+  X,
+} from "lucide-react";
 
 import { selectCanFetchLessons, useLessonsStore } from "@/lib/store/lessons";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -16,6 +23,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { cn } from "@/lib/utils";
 
 interface LessonFiltersProps {
   onFiltersChange?: () => void;
@@ -183,54 +191,64 @@ export function LessonFilters({
   }
 
   return (
-    <Card className="border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900">
+    <Card className="border-2 shadow-lg">
       {showTitle && (
         <CardHeader className="pb-4">
-          <CardTitle className="flex items-center gap-2 text-lg font-semibold text-slate-900 dark:text-slate-100">
-            <Filter className="size-5" />
-            Filter Lessons
-          </CardTitle>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                <Filter className="size-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-xl font-bold">Filter Lessons</CardTitle>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Select filters to find your lessons
+                </p>
+              </div>
+            </div>
+            {isFiltersSelected && (
+              <Badge variant="default" className="text-sm font-medium">
+                <Sparkles className="mr-1 size-3" />
+                Active
+              </Badge>
+            )}
+          </div>
         </CardHeader>
       )}
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6">
         {error && (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="border-2">
             <AlertCircle className="size-4" />
-            <AlertDescription>{error}</AlertDescription>
+            <AlertDescription className="font-medium">{error}</AlertDescription>
           </Alert>
         )}
 
         {isLoadingMetadata ? (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-16" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-10" />
-              <Skeleton className="h-10 w-full" />
-            </div>
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-12" />
-              <Skeleton className="h-10 w-full" />
-            </div>
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="space-y-2">
+                <Skeleton className="h-4 w-20" />
+                <Skeleton className="h-12 w-full" />
+              </div>
+            ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Class
+              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span>Class</span>
+                {filters.class && (
+                  <Badge variant="secondary" className="text-xs">
+                    Selected
+                  </Badge>
+                )}
               </label>
               <Select
                 value={filters.class}
                 onValueChange={(value) => handleFilterChange("class", value)}
               >
-                <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
+                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent>
@@ -244,14 +262,19 @@ export function LessonFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Subject
+              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span>Subject</span>
+                {filters.subject && (
+                  <Badge variant="secondary" className="text-xs">
+                    Selected
+                  </Badge>
+                )}
               </label>
               <Select
                 value={filters.subject}
                 onValueChange={(value) => handleFilterChange("subject", value)}
               >
-                <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
+                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
                   <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
                 <SelectContent>
@@ -265,14 +288,19 @@ export function LessonFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Term
+              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span>Term</span>
+                {filters.term && (
+                  <Badge variant="secondary" className="text-xs">
+                    Selected
+                  </Badge>
+                )}
               </label>
               <Select
                 value={filters.term}
                 onValueChange={(value) => handleFilterChange("term", value)}
               >
-                <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
+                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
                 <SelectContent>
@@ -286,14 +314,19 @@ export function LessonFilters({
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                Week
+              <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
+                <span>Week</span>
+                {filters.week && (
+                  <Badge variant="secondary" className="text-xs">
+                    Selected
+                  </Badge>
+                )}
               </label>
               <Select
                 value={filters.week}
                 onValueChange={(value) => handleFilterChange("week", value)}
               >
-                <SelectTrigger className="bg-slate-50 dark:bg-slate-800">
+                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
                   <SelectValue placeholder="Select week" />
                 </SelectTrigger>
                 <SelectContent>
@@ -309,35 +342,47 @@ export function LessonFilters({
         )}
 
         {/* Filter status and actions */}
-        <div className="flex items-center justify-between border-t border-slate-200 pt-4 dark:border-slate-700">
-          <div className="flex items-center gap-2">
+        <div className="flex flex-col gap-4 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-wrap items-center gap-2">
             {isFiltersSelected && (
-              <Badge variant="secondary" className="text-sm">
-                Filters Applied
+              <Badge variant="default" className="text-sm font-medium">
+                <Filter className="mr-1.5 size-3" />
+                All Filters Applied
               </Badge>
             )}
             {hasAnyFilter && !isFiltersSelected && (
-              <Badge variant="outline" className="text-sm">
-                Partial Selection
+              <Badge variant="outline" className="text-sm font-medium">
+                <AlertCircle className="mr-1.5 size-3" />
+                Incomplete Selection
               </Badge>
+            )}
+            {!hasAnyFilter && (
+              <p className="text-sm text-muted-foreground">
+                Select filters to find lessons
+              </p>
             )}
           </div>
 
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             {hasAnyFilter && (
-              <Button variant="outline" onClick={handleClearFilters} size="sm">
-                <RefreshCw className="mr-2 size-4" />
-                Clear Filters
+              <Button
+                variant="outline"
+                onClick={handleClearFilters}
+                size="lg"
+                className="font-medium"
+              >
+                <X className="mr-2 size-4" />
+                Clear All
               </Button>
             )}
 
             <Button
               onClick={handleFetchLessons}
               disabled={!canFetchLessons}
-              className="bg-blue-600 hover:bg-blue-700"
-              size="sm"
+              size="lg"
+              className="bg-primary font-medium shadow-md hover:bg-primary/90"
             >
-              <Filter className="mr-2 size-4" />
+              <Search className="mr-2 size-4" />
               Find Lessons
             </Button>
           </div>
