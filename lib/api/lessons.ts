@@ -195,6 +195,41 @@ export async function getLessonContentBySlug(subjectSlug: string, topicSlug: str
   }
 }
 
+export async function getLessonContentById(lessonId: number): Promise<LessonContentResponse> {
+  try {
+    const res = await fetch(`/api/lessons/by-id/${lessonId}/content`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to fetch lesson content by ID",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as LessonContentResponse;
+  } catch (err: any) {
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.error("getLessonContentById error:", err);
+    }
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
 // Lesson Completion Check Endpoints
 
 export async function checkLessonOverview(lessonId: number): Promise<LessonCheckResponse> {

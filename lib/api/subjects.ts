@@ -1,12 +1,13 @@
 // lib/api/subjects.ts - Client-side service for subjects API
 
-import type { 
-  SubjectsResponse, 
-  UpdateResponse, 
-  ApiSubjectsResponse,
-  ProfileData,
-  DashboardData,
-  SubjectItem
+import { 
+  type SubjectsResponse, 
+  type UpdateResponse, 
+  type ApiSubjectsResponse,
+  type ProfileData,
+  type DashboardData,
+  type SubjectItem,
+  type SubjectsContent,
 } from "@/lib/types/subjects";
 
 import { BASE_API_URL as API_BASE } from './client';
@@ -125,6 +126,33 @@ export async function getSubjects(token: string): Promise<ApiSubjectsResponse['c
   return data.content;
 }
 
+// Get subjects via lessons endpoint (preferred source for student's offered subjects)
+export async function getLessonSubjects(token: string): Promise<SubjectsContent> {
+  const response = await fetch(`${API_BASE}/lessons/`, {
+    headers: {
+      'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json',
+    },
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch subjects');
+  }
+
+  const data = await response.json();
+  const subjects = data?.content?.subjects ?? [];
+
+  // Normalize to SubjectsContent shape
+  return {
+    subjects,
+    compulsory_selective_status: 'selected',
+    compulsory_selective: [],
+    selective_status: 'selected',
+    selective: [],
+  };
+}
+
 // Update compulsory selective subject (1 religious study)
 export async function updateCompulsorySelective(
   token: string,
@@ -198,7 +226,7 @@ export async function getDashboard(token: string): Promise<DashboardData['conten
 
 export async function getStudentSubjects(): Promise<SubjectsResponse> {
   try {
-    const res = await fetch("/api/subjects", {
+    const res = await fetch("/api/lessons", {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -208,16 +236,30 @@ export async function getStudentSubjects(): Promise<SubjectsResponse> {
 
     const data = await res.json();
 
-    if (!res.ok) {
+    if (!res.ok || !data?.success || !data?.content?.subjects) {
       return {
         success: false,
-        message: data.message || "Failed to fetch subjects",
+        message: data?.message || "Failed to fetch subjects",
         content: null,
         code: res.status,
       };
     }
 
-    return data as SubjectsResponse;
+    // Normalize lessons response into SubjectsContent
+    const content: SubjectsContent = {
+      subjects: data.content.subjects,
+      compulsory_selective_status: 'selected',
+      compulsory_selective: [],
+      selective_status: 'selected',
+      selective: [],
+    };
+
+    return {
+      success: true,
+      message: data.message || "Success",
+      content,
+      code: res.status,
+    };
   } catch (err: any) {
     if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
       console.error("getStudentSubjects error:", err);

@@ -19,6 +19,7 @@ import type {
   TopicItem,
   TopicsByTerm,
 } from "@/lib/types/lessons";
+import { getSubjectsWithSlugs } from "@/lib/api/lessons";
 import {
   Accordion,
   AccordionContent,
@@ -100,25 +101,16 @@ export function LessonsDashboard() {
       setIsLoading(true);
       setError(null);
       try {
-        const response = await fetch("/api/lessons", {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-          credentials: "include",
-          cache: "no-store",
-        });
+        const response = await getSubjectsWithSlugs();
 
-        const data = await response.json();
-
-        if (!response.ok) {
-          setError(data.message || "Failed to fetch subjects");
+        if (!response.success) {
+          setError(response.message || "Failed to fetch subjects");
           setAvailableSubjects([]);
           return;
         }
 
-        if (data.success && data.content?.subjects) {
-          const subjects = data.content.subjects.map(
+        if (response.content?.subjects) {
+          const subjects = response.content.subjects.map(
             (s: { id: number; name: string; slug: string }) => ({
               id: s.id,
               name: s.name,
@@ -127,7 +119,7 @@ export function LessonsDashboard() {
           );
           setAvailableSubjects(subjects);
         } else {
-          setError(data.message || "No subjects found");
+          setError(response.message || "No subjects found");
           setAvailableSubjects([]);
         }
       } catch (error) {

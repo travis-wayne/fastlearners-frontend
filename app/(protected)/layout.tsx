@@ -107,7 +107,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
             </div>
 
             <main className="flex-1 px-4 pb-16 pt-4 xl:px-8">
-              <div className="flex h-full w-full flex-col gap-4 lg:gap-6">
+              <div className="flex size-full flex-col gap-4 lg:gap-6">
                 {children}
               </div>
             </main>

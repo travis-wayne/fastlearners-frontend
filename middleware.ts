@@ -84,6 +84,18 @@ async function getUserRoleFromBackend(authToken: string): Promise<RoleFetchResul
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  
+  // Skip role verification for static assets to prevent timeouts
+  const staticAssetExtensions = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp', '.ico', '.woff', '.woff2', '.ttf', '.eot', '.css', '.js', '.map'];
+  const isStaticAsset = staticAssetExtensions.some(ext => pathname.toLowerCase().endsWith(ext)) ||
+    pathname.startsWith('/_next/') ||
+    pathname.startsWith('/_static/') ||
+    pathname.startsWith('/favicon.ico');
+  
+  if (isStaticAsset) {
+    return NextResponse.next();
+  }
+  
   const authData = parseAuthCookiesServer(request);
   const isAuthenticated = !!authData;
   let userRole: RoleFetchResult = null;

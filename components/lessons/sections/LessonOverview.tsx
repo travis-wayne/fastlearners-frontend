@@ -1,98 +1,327 @@
+import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { BookOpen, Target, Lightbulb, Sparkles, CheckCircle2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { BookOpen, Target, Lightbulb, Sparkles, CheckCircle2, Play, Clock, Trophy, ChevronDown, ChevronUp, Printer, SkipForward } from "lucide-react";
 import { LessonContent } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
+import { useLessonsStore } from "@/lib/store/lessons";
 
 interface LessonOverviewProps {
   lesson: LessonContent;
+  onStartLesson?: () => void;
+  onResumeLesson?: () => void;
 }
 
-export function LessonOverview({ lesson }: LessonOverviewProps) {
+export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: LessonOverviewProps) {
+  const [expandedObjectives, setExpandedObjectives] = useState<Set<number>>(new Set());
+  const [checkedObjectives, setCheckedObjectives] = useState<Set<number>>(new Set());
+
+  const { lessonMetadata, currentStepIndex, progress, nextStep } = useLessonsStore();
+  const lessonMeta = lessonMetadata[lesson.id];
+
   const objectives = lesson.objectives || [];
   const key_concepts = lesson.key_concepts || {};
 
+  // Calculate estimated duration based on content
+  const estimatedDuration = Math.max(15, (lesson.concepts?.length || 0) * 10 + 20); // 10 min per concept + 20 min for overview/summary
+
+  // Check if lesson has been started
+  const hasStarted = lessonMeta && lessonMeta.lastAccessedAt;
+  const completionPercentage = lessonMeta?.overallProgress || 0;
+
+  const toggleObjectiveExpansion = (index: number) => {
+    const newExpanded = new Set(expandedObjectives);
+    if (newExpanded.has(index)) {
+      newExpanded.delete(index);
+    } else {
+      newExpanded.add(index);
+    }
+    setExpandedObjectives(newExpanded);
+  };
+
+  const toggleObjectiveCheck = (index: number) => {
+    const newChecked = new Set(checkedObjectives);
+    if (newChecked.has(index)) {
+      newChecked.delete(index);
+    } else {
+      newChecked.add(index);
+    }
+    setCheckedObjectives(newChecked);
+  };
+
+  const handleStartLesson = () => {
+    if (onStartLesson) {
+      onStartLesson();
+    } else {
+      nextStep();
+    }
+  };
+
+  const handleResumeLesson = () => {
+    if (onResumeLesson) {
+      onResumeLesson();
+    }
+  };
+
+  const handlePrintObjectives = () => {
+    if (typeof window === 'undefined') return;
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(`
+        <html>
+          <head>
+            <title>${lesson.topic || lesson.title} - Learning Objectives</title>
+            <style>
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              h1 { color: #333; }
+              .objective { margin-bottom: 20px; border: 1px solid #ddd; padding: 10px; }
+              .points { margin-left: 20px; }
+            </style>
+          </head>
+          <body>
+            <h1>${lesson.topic || lesson.title} - Learning Objectives</h1>
+            ${objectives.map((obj, index) => `
+              <div class="objective">
+                <h3>Objective ${index + 1}: ${obj.description}</h3>
+                ${obj.points.length > 0 ? `
+                  <ul class="points">
+                    ${obj.points.map(point => `<li>${point}</li>`).join('')}
+                  </ul>
+                ` : ''}
+              </div>
+            `).join('')}
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">
-      {/* Overview Card */}
-      <Card className="border-2 bg-gradient-to-br from-primary/5 via-background to-background shadow-lg">
+      {/* Skip Links for Accessibility */}
+      <div className="sr-only">
+        <a href="#main-content" className="skip-link">Skip to main content</a>
+        <a href="#objectives" className="skip-link">Skip to learning objectives</a>
+        <a href="#key-concepts" className="skip-link">Skip to key concepts</a>
+      </div>
+
+      {/* Hero Section */}
+      <Card className="border-2 bg-gradient-to-br from-primary/10 via-primary/5 to-background shadow-xl">
         <CardHeader className="pb-4">
-          <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/20">
-              <BookOpen className="size-6 text-primary" />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-12 items-center justify-center rounded-xl bg-primary/20">
+                <BookOpen className="size-6 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-3xl" id="main-content">Lesson Overview</CardTitle>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Get started with this lesson
+                </p>
+              </div>
             </div>
-            <div>
-              <CardTitle className="text-2xl">Lesson Overview</CardTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Get started with this lesson
-              </p>
+            <div className="flex flex-col items-end gap-2">
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Clock className="size-4" />
+                <span>~{estimatedDuration} min</span>
+              </div>
+              {hasStarted && (
+                <Badge variant="secondary" className="text-xs">
+                  {completionPercentage}% Complete
+                </Badge>
+              )}
             </div>
           </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <p className="text-lg leading-relaxed text-foreground">
             {lesson.overview}
           </p>
+
+          {/* Progress Context */}
+          {hasStarted && (
+            <div className="rounded-lg bg-muted/50 p-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Trophy className="size-4 text-yellow-600" />
+                  <span className="text-sm font-medium">Progress: {completionPercentage}%</span>
+                </div>
+                <Button variant="outline" size="sm" onClick={handleResumeLesson}>
+                  <SkipForward className="mr-2 size-4" />
+                  Resume Lesson
+                </Button>
+              </div>
+              {lessonMeta.lastAccessedAt && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Last accessed: {new Date(lessonMeta.lastAccessedAt).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+          )}
+
+          {/* Video Introduction */}
+          {lesson.video_path && (
+            <div className="rounded-lg border bg-muted/30 p-4">
+              <div className="mb-3 flex items-center gap-2">
+                <Play className="size-4 text-primary" />
+                <span className="text-sm font-medium">Video Introduction</span>
+              </div>
+              <video
+                controls
+                className="w-full rounded-lg"
+                poster="/api/placeholder/640/360"
+              >
+                <source src={lesson.video_path} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          )}
+
+          {/* Start Lesson Button */}
+          <div className="flex justify-center pt-4">
+            <Button size="lg" onClick={handleStartLesson} className="px-8">
+              {hasStarted ? 'Continue Lesson' : 'Start Lesson'}
+              <Sparkles className="ml-2 size-4" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Quick Preview */}
+      <Card className="border-2 shadow-lg">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-xl">Quick Preview</CardTitle>
+          <p className="text-sm text-muted-foreground">Topics covered in this lesson</p>
+        </CardHeader>
+        <CardContent>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+              <CheckCircle2 className="size-4 text-emerald-600" />
+              <span className="text-sm">Overview</span>
+            </div>
+            {lesson.concepts?.map((concept, index) => (
+              <div key={concept.id} className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+                <CheckCircle2 className="size-4 text-emerald-600" />
+                <span className="text-sm">{concept.title || `Concept ${index + 1}`}</span>
+              </div>
+            ))}
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+              <CheckCircle2 className="size-4 text-emerald-600" />
+              <span className="text-sm">Summary & Application</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+              <CheckCircle2 className="size-4 text-emerald-600" />
+              <span className="text-sm">General Exercises</span>
+            </div>
+          </div>
         </CardContent>
       </Card>
 
       {/* Learning Objectives */}
       {objectives.length > 0 && (
-        <Card className="border-2 shadow-lg">
+        <Card className="border-2 shadow-lg" id="objectives">
           <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
-                <Target className="size-6 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="flex size-12 items-center justify-center rounded-xl bg-emerald-100 dark:bg-emerald-900/30">
+                  <Target className="size-6 text-emerald-600 dark:text-emerald-400" />
+                </div>
+                <div>
+                  <CardTitle className="text-2xl">Learning Objectives</CardTitle>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    What you&apos;ll learn in this lesson
+                  </p>
+                </div>
               </div>
-              <div>
-                <CardTitle className="text-2xl">Learning Objectives</CardTitle>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  What you&apos;ll learn in this lesson
-                </p>
-              </div>
+              <Button variant="outline" size="sm" onClick={handlePrintObjectives}>
+                <Printer className="mr-2 size-4" />
+                Print
+              </Button>
             </div>
           </CardHeader>
-          <CardContent className="space-y-6">
-            {objectives.map((objective, index) => (
-              <div
-                key={index}
-                className="rounded-lg border-2 bg-muted/30 p-5 transition-all hover:border-primary/50"
-              >
-                <div className="mb-3 flex items-center gap-2">
-                  <Badge variant="outline" className="font-medium">
-                    Objective {index + 1}
-                  </Badge>
-                </div>
-                <p className="mb-3 text-base leading-relaxed text-foreground">
-                  {objective.description}
-                </p>
-                {objective.points.length > 0 && (
-                  <div className="space-y-2">
-                    <p className="text-sm font-medium text-muted-foreground">
-                      Key Points:
-                    </p>
-                    <ul className="ml-4 space-y-2">
-                      {objective.points.map((point, pointIndex) => (
-                        <li
-                          key={pointIndex}
-                          className="flex items-start gap-2 text-sm text-foreground"
-                        >
-                          <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
-                          <span>{point}</span>
-                        </li>
-                      ))}
-                    </ul>
+          <CardContent className="space-y-4">
+            {objectives.map((objective, index) => {
+              const isExpanded = expandedObjectives.has(index);
+              const isChecked = checkedObjectives.has(index);
+              return (
+                <div
+                  key={index}
+                  className="rounded-lg border-2 bg-muted/30 p-5 transition-all hover:border-primary/50"
+                >
+                  <div className="flex items-start justify-between">
+                    <div className="flex flex-1 items-start gap-3">
+                      <Checkbox
+                        id={`objective-${index}`}
+                        checked={isChecked}
+                        onCheckedChange={() => toggleObjectiveCheck(index)}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="mb-3 flex items-center gap-2">
+                          <Badge variant="outline" className="font-medium">
+                            Objective {index + 1}
+                          </Badge>
+                          <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <Clock className="size-3" />
+                            <span>~{Math.ceil(estimatedDuration / objectives.length)} min</span>
+                          </div>
+                        </div>
+                        <p className="mb-3 text-base leading-relaxed text-foreground">
+                          {objective.description}
+                        </p>
+                        {objective.points.length > 0 && (
+                          <div className="space-y-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => toggleObjectiveExpansion(index)}
+                              className="h-auto p-0 font-normal text-muted-foreground hover:text-foreground"
+                            >
+                              {isExpanded ? (
+                                <>
+                                  <ChevronUp className="mr-1 size-4" />
+                                  Hide Key Points
+                                </>
+                              ) : (
+                                <>
+                                  <ChevronDown className="mr-1 size-4" />
+                                  Show Key Points ({objective.points.length})
+                                </>
+                              )}
+                            </Button>
+                            {isExpanded && (
+                              <ul className="ml-4 space-y-2">
+                                {objective.points.map((point, pointIndex) => (
+                                  <li
+                                    key={pointIndex}
+                                    className="flex items-start gap-2 text-sm text-foreground"
+                                  >
+                                    <CheckCircle2 className="mt-0.5 size-4 shrink-0 text-emerald-600" />
+                                    <span>{point}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       )}
 
       {/* Key Concepts */}
       {Object.keys(key_concepts).length > 0 && (
-        <Card className="border-2 shadow-lg">
+        <Card className="border-2 shadow-lg" id="key-concepts">
           <CardHeader className="pb-4">
             <div className="flex items-center gap-3">
               <div className="flex size-12 items-center justify-center rounded-xl bg-yellow-100 dark:bg-yellow-900/30">
@@ -109,23 +338,43 @@ export function LessonOverview({ lesson }: LessonOverviewProps) {
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
               {Object.entries(key_concepts).map(([concept, description], index) => (
-                <div
-                  key={concept}
-                  className={cn(
-                    "group relative rounded-xl border-2 bg-gradient-to-br p-5 transition-all hover:border-primary hover:shadow-md",
-                    index % 2 === 0
-                      ? "from-blue-50/50 to-background dark:from-blue-950/20"
-                      : "from-purple-50/50 to-background dark:from-purple-950/20",
-                  )}
-                >
-                  <div className="mb-3 flex items-center gap-2">
-                    <Sparkles className="size-4 text-primary" />
-                    <h4 className="font-bold text-foreground">{concept}</h4>
-                  </div>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    {description as string}
-                  </p>
-                </div>
+                <TooltipProvider key={concept}>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <div
+                        className={cn(
+                          "group relative cursor-pointer rounded-xl border-2 bg-gradient-to-br p-5 transition-all hover:scale-105 hover:border-primary hover:shadow-md",
+                          index % 2 === 0
+                            ? "from-blue-50/50 to-background dark:from-blue-950/20"
+                            : "from-purple-50/50 to-background dark:from-purple-950/20",
+                        )}
+                      >
+                        <div className="mb-3 flex items-center gap-2">
+                          <Sparkles className="size-4 text-primary" />
+                          <h4 className="font-bold text-foreground">{concept}</h4>
+                        </div>
+                        <p className="text-sm leading-relaxed text-muted-foreground">
+                          {description as string}
+                        </p>
+                        {/* Link to concept section - placeholder for now */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="absolute bottom-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
+                          onClick={() => {
+                            // TODO: Implement navigation to specific concept section
+                            console.log(`Navigate to concept: ${concept}`);
+                          }}
+                        >
+                          View Section
+                        </Button>
+                      </div>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Click to learn more about {concept}</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
               ))}
             </div>
           </CardContent>

@@ -22,7 +22,7 @@ export function ContentSection({ title, desc, children }: ContentSectionProps) {
 
       {/* Scrollable content area */}
       <div className="faded-bottom size-full overflow-y-auto scroll-smooth pb-6 pe-2 md:pb-8 md:pe-4">
-        <div className="relative -mx-1 rounded-2xl border bg-card/70 px-3 py-4 shadow-sm backdrop-blur-sm md:px-6 md:py-6 lg:max-w-2xl">
+        <div className="relative -mx-1 rounded-2xl border bg-card/70 px-3 py-4 shadow-sm backdrop-blur-sm md:p-6 lg:max-w-2xl">
           <div className="pointer-events-none absolute inset-x-0 top-0 h-10 rounded-2xl bg-gradient-to-b from-background/80 to-transparent opacity-80" />
           <div className="pointer-events-none absolute inset-x-0 bottom-0 h-10 rounded-2xl bg-gradient-to-t from-background/80 to-transparent opacity-80" />
           <div className="relative space-y-6">{children}</div>

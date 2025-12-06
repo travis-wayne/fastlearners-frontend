@@ -1,383 +1,99 @@
-"use client";
+import { Metadata } from 'next';
+import { LessonViewer } from '@/components/lessons/LessonViewer';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
 
-import { useEffect, useState } from "react";
-import Link from "next/link";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
-import { ArrowLeft, BookOpen, CheckCircle, Loader2 } from "lucide-react";
+// Helper function to format slugs into readable titles
+function formatSlug(slug: string): string {
+  return slug
+    .split('-')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+}
 
-import { getSubjectById } from "@/config/education";
-import {
-  getTopicsBySubjectSlug,
-} from "@/lib/api/lessons";
-import type { TableOfContents } from "@/lib/toc";
-import { getTopicsForTerm } from "@/lib/types/lessons";
-import type {
-  TopicOverview as TopicOverviewType,
-} from "@/lib/types/lessons";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
-import { LessonViewer } from "@/components/lessons/LessonViewer";
-import { LessonNavigation } from "@/components/lessons/LessonNavigation";
-import { TopicOverview } from "@/components/lessons/TopicOverview";
-import {
-  useAcademicContext,
-  useAcademicDisplay,
-} from "@/components/providers/academic-context";
-import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
-import { DashboardTableOfContents } from "@/components/shared/toc";
-import { useLessonsStore } from "@/lib/store/lessons";
 
-export default function LessonPage() {
-  const params = useParams();
-  const router = useRouter();
-  const { toast } = useToast();
-  const { currentClass, currentTerm } = useAcademicContext();
-  const { classDisplay, termDisplay } = useAcademicDisplay();
-  const { selectedLesson, isLoadingLessonContent } = useLessonsStore();
+export async function generateMetadata({ params }: { params: { slug: string[] } }): Promise<Metadata> {
+  const { slug } = params;
 
-  const [topicOverview, setTopicOverview] = useState<TopicOverviewType | null>(
-    null,
-  );
-  const [isLoadingOverview, setIsLoadingOverview] = useState(true);
-  const [isSlugBased, setIsSlugBased] = useState(false);
-  const [subjectSlug, setSubjectSlug] = useState<string | null>(null);
-  const [topicSlug, setTopicSlug] = useState<string | null>(null);
-  const [previousUrl, setPreviousUrl] = useState<string | null>(null);
-  const [nextUrl, setNextUrl] = useState<string | null>(null);
-  const [toc, setToc] = useState<TableOfContents>({});
-
-  // Fetch lesson content - slug-based only
-  useEffect(() => {
-    const loadLesson = async () => {
-      // Handle slug array: [subjectSlug, topicSlug] from catch-all route
-      const slugArray = params?.slug as string[] | string;
-      const slugParts = Array.isArray(slugArray)
-        ? slugArray
-        : slugArray
-          ? [slugArray]
-          : [];
-
-      if (slugParts.length !== 2) {
-        if (slugParts.length > 0) {
-          toast({
-            title: "Error",
-            description:
-              "Invalid lesson URL. Please use format: /dashboard/lessons/{subjectSlug}/{topicSlug}",
-            variant: "destructive",
-          });
-        }
-        if (slugParts.length > 0) {
-          router.push("/dashboard/lessons");
-        }
-        return;
-      }
-
-      setIsLoadingOverview(true);
-      const [subjSlug, topSlug] = slugParts;
-      setIsSlugBased(true);
-      setSubjectSlug(subjSlug);
-      setTopicSlug(topSlug);
-
-      try {
-        // Fetch topic overview
-        const overviewRes = await fetch(`/api/lessons/${subjSlug}/${topSlug}/overview`, {
-            method: "GET",
-            headers: { Accept: "application/json" },
-            credentials: "include",
-            cache: "no-store",
-          });
-
-        const overviewData = await overviewRes.json();
-
-        // Set topic overview
-        if (
-          overviewRes.ok &&
-          overviewData.success &&
-          overviewData.content?.overview
-        ) {
-          setTopicOverview(overviewData.content.overview);
-        } else {
-          console.warn("Failed to load topic overview:", overviewData.message);
-        }
-      } catch (error) {
-        console.error("Failed to load topic overview", error);
-      } finally {
-        setIsLoadingOverview(false);
-      }
+  if (!slug || slug.length !== 2) {
+    return {
+      title: 'Invalid Lesson | Fast Learner',
+      description: 'The lesson URL is invalid. Please check the link and try again.',
     };
+  }
 
-    loadLesson();
-  }, [params?.slug, toast, router]);
+  const [subjectSlug, topicSlug] = slug;
+  const subject = formatSlug(subjectSlug);
+  const topic = formatSlug(topicSlug);
 
-  // Fetch all lessons to determine previous/next - slug-based only
-  useEffect(() => {
-    const loadLessons = async () => {
-      if (
-        !currentClass ||
-        !currentTerm ||
-        !selectedLesson ||
-        !isSlugBased ||
-        !subjectSlug ||
-        !topicSlug
-      )
-        return;
-
-      try {
-        // For slug-based, fetch topics by subject slug
-        const topicsResponse = await getTopicsBySubjectSlug(subjectSlug);
-        if (topicsResponse.success && topicsResponse.content) {
-          const topics = topicsResponse.content.topics;
-          // Use helper to safely get topics for current term
-          const termTopics = getTopicsForTerm(topics, currentTerm.id);
-          const currentIndex = termTopics.findIndex(
-            (t) => t.slug === topicSlug,
-          );
-
-          // Compute prev/next within current term
-          let prevSlug: string | null =
-            currentIndex > 0 ? termTopics[currentIndex - 1].slug : null;
-          let nextSlug: string | null =
-            currentIndex >= 0 && currentIndex < termTopics.length - 1
-              ? termTopics[currentIndex + 1].slug
-              : null;
-
-          // If at boundaries within a term, peek into adjacent term arrays for cross-term navigation
-          if (!prevSlug && currentIndex === 0) {
-            // At start of current term, check previous term
-            const prevTermId =
-              currentTerm.id === "term2"
-                ? "term1"
-                : currentTerm.id === "term3"
-                  ? "term2"
-                  : null;
-            if (prevTermId) {
-              const prevTermTopics = getTopicsForTerm(topics, prevTermId);
-              if (prevTermTopics.length > 0) {
-                prevSlug = prevTermTopics[prevTermTopics.length - 1].slug;
-              }
-            }
-          }
-
-          if (!nextSlug && currentIndex === termTopics.length - 1) {
-            // At end of current term, check next term
-            const nextTermId =
-              currentTerm.id === "term1"
-                ? "term2"
-                : currentTerm.id === "term2"
-                  ? "term3"
-                  : null;
-            if (nextTermId) {
-              const nextTermTopics = getTopicsForTerm(topics, nextTermId);
-              if (nextTermTopics.length > 0) {
-                nextSlug = nextTermTopics[0].slug;
-              }
-            }
-          }
-
-          setPreviousUrl(
-            prevSlug ? `/dashboard/lessons/${subjectSlug}/${prevSlug}` : null,
-          );
-          setNextUrl(
-            nextSlug ? `/dashboard/lessons/${subjectSlug}/${nextSlug}` : null,
-          );
-        }
-      } catch (error) {
-        console.error("Failed to load lessons list:", error);
-      }
-    };
-
-    loadLessons();
-  }, [
-    currentClass,
-    currentTerm,
-    selectedLesson,
-    isSlugBased,
-    subjectSlug,
-    topicSlug,
-  ]);
-
-  // Get subject using subject_id from selectedLesson
-  const subjectId = selectedLesson?.subject_id
-    ? String(selectedLesson.subject_id)
-    : null;
-  const subject = subjectId ? getSubjectById(subjectId) : null;
-
-  const isCompleted =
-    selectedLesson?.check_markers?.every((m: any) => m.completed) || false;
-  
-  // Update TOC from selectedLesson concepts
-  const lessonTopics =
-    selectedLesson?.concepts?.filter((concept) =>
-      Boolean(concept?.title?.trim()),
-    ) || [];
-    
-  const shouldShowAcademicBadge = Boolean(currentClass && currentTerm);
-  const classBadgeLabel =
-    selectedLesson?.class?.trim() ||
-    currentClass?.name ||
-    classDisplay.replace(" • ", " ");
-
-  const scrollToLessonTopic = (conceptId: number) => {
-    const element = document.getElementById(`concept-${conceptId}`);
-    if (element) {
-      element.scrollIntoView({ behavior: "smooth", block: "start" });
-      element.classList.add("ring-2", "ring-primary/40", "bg-primary/5");
-      setTimeout(() => {
-        element.classList.remove("ring-2", "ring-primary/40", "bg-primary/5");
-      }, 1200);
-    }
+  return {
+    title: `${subject} - ${topic} | Lesson`,
+    description: `Learn about ${topic} in ${subject}. Explore concepts, examples, and exercises to master the topic.`,
   };
+}
 
-  if (isLoadingOverview && !selectedLesson) {
+export default async function LessonPage({ params }: { params: { slug: string[] } }) {
+  const { slug } = params;
+
+  if (!slug || slug.length !== 2) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <div className="space-y-4 text-center">
-          <Loader2 className="mx-auto size-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Loading lesson...</p>
-        </div>
+      <div className="container mx-auto max-w-4xl p-6">
+        <Card className="border-2 border-dashed">
+          <CardHeader>
+            <CardTitle>Invalid Lesson URL</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <p className="text-muted-foreground">
+              The lesson URL is invalid. Please check the link and try again.
+            </p>
+            <Button variant="outline" asChild>
+              <a href="/dashboard/lessons">Back to Lessons</a>
+            </Button>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
-  const subjectName = selectedLesson?.subject || subject?.name || "Subject";
-  const lessonTitle = selectedLesson?.topic || selectedLesson?.title || "Lesson";
-  const lessonDescription =
-    selectedLesson?.overview || topicOverview?.introduction || "";
+  const [subjectSlug, topicSlug] = slug;
+  const subject = formatSlug(subjectSlug);
+  const topic = formatSlug(topicSlug);
 
   return (
-    <>
-      <MaxWidthWrapper className="pt-6 md:pt-10">
-        <div className="flex flex-col space-y-4">
-          <div className="flex items-center space-x-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => router.back()}
-              className="h-8 rounded-lg"
-            >
-              <ArrowLeft className="mr-2 size-4" />
-              Back
-            </Button>
-            {subject && (
-              <Link
-                href={`/dashboard/subjects/${subjectSlug || ""}`}
-                className={cn(
-                  "h-8 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors hover:bg-accent",
-                  "inline-flex items-center",
-                )}
-              >
-                {subjectName}
-              </Link>
-            )}
-            {shouldShowAcademicBadge && (
-              <Badge variant="outline" className="h-8 rounded-lg">
-                {classBadgeLabel}  • {termDisplay}
-              </Badge>
-            )}
-            {isCompleted && (
-              <Badge variant="default" className="h-8 rounded-lg">
-                <CheckCircle className="mr-1 size-3" />
-                Completed
-              </Badge>
-            )}
-          </div>
-          <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
-            {lessonTitle}
-          </h1>
-          {lessonDescription && (
-            <p className="text-base text-muted-foreground md:text-lg">
-              {lessonDescription}
-            </p>
-          )}
-        </div>
-      </MaxWidthWrapper>
+    <div className="container mx-auto max-w-full space-y-6 p-6">
+      {/* Breadcrumb Navigation */}
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard">Dashboard</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/dashboard/lessons">Lessons</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{subject}</BreadcrumbPage>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>{topic}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
-      <div className="relative">
-        <div className="absolute top-52 w-full border-t" />
+      {/* Back to Lessons Button */}
+      <Button variant="outline" asChild className="w-fit">
+        <a href="/dashboard/lessons">Back to Lessons</a>
+      </Button>
 
-        <MaxWidthWrapper className="grid grid-cols-4 gap-10 pt-8 max-md:px-0">
-          <div className="relative col-span-4 mb-10 flex flex-col space-y-8 border-y bg-background md:rounded-xl md:border lg:col-span-3">
-            <div className="px-[.8rem] pb-10 pt-8 md:px-8">
-              {/* Topic Overview - Introduction to the lesson */}
-              {topicOverview && subjectSlug && topicSlug && (
-                <div className="mb-8 space-y-6">
-                  <div className="border-b pb-2">
-                    <h2 className="text-2xl font-semibold">Topic Overview</h2>
-                    <p className="mt-1 text-sm text-muted-foreground">
-                      Introduction to this lesson topic
-                    </p>
-                  </div>
-                  <TopicOverview
-                    overview={topicOverview}
-                    subjectSlug={subjectSlug}
-                    topicSlug={topicSlug}
-                  />
-                </div>
-              )}
-
-              {/* Lesson Viewer */}
-              {subjectSlug && topicSlug && (
-                <div className="space-y-6">
-                  {topicOverview && (
-                    <div className="border-b pb-2">
-                      <h2 className="text-2xl font-semibold">Lesson Content</h2>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        Detailed lesson materials and concepts
-                      </p>
-                    </div>
-                  )}
-                  <LessonViewer
-                    subjectSlug={subjectSlug}
-                    topicSlug={topicSlug}
-                  />
-                </div>
-              )}
-
-              {/* Navigation */}
-              <div className="mt-12 border-t pt-8">
-                <LessonNavigation previousUrl={previousUrl} nextUrl={nextUrl} />
-              </div>
-            </div>
-          </div>
-
-          <div className="sticky top-20 col-span-1 mt-52 hidden flex-col self-start pb-24 lg:flex">
-            <div className="space-y-6">
-              {toc?.items && toc.items.length > 0 ? (
-                <DashboardTableOfContents toc={toc} />
-              ) : (
-                <div className="space-y-2">
-                  <p className="text-[15px] font-medium">On This Page</p>
-                  <p className="text-sm text-muted-foreground">
-                    Table of contents will appear here
-                  </p>
-                </div>
-              )}
-
-              {lessonTopics.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-[15px] font-medium">Lesson Topics</p>
-                  <ul className="space-y-1">
-                    {lessonTopics.map((concept) => (
-                      <li key={concept.id}>
-                        <button
-                          type="button"
-                          className="text-left text-sm text-primary transition hover:underline"
-                          onClick={() => scrollToLessonTopic(concept.id)}
-                        >
-                          {concept.title}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-            </div>
-          </div>
-        </MaxWidthWrapper>
-      </div>
-    </>
+      {/* LessonViewer */}
+      <LessonViewer
+        subjectSlug={subjectSlug}
+        topicSlug={topicSlug}
+        autoLoad={true}
+      />
+    </div>
   );
 }

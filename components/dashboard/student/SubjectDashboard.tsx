@@ -272,6 +272,38 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
             slugMap.set(s.id, s.slug);
           });
           setSubjectsWithSlugs(slugMap);
+
+          // Development-only check: log subject IDs without matching slugs
+          if (
+            (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true" ||
+              process.env.NODE_ENV === "development") &&
+            response.success &&
+            response.content
+          ) {
+            const allApiSubjects = new Set<number>();
+            // Collect all subject IDs from student's subjects
+            (response.content.subjects || []).forEach((subject) => {
+              allApiSubjects.add(subject.id);
+            });
+            (response.content.compulsory_selective || []).forEach((subject) => {
+              allApiSubjects.add(subject.id);
+            });
+            (response.content.selective || []).forEach((subject) => {
+              allApiSubjects.add(subject.id);
+            });
+
+            // Find subject IDs without matching slug entry
+            const missingSlugs = Array.from(allApiSubjects).filter(
+              (subjectId) => !slugMap.has(subjectId),
+            );
+
+            if (missingSlugs.length > 0) {
+              console.warn(
+                "[SubjectDashboard] Subject IDs without matching slug entry:",
+                missingSlugs,
+              );
+            }
+          }
         }
       } catch (error) {
         console.error("Failed to fetch subjects:", error);
@@ -293,6 +325,37 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
               slugMap.set(s.id, s.slug);
             });
             setSubjectsWithSlugs(slugMap);
+
+            // Development-only check: log subject IDs without matching slugs
+            if (
+              (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true" ||
+                process.env.NODE_ENV === "development") &&
+              initialData
+            ) {
+              const allApiSubjects = new Set<number>();
+              // Collect all subject IDs from student's subjects
+              (initialData.subjects || []).forEach((subject) => {
+                allApiSubjects.add(subject.id);
+              });
+              (initialData.compulsory_selective || []).forEach((subject) => {
+                allApiSubjects.add(subject.id);
+              });
+              (initialData.selective || []).forEach((subject) => {
+                allApiSubjects.add(subject.id);
+              });
+
+              // Find subject IDs without matching slug entry
+              const missingSlugs = Array.from(allApiSubjects).filter(
+                (subjectId) => !slugMap.has(subjectId),
+              );
+
+              if (missingSlugs.length > 0) {
+                console.warn(
+                  "[SubjectDashboard] Subject IDs without matching slug entry:",
+                  missingSlugs,
+                );
+              }
+            }
           }
         } catch (error) {
           console.error("Failed to fetch subject slugs:", error);

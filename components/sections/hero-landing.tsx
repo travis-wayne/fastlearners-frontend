@@ -54,7 +54,7 @@ export default function HeroLanding() {
       as="section"
       className="space-y-16 pt-16 md:space-y-20 md:pt-20 lg:pt-24"
     >
-      <div className="grid grid-cols-1 gap-10 lg:gap-12 xl:gap-16 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         {/* Left content */}
         <div className="relative z-10 flex flex-col justify-center space-y-8">
           <div className="space-y-6">

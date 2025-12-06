@@ -63,13 +63,13 @@ export async function GET(req: NextRequest) {
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch subjects after retry", requestId);
+          return handleApiError(retryError, "Network error: Failed to fetch lesson subjects after retry", requestId);
         }
       }
       
       throw fetchError;
     }
   } catch (err: any) {
-    return handleApiError(err, "Failed to fetch subjects", requestId);
+    return handleApiError(err, "Failed to fetch lesson subjects", requestId);
   }
 }
