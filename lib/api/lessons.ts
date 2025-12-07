@@ -368,11 +368,61 @@ export async function checkExerciseAnswer(
   isGeneral: boolean = false
 ): Promise<ExerciseCheckResponse> {
   try {
-    const body = isGeneral
-      ? { general_exercise_id: exerciseId, answer }
-      : { exercise_id: exerciseId, answer };
+    // Validate inputs
+    if (!exerciseId || exerciseId <= 0) {
+      return {
+        success: false,
+        message: "Invalid exercise ID",
+        content: null,
+        code: 422,
+        isCorrect: false,
+        errors: { exercise_id: ["Exercise ID is required and must be greater than 0"] },
+      };
+    }
 
-    const res = await fetch("/api/lessons/check-exercise-answer", {
+    if (!answer || answer.trim() === '') {
+      return {
+        success: false,
+        message: "Answer is required",
+        content: null,
+        code: 422,
+        isCorrect: false,
+        errors: { answer: ["The answer field is required."] },
+      };
+    }
+
+    // Ensure answer is uppercase letter (A, B, C, D, etc.)
+    const normalizedAnswer = answer.trim().toUpperCase();
+    if (!/^[A-Z]$/.test(normalizedAnswer)) {
+      return {
+        success: false,
+        message: "Answer must be a single letter (A, B, C, D, etc.)",
+        content: null,
+        code: 422,
+        isCorrect: false,
+        errors: { answer: ["Answer must be a single letter"] },
+      };
+    }
+
+    const body = isGeneral
+      ? { general_exercise_id: exerciseId, answer: normalizedAnswer }
+      : { exercise_id: exerciseId, answer: normalizedAnswer };
+
+    // Use different endpoints for concept vs general exercises
+    const endpoint = isGeneral
+      ? "/api/lessons/check-general-exercise-answer"
+      : "/api/lessons/check-exercise-answer";
+
+    // Debug logging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[checkExerciseAnswer] Request:', {
+        endpoint,
+        body,
+        isGeneral,
+      });
+    }
+
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: {
         Accept: "application/json",
@@ -384,7 +434,32 @@ export async function checkExerciseAnswer(
 
     const data = await res.json();
 
+    // Debug logging (always log in development to see what we're getting)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[checkExerciseAnswer] Response:', {
+        status: res.status,
+        statusText: res.statusText,
+        data,
+        requestBody: body,
+      });
+    }
+
     if (!res.ok) {
+      // Check if it's an "already answered" error - these should be treated as success
+      const isAlreadyAnswered = data.message?.toLowerCase().includes('already answered') || 
+                                data.message?.toLowerCase().includes('already answered correctly');
+      
+      if (isAlreadyAnswered) {
+        return {
+          success: true,
+          message: data.message || "Exercise already answered",
+          content: data.content || null,
+          code: 200, // Treat as success
+          isCorrect: true,
+          errors: null,
+        };
+      }
+
       return {
         success: false,
         message: data.message || "Wrong answer. Try again!",
@@ -395,9 +470,25 @@ export async function checkExerciseAnswer(
       };
     }
 
+    // Success response (200) - determine if answer is correct
+    // Backend returns 200 with success: true for correct answers
+    // Backend returns 200 with message "already answered" for previously answered exercises
+    const isAlreadyAnswered = data.message?.toLowerCase().includes('already answered') || 
+                              data.message?.toLowerCase().includes('already answered correctly');
+    
+    // Answer is correct if:
+    // 1. success is explicitly true, OR
+    // 2. status is 200 and message doesn't say "wrong answer", OR
+    // 3. message indicates "already answered" (was previously correct)
+    const isCorrect = data.success === true || 
+                     (res.status === 200 && !data.message?.toLowerCase().includes('wrong answer')) ||
+                     isAlreadyAnswered;
+
     return {
       ...data,
-      isCorrect: true,
+      isCorrect: isCorrect,
+      code: data.code || res.status,
+      success: data.success !== false, // Ensure success is set
     } as ExerciseCheckResponse;
   } catch (err: any) {
     return {

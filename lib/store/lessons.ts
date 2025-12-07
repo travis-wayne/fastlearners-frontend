@@ -9,6 +9,7 @@ import {
   type Lesson,
   type LessonContent,
   type LessonFilters,
+  type Concept,
 } from '@/lib/types/lessons';
 import {
   type ExerciseProgress,
@@ -485,6 +486,7 @@ export const useLessonsStore = create<LessonsStore>()(
           let stepName = '';
           let sectionType: SectionType = 'overview';
           let isConceptStep = false;
+          let currentConcept: Concept | null = null;
 
           try {
             if (currentStepIndex === 0) {
@@ -495,7 +497,32 @@ export const useLessonsStore = create<LessonsStore>()(
             } else if (currentStepIndex <= conceptsCount) {
               const conceptIndex = currentStepIndex - 1;
               const concept = selectedLesson.concepts?.[conceptIndex];
+              currentConcept = concept || null;
               if (concept) {
+                // If concept has no exercises, allow progression without API check
+                const hasExercises = concept.exercises && concept.exercises.length > 0;
+                if (!hasExercises) {
+                  // Concept has no exercises, mark as completed automatically
+                  sectionId = `concept_${concept.id}`;
+                  stepName = concept.title || `Concept ${conceptIndex + 1}`;
+                  sectionType = 'concept';
+                  
+                  if (sectionId && !completedSections.includes(sectionId)) {
+                    const newCompletedSections = [...completedSections, sectionId];
+                    set({ completedSections: newCompletedSections, error: null });
+                    get().markSectionCompleted(sectionId, sectionType);
+                    get().calculateProgress();
+                  }
+                  
+                  if (!silent) {
+                    toast.success(`${stepName} completed!`, {
+                      description: 'No exercises required. You can proceed to the next section.',
+                    });
+                  }
+                  return true;
+                }
+                
+                // Concept has exercises, check completion via API
                 response = await checkLessonConcept(lessonId, concept.id);
                 sectionId = `concept_${concept.id}`;
                 stepName = concept.title || `Concept ${conceptIndex + 1}`;
@@ -507,11 +534,59 @@ export const useLessonsStore = create<LessonsStore>()(
               sectionId = 'summary_application';
               stepName = 'Summary & Application';
               sectionType = 'summary_application';
+              
+              // Summary & Application is a content section (no exercises)
+              // If API check fails but user has reached this step, allow progression
+              // This handles cases where the backend check fails but the section was viewed
+              if (!response || !response.success) {
+                // Check if this is a 400 error (likely missing check marker)
+                if (response?.code === 400) {
+                  // For content sections, if user has reached the step, mark as complete
+                  // This is more lenient since content sections don't have exercises to verify
+                  if (sectionId && !completedSections.includes(sectionId)) {
+                    const newCompletedSections = [...completedSections, sectionId];
+                    set({ completedSections: newCompletedSections, error: null });
+                    get().markSectionCompleted(sectionId, sectionType);
+                    get().calculateProgress();
+                    
+                    if (!silent) {
+                      toast.warning('Completion verified', {
+                        description: `The system couldn't verify completion with the server, but you can proceed.`,
+                      });
+                    }
+                  }
+                  return true;
+                }
+              }
             } else if (currentStepIndex === conceptsCount + 2) {
               response = await checkLessonGeneralExercises(lessonId);
               sectionId = 'general_exercises';
               stepName = 'General Exercises';
               sectionType = 'general_exercises';
+              
+              // For general exercises, also check locally if all exercises are completed
+              // This helps when the API check fails but exercises are actually done
+              const { exerciseProgress: localProgress } = get();
+              const generalExercises = selectedLesson.general_exercises || [];
+              const allExercisesCompleted = generalExercises.length > 0 && 
+                generalExercises.every(ex => localProgress[ex.id]?.isCompleted);
+              
+              // If all exercises are completed locally, mark as complete even if API check fails
+              if (allExercisesCompleted && (!response || !response.success)) {
+                if (sectionId && !completedSections.includes(sectionId)) {
+                  const newCompletedSections = [...completedSections, sectionId];
+                  set({ completedSections: newCompletedSections, error: null });
+                  get().markSectionCompleted(sectionId, sectionType);
+                  get().calculateProgress();
+                  
+                  if (!silent) {
+                    toast.success(`${stepName} completed!`, {
+                      description: 'All exercises completed. You can now proceed to the next section.',
+                    });
+                  }
+                }
+                return true;
+              }
             }
 
             // Check if completed
@@ -535,26 +610,85 @@ export const useLessonsStore = create<LessonsStore>()(
               return true;
             }
             
-            // Handle 400 error (missing check marker) - allow progression with warning
-            if (response && response.code === 400 && response.message?.includes('No lesson check marker found')) {
-              if (!silent) {
-                toast.warning('Check marker not found', {
-                  description: `The system couldn't verify completion for "${stepName}". You can proceed, but please contact support if this persists.`,
-                });
+            // Handle 400 error (missing check marker or other backend issues) - allow progression with warning
+            // For general exercises and content sections, be more lenient
+            if (response && response.code === 400) {
+              const isGeneralExercises = sectionId === 'general_exercises';
+              const isContentSection = sectionId === 'summary_application' || sectionId === 'overview';
+              const isCheckMarkerError = response.message?.includes('No lesson check marker found') ||
+                                        response.message?.includes('check marker');
+              
+              // For general exercises with 400 errors, check locally first
+              if (isGeneralExercises) {
+                const { exerciseProgress: localProgress } = get();
+                const generalExercises = selectedLesson.general_exercises || [];
+                const allExercisesCompleted = generalExercises.length > 0 && 
+                  generalExercises.every(ex => localProgress[ex.id]?.isCompleted);
+                
+                if (allExercisesCompleted) {
+                  // All exercises done locally, mark as complete
+                  if (sectionId && !completedSections.includes(sectionId)) {
+                    const newCompletedSections = [...completedSections, sectionId];
+                    set({ completedSections: newCompletedSections, error: null });
+                    get().markSectionCompleted(sectionId, sectionType);
+                    get().calculateProgress();
+                  }
+                  
+                  if (!silent && !isCheckMarkerError) {
+                    toast.warning('Completion verified locally', {
+                      description: `All exercises completed. The system couldn't verify with the server, but you can proceed.`,
+                    });
+                  } else if (!silent) {
+                    toast.warning('Check marker not found', {
+                      description: `The system couldn't verify completion for "${stepName}". You can proceed, but please contact support if this persists.`,
+                    });
+                  }
+                  return true;
+                }
               }
-              // Mark as completed to allow progression
-              if (sectionId && !completedSections.includes(sectionId)) {
-                const newCompletedSections = [...completedSections, sectionId];
-                set({ completedSections: newCompletedSections, error: null });
-                get().markSectionCompleted(sectionId, sectionType);
-                get().calculateProgress();
+              
+              // For content sections (Summary & Application, Overview), be lenient with 400 errors
+              // These sections don't have exercises, so if user has reached the step, allow progression
+              if (isContentSection) {
+                if (sectionId && !completedSections.includes(sectionId)) {
+                  const newCompletedSections = [...completedSections, sectionId];
+                  set({ completedSections: newCompletedSections, error: null });
+                  get().markSectionCompleted(sectionId, sectionType);
+                  get().calculateProgress();
+                }
+                
+                if (!silent) {
+                  toast.warning('Completion verified', {
+                    description: `The system couldn't verify completion with the server, but you can proceed.`,
+                  });
+                }
+                return true;
               }
-              return true;
+              
+              // For other sections or if exercises aren't all done, only allow if it's a check marker error
+              if (isCheckMarkerError) {
+                if (!silent) {
+                  toast.warning('Check marker not found', {
+                    description: `The system couldn't verify completion for "${stepName}". You can proceed, but please contact support if this persists.`,
+                  });
+                }
+                // Mark as completed to allow progression
+                if (sectionId && !completedSections.includes(sectionId)) {
+                  const newCompletedSections = [...completedSections, sectionId];
+                  set({ completedSections: newCompletedSections, error: null });
+                  get().markSectionCompleted(sectionId, sectionType);
+                  get().calculateProgress();
+                }
+                return true;
+              }
             }
             
             // Show error toast if not silent
             if (!silent) {
-              const errorMessage = isConceptStep
+              // Check if this is a concept step and if it has exercises
+              const hasExercises = currentConcept && currentConcept.exercises && currentConcept.exercises.length > 0;
+              
+              const errorMessage = isConceptStep && hasExercises
                 ? `Please complete all exercises in the "${stepName}" section before proceeding.`
                 : `Please complete the "${stepName}" section before proceeding.`;
               
@@ -604,12 +738,18 @@ export const useLessonsStore = create<LessonsStore>()(
             try {
               const response = await checkExerciseAnswer(exerciseId, answer, isGeneral);
 
+              // Check if response indicates "already answered" - treat as correct
+              const isAlreadyAnswered = response.message?.toLowerCase().includes('already answered');
+              const isAnswerCorrect = response.isCorrect === true || 
+                                     (response.success === true && response.code === 200) ||
+                                     isAlreadyAnswered;
+
               // Mark exercise as completed in adaptive progress
-              if (response.isCorrect !== undefined) {
-                get().markExerciseCompleted(exerciseId, response.isCorrect, answer);
+              if (response.isCorrect !== undefined || isAnswerCorrect) {
+                get().markExerciseCompleted(exerciseId, isAnswerCorrect, answer);
               }
 
-              if (response.success && response.isCorrect) {
+              if (response.success && isAnswerCorrect) {
                 const { selectedLesson, currentStepIndex, completedSections } = get();
                 if (selectedLesson) {
                   let sectionId = '';
@@ -631,10 +771,10 @@ export const useLessonsStore = create<LessonsStore>()(
               }
 
               return {
-                success: response.success,
+                success: response.success || isAnswerCorrect,
                 message: response.message,
-                isCorrect: response.isCorrect,
-                code: response.code
+                isCorrect: isAnswerCorrect,
+                code: response.code || 200
               };
             } catch (error: any) {
               const errorMsg = getErrorMessage(error);

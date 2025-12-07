@@ -176,7 +176,7 @@ export function LessonConcept({
             )}
 
             {/* Exercises */}
-            {concept.exercises.length > 0 && (
+            {concept.exercises.length > 0 ? (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
@@ -198,6 +198,22 @@ export function LessonConcept({
                       onAnswer={onAnswerExercise}
                     />
                   ))}
+                </div>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10">
+                    <CheckCircle2 className="size-4 text-primary" />
+                  </div>
+                  <h4 className="text-xl font-bold text-foreground">
+                    Concept Exercises
+                  </h4>
+                </div>
+                <div className="rounded-lg border-2 border-dashed border-muted bg-muted/30 p-6 text-center">
+                  <p className="text-sm text-muted-foreground">
+                    No exercises available for this concept. You can proceed to the next section.
+                  </p>
                 </div>
               </div>
             )}

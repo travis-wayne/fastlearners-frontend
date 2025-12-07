@@ -189,18 +189,57 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
     setIsSubmitting(true);
     try {
-      // Get the answer text from the selected option key
-      const selectedAnswerText = getAnswerText(selectedOptionKey);
-      const result = await onAnswer(exercise.id, selectedAnswerText);
+      // Send the option letter (A, B, C, D) as the backend expects
+      // The backend expects A, B, C, or D
+      if (!selectedOptionKey) {
+        setFeedbackMessage("Please select an answer before submitting.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Validate exercise ID
+      if (!exercise.id || typeof exercise.id !== 'number') {
+        console.error('[ExerciseCard] Invalid exercise ID:', exercise.id);
+        setFeedbackMessage("Error: Invalid exercise ID. Please refresh the page.");
+        setIsSubmitting(false);
+        return;
+      }
+
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[ExerciseCard] Submitting answer:', {
+          exerciseId: exercise.id,
+          answer: selectedOptionKey,
+          answerType: typeof selectedOptionKey,
+        });
+      }
+
+      const result = await onAnswer(exercise.id, selectedOptionKey);
       setIsRevealed(true);
 
       if (result && typeof result === 'object') {
-        setIsCorrect(result.isCorrect);
+        // Determine if answer is correct
+        const isAnswerCorrect = result.isCorrect === true || 
+                                result.success === true ||
+                                (result.code === 200 && result.message?.toLowerCase().includes('already answered'));
+        
+        setIsCorrect(isAnswerCorrect);
 
         let message = result.message;
         const code = result.code;
 
-        if (code === 400) {
+        // Handle different response codes
+        if (code === 200 || (code === 400 && isAnswerCorrect)) {
+          // Success or "already answered" case
+          if (isAnswerCorrect) {
+            message = message || "Correct!";
+            setSuccess(true);
+          } else {
+            message = message || "Incorrect. Try again.";
+            setShake(true);
+          }
+        } else if (code === 400) {
+          // Wrong answer case
           if (result.isCorrect) {
             message = message || "Correct!";
             setSuccess(true);
@@ -209,6 +248,17 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
             setShake(true);
           }
         } else if (code === 422) {
+          // Show detailed validation errors if available
+          if (result.errors) {
+            const errorMessages = Object.entries(result.errors)
+              .flatMap(([field, errors]) => 
+                Array.isArray(errors) 
+                  ? errors.map(err => `${field}: ${err}`)
+                  : [`${field}: ${errors}`]
+              )
+              .join(', ');
+            message = errorMessages || message;
+          }
           message = `Validation Error: ${message}`;
         } else if (code >= 500) {
           message = "We could not check your answer. Please try again.";

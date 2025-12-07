@@ -9,6 +9,7 @@ export interface ApiErrorResponse {
   code: number;
   requestId: string;
   errorCode?: string;
+  errors?: any;
 }
 
 /**
@@ -59,12 +60,20 @@ export function handleUpstreamError(
 
   // Extract error code if available
   const errorCode = upstreamData?.code || upstreamData?.error_code;
+  const id = requestId || crypto.randomUUID();
 
-  return createErrorResponse(
-    message,
-    upstreamResponse.status,
-    errorCode,
-    requestId
+  // Build response with errors field if present
+  return NextResponse.json(
+    {
+      success: false,
+      message,
+      content: null,
+      code: upstreamResponse.status,
+      requestId: id,
+      ...(errorCode && { errorCode }),
+      ...(upstreamData?.errors && { errors: upstreamData.errors }),
+    },
+    { status: upstreamResponse.status }
   );
 }
 

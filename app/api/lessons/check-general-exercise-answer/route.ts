@@ -14,21 +14,12 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
-    // Debug logging (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[check-exercise-answer] Received request:', {
-        body,
-        requestId,
-        hasAuth: !!auth,
-      });
-    }
-    
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
     try {
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/check-exercise-answer`,
+        `${UPSTREAM_BASE}/lessons/check-general-exercise-answer`,
         {
           method: "POST",
           headers: {
@@ -45,16 +36,6 @@ export async function POST(req: NextRequest) {
       clearTimeout(timeoutId);
       const data = await upstream.json();
 
-      // Debug logging for errors
-      if (!upstream.ok && process.env.NODE_ENV === 'development') {
-        console.error('[check-exercise-answer] Upstream error:', {
-          status: upstream.status,
-          statusText: upstream.statusText,
-          data,
-          requestBody: body,
-        });
-      }
-
       if (!upstream.ok) {
         return handleUpstreamError(upstream, data, requestId);
       }
@@ -67,7 +48,7 @@ export async function POST(req: NextRequest) {
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/check-exercise-answer`,
+            `${UPSTREAM_BASE}/lessons/check-general-exercise-answer`,
             {
               method: "POST",
               headers: {
@@ -88,13 +69,13 @@ export async function POST(req: NextRequest) {
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to check exercise answer after retry", requestId);
+          return handleApiError(retryError, "Network error: Failed to check general exercise answer after retry", requestId);
         }
       }
       
       throw fetchError;
     }
   } catch (err: any) {
-    return handleApiError(err, "Failed to check exercise answer", requestId);
+    return handleApiError(err, "Failed to check general exercise answer", requestId);
   }
 }
