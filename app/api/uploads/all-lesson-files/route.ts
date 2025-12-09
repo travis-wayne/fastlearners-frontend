@@ -16,6 +16,9 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Generate request ID for log correlation
+  const requestId = req.headers.get("x-request-id") || crypto.randomUUID();
+
   try {
     const formData = await req.formData();
 
@@ -86,6 +89,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // Log upload attempt
+    const fileSizes: Record<string, number> = {};
+    requiredFields.forEach((field) => {
+      const file = formData.get(field) as File | null;
+      if (file) fileSizes[field] = file.size;
+    });
+
+    console.log("[UPLOAD_ATTEMPT]", JSON.stringify({
+      requestId,
+      uploadType: "all-lesson-files",
+      fileSizes,
+      timestamp: new Date().toISOString(),
+    }));
+
     // Create new FormData for upstream with all files
     const upstreamFormData = new FormData();
     requiredFields.forEach((field) => {
@@ -105,6 +122,7 @@ export async function POST(req: NextRequest) {
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${auth.token}`,
+          "X-Request-ID": requestId,
         },
         body: upstreamFormData,
         cache: "no-store",
@@ -112,6 +130,18 @@ export async function POST(req: NextRequest) {
     );
 
     const data = await upstream.json();
+
+    // Log upload completion
+    console.log("[UPLOAD_COMPLETE]", JSON.stringify({
+      requestId,
+      uploadType: "all-lesson-files",
+      statusCode: upstream.status,
+      success: upstream.ok,
+      hasErrors: !!data.errors,
+      hasConflicts: !!data.conflicts,
+      conflictCount: data.conflicts?.length || 0,
+      timestamp: new Date().toISOString(),
+    }));
 
     if (!upstream.ok) {
       return handleUpstreamError(upstream, data);

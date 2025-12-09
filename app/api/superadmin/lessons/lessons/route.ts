@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
     }
 
     const response = await fetch(
-      `${BASE_API_URL}/superadmin/lessons/lessons/`,
+      `${BASE_API_URL}/superadmin/lessons/lessons`,
       {
         method: "POST",
         headers: {

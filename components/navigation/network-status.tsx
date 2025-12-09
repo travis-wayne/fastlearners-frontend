@@ -51,7 +51,7 @@ export function NetworkStatus({
       const pingMethods = [
         // Method 1: Favicon request (fastest)
         () =>
-          fetch("/favicon.ico", {
+          fetch("/favicon.svg", {
             method: "HEAD",
             cache: "no-cache",
             signal: controller.signal,
@@ -69,7 +69,7 @@ export function NetworkStatus({
             const img = new Image();
             img.onload = () => resolve(new Response());
             img.onerror = reject;
-            img.src = "/favicon.ico?t=" + Date.now();
+            img.src = "/favicon.svg?t=" + Date.now();
           }),
       ];
 

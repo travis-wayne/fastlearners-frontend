@@ -192,6 +192,8 @@ export async function getLessons(filters: {
   subject: string;
   term: string;
   week: string;
+  page?: number;
+  limit?: number;
 }): Promise<ApiResponse<LessonsListResponse>> {
   try {
     const response = await fetch("/api/superadmin/lessons/lessons", {
@@ -219,7 +221,7 @@ export async function getLessons(filters: {
 // Get specific lesson
 export async function getLessonById(id: number): Promise<ApiResponse<LessonDetail>> {
   try {
-    const response = await fetch(`/api/superadmin/lessons/${id}`, {
+    const response = await fetch(`/api/v1/superadmin/lessons/lesson/${id}`, {
       method: "GET",
       credentials: "include",
       headers: {

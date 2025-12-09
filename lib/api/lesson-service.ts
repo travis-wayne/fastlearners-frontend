@@ -16,12 +16,32 @@ import {
 } from "@/lib/utils/csv-upload-helper";
 
 // Types based on API documentation
+
+/**
+ * Represents a row-level conflict or duplicate detected during upload
+ */
+export interface ConflictRecord {
+  rowIndex: number;
+  primaryKeys: {
+    class?: string;
+    subject?: string;
+    term?: string;
+    week?: number;
+    topic?: string;
+    lesson?: string;
+    concept?: string;
+  };
+  reason: string;
+  conflictType: "duplicate" | "semantic" | "validation";
+}
+
 export interface ApiResponse<T = any> {
   success: boolean;
   message: string;
   content: T;
   code: number;
   errors?: any;
+  conflicts?: ConflictRecord[];
 }
 
 export interface Lesson {
@@ -378,6 +398,7 @@ export interface UploadResult {
   apiResponse?: ApiResponse;
   error?: string;
   triedFormats?: string[];
+  conflicts?: ConflictRecord[];
 }
 
 // Smart upload function that tries both formats

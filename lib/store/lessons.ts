@@ -6,6 +6,13 @@ import {
   type Term,
 } from '@/lib/api/lessons-api';
 import {
+  getLessonsMetadata as getSuperadminMetadata,
+  getLessons as getSuperadminLessons,
+  getLessonContent as getSuperadminLessonContent,
+  getLessonById as getSuperadminLessonById,
+} from '@/lib/api/superadmin-lessons';
+
+import {
   type Lesson,
   type LessonContent,
   type LessonFilters,
@@ -95,6 +102,10 @@ interface UserNotes {
 }
 
 interface LessonsStore {
+  // Superadmin Mode
+  isSuperadminMode: boolean;
+  setSuperadminMode: (isSuperadmin: boolean) => void;
+
   // Metadata
   classes: ClassItem[];
   subjects: Subject[];
@@ -217,6 +228,9 @@ export const useLessonsStore = create<LessonsStore>()(
   devtools(
     persist(
       (set, get) => ({
+        isSuperadminMode: false,
+        setSuperadminMode: (mode) => set({ isSuperadminMode: mode }),
+
         // Initial state
         classes: [],
         subjects: [],
@@ -224,46 +238,65 @@ export const useLessonsStore = create<LessonsStore>()(
         weeks: [],
         lessons: [],
         selectedLesson: null,
-        filters: initialFilters,
+        filters: {
+          class: "",
+          subject: "",
+          term: "",
+          week: "",
+        },
         isLoading: false,
         isLoadingMetadata: false,
         isLoadingLessons: false,
         isLoadingLessonContent: false,
         error: null,
         currentPage: 1,
-        totalPages: 0,
+        totalPages: 1,
         totalLessons: 0,
         completedSections: [],
         currentStepIndex: 0,
+        unlockedSteps: [0],
         progress: 0,
 
         // Adaptive learning progress
         sectionProgress: {},
         exerciseProgress: {},
         lessonMetadata: {},
+        exerciseAnswers: {},
+        isSubmittingExercise: false,
 
         // New enhanced state
-        userPreferences: initialUserPreferences,
+        userPreferences: {
+            autoAdvance: true,
+            autoAdvanceDelay: 5,
+            displayMode: 'detailed',
+            showHints: true,
+            showSolutions: false,
+            theme: 'auto'
+        },
         sessionTracking: [],
         currentSession: null,
         errorHistory: [],
-        analyticsData: {},
+        analyticsData: {
+            averageTimePerSection: {},
+            commonErrors: {},
+            preferredLearningTime: null,
+            completionRates: {}
+        },
         queuedActions: [],
         isOffline: false,
         sectionTimeTracking: {},
         userNotes: {},
         cacheTimestamps: {},
+        lastSyncedAt: null,
+        adaptiveRecommendations: [],
 
         // Filter actions
         setFilters: (newFilters) => {
-          set((state) => ({
-            filters: { ...state.filters, ...newFilters },
-            currentPage: 1, // Reset pagination when filters change
-          }));
+          set((state) => ({ filters: { ...state.filters, ...newFilters }, currentPage: 1 }));
         },
 
         clearFilters: () => {
-          set({ filters: initialFilters, currentPage: 1 });
+          set({ filters: { class: "", subject: "", term: "", week: "" }, currentPage: 1 });
         },
 
         // API actions
@@ -271,34 +304,80 @@ export const useLessonsStore = create<LessonsStore>()(
           set({ isLoadingMetadata: true, error: null });
 
           try {
-            const { getProfileData } = await import('@/lib/api/profile');
-            const profileData = await getProfileData();
+            if (get().isSuperadminMode) {
+              const response = await getSuperadminMetadata();
+              const data = response.content; // Access content from ApiResponse
 
-            set({
-              classes: (profileData.classes || []).map((cls, index) => ({
-                id: index + 1,
-                name: cls.name,
-              })),
-              subjects: [],
-              terms: [
-                { id: 1, name: 'First' },
-                { id: 2, name: 'Second' },
-                { id: 3, name: 'Third' },
-              ],
-              weeks: Array.from({ length: 12 }, (_, i) => ({ id: i + 1, name: i + 1 })),
-              isLoadingMetadata: false,
-            });
+              if (response.success && data) {
+                 set({
+                  classes: (data.classes || []).map((c) => ({ id: c.id, name: c.name })),
+                  subjects: (data.subjects || []).map((s) => ({ id: s.id, name: s.name, slug: '' })), // Subject from superadmin might usually not have slug?
+                  terms: (data.terms || []).map((t) => ({ id: t.id, name: t.name })),
+                  weeks: (data.weeks || []).map((w) => ({ id: w.id, name: w.name })),
+                  isLoadingMetadata: false,
+                });
+              } else {
+                 throw new Error(response.message || 'Failed to fetch metadata');
+              }
+            } else {
+               const { getProfileData } = await import('@/lib/api/profile');
+               const profileData = await getProfileData();
+               set({
+                  classes: (profileData.classes || []).map((cls, index) => ({
+                    id: index + 1,
+                    name: cls.name,
+                  })),
+                  subjects: [], // Profile data might not match exactly, keeping legacy behavior
+                  terms: [
+                    { id: 1, name: 'First' },
+                    { id: 2, name: 'Second' },
+                    { id: 3, name: 'Third' },
+                  ],
+                  weeks: Array.from({ length: 12 }, (_, i) => ({ id: i + 1, name: i + 1 })),
+                  isLoadingMetadata: false,
+                });
+            }
           } catch (err) {
-            get().addErrorToHistory('fetchMetadata', getErrorMessage(err));
-            set({
+             set({
               error: getErrorMessage(err),
               isLoadingMetadata: false,
-            });
+             });
           }
         },
 
         fetchLessons: async (page = 1) => {
-          set({ isLoadingLessons: false });
+           set({ isLoadingLessons: true, error: null });
+           try {
+             if (get().isSuperadminMode) {
+                const filters = get().filters;
+                const response = await getSuperadminLessons({
+                    ...filters,
+                    page,
+                    limit: 12
+                });
+                
+                if (response.success && response.content) {
+                    // response.content is LessonsListResponse from superadmin-lessons.ts
+                    // which has 'lessons', 'links', 'meta'.
+                    const content = response.content as any; // Cast if type mismatch exists between definition files
+                    
+                    set({
+                        lessons: content.lessons || [],
+                        currentPage: content.meta?.current_page || 1,
+                        totalPages: content.meta?.last_page || 1,
+                        totalLessons: content.meta?.total || 0,
+                        isLoadingLessons: false
+                    });
+                } else {
+                    throw new Error(response.message || "Failed to fetch lessons");
+                }
+             } else {
+               // Student fetch logic placeholder
+               set({ isLoadingLessons: false }); 
+             }
+           } catch (error) {
+               set({ isLoadingLessons: false, error: getErrorMessage(error) });
+           }
         },
 
         fetchLessonContentBySlug: async (subjectSlug: string, topicSlug: string) => {
@@ -392,7 +471,12 @@ export const useLessonsStore = create<LessonsStore>()(
           
           const retryWithBackoff = async (attempt: number = 0): Promise<void> => {
             try {
-              const response = await getLessonContentById(lessonId);
+              let response;
+              if (get().isSuperadminMode) {
+                response = await getSuperadminLessonContent(Number(lessonId));
+              } else {
+                response = await getLessonContentById(lessonId);
+              }
               if (response.success && response.content) {
                 const lesson = response.content;
                 const now = new Date().toISOString();

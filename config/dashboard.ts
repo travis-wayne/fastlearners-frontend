@@ -75,9 +75,27 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.ADMIN,
       },
       {
-        href: "/dashboard/superadmin/lessons",
+        href: "/dashboard/superadmin",
+        icon: "layoutDashboard",
+        title: "Dashboard",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/uploads",
+        icon: "upload",
+        title: "Uploads",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/browse",
         icon: "bookOpen",
-        title: "Lesson Management",
+        title: "Browse",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/manage",
+        icon: "folderCog",
+        title: "Manage Files",
         authorizeOnly: UserRole.SUPERADMIN,
       },
   // ACCOUNT SECTION for students
@@ -93,12 +111,6 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Billing",
         authorizeOnly: UserRole.TEACHER,
       },
-      {
-        href: "/dashboard/superadmin/billing",
-        icon: "billing",
-        title: "Billing",
-        authorizeOnly: UserRole.SUPERADMIN,
-      },
       // Unified orders
       {
         href: "/dashboard/admin/orders",
@@ -112,12 +124,6 @@ export const sidebarLinks: SidebarNavItem[] = [
         icon: "package",
         title: "Orders",
         authorizeOnly: UserRole.TEACHER,
-      },
-      {
-        href: "/dashboard/superadmin/orders",
-        icon: "package",
-        title: "Orders",
-        authorizeOnly: UserRole.SUPERADMIN,
       },
     ],
   },
@@ -149,12 +155,6 @@ export const sidebarLinks: SidebarNavItem[] = [
         icon: "settings",
         title: "Settings",
         authorizeOnly: UserRole.ADMIN,
-      },
-      {
-        href: "/dashboard/superadmin/settings",
-        icon: "settings",
-        title: "Settings",
-        authorizeOnly: UserRole.SUPERADMIN,
       },
       { href: "/", icon: "home", title: "Homepage" },
       {

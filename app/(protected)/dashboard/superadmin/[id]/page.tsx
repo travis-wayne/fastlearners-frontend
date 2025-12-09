@@ -66,7 +66,7 @@ export default function LessonDetailPage() {
           text={lesson ? lesson.topic : "Loading lesson details..."}
         />
         {id ? (
-          <Link href={`/dashboard/superadmin/lessons/${id}/content`}>
+          <Link href={`/dashboard/superadmin/${id}/content`}>
             <Button variant="secondary">View Full Content</Button>
           </Link>
         ) : null}
@@ -172,11 +172,11 @@ export default function LessonDetailPage() {
       </Card>
 
       <div className="flex gap-3">
-        <Link href="/dashboard/superadmin/lessons">
+        <Link href="/dashboard/superadmin/browse">
           <Button variant="outline">Back to Lessons</Button>
         </Link>
         {id ? (
-          <Link href={`/dashboard/superadmin/lessons/${id}/content`}>
+          <Link href={`/dashboard/superadmin/${id}/content`}>
             <Button>Open Content</Button>
           </Link>
         ) : null}

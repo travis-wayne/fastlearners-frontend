@@ -29,13 +29,17 @@ interface LessonFiltersProps {
   onFiltersChange?: () => void;
   compact?: boolean;
   showTitle?: boolean;
+  sidebar?: boolean;
 }
 
 export function LessonFilters({
   onFiltersChange,
   compact = false,
   showTitle = true,
+  sidebar = false,
 }: LessonFiltersProps) {
+  // ... (existing hooks)
+
   const {
     classes,
     subjects,
@@ -191,9 +195,9 @@ export function LessonFilters({
   }
 
   return (
-    <Card className="border-2 shadow-lg">
+    <Card className={cn("border-2 shadow-lg", sidebar && "border-0 bg-transparent shadow-none")}>
       {showTitle && (
-        <CardHeader className="pb-4">
+        <CardHeader className={cn("pb-4", sidebar && "px-0")}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
@@ -216,7 +220,7 @@ export function LessonFilters({
         </CardHeader>
       )}
 
-      <CardContent className="space-y-6">
+      <CardContent className={cn("space-y-6", sidebar && "px-0")}>
         {error && (
           <Alert variant="destructive" className="border-2">
             <AlertCircle className="size-4" />
@@ -225,7 +229,10 @@ export function LessonFilters({
         )}
 
         {isLoadingMetadata ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className={cn(
+            "grid grid-cols-1 gap-4",
+            !sidebar && "md:grid-cols-2 lg:grid-cols-4"
+          )}>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-4 w-20" />
@@ -234,7 +241,10 @@ export function LessonFilters({
             ))}
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
+          <div className={cn(
+            "grid grid-cols-1 gap-4",
+            !sidebar && "md:grid-cols-2 lg:grid-cols-4"
+          )}>
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <span>Class</span>
