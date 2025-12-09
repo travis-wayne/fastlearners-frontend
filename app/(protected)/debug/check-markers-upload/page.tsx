@@ -126,50 +126,39 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
         content.substring(0, 1000),
       );
 
-      // Analyze file structure
-      const lines = content.split("\n");
-      addLog("info", `File analysis - Total lines: ${lines.length}`);
+      // Use shared preview helper
+      const { previewCSVFile } = await import("@/lib/utils/csv-upload-helper");
+      const preview = await previewCSVFile(file, 10);
 
-      if (lines.length > 0) {
-        // Auto-detect delimiter
-        const headerLine = lines[0];
-        const commaCount = (headerLine.match(/,/g) || []).length;
-        const pipeCount = (headerLine.match(/\|/g) || []).length;
+      addLog("info", `File analysis - Total lines: ${preview.totalRowCount + 1}`);
+      addLog("info", `Format detected: ${preview.format}-delimited`);
+      addLog("info", `Headers found (${preview.headers.length}):`, preview.headers);
 
-        let delimiter = ",";
-        let format = "comma";
+      const expectedHeaders = [
+        "lesson",
+        "overview",
+        "lesson_video",
+        "concept_one",
+        "concept_two",
+        "concept_three",
+        "concept_four",
+        "concept_five",
+        "concept_six",
+        "concept_seven",
+        "general_exercises",
+      ];
+      const missingHeaders = expectedHeaders.filter(
+        (h) => !preview.headers.includes(h),
+      );
 
-        if (pipeCount > commaCount) {
-          delimiter = "|";
-          format = "pipe";
-        }
+      if (missingHeaders.length > 0) {
+        addLog("error", `Missing headers:`, missingHeaders);
+      } else {
+        addLog("success", "All required headers present");
+      }
 
-        const headers = headerLine.split(delimiter).map((h) => h.trim());
-        addLog("info", `Format detected: ${format}-delimited`);
-        addLog("info", `Headers found (${headers.length}):`, headers);
-
-        const expectedHeaders = [
-          "lesson",
-          "overview",
-          "lesson_video",
-          "concept_one",
-          "concept_two",
-          "concept_three",
-          "concept_four",
-          "concept_five",
-          "concept_six",
-          "concept_seven",
-          "general_exercises",
-        ];
-        const missingHeaders = expectedHeaders.filter(
-          (h) => !headers.includes(h),
-        );
-
-        if (missingHeaders.length > 0) {
-          addLog("error", `Missing headers:`, missingHeaders);
-        } else {
-          addLog("success", "All required headers present");
-        }
+      if (preview.sampleRows.length > 0) {
+        addLog("info", `Sample rows (${preview.sampleRows.length}):`, preview.sampleRows);
       }
     } catch (error) {
       addLog(

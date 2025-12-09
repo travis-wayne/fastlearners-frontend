@@ -1,11 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState } from "react";
 import { 
   FileUp, 
   CheckCircle, 
   AlertCircle,
-  Upload
+  Upload,
+  Eye
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -15,6 +16,15 @@ import { Progress } from "@/components/ui/progress";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
+import { Badge } from "@/components/ui/badge";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 import FileUpload from "@/components/lessons/file-upload";
 import { 
@@ -32,7 +42,34 @@ import {
   uploadAllLessonFiles,
   UploadResult,
   ApiResponse,
+  CSV_COLUMNS,
 } from "@/lib/api/lesson-service";
+import { previewCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
+
+type BulkFileKey = 
+  | "lessons_file"
+  | "concepts_file"
+  | "examples_file"
+  | "exercises_file"
+  | "general_exercises_file"
+  | "check_markers_file";
+
+interface BulkPreviewState {
+  [key: string]: CSVPreviewResult | null;
+}
+
+const BULK_FILE_CONFIGS: {
+  id: BulkFileKey;
+  label: string;
+  requiredColumns: string[];
+}[] = [
+  { id: 'lessons_file', label: 'Lessons File', requiredColumns: CSV_COLUMNS.lessons },
+  { id: 'concepts_file', label: 'Concepts File', requiredColumns: CSV_COLUMNS.concepts },
+  { id: 'examples_file', label: 'Examples File', requiredColumns: CSV_COLUMNS.examples },
+  { id: 'exercises_file', label: 'Exercises File', requiredColumns: CSV_COLUMNS.exercises },
+  { id: 'general_exercises_file', label: 'General Exercises File', requiredColumns: CSV_COLUMNS.general_exercises },
+  { id: 'check_markers_file', label: 'Check Markers File', requiredColumns: CSV_COLUMNS.check_markers },
+];
 
 const UPLOAD_CONFIG: {
   id: UploadType;
@@ -99,6 +136,9 @@ export default function UploadsPage() {
      resetBulkState
   } = useSuperadminState();
 
+  const [bulkPreviews, setBulkPreviews] = useState<BulkPreviewState>({});
+  const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
+
   // --- Individual Upload Handlers ---
 
   const handleFileSelect = (type: UploadType, file: File) => {
@@ -148,6 +188,26 @@ export default function UploadsPage() {
     }
   };
 
+  // --- Bulk Preview Handler ---
+
+  const handleBulkPreview = async (fileKey: BulkFileKey) => {
+    const file = bulkFiles[fileKey];
+    if (!file) return;
+
+    setLoadingPreview(fileKey);
+    try {
+      const preview = await previewCSVFile(file, 10);
+      setBulkPreviews(prev => ({ ...prev, [fileKey]: preview }));
+      toast.success(`Preview loaded for ${fileKey.replace(/_/g, ' ')}`);
+    } catch (error) {
+      toast.error("Failed to preview file", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setLoadingPreview(null);
+    }
+  };
+
   // --- Bulk Upload Handlers ---
 
   const isBulkReady = Object.values(bulkFiles).every((f) => f !== null);
@@ -155,6 +215,28 @@ export default function UploadsPage() {
   const handleBulkUpload = async () => {
     if (!isBulkReady) {
       toast.error("Missing files", { description: "Please select all 6 required files." });
+      return;
+    }
+
+    // Check for missing columns in previewed files
+    const filesWithMissingColumns: string[] = [];
+    BULK_FILE_CONFIGS.forEach((config) => {
+      const preview = bulkPreviews[config.id];
+      if (preview) {
+        const missingColumns = config.requiredColumns.filter(
+          col => !preview.headers.map(h => h.toLowerCase()).includes(col.toLowerCase())
+        );
+        if (missingColumns.length > 0) {
+          filesWithMissingColumns.push(`${config.label} (missing: ${missingColumns.join(', ')})`);
+        }
+      }
+    });
+
+    if (filesWithMissingColumns.length > 0) {
+      toast.error("Column Validation Failed", {
+        description: `The following files have missing required columns:\n${filesWithMissingColumns.join('\n')}\n\nPlease fix these files before uploading.`,
+        duration: 8000,
+      });
       return;
     }
 
@@ -262,28 +344,138 @@ export default function UploadsPage() {
             )}
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {[
-                { id: 'lessons_file', label: 'Lessons File' },
-                { id: 'concepts_file', label: 'Concepts File' },
-                { id: 'examples_file', label: 'Examples File' },
-                { id: 'exercises_file', label: 'Exercises File' },
-                { id: 'general_exercises_file', label: 'General Exercises File' },
-                { id: 'check_markers_file', label: 'Check Markers File' },
-                ].map((fileInput) => (
-                <div key={fileInput.id} className="grid w-full max-w-sm items-center gap-1.5">
-                    <Label htmlFor={fileInput.id}>{fileInput.label}</Label>
-                    <Input 
-                    id={fileInput.id} 
-                    type="file" 
-                    accept=".csv,.txt"
-                    disabled={isBulkUploading || bulkSuccess}
-                    onChange={(e) => setBulkFile(fileInput.id as any, e.target.files?.[0] || null)}
-                    />
-                    <p className="text-xs text-muted-foreground">
-                    {bulkFiles[fileInput.id as any]?.name || "No file selected"}
-                    </p>
-                </div>
-                ))}
+                {BULK_FILE_CONFIGS.map((fileConfig) => {
+                  const file = bulkFiles[fileConfig.id];
+                  const preview = bulkPreviews[fileConfig.id];
+                  const isLoadingThisPreview = loadingPreview === fileConfig.id;
+
+                  // Check for missing columns
+                  const missingColumns = preview
+                    ? fileConfig.requiredColumns.filter(
+                        col => !preview.headers.map(h => h.toLowerCase()).includes(col.toLowerCase())
+                      )
+                    : [];
+
+                  return (
+                    <div key={fileConfig.id} className="space-y-3">
+                      <div className="grid w-full items-center gap-1.5">
+                        <Label htmlFor={fileConfig.id}>{fileConfig.label}</Label>
+                        <Input 
+                          id={fileConfig.id} 
+                          type="file" 
+                          accept=".csv,.txt"
+                          disabled={isBulkUploading || bulkSuccess}
+                          onChange={(e) => {
+                            setBulkFile(fileConfig.id, e.target.files?.[0] || null);
+                            // Clear preview when file changes
+                            setBulkPreviews(prev => ({ ...prev, [fileConfig.id]: null }));
+                          }}
+                        />
+                        <p className="text-xs text-muted-foreground">
+                          {file?.name || "No file selected"}
+                        </p>
+                      </div>
+
+                      {file && !preview && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => handleBulkPreview(fileConfig.id)}
+                          disabled={isLoadingThisPreview || isBulkUploading}
+                        >
+                          <Eye className="mr-2 size-4" />
+                          {isLoadingThisPreview ? "Loading..." : "Preview File"}
+                        </Button>
+                      )}
+
+                      {preview && (
+                        <div className="space-y-2 rounded-lg border bg-muted/50 p-3">
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm font-medium">Preview</p>
+                            <Badge variant="outline" className="text-xs">
+                              {preview.totalRowCount} rows
+                            </Badge>
+                          </div>
+
+                          <div className="space-y-1 text-xs">
+                            <p className="text-muted-foreground">
+                              Format: <span className="font-medium">{preview.format}-delimited</span>
+                            </p>
+                            <p className="text-muted-foreground">
+                              Columns: <span className="font-medium">{preview.headers.length}</span>
+                            </p>
+                          </div>
+
+                          {missingColumns.length > 0 && (
+                            <Alert variant="destructive" className="py-2">
+                              <AlertCircle className="size-4" />
+                              <AlertDescription className="text-xs">
+                                Missing: {missingColumns.join(", ")}
+                              </AlertDescription>
+                            </Alert>
+                          )}
+
+                          {missingColumns.length === 0 && (
+                            <div className="flex items-center gap-1 text-xs text-green-700">
+                              <CheckCircle className="size-3" />
+                              <span>All required columns present</span>
+                            </div>
+                          )}
+
+                          {preview.sampleRows.length > 0 && (
+                            <div className="mt-2">
+                              <p className="mb-1 text-xs text-muted-foreground">
+                                Sample (first {Math.min(5, preview.sampleRows.length)} rows):
+                              </p>
+                              <div className="max-h-32 overflow-auto rounded border bg-background">
+                                <Table>
+                                  <TableHeader>
+                                    <TableRow>
+                                      {preview.headers.slice(0, 3).map((header, idx) => (
+                                        <TableHead key={idx} className="px-2 py-1 text-xs">
+                                          {header}
+                                        </TableHead>
+                                      ))}
+                                      {preview.headers.length > 3 && (
+                                        <TableHead className="px-2 py-1 text-xs">...</TableHead>
+                                      )}
+                                    </TableRow>
+                                  </TableHeader>
+                                  <TableBody>
+                                    {preview.sampleRows.slice(0, 5).map((row, rowIdx) => (
+                                      <TableRow key={rowIdx}>
+                                        {row.slice(0, 3).map((cell, cellIdx) => (
+                                          <TableCell key={cellIdx} className="max-w-[100px] truncate px-2 py-1 text-xs">
+                                            {cell || <span className="italic text-muted-foreground">empty</span>}
+                                          </TableCell>
+                                        ))}
+                                        {row.length > 3 && (
+                                          <TableCell className="px-2 py-1 text-xs">...</TableCell>
+                                        )}
+                                      </TableRow>
+                                    ))}
+                                  </TableBody>
+                                </Table>
+                              </div>
+                            </div>
+                          )}
+
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="w-full text-xs"
+                            onClick={() => handleBulkPreview(fileConfig.id)}
+                            disabled={isLoadingThisPreview}
+                          >
+                            <Eye className="mr-1 size-3" />
+                            Refresh Preview
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
             </div>
 
             {isBulkUploading && (

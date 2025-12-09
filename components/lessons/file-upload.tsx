@@ -22,7 +22,22 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { Progress } from "@/components/ui/progress";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { previewCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
 
 // Import CSV_COLUMNS for validation
 const CSV_COLUMNS = {
@@ -105,6 +120,7 @@ interface FileUploadProps {
   error?: string | null;
   success?: boolean;
   maxSize?: number; // in MB
+  showPreviewButton?: boolean; // defaults to true
 }
 
 export default function FileUpload({
@@ -119,10 +135,14 @@ export default function FileUpload({
   error = null,
   success = false,
   maxSize = 10,
+  showPreviewButton = true,
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
+  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
+  const [previewData, setPreviewData] = useState<CSVPreviewResult | null>(null);
+  const [isLoadingPreview, setIsLoadingPreview] = useState(false);
 
   const validateFile = (file: File): string[] => {
     const errors: string[] = [];
@@ -220,6 +240,23 @@ export default function FileUpload({
     return CSV_COLUMNS[fileType] || [];
   };
 
+  const handlePreviewFile = async () => {
+    if (!selectedFile) return;
+
+    setIsLoadingPreview(true);
+    try {
+      const preview = await previewCSVFile(selectedFile, 20);
+      setPreviewData(preview);
+      setIsPreviewOpen(true);
+    } catch (error) {
+      toast.error("Failed to preview file", {
+        description: error instanceof Error ? error.message : "Unknown error",
+      });
+    } finally {
+      setIsLoadingPreview(false);
+    }
+  };
+
   return (
     <Card
       className={`transition-all duration-200 ${
@@ -294,6 +331,17 @@ export default function FileUpload({
                   <Badge className="bg-green-100 text-green-800">
                     Uploaded
                   </Badge>
+                )}
+                {showPreviewButton && !isUploading && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handlePreviewFile}
+                    disabled={isLoadingPreview}
+                  >
+                    <Eye className="mr-1 size-4" />
+                    Preview
+                  </Button>
                 )}
                 <Button
                   variant="ghost"
@@ -376,6 +424,63 @@ export default function FileUpload({
           className="hidden"
         />
       </CardContent>
+
+      {/* Preview Dialog */}
+      <Dialog open={isPreviewOpen} onOpenChange={setIsPreviewOpen}>
+        <DialogContent className="max-h-[80vh] max-w-4xl overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>File Preview</DialogTitle>
+          </DialogHeader>
+          {previewData && selectedFile && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between rounded-lg bg-muted p-3">
+                <div>
+                  <p className="font-medium">{selectedFile.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {formatFileSize(selectedFile.size)} • {previewData.format}-delimited
+                  </p>
+                </div>
+                <Badge variant="outline">
+                  {previewData.totalRowCount} data rows
+                </Badge>
+              </div>
+
+              <div className="rounded-lg border bg-muted/50 p-3">
+                <p className="text-sm text-muted-foreground">
+                  Showing first {Math.min(20, previewData.sampleRows.length)} rows of this file
+                </p>
+              </div>
+
+              <div className="rounded-lg border">
+                <div className="max-h-96 overflow-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        {previewData.headers.map((header, idx) => (
+                          <TableHead key={idx} className="font-semibold">
+                            {header}
+                          </TableHead>
+                        ))}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {previewData.sampleRows.map((row, rowIdx) => (
+                        <TableRow key={rowIdx}>
+                          {row.map((cell, cellIdx) => (
+                            <TableCell key={cellIdx} className="max-w-xs truncate">
+                              {cell || <span className="italic text-muted-foreground">empty</span>}
+                            </TableCell>
+                          ))}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

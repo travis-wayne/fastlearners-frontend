@@ -15,6 +15,14 @@ export interface CSVUploadOptions {
   allowedFormats?: ("comma" | "pipe")[];
 }
 
+export interface CSVPreviewResult {
+  format: "comma" | "pipe" | "unknown";
+  headers: string[];
+  sampleRows: string[][];
+  totalRowCount: number;
+  detectedDelimiter: string;
+}
+
 // Required columns for different file types
 export const LESSON_REQUIRED_COLUMNS = [
   "class",
@@ -164,6 +172,88 @@ export function parseCSVContent(content: string): CSVValidationResult {
     missingColumns: [],
     rowCount: lines.length - 1, // Subtract header row
     errors: [],
+  };
+}
+
+/**
+ * Preview a CSV file without full parsing
+ * Returns format, headers, sample rows, and total count
+ */
+export async function previewCSVFile(
+  file: File,
+  maxSampleRows: number = 20
+): Promise<CSVPreviewResult> {
+  const content = await file.text();
+  const lines = content.trim().split("\n").filter(line => line.trim());
+
+  if (lines.length < 1) {
+    return {
+      format: "unknown",
+      headers: [],
+      sampleRows: [],
+      totalRowCount: 0,
+      detectedDelimiter: "",
+    };
+  }
+
+  // Clean the first line of any BOM or special characters
+  let headerLine = lines[0].replace(/^\uFEFF/, ""); // Remove BOM
+
+  // Check for numbered format (e.g., "1|header1,header2")
+  const numberedFormatMatch = headerLine.match(/^\d+\|(.*)$/);
+  if (numberedFormatMatch) {
+    headerLine = numberedFormatMatch[1];
+  }
+
+  // Detect format by checking delimiters
+  const commaCount = (headerLine.match(/,/g) || []).length;
+  const pipeCount = (headerLine.match(/\|/g) || []).length;
+
+  let format: "comma" | "pipe" | "unknown" = "unknown";
+  let delimiter = ",";
+  let headers: string[] = [];
+
+  if (pipeCount > commaCount && pipeCount > 0) {
+    format = "pipe";
+    delimiter = "|";
+    headers = headerLine.split("|").map((h) => h.trim());
+  } else if (commaCount > 0) {
+    format = "comma";
+    delimiter = ",";
+    headers = parseCSVLine(headerLine);
+  }
+
+  // Clean headers of quotes and whitespace
+  headers = headers.map((h) => h.replace(/^["']|["']$/g, "").trim());
+
+  // Parse sample data rows
+  const sampleRows: string[][] = [];
+  const dataLines = lines.slice(1); // Skip header
+  const rowsToSample = Math.min(maxSampleRows, dataLines.length);
+
+  for (let i = 0; i < rowsToSample; i++) {
+    let dataLine = dataLines[i].replace(/^\uFEFF/, "").replace(/^\d+\|/, "");
+    
+    let cells: string[];
+    if (format === "comma") {
+      cells = parseCSVLine(dataLine);
+    } else if (format === "pipe") {
+      cells = dataLine.split("|").map((c) => c.trim());
+    } else {
+      cells = [dataLine];
+    }
+
+    // Clean cells and trim whitespace
+    cells = cells.map((c) => c.replace(/^["']|["']$/g, "").trim());
+    sampleRows.push(cells);
+  }
+
+  return {
+    format,
+    headers,
+    sampleRows,
+    totalRowCount: dataLines.length,
+    detectedDelimiter: delimiter,
   };
 }
 
