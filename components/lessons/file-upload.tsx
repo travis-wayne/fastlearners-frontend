@@ -12,6 +12,11 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { type ParsedUploadError } from "@/lib/api/upload-error-handler";
+import {
+  previewCSVFile,
+  type CSVPreviewResult,
+} from "@/lib/utils/csv-upload-helper";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -37,9 +42,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { previewCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
 import { UploadErrorDisplay } from "@/components/upload/UploadErrorDisplay";
-import { type ParsedUploadError } from "@/lib/api/upload-error-handler";
 
 // Import CSV_COLUMNS for validation
 const CSV_COLUMNS = {
@@ -297,7 +300,7 @@ export default function FileUpload({
           <div
             className={`rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200 ${
               dragActive
-                ? "border-primary bg-primary/10 scale-[1.02]"
+                ? "scale-[1.02] border-primary bg-primary/10"
                 : "border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5"
             } ${isUploading ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
             onDrop={handleDrop}
@@ -305,12 +308,18 @@ export default function FileUpload({
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
           >
-            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${
-              dragActive ? "bg-primary/20" : "bg-muted"
-            } transition-all duration-200`}>
-              <Upload className={`size-8 ${
-                dragActive ? "text-primary scale-110" : "text-muted-foreground"
-              } transition-all duration-200`} />
+            <div
+              className={`mx-auto mb-4 flex size-16 items-center justify-center rounded-full transition-all duration-200 ${
+                dragActive ? "bg-primary/20" : "bg-muted"
+              }`}
+            >
+              <Upload
+                className={`size-8 transition-all duration-200 ${
+                  dragActive
+                    ? "scale-110 text-primary"
+                    : "text-muted-foreground"
+                }`}
+              />
             </div>
             <div className="space-y-2">
               <p className="text-lg font-semibold">
@@ -339,7 +348,7 @@ export default function FileUpload({
 
         {/* Selected File Info */}
         {selectedFile && (
-          <div className="space-y-3 rounded-lg border-2 p-4 bg-background animate-in fade-in slide-in-from-top-2 duration-300">
+          <div className="space-y-3 rounded-lg border-2 bg-background p-4 duration-300 animate-in fade-in slide-in-from-top-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <FileText className="size-8 text-primary" />
@@ -380,10 +389,10 @@ export default function FileUpload({
 
             {/* Upload Progress */}
             {isUploading && (
-              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+              <div className="space-y-2 duration-300 animate-in fade-in slide-in-from-top-2">
                 <div className="flex justify-between text-sm font-medium">
                   <div className="flex items-center gap-2">
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    <div className="size-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
                     <span>Uploading...</span>
                   </div>
                   <span className="text-primary">{uploadProgress}%</span>
@@ -396,17 +405,20 @@ export default function FileUpload({
 
         {/* Validation Errors */}
         {validationErrors.length > 0 && (
-          <Alert variant="destructive" className="border-2 animate-in fade-in slide-in-from-top-2 duration-300">
+          <Alert
+            variant="destructive"
+            className="border-2 duration-300 animate-in fade-in slide-in-from-top-2"
+          >
             <div className="flex items-start gap-3">
-              <div className="rounded-lg bg-red-100 dark:bg-red-900/30 p-2">
+              <div className="rounded-lg bg-red-100 p-2 dark:bg-red-900/30">
                 <AlertCircle className="size-5" />
               </div>
               <AlertDescription className="flex-1">
-                <div className="font-semibold mb-2">Validation Failed</div>
+                <div className="mb-2 font-semibold">Validation Failed</div>
                 <ul className="space-y-1 text-sm">
                   {validationErrors.map((error, index) => (
                     <li key={index} className="flex items-start gap-2">
-                      <span className="text-red-500 mt-0.5">•</span>
+                      <span className="mt-0.5 text-red-500">•</span>
                       <span>{error}</span>
                     </li>
                   ))}
@@ -432,12 +444,12 @@ export default function FileUpload({
 
         {/* Success Message */}
         {success && (
-          <Alert className="border-2 border-green-200 bg-green-50 dark:bg-green-950 animate-in fade-in slide-in-from-bottom-2 duration-300">
+          <Alert className="border-2 border-green-200 bg-green-50 duration-300 animate-in fade-in slide-in-from-bottom-2 dark:bg-green-950">
             <div className="flex items-center gap-3">
-              <div className="rounded-lg bg-green-100 dark:bg-green-900 p-2">
+              <div className="rounded-lg bg-green-100 p-2 dark:bg-green-900">
                 <CheckCircle className="size-5 text-green-600 dark:text-green-400" />
               </div>
-              <AlertDescription className="text-green-800 dark:text-green-200 font-medium">
+              <AlertDescription className="font-medium text-green-800 dark:text-green-200">
                 File uploaded successfully!
               </AlertDescription>
             </div>
@@ -445,16 +457,21 @@ export default function FileUpload({
         )}
 
         {/* Expected Columns Info */}
-        <details className="group rounded-lg border bg-muted/30 overflow-hidden">
-          <summary className="cursor-pointer p-3 hover:bg-muted/50 transition-colors flex items-center justify-between">
+        <details className="group overflow-hidden rounded-lg border bg-muted/30">
+          <summary className="flex cursor-pointer items-center justify-between p-3 transition-colors hover:bg-muted/50">
             <div className="flex items-center gap-2">
               <svg
-                className="h-4 w-4 transition-transform group-open:rotate-90"
+                className="size-4 transition-transform group-open:rotate-90"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </svg>
               <h4 className="text-sm font-semibold">Expected CSV Columns</h4>
             </div>
@@ -462,16 +479,21 @@ export default function FileUpload({
               {getExpectedColumns().length} columns
             </Badge>
           </summary>
-          <div className="p-3 pt-0 space-y-2">
+          <div className="space-y-2 p-3 pt-0">
             <div className="flex flex-wrap gap-1.5">
               {getExpectedColumns().map((column, index) => (
-                <Badge key={index} variant="outline" className="text-xs font-mono">
+                <Badge
+                  key={index}
+                  variant="outline"
+                  className="font-mono text-xs"
+                >
                   {column}
                 </Badge>
               ))}
             </div>
-            <p className="text-xs text-muted-foreground pt-2 border-t">
-              💡 Use pipe (|) as column delimiter. Ensure all columns are present in your CSV file.
+            <p className="border-t pt-2 text-xs text-muted-foreground">
+              💡 Use pipe (|) as column delimiter. Ensure all columns are
+              present in your CSV file.
             </p>
           </div>
         </details>
@@ -498,7 +520,8 @@ export default function FileUpload({
                 <div>
                   <p className="font-medium">{selectedFile.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {formatFileSize(selectedFile.size)} • {previewData.format}-delimited
+                    {formatFileSize(selectedFile.size)} • {previewData.format}
+                    -delimited
                   </p>
                 </div>
                 <Badge variant="outline">
@@ -508,7 +531,8 @@ export default function FileUpload({
 
               <div className="rounded-lg border bg-muted/50 p-3">
                 <p className="text-sm text-muted-foreground">
-                  Showing first {Math.min(20, previewData.sampleRows.length)} rows of this file
+                  Showing first {Math.min(20, previewData.sampleRows.length)}{" "}
+                  rows of this file
                 </p>
               </div>
 
@@ -528,8 +552,15 @@ export default function FileUpload({
                       {previewData.sampleRows.map((row, rowIdx) => (
                         <TableRow key={rowIdx}>
                           {row.map((cell, cellIdx) => (
-                            <TableCell key={cellIdx} className="max-w-xs truncate">
-                              {cell || <span className="italic text-muted-foreground">empty</span>}
+                            <TableCell
+                              key={cellIdx}
+                              className="max-w-xs truncate"
+                            >
+                              {cell || (
+                                <span className="italic text-muted-foreground">
+                                  empty
+                                </span>
+                              )}
                             </TableCell>
                           ))}
                         </TableRow>

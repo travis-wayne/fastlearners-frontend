@@ -7,7 +7,6 @@ const REQUIRED_FIELDS: Record<string, string[]> = {
     "name",
     "email",
     "username",
-    "phone",
     "school",
     "class",
     "date_of_birth",
@@ -15,20 +14,17 @@ const REQUIRED_FIELDS: Record<string, string[]> = {
     "country",
     "state",
     "city",
-    "address",
     // discipline is conditionally required for SS/SSS classes only
   ],
   guardian: [
     "name",
     "email",
     "username",
-    "phone",
     "date_of_birth",
     "gender",
     "country",
     "state",
     "city",
-    "address",
     "child_email",
     "child_phone",
   ],
@@ -41,12 +37,12 @@ const REQUIRED_FIELDS: Record<string, string[]> = {
 function getRequiredFieldsForStudent(user: User): string[] {
   const baseFields = REQUIRED_FIELDS.student;
   const userClass = user.class;
-  
+
   // Only include discipline if class starts with SS or SSS
   if (userClass && (userClass.startsWith("SS") || userClass.startsWith("SSS"))) {
     return [...baseFields, "discipline"];
   }
-  
+
   return baseFields;
 }
 
@@ -55,7 +51,6 @@ const FIELD_LABELS: Record<string, string> = {
   name: "Name",
   email: "Email",
   username: "Username",
-  phone: "Phone",
   school: "School",
   class: "Class",
   date_of_birth: "Date of Birth",
@@ -63,7 +58,6 @@ const FIELD_LABELS: Record<string, string> = {
   country: "Country",
   state: "State",
   city: "City",
-  address: "Address",
   discipline: "Discipline",
   child_email: "Child Email",
   child_phone: "Child Phone",
@@ -80,14 +74,14 @@ export function calculateProfileCompletion(user: User): number {
 
   const role = user.role[0];
   let required: string[];
-  
+
   // Use dynamic required fields for students based on class
   if (role === "student") {
     required = getRequiredFieldsForStudent(user);
   } else {
     required = REQUIRED_FIELDS[role] || [];
   }
-  
+
   let filled = 0;
 
   for (const field of required) {
@@ -117,14 +111,14 @@ export function getMissingFields(user: User): string[] {
 
   const role = user.role[0];
   let required: string[];
-  
+
   // Use dynamic required fields for students based on class
   if (role === "student") {
     required = getRequiredFieldsForStudent(user);
   } else {
     required = REQUIRED_FIELDS[role] || [];
   }
-  
+
   const missing: string[] = [];
 
   for (const field of required) {

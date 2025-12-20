@@ -75,7 +75,6 @@ const profileSchema = z
     country: z.string().optional(),
     state: z.string().optional(),
     city: z.string().optional(),
-    address: z.string().optional(),
     child_email: z.string().email().optional().or(z.literal("")),
     child_phone: z.string().optional().or(z.literal("")),
   })
@@ -131,6 +130,13 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
 
   const selectedRole = watch("role");
   const selectedClass = watch("class");
+
+  // Clear discipline when JSS class is selected
+  useEffect(() => {
+    if (selectedClass && selectedClass.startsWith("JSS")) {
+      setValue("discipline", "");
+    }
+  }, [selectedClass, setValue]);
 
   // Derive primary role from profile for conditional rendering
   const primaryRole = profile
@@ -190,7 +196,6 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           country: profileData.country || "",
           state: profileData.state || "",
           city: profileData.city || "",
-          address: profileData.address || "",
           child_email: profileData.child_email || "",
           child_phone: profileData.child_phone || "",
         } as ProfileFormData);
@@ -266,7 +271,6 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         username: data.username,
         school: data.school,
         class: data.class,
-        discipline: data.discipline,
         date_of_birth: data.date_of_birth
           ? format(data.date_of_birth, "dd/MM/yyyy")
           : undefined,
@@ -274,10 +278,14 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         country: data.country,
         state: data.state,
         city: data.city,
-        address: data.address,
         child_email: data.child_email,
         child_phone: data.child_phone,
       };
+
+      // Only include discipline for SSS classes
+      if (data.class && data.class.startsWith("SSS")) {
+        submitData.discipline = data.discipline;
+      }
 
       // Only include role if it changed (and user is not guest)
       if (primaryRole !== "guest" && roleValue && roleValue !== primaryRole) {
@@ -412,20 +420,20 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     primaryRole === "guest" ||
                     Boolean(
                       profile?.username &&
-                        typeof profile.username === "string" &&
-                        profile.username.trim() !== "",
+                      typeof profile.username === "string" &&
+                      profile.username.trim() !== "",
                     )
                   }
                 />
                 {Boolean(
                   profile?.username &&
-                    typeof profile.username === "string" &&
-                    profile.username.trim() !== "",
+                  typeof profile.username === "string" &&
+                  profile.username.trim() !== "",
                 ) && (
-                  <p className="text-xs text-muted-foreground">
-                    Username cannot be changed once set.
-                  </p>
-                )}
+                    <p className="text-xs text-muted-foreground">
+                      Username cannot be changed once set.
+                    </p>
+                  )}
                 {errors.username && (
                   <p className="text-sm text-red-600">
                     {errors.username.message}
@@ -434,8 +442,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
               </div>
 
               {primaryRole === "guest" ||
-              primaryRole === "student" ||
-              primaryRole === "guardian" ? (
+                primaryRole === "student" ||
+                primaryRole === "guardian" ? (
                 <div className="space-y-2">
                   <Label htmlFor="role">Account Type</Label>
                   <Select
@@ -637,59 +645,59 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
 
                 {(selectedClass?.startsWith("SS") ||
                   selectedClass?.startsWith("SSS")) && (
-                  <div className="space-y-2">
-                    <Label htmlFor="discipline">Discipline</Label>
-                    <Select
-                      value={watch("discipline")}
-                      onValueChange={(value) => setValue("discipline", value)}
-                      disabled={
-                        primaryRole === "guest" ||
-                        Boolean(
-                          profile?.discipline &&
+                    <div className="space-y-2">
+                      <Label htmlFor="discipline">Discipline</Label>
+                      <Select
+                        value={watch("discipline")}
+                        onValueChange={(value) => setValue("discipline", value)}
+                        disabled={
+                          primaryRole === "guest" ||
+                          Boolean(
+                            profile?.discipline &&
                             typeof profile.discipline === "string" &&
                             profile.discipline.trim() !== "",
-                        )
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select your discipline" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {metadata?.discipline &&
-                        metadata.discipline.length > 0 ? (
-                          metadata.discipline.map((disc) => (
-                            <SelectItem key={disc.name} value={disc.name}>
-                              {disc.name}
-                            </SelectItem>
-                          ))
-                        ) : (
-                          // Fallback to hardcoded list if metadata unavailable
-                          <>
-                            <SelectItem value="Art">Art</SelectItem>
-                            <SelectItem value="Commercial">
-                              Commercial
-                            </SelectItem>
-                            <SelectItem value="Science">Science</SelectItem>
-                          </>
-                        )}
-                      </SelectContent>
-                    </Select>
-                    {Boolean(
-                      profile?.discipline &&
+                          )
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select your discipline" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {metadata?.discipline &&
+                            metadata.discipline.length > 0 ? (
+                            metadata.discipline.map((disc) => (
+                              <SelectItem key={disc.name} value={disc.name}>
+                                {disc.name}
+                              </SelectItem>
+                            ))
+                          ) : (
+                            // Fallback to hardcoded list if metadata unavailable
+                            <>
+                              <SelectItem value="Art">Art</SelectItem>
+                              <SelectItem value="Commercial">
+                                Commercial
+                              </SelectItem>
+                              <SelectItem value="Science">Science</SelectItem>
+                            </>
+                          )}
+                        </SelectContent>
+                      </Select>
+                      {Boolean(
+                        profile?.discipline &&
                         typeof profile.discipline === "string" &&
                         profile.discipline.trim() !== "",
-                    ) && (
-                      <p className="text-xs text-muted-foreground">
-                        Discipline cannot be changed once set.
-                      </p>
-                    )}
-                    {errors.discipline && (
-                      <p className="text-sm text-red-600">
-                        {errors.discipline.message}
-                      </p>
-                    )}
-                  </div>
-                )}
+                      ) && (
+                          <p className="text-xs text-muted-foreground">
+                            Discipline cannot be changed once set.
+                          </p>
+                        )}
+                      {errors.discipline && (
+                        <p className="text-sm text-red-600">
+                          {errors.discipline.message}
+                        </p>
+                      )}
+                    </div>
+                  )}
               </div>
             </div>
           )}
@@ -742,21 +750,6 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                   <p className="text-sm text-red-600">{errors.city.message}</p>
                 )}
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="address">Address</Label>
-                <Input
-                  id="address"
-                  {...register("address")}
-                  placeholder="Enter your address"
-                  disabled={primaryRole === "guest"}
-                />
-                {errors.address && (
-                  <p className="text-sm text-red-600">
-                    {errors.address.message}
-                  </p>
-                )}
-              </div>
             </div>
           </div>
 
@@ -776,8 +769,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     if (
                       !Boolean(
                         profile?.date_of_birth &&
-                          typeof profile.date_of_birth === "string" &&
-                          profile.date_of_birth.trim() !== "",
+                        typeof profile.date_of_birth === "string" &&
+                        profile.date_of_birth.trim() !== "",
                       )
                     ) {
                       setValue("date_of_birth", date);
@@ -788,20 +781,20 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     primaryRole === "guest" ||
                     Boolean(
                       profile?.date_of_birth &&
-                        typeof profile.date_of_birth === "string" &&
-                        profile.date_of_birth.trim() !== "",
+                      typeof profile.date_of_birth === "string" &&
+                      profile.date_of_birth.trim() !== "",
                     )
                   }
                 />
                 {Boolean(
                   profile?.date_of_birth &&
-                    typeof profile.date_of_birth === "string" &&
-                    profile.date_of_birth.trim() !== "",
+                  typeof profile.date_of_birth === "string" &&
+                  profile.date_of_birth.trim() !== "",
                 ) && (
-                  <p className="text-xs text-muted-foreground">
-                    Date of birth cannot be changed once set.
-                  </p>
-                )}
+                    <p className="text-xs text-muted-foreground">
+                      Date of birth cannot be changed once set.
+                    </p>
+                  )}
                 {errors.date_of_birth && (
                   <p className="text-sm text-red-600">
                     {errors.date_of_birth.message}
@@ -822,8 +815,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     primaryRole === "guest" ||
                     Boolean(
                       profile?.gender &&
-                        typeof profile.gender === "string" &&
-                        profile.gender.trim() !== "",
+                      typeof profile.gender === "string" &&
+                      profile.gender.trim() !== "",
                     )
                   }
                 >
@@ -837,13 +830,13 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 </Select>
                 {Boolean(
                   profile?.gender &&
-                    typeof profile.gender === "string" &&
-                    profile.gender.trim() !== "",
+                  typeof profile.gender === "string" &&
+                  profile.gender.trim() !== "",
                 ) && (
-                  <p className="text-xs text-muted-foreground">
-                    Gender cannot be changed once set.
-                  </p>
-                )}
+                    <p className="text-xs text-muted-foreground">
+                      Gender cannot be changed once set.
+                    </p>
+                  )}
                 {errors.gender && (
                   <p className="text-sm text-red-600">
                     {errors.gender.message}

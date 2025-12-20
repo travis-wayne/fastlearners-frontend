@@ -3,9 +3,17 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { AlertCircle, AlertTriangle, CheckCircle2, Circle, Loader2, RefreshCw, Sparkles } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  AlertCircle,
+  AlertTriangle,
+  CheckCircle2,
+  Circle,
+  Loader2,
+  RefreshCw,
+  Sparkles,
+} from "lucide-react";
 import { toast } from "sonner";
-import { motion, AnimatePresence } from "framer-motion";
 
 import { getStudentSubjects } from "@/lib/api/subjects";
 import type { SubjectsContent } from "@/lib/types/subjects";
@@ -63,7 +71,7 @@ export function SimpleSubjectSelector({
   // Selection state
   const [selectedCompulsory, setSelectedCompulsory] = useState<number | null>(
     initialData?.compulsory_selective_status === "selected"
-      ? initialData?.compulsory_selective[0]?.id ?? null
+      ? (initialData?.compulsory_selective[0]?.id ?? null)
       : null,
   );
   const [selectedSelective, setSelectedSelective] = useState<number[]>(
@@ -75,7 +83,9 @@ export function SimpleSubjectSelector({
   // Confirmation dialog state
   const [showCompulsoryConfirm, setShowCompulsoryConfirm] = useState(false);
   const [showSelectiveConfirm, setShowSelectiveConfirm] = useState(false);
-  const [pendingCompulsoryId, setPendingCompulsoryId] = useState<number | null>(null);
+  const [pendingCompulsoryId, setPendingCompulsoryId] = useState<number | null>(
+    null,
+  );
   const [pendingSelectiveIds, setPendingSelectiveIds] = useState<number[]>([]);
 
   useEffect(() => {
@@ -112,7 +122,9 @@ export function SimpleSubjectSelector({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [subjectsData]);
 
-  const fetchSubjects = async ({ silent = false }: { silent?: boolean } = {}) => {
+  const fetchSubjects = async ({
+    silent = false,
+  }: { silent?: boolean } = {}) => {
     if (!silent) {
       setIsLoading(true);
     }
@@ -298,7 +310,7 @@ export function SimpleSubjectSelector({
   return (
     <div className="space-y-6">
       <Card className="border-2">
-        <CardHeader className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between bg-muted/30">
+        <CardHeader className="flex flex-col gap-4 bg-muted/30 md:flex-row md:items-center md:justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
               <CheckCircle2 className="size-5 text-green-600" />
@@ -328,11 +340,16 @@ export function SimpleSubjectSelector({
               {assignedSubjects.map((subject) => (
                 <div
                   key={subject.id}
-                  className="rounded-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-4 hover:border-primary/40 transition-colors"
+                  className="rounded-lg border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10 p-4 text-primary/10 transition-colors hover:border-primary/40"
                 >
                   <div className="flex items-start justify-between gap-2">
-                    <p className="font-semibold text-sm leading-tight">{subject.name}</p>
-                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0.5 shrink-0">
+                    <p className="text-sm font-semibold leading-tight">
+                      {subject.name}
+                    </p>
+                    <Badge
+                      variant="secondary"
+                      className="shrink-0 px-1.5 py-0.5 text-[10px]"
+                    >
                       ID: {subject.id}
                     </Badge>
                   </div>
@@ -358,7 +375,9 @@ export function SimpleSubjectSelector({
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-amber-900 dark:text-amber-100">
-                  <Circle className={`size-5 ${compulsoryComplete ? "fill-green-600 text-green-600" : "text-amber-600"}`} />
+                  <Circle
+                    className={`size-5 ${compulsoryComplete ? "fill-green-600 text-green-600" : "text-amber-600"}`}
+                  />
                   Compulsory Selective Subject
                 </CardTitle>
                 <CardDescription className="text-amber-800/80 dark:text-amber-200/80">
@@ -374,7 +393,9 @@ export function SimpleSubjectSelector({
                 }
               >
                 {compulsoryComplete ? (
-                  <><CheckCircle2 className="mr-1 size-3" /> Selected</>
+                  <>
+                    <CheckCircle2 className="mr-1 size-3" /> Selected
+                  </>
                 ) : (
                   "Pending"
                 )}
@@ -396,11 +417,13 @@ export function SimpleSubjectSelector({
                       } `}
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-medium group-hover:text-primary transition-colors">{subject.name}</span>
+                        <span className="font-medium transition-colors group-hover:text-primary">
+                          {subject.name}
+                        </span>
                         {selectedCompulsory === subject.id ? (
                           <CheckCircle2 className="size-5 text-primary" />
                         ) : (
-                          <Circle className="size-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                          <Circle className="size-5 text-muted-foreground transition-colors group-hover:text-primary" />
                         )}
                       </div>
                     </button>
@@ -476,7 +499,9 @@ export function SimpleSubjectSelector({
             <div className="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
               <div>
                 <CardTitle className="flex items-center gap-2 text-blue-900 dark:text-blue-100">
-                  <Circle className={`size-5 ${selectiveComplete ? "fill-green-600 text-green-600" : "text-blue-600"}`} />
+                  <Circle
+                    className={`size-5 ${selectiveComplete ? "fill-green-600 text-green-600" : "text-blue-600"}`}
+                  />
                   Selective Subjects
                 </CardTitle>
                 <CardDescription className="text-blue-800/80 dark:text-blue-200/80">
@@ -493,7 +518,9 @@ export function SimpleSubjectSelector({
                 }
               >
                 {selectiveComplete ? (
-                  <><CheckCircle2 className="mr-1 size-3" /> Selected</>
+                  <>
+                    <CheckCircle2 className="mr-1 size-3" /> Selected
+                  </>
                 ) : (
                   `${selectedSelective.length}/${requiredSelectiveCount} selected`
                 )}
@@ -531,19 +558,25 @@ export function SimpleSubjectSelector({
                             ? "border-primary bg-primary/10 shadow-md hover:scale-[1.02]"
                             : isDisabled
                               ? "cursor-not-allowed border-border opacity-50"
-                              : "border-border hover:border-primary/50 hover:bg-primary/5 hover:scale-[1.02]"
+                              : "border-border hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/5"
                         } `}
                       >
                         <div className="flex items-center justify-between">
-                          <span className={`font-medium transition-colors ${
-                            !isDisabled && "group-hover:text-primary"
-                          }`}>{subject.name}</span>
+                          <span
+                            className={`font-medium transition-colors ${
+                              !isDisabled && "group-hover:text-primary"
+                            }`}
+                          >
+                            {subject.name}
+                          </span>
                           {isSelected ? (
                             <CheckCircle2 className="size-5 text-primary" />
                           ) : (
-                            <Circle className={`size-5 text-muted-foreground transition-colors ${
-                              !isDisabled && "group-hover:text-primary"
-                            }`} />
+                            <Circle
+                              className={`size-5 text-muted-foreground transition-colors ${
+                                !isDisabled && "group-hover:text-primary"
+                              }`}
+                            />
                           )}
                         </div>
                       </button>
@@ -635,7 +668,10 @@ export function SimpleSubjectSelector({
       )}
 
       {/* Confirmation Dialogs */}
-      <AlertDialog open={showCompulsoryConfirm} onOpenChange={setShowCompulsoryConfirm}>
+      <AlertDialog
+        open={showCompulsoryConfirm}
+        onOpenChange={setShowCompulsoryConfirm}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -644,8 +680,9 @@ export function SimpleSubjectSelector({
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2 pt-2">
               <p>
-                You are about to <strong>change your compulsory selective subject</strong>. This will
-                overwrite your current selection.
+                You are about to{" "}
+                <strong>change your compulsory selective subject</strong>. This
+                will overwrite your current selection.
               </p>
               <p className="text-sm">
                 Are you sure you want to proceed with this change?
@@ -653,14 +690,19 @@ export function SimpleSubjectSelector({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setShowCompulsoryConfirm(false);
-              setPendingCompulsoryId(null);
-            }}>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowCompulsoryConfirm(false);
+                setPendingCompulsoryId(null);
+              }}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => pendingCompulsoryId && confirmCompulsorySubmit(pendingCompulsoryId)}
+              onClick={() =>
+                pendingCompulsoryId &&
+                confirmCompulsorySubmit(pendingCompulsoryId)
+              }
               className="bg-primary"
             >
               Confirm Change
@@ -669,7 +711,10 @@ export function SimpleSubjectSelector({
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={showSelectiveConfirm} onOpenChange={setShowSelectiveConfirm}>
+      <AlertDialog
+        open={showSelectiveConfirm}
+        onOpenChange={setShowSelectiveConfirm}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -678,17 +723,25 @@ export function SimpleSubjectSelector({
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-3 pt-2">
               <p>
-                You are about to <strong>update your selective subjects</strong>. This will replace
-                your current {requiredSelectiveCount} subject selections.
+                You are about to <strong>update your selective subjects</strong>
+                . This will replace your current {requiredSelectiveCount}{" "}
+                subject selections.
               </p>
               {pendingSelectiveIds.length > 0 && subjectsData && (
-                <div className="rounded-lg bg-muted p-3 space-y-2">
-                  <p className="text-sm font-semibold text-foreground">New selections:</p>
+                <div className="space-y-2 rounded-lg bg-muted p-3">
+                  <p className="text-sm font-semibold text-foreground">
+                    New selections:
+                  </p>
                   <ul className="space-y-1">
                     {pendingSelectiveIds.map((id) => {
-                      const subject = subjectsData.selective.find((s) => s.id === id);
+                      const subject = subjectsData.selective.find(
+                        (s) => s.id === id,
+                      );
                       return subject ? (
-                        <li key={id} className="text-xs flex items-center gap-2">
+                        <li
+                          key={id}
+                          className="flex items-center gap-2 text-xs"
+                        >
                           <CheckCircle2 className="size-3 text-green-600" />
                           {subject.name}
                         </li>
@@ -703,14 +756,19 @@ export function SimpleSubjectSelector({
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => {
-              setShowSelectiveConfirm(false);
-              setPendingSelectiveIds([]);
-            }}>
+            <AlertDialogCancel
+              onClick={() => {
+                setShowSelectiveConfirm(false);
+                setPendingSelectiveIds([]);
+              }}
+            >
               Cancel
             </AlertDialogCancel>
             <AlertDialogAction
-              onClick={() => pendingSelectiveIds.length > 0 && confirmSelectiveSubmit(pendingSelectiveIds)}
+              onClick={() =>
+                pendingSelectiveIds.length > 0 &&
+                confirmSelectiveSubmit(pendingSelectiveIds)
+              }
               className="bg-primary"
             >
               Confirm Change

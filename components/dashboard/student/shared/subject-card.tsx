@@ -102,16 +102,14 @@ export function SubjectCard({
             </p>
           </div>
         </div>
-        <Link
-          href={
-            slug
-              ? `/dashboard/subjects/${slug}`
-              : `/dashboard/subjects/${subject.id}`
-          }
-          className="absolute inset-0"
-        >
-          <span className="sr-only">View {subject.name}</span>
-        </Link>
+        {slug && (
+          <Link
+            href={`/dashboard/subjects/${slug}`}
+            className="absolute inset-0"
+          >
+            <span className="sr-only">View {subject.name}</span>
+          </Link>
+        )}
       </article>
     );
   }
@@ -232,16 +230,14 @@ export function SubjectCard({
             )}
           </div>
         </div>
-        <Link
-          href={
-            slug
-              ? `/dashboard/subjects/${slug}`
-              : `/dashboard/subjects/${subject.id}`
-          }
-          className="absolute inset-0"
-        >
-          <span className="sr-only">View {subject.name}</span>
-        </Link>
+        {slug && (
+          <Link
+            href={`/dashboard/subjects/${slug}`}
+            className="absolute inset-0"
+          >
+            <span className="sr-only">View {subject.name}</span>
+          </Link>
+        )}
       </article>
     );
   }
@@ -328,16 +324,14 @@ export function SubjectCard({
           )}
         </div>
       </div>
-      <Link
-        href={
-          slug
-            ? `/dashboard/subjects/${slug}`
-            : `/dashboard/subjects/${subject.id}`
-        }
-        className="absolute inset-0"
-      >
-        <span className="sr-only">View {subject.name}</span>
-      </Link>
+      {slug && (
+        <Link
+          href={`/dashboard/subjects/${slug}`}
+          className="absolute inset-0"
+        >
+          <span className="sr-only">View {subject.name}</span>
+        </Link>
+      )}
     </article>
   );
 }
