@@ -38,6 +38,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { previewCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
+import { UploadErrorDisplay } from "@/components/upload/UploadErrorDisplay";
+import { type ParsedUploadError } from "@/lib/api/upload-error-handler";
 
 // Import CSV_COLUMNS for validation
 const CSV_COLUMNS = {
@@ -118,9 +120,11 @@ interface FileUploadProps {
   isUploading?: boolean;
   uploadProgress?: number;
   error?: string | null;
+  parsedError?: ParsedUploadError;
   success?: boolean;
   maxSize?: number; // in MB
   showPreviewButton?: boolean; // defaults to true
+  onRetry?: () => void;
 }
 
 export default function FileUpload({
@@ -133,9 +137,11 @@ export default function FileUpload({
   isUploading = false,
   uploadProgress = 0,
   error = null,
+  parsedError,
   success = false,
   maxSize = 10,
   showPreviewButton = true,
+  onRetry,
 }: FileUploadProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragActive, setDragActive] = useState(false);
@@ -262,7 +268,7 @@ export default function FileUpload({
       className={`transition-all duration-200 ${
         success
           ? "border-green-200 bg-green-50/30"
-          : error || validationErrors.length > 0
+          : error || parsedError || validationErrors.length > 0
             ? "border-red-200 bg-red-50/30"
             : dragActive
               ? "border-primary bg-primary/5"
@@ -279,7 +285,7 @@ export default function FileUpload({
             <CardDescription>{description}</CardDescription>
           </div>
           {success && <CheckCircle className="size-6 text-green-600" />}
-          {(error || validationErrors.length > 0) && (
+          {(error || parsedError || validationErrors.length > 0) && (
             <AlertCircle className="size-6 text-red-600" />
           )}
         </div>
@@ -289,19 +295,25 @@ export default function FileUpload({
         {/* Upload Area */}
         {!selectedFile && (
           <div
-            className={`rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
+            className={`rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200 ${
               dragActive
-                ? "border-primary bg-primary/10"
-                : "border-muted-foreground/25 hover:border-primary/50"
+                ? "border-primary bg-primary/10 scale-[1.02]"
+                : "border-muted-foreground/25 hover:border-primary/50 hover:bg-primary/5"
             } ${isUploading ? "pointer-events-none opacity-50" : "cursor-pointer"}`}
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onClick={() => fileInputRef.current?.click()}
           >
-            <Upload className="mx-auto mb-4 size-12 text-muted-foreground" />
+            <div className={`mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full ${
+              dragActive ? "bg-primary/20" : "bg-muted"
+            } transition-all duration-200`}>
+              <Upload className={`size-8 ${
+                dragActive ? "text-primary scale-110" : "text-muted-foreground"
+              } transition-all duration-200`} />
+            </div>
             <div className="space-y-2">
-              <p className="text-lg font-medium">
+              <p className="text-lg font-semibold">
                 {dragActive
                   ? "Drop your file here"
                   : "Choose a file or drag it here"}
@@ -309,13 +321,25 @@ export default function FileUpload({
               <p className="text-sm text-muted-foreground">
                 CSV or TXT files only, up to {maxSize}MB
               </p>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-4"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  fileInputRef.current?.click();
+                }}
+              >
+                Browse Files
+              </Button>
             </div>
           </div>
         )}
 
         {/* Selected File Info */}
         {selectedFile && (
-          <div className="space-y-3 rounded-lg border p-4">
+          <div className="space-y-3 rounded-lg border-2 p-4 bg-background animate-in fade-in slide-in-from-top-2 duration-300">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <FileText className="size-8 text-primary" />
@@ -356,10 +380,13 @@ export default function FileUpload({
 
             {/* Upload Progress */}
             {isUploading && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Uploading...</span>
-                  <span>{uploadProgress}%</span>
+              <div className="space-y-2 animate-in fade-in slide-in-from-top-2 duration-300">
+                <div className="flex justify-between text-sm font-medium">
+                  <div className="flex items-center gap-2">
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-primary border-t-transparent"></div>
+                    <span>Uploading...</span>
+                  </div>
+                  <span className="text-primary">{uploadProgress}%</span>
                 </div>
                 <Progress value={uploadProgress} className="h-2" />
               </div>
@@ -369,51 +396,85 @@ export default function FileUpload({
 
         {/* Validation Errors */}
         {validationErrors.length > 0 && (
-          <Alert variant="destructive">
-            <AlertCircle className="size-4" />
-            <AlertDescription>
-              <ul className="list-inside list-disc space-y-1">
-                {validationErrors.map((error, index) => (
-                  <li key={index}>{error}</li>
-                ))}
-              </ul>
-            </AlertDescription>
+          <Alert variant="destructive" className="border-2 animate-in fade-in slide-in-from-top-2 duration-300">
+            <div className="flex items-start gap-3">
+              <div className="rounded-lg bg-red-100 dark:bg-red-900/30 p-2">
+                <AlertCircle className="size-5" />
+              </div>
+              <AlertDescription className="flex-1">
+                <div className="font-semibold mb-2">Validation Failed</div>
+                <ul className="space-y-1 text-sm">
+                  {validationErrors.map((error, index) => (
+                    <li key={index} className="flex items-start gap-2">
+                      <span className="text-red-500 mt-0.5">•</span>
+                      <span>{error}</span>
+                    </li>
+                  ))}
+                </ul>
+              </AlertDescription>
+            </div>
           </Alert>
         )}
 
         {/* Error Message */}
-        {error && (
+        {parsedError ? (
+          <UploadErrorDisplay
+            error={parsedError}
+            fileName={selectedFile?.name}
+            onRetry={onRetry}
+          />
+        ) : error ? (
           <Alert variant="destructive">
             <AlertCircle className="size-4" />
             <AlertDescription>{error}</AlertDescription>
           </Alert>
-        )}
+        ) : null}
 
         {/* Success Message */}
         {success && (
-          <Alert className="border-green-200 bg-green-50">
-            <CheckCircle className="size-4 text-green-600" />
-            <AlertDescription className="text-green-800">
-              File uploaded successfully!
-            </AlertDescription>
+          <Alert className="border-2 border-green-200 bg-green-50 dark:bg-green-950 animate-in fade-in slide-in-from-bottom-2 duration-300">
+            <div className="flex items-center gap-3">
+              <div className="rounded-lg bg-green-100 dark:bg-green-900 p-2">
+                <CheckCircle className="size-5 text-green-600 dark:text-green-400" />
+              </div>
+              <AlertDescription className="text-green-800 dark:text-green-200 font-medium">
+                File uploaded successfully!
+              </AlertDescription>
+            </div>
           </Alert>
         )}
 
         {/* Expected Columns Info */}
-        <div className="rounded-lg bg-muted/50 p-3">
-          <h4 className="mb-2 text-sm font-medium">Expected CSV Columns:</h4>
-          <div className="flex flex-wrap gap-1">
-            {getExpectedColumns().map((column, index) => (
-              <Badge key={index} variant="outline" className="text-xs">
-                {column}
-              </Badge>
-            ))}
+        <details className="group rounded-lg border bg-muted/30 overflow-hidden">
+          <summary className="cursor-pointer p-3 hover:bg-muted/50 transition-colors flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <svg
+                className="h-4 w-4 transition-transform group-open:rotate-90"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+              <h4 className="text-sm font-semibold">Expected CSV Columns</h4>
+            </div>
+            <Badge variant="secondary" className="text-xs">
+              {getExpectedColumns().length} columns
+            </Badge>
+          </summary>
+          <div className="p-3 pt-0 space-y-2">
+            <div className="flex flex-wrap gap-1.5">
+              {getExpectedColumns().map((column, index) => (
+                <Badge key={index} variant="outline" className="text-xs font-mono">
+                  {column}
+                </Badge>
+              ))}
+            </div>
+            <p className="text-xs text-muted-foreground pt-2 border-t">
+              💡 Use pipe (|) as column delimiter. Ensure all columns are present in your CSV file.
+            </p>
           </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Use pipe (|) as column delimiter. Ensure all columns are present in
-            your CSV file.
-          </p>
-        </div>
+        </details>
 
         {/* Hidden File Input */}
         <input

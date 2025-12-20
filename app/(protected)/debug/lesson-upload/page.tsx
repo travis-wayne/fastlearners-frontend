@@ -58,7 +58,7 @@ export default function DebugLessonUploadPage() {
   };
 
   return (
-    <div className="container mx-auto space-y-8 p-6">
+    <div className="container space-y-8 pb-20">
       <div>
         <h1 className="text-3xl font-bold">Debug: Lesson Upload System</h1>
         <p className="mt-2 text-muted-foreground">

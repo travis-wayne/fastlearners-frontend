@@ -38,7 +38,7 @@ export default async function LessonPage({ params }: { params: { slug: string[] 
 
   if (!slug || slug.length !== 2) {
     return (
-      <div className="container mx-auto max-w-4xl p-6">
+      <div className="container max-w-4xl py-6">
         <Card className="border-2 border-dashed">
           <CardHeader>
             <CardTitle>Invalid Lesson URL</CardTitle>
@@ -61,7 +61,7 @@ export default async function LessonPage({ params }: { params: { slug: string[] 
   const topic = formatSlug(topicSlug);
 
   return (
-    <div className="container mx-auto max-w-full space-y-6 p-6">
+    <div className="container space-y-6 pb-20">
       {/* Breadcrumb Navigation */}
       <Breadcrumb>
         <BreadcrumbList>

@@ -365,37 +365,32 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
     }
   }, [initialData]);
 
-  // Get all subjects from API response
+  // Get user's ASSIGNED subjects only (from subjects array)
+  // Categorize them based on whether they appear in compulsory_selective or selective lists
   const allApiSubjects = useMemo(() => {
     if (!subjectsData) return [];
 
-    // Combine all subjects from API
-    const subjects = new Map<
-      number,
-      ApiSubject & {
-        type: "regular" | "compulsory_selective" | "selective";
+    // Create sets for quick lookup to determine subject type
+    const compulsorySelectiveIds = new Set(
+      (subjectsData.compulsory_selective || []).map(s => s.id)
+    );
+    const selectiveIds = new Set(
+      (subjectsData.selective || []).map(s => s.id)
+    );
+
+    // Only show user's ASSIGNED subjects (from subjects array)
+    // Categorize them based on whether their ID appears in compulsory_selective or selective
+    return (subjectsData.subjects || []).map((subject) => {
+      let type: "core" | "compulsory_selective" | "selective" = "core";
+
+      if (compulsorySelectiveIds.has(subject.id)) {
+        type = "compulsory_selective";
+      } else if (selectiveIds.has(subject.id)) {
+        type = "selective";
       }
-    >();
 
-    // Add regular subjects
-    (subjectsData.subjects || []).forEach((subject) => {
-      subjects.set(subject.id, { ...subject, type: "regular" });
+      return { ...subject, type };
     });
-
-    // Add compulsory selective subjects (for JSS)
-    (subjectsData.compulsory_selective || []).forEach((subject) => {
-      subjects.set(subject.id, { ...subject, type: "compulsory_selective" });
-    });
-
-    // Add selective subjects
-    (subjectsData.selective || []).forEach((subject) => {
-      // Only add if not already added as regular
-      if (!subjects.has(subject.id)) {
-        subjects.set(subject.id, { ...subject, type: "selective" });
-      }
-    });
-
-    return Array.from(subjects.values());
   }, [subjectsData]);
 
   // Filter subjects based on search and track
@@ -411,7 +406,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       const matchesTrack =
         selectedTrack === "all" ||
         (selectedTrack === "core" &&
-          (subject.type === "regular" ||
+          (subject.type === "core" ||
             subject.type === "compulsory_selective")) ||
         (selectedTrack === "elective" && subject.type === "selective") ||
         (configSubject && selectedTrack === configSubject.track);
@@ -421,11 +416,12 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   }, [allApiSubjects, searchQuery, selectedTrack, currentClass]);
 
   // Separate subjects by type for display
-  const regularSubjects = filteredSubjects.filter((s) => s.type === "regular");
-  const compulsorySelectiveSubjects = filteredSubjects.filter(
-    (s) => s.type === "compulsory_selective",
+  // Core subjects = compulsory subjects + compulsory selective (religious study)
+  const coreSubjects = filteredSubjects.filter(
+    (s) => s.type === "core" || s.type === "compulsory_selective"
   );
-  const selectiveSubjects = filteredSubjects.filter(
+  // Elective subjects = selective subjects chosen by user
+  const electiveSubjects = filteredSubjects.filter(
     (s) => s.type === "selective",
   );
 
@@ -524,7 +520,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto space-y-6 p-6"
+      className="container space-y-6 pb-20"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
@@ -540,7 +536,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
             <Link href="/dashboard/subjects/manage">
               <Button variant="outline">
                 <Settings className="mr-2 size-4" />
-                Manage
+                Manage Subjects
               </Button>
             </Link>
           </div>
@@ -638,26 +634,25 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
             <TabsTrigger value="all">
               All Subjects ({filteredSubjects.length})
             </TabsTrigger>
-            <TabsTrigger value="compulsory">
-              Core Subjects (
-              {regularSubjects.length + compulsorySelectiveSubjects.length})
+            <TabsTrigger value="core">
+              Core Subjects ({coreSubjects.length})
             </TabsTrigger>
             <TabsTrigger value="elective">
-              Electives ({selectiveSubjects.length})
+              Electives ({electiveSubjects.length})
             </TabsTrigger>
           </TabsList>
 
           <TabsContent value="all" className="space-y-4">
-            {regularSubjects.length > 0 && (
+            {coreSubjects.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
                   <Badge variant="default">Core Subjects</Badge>
                   <span className="text-sm text-muted-foreground">
-                    Required for all students in {classDisplay}
+                    Compulsory subjects for {classDisplay}
                   </span>
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {regularSubjects.map((apiSubject) => {
+                  {coreSubjects.map((apiSubject) => {
                     const configSubject = mapApiSubjectToConfig(
                       apiSubject,
                       currentClass?.id,
@@ -680,7 +675,6 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                           termProgress: 0,
                         };
 
-                    // Create a config subject for display if not found, using deterministic fallback
                     const fallback = !configSubject
                       ? getFallbackSubjectDisplay(apiSubject)
                       : null;
@@ -708,72 +702,16 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
               </div>
             )}
 
-            {compulsorySelectiveSubjects.length > 0 && (
+            {electiveSubjects.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
-                  <Badge variant="secondary">Compulsory Selective</Badge>
+                  <Badge variant="outline">Elective Subjects</Badge>
                   <span className="text-sm text-muted-foreground">
-                    Select one religious studies subject (JSS only)
+                    Your selected elective subjects
                   </span>
                 </div>
                 <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {compulsorySelectiveSubjects.map((apiSubject) => {
-                    const configSubject = mapApiSubjectToConfig(
-                      apiSubject,
-                      currentClass?.id,
-                    );
-                    const progress = configSubject
-                      ? mockSubjectProgress[configSubject.id] || {
-                          totalTopics: 10,
-                          completedTopics: 0,
-                          currentWeek: 1,
-                          totalWeeks: 12,
-                          upcomingAssessments: 0,
-                          termProgress: 0,
-                        }
-                      : {
-                          totalTopics: 10,
-                          completedTopics: 0,
-                          currentWeek: 1,
-                          totalWeeks: 12,
-                          upcomingAssessments: 0,
-                          termProgress: 0,
-                        };
-
-                    const displaySubject: ConfigSubject = configSubject || {
-                      id: String(apiSubject.id),
-                      name: apiSubject.name,
-                      code: apiSubject.name.substring(0, 3).toUpperCase(),
-                      description: apiSubject.name,
-                      icon: "BookOpen",
-                      color: "#8b5cf6",
-                      compulsory: true,
-                      levels: [],
-                    };
-
-                    return (
-                      <SubjectCard
-                        key={apiSubject.id}
-                        subject={displaySubject}
-                        progress={progress}
-                        slug={subjectsWithSlugs.get(apiSubject.id)}
-                      />
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-
-            {selectiveSubjects.length > 0 && (
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Badge variant="outline">Selective Subjects</Badge>
-                  <span className="text-sm text-muted-foreground">
-                    Optional subjects you can choose
-                  </span>
-                </div>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                  {selectiveSubjects.map((apiSubject) => {
+                  {electiveSubjects.map((apiSubject) => {
                     const configSubject = mapApiSubjectToConfig(
                       apiSubject,
                       currentClass?.id,
@@ -796,13 +734,16 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                           termProgress: 0,
                         };
 
+                    const fallback = !configSubject
+                      ? getFallbackSubjectDisplay(apiSubject)
+                      : null;
                     const displaySubject: ConfigSubject = configSubject || {
                       id: String(apiSubject.id),
                       name: apiSubject.name,
                       code: apiSubject.name.substring(0, 3).toUpperCase(),
                       description: apiSubject.name,
-                      icon: "BookOpen",
-                      color: "#10b981",
+                      icon: fallback?.icon || "BookOpen",
+                      color: fallback?.color || "#10b981",
                       compulsory: false,
                       levels: [],
                     };
@@ -846,58 +787,60 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
             )}
           </TabsContent>
 
-          <TabsContent value="compulsory" className="space-y-4">
+          <TabsContent value="core" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {[...regularSubjects, ...compulsorySelectiveSubjects].map(
-                (apiSubject) => {
-                  const configSubject = mapApiSubjectToConfig(
-                    apiSubject,
-                    currentClass?.id,
-                  );
-                  const progress = configSubject
-                    ? mockSubjectProgress[configSubject.id] || {
-                        totalTopics: 10,
-                        completedTopics: 0,
-                        currentWeek: 1,
-                        totalWeeks: 12,
-                        upcomingAssessments: 0,
-                        termProgress: 0,
-                      }
-                    : {
-                        totalTopics: 10,
-                        completedTopics: 0,
-                        currentWeek: 1,
-                        totalWeeks: 12,
-                        upcomingAssessments: 0,
-                        termProgress: 0,
-                      };
+              {coreSubjects.map((apiSubject) => {
+                const configSubject = mapApiSubjectToConfig(
+                  apiSubject,
+                  currentClass?.id,
+                );
+                const progress = configSubject
+                  ? mockSubjectProgress[configSubject.id] || {
+                      totalTopics: 10,
+                      completedTopics: 0,
+                      currentWeek: 1,
+                      totalWeeks: 12,
+                      upcomingAssessments: 0,
+                      termProgress: 0,
+                    }
+                  : {
+                      totalTopics: 10,
+                      completedTopics: 0,
+                      currentWeek: 1,
+                      totalWeeks: 12,
+                      upcomingAssessments: 0,
+                      termProgress: 0,
+                    };
 
-                  const displaySubject: ConfigSubject = configSubject || {
-                    id: String(apiSubject.id),
-                    name: apiSubject.name,
-                    code: apiSubject.name.substring(0, 3).toUpperCase(),
-                    description: apiSubject.name,
-                    icon: "BookOpen",
-                    color: "#6366f1",
-                    compulsory: true,
-                    levels: [],
-                  };
+                const fallback = !configSubject
+                  ? getFallbackSubjectDisplay(apiSubject)
+                  : null;
+                const displaySubject: ConfigSubject = configSubject || {
+                  id: String(apiSubject.id),
+                  name: apiSubject.name,
+                  code: apiSubject.name.substring(0, 3).toUpperCase(),
+                  description: apiSubject.name,
+                  icon: fallback?.icon || "BookOpen",
+                  color: fallback?.color || "#6366f1",
+                  compulsory: true,
+                  levels: [],
+                };
 
-                  return (
-                    <SubjectCard
-                      key={apiSubject.id}
-                      subject={displaySubject}
-                      progress={progress}
-                    />
-                  );
-                },
-              )}
+                return (
+                  <SubjectCard
+                    key={apiSubject.id}
+                    subject={displaySubject}
+                    progress={progress}
+                    slug={subjectsWithSlugs.get(apiSubject.id)}
+                  />
+                );
+              })}
             </div>
           </TabsContent>
 
           <TabsContent value="elective" className="space-y-4">
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {selectiveSubjects.map((apiSubject) => {
+              {electiveSubjects.map((apiSubject) => {
                 const configSubject = mapApiSubjectToConfig(
                   apiSubject,
                   currentClass?.id,
@@ -920,13 +863,16 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                       termProgress: 0,
                     };
 
+                const fallback = !configSubject
+                  ? getFallbackSubjectDisplay(apiSubject)
+                  : null;
                 const displaySubject: ConfigSubject = configSubject || {
                   id: String(apiSubject.id),
                   name: apiSubject.name,
                   code: apiSubject.name.substring(0, 3).toUpperCase(),
                   description: apiSubject.name,
-                  icon: "BookOpen",
-                  color: "#10b981",
+                  icon: fallback?.icon || "BookOpen",
+                  color: fallback?.color || "#10b981",
                   compulsory: false,
                   levels: [],
                 };
@@ -936,6 +882,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                     key={apiSubject.id}
                     subject={displaySubject}
                     progress={progress}
+                    slug={subjectsWithSlugs.get(apiSubject.id)}
                   />
                 );
               })}

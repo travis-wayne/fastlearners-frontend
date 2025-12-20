@@ -104,7 +104,7 @@ export default function RecordsPage() {
 
   if (!currentClass || !currentTerm) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <Calendar className="mx-auto mb-4 size-12 text-muted-foreground" />
@@ -130,7 +130,7 @@ export default function RecordsPage() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="container mx-auto space-y-6 p-6"
+      className="container space-y-6 pb-20"
     >
       <div className="mb-4 flex items-center justify-between">
         <div>

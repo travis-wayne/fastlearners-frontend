@@ -74,7 +74,7 @@ export default function QuizResultsPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <div className="text-muted-foreground">Loading results...</div>
@@ -86,7 +86,7 @@ export default function QuizResultsPage() {
 
   if (!result) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <XCircle className="mx-auto mb-4 size-12 text-muted-foreground" />
@@ -122,7 +122,7 @@ export default function QuizResultsPage() {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="container mx-auto space-y-6 p-6"
+      className="container space-y-6 pb-20"
     >
       <Button variant="outline" onClick={() => router.back()}>
         <ArrowLeft className="mr-2 size-4" />

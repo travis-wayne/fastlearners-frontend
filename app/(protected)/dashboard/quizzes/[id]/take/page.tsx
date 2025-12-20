@@ -130,7 +130,7 @@ export default function QuizTakePage() {
 
   if (!quiz) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <div className="text-muted-foreground">Loading quiz...</div>
@@ -155,7 +155,7 @@ export default function QuizTakePage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="container mx-auto space-y-6 p-6"
+        className="container space-y-6 pb-20"
       >
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {/* Results Card */}
@@ -239,7 +239,7 @@ export default function QuizTakePage() {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        className="container mx-auto p-6"
+        className="container py-6"
       >
         <Card>
           <CardContent className="p-8 text-center">
@@ -258,7 +258,7 @@ export default function QuizTakePage() {
   }
 
   return (
-    <div className="container mx-auto space-y-4 p-6">
+    <div className="container space-y-4 pb-20">
       {/* Header with Timer and Progress */}
       <div className="flex items-center justify-between">
         <div>

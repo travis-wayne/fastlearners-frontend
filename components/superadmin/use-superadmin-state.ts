@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { LessonsListResponse } from '@/lib/api/superadmin-lessons';
 import { getUploadStats, getUploadList, UploadStats, UploadRecord } from '@/lib/api/superadmin-uploads';
+import { type ParsedUploadError } from '@/lib/api/upload-error-handler';
 
 export type UploadType =
   | "lessons"
@@ -17,6 +18,7 @@ interface UploadState {
   isUploading: boolean;
   uploadProgress: number;
   error: string | null;
+  parsedError?: ParsedUploadError;
   success: boolean;
 }
 

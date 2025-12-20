@@ -14,6 +14,7 @@ import {
   validateCSVFile,
   type CSVValidationResult,
 } from "@/lib/utils/csv-upload-helper";
+import { parseUploadError, type ParsedUploadError } from "@/lib/api/upload-error-handler";
 
 // Types based on API documentation
 
@@ -157,7 +158,16 @@ export const uploadLessonsFile = async (file: File): Promise<ApiResponse> => {
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 export const uploadConceptsFile = async (file: File): Promise<ApiResponse> => {
@@ -170,7 +180,16 @@ export const uploadConceptsFile = async (file: File): Promise<ApiResponse> => {
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 export const uploadExamplesFile = async (file: File): Promise<ApiResponse> => {
@@ -183,7 +202,16 @@ export const uploadExamplesFile = async (file: File): Promise<ApiResponse> => {
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 export const uploadExercisesFile = async (file: File): Promise<ApiResponse> => {
@@ -196,7 +224,16 @@ export const uploadExercisesFile = async (file: File): Promise<ApiResponse> => {
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 export const uploadGeneralExercisesFile = async (
@@ -211,7 +248,16 @@ export const uploadGeneralExercisesFile = async (
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 const debugUploads = process.env.NEXT_PUBLIC_DEBUG_UPLOADS === "true";
@@ -237,7 +283,16 @@ export const uploadCheckMarkersFile = async (
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 export const uploadSchemeOfWorkFile = async (
@@ -252,7 +307,16 @@ export const uploadSchemeOfWorkFile = async (
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 export const uploadAllLessonFiles = async (files: {
@@ -277,7 +341,16 @@ export const uploadAllLessonFiles = async (files: {
     body: formData,
   });
 
-  return await response.json();
+  const data = await response.json();
+
+  if (!response.ok) {
+    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    error.response = response;
+    error.data = data;
+    throw error;
+  }
+
+  return data;
 };
 
 // Get lessons data
@@ -397,6 +470,7 @@ export interface UploadResult {
   validation?: CSVValidationResult;
   apiResponse?: ApiResponse;
   error?: string;
+  parsedError?: ParsedUploadError;
   triedFormats?: string[];
   conflicts?: ConflictRecord[];
 }
@@ -459,6 +533,7 @@ export const uploadLessonsFileWithValidation = async (
       validation,
       apiResponse: uploadResult.apiResponse,
       error: uploadResult.error,
+      parsedError: uploadResult.parsedError,
       triedFormats,
     };
   } catch (error) {
@@ -475,9 +550,29 @@ export const uploadLessonsFileWithValidation = async (
 // Helper function to try uploading a file
 const tryUploadLessonsFile = async (
   file: File,
-): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
+): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string; parsedError?: ParsedUploadError }> => {
   try {
     const apiResponse = await uploadLessonsFile(file);
+
+    // Check if the API response indicates failure (2xx with success:false)
+    if (apiResponse.success === false) {
+      // Create a mock response object for error parsing
+      const mockResponse = new Response(JSON.stringify(apiResponse), {
+        status: apiResponse.code || 400,
+        statusText: 'Bad Request',
+      });
+
+      const parsedError = parseUploadError(mockResponse, apiResponse);
+      const errorMessage = parsedError.userMessage;
+
+      return {
+        success: false,
+        error: errorMessage,
+        parsedError,
+        apiResponse,
+      };
+    }
+
     return { success: true, apiResponse };
   } catch (error: any) {
     if (debugUploads) {
@@ -485,9 +580,12 @@ const tryUploadLessonsFile = async (
     }
 
     let errorMessage = "Upload failed";
+    let parsedError: ParsedUploadError | undefined;
 
-    if (error.response?.data?.message) {
-      errorMessage = error.response.data.message;
+    if (error.response && error.data) {
+      // Parse the error using the error handler
+      parsedError = parseUploadError(error.response, error.data);
+      errorMessage = parsedError.userMessage;
     } else if (error.message) {
       errorMessage = error.message;
     }
@@ -495,7 +593,8 @@ const tryUploadLessonsFile = async (
     return {
       success: false,
       error: errorMessage,
-      apiResponse: error.response?.data,
+      parsedError,
+      apiResponse: error.data,
     };
   }
 };
@@ -607,51 +706,17 @@ const smartUploadWithValidation = async (
       };
     }
 
-    // Convert file to API format before upload
+    // Upload the original file directly (backend expects standard CSV format)
     if (debugUploads) {
-      console.log("Converting file to API format...");
-    }
-    const apiFormattedFile = createAPIFormattedFile(file, fileContent);
-    if (debugUploads) {
-      console.log(
-        "API formatted file created:",
-        apiFormattedFile.name,
-        apiFormattedFile.size,
-        "bytes",
-      );
+      console.log("Uploading original file to API...");
     }
 
-    // Try uploading with API format
-    let uploadResult = await tryUpload(apiFormattedFile, uploadFunction);
-    let triedFormats = [`api_${validation.format}`];
+    const uploadResult = await tryUpload(file, uploadFunction);
 
-    if (!uploadResult.success && debugUploads) {
-      console.log(`Upload failed with API format, trying original file`);
-
-      // Fallback: try uploading the original file
-      uploadResult = await tryUpload(file, uploadFunction);
-      triedFormats.push(validation.format);
-
-      if (!uploadResult.success && debugUploads) {
-        console.log(
-          `Upload failed with original format, trying alternative format`,
-        );
-
-        // Try the alternative format
-        const alternativeFormat =
-          validation.format === "comma" ? "pipe" : "comma";
-        const normalizedContent = normalizeCSVContent(
-          fileContent,
-          alternativeFormat,
-        );
-        const normalizedFile = createNormalizedFile(
-          file,
-          normalizedContent,
-          alternativeFormat,
-        );
-
-        uploadResult = await tryUpload(normalizedFile, uploadFunction);
-        triedFormats.push(alternativeFormat);
+    if (debugUploads) {
+      console.log(`Upload result for ${fileType}:`, uploadResult.success ? "SUCCESS" : "FAILED");
+      if (!uploadResult.success) {
+        console.log("Upload error:", uploadResult.error);
       }
     }
 
@@ -660,7 +725,8 @@ const smartUploadWithValidation = async (
       validation,
       apiResponse: uploadResult.apiResponse,
       error: uploadResult.error,
-      triedFormats,
+      parsedError: uploadResult.parsedError,
+      triedFormats: [validation.format],
     };
   } catch (error) {
     if (debugUploads) {
@@ -677,7 +743,7 @@ const smartUploadWithValidation = async (
 const tryUpload = async (
   file: File,
   uploadFunction: (file: File) => Promise<ApiResponse>,
-): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string }> => {
+): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string; parsedError?: ParsedUploadError }> => {
   try {
     if (debugUploads) {
       console.log("Attempting upload with file:", {
@@ -699,6 +765,30 @@ const tryUpload = async (
     if (debugUploads) {
       console.log("Upload successful! API Response:", apiResponse);
     }
+
+    // Check if the API response indicates failure (2xx with success:false)
+    if (apiResponse.success === false) {
+      if (debugUploads) {
+        console.warn("API returned 2xx but success:false, treating as error");
+      }
+
+      // Create a mock response object for error parsing
+      const mockResponse = new Response(JSON.stringify(apiResponse), {
+        status: apiResponse.code || 400,
+        statusText: 'Bad Request',
+      });
+
+      const parsedError = parseUploadError(mockResponse, apiResponse);
+      const errorMessage = parsedError.userMessage;
+
+      return {
+        success: false,
+        error: errorMessage,
+        parsedError,
+        apiResponse,
+      };
+    }
+
     return { success: true, apiResponse };
   } catch (error: any) {
     if (debugUploads) {
@@ -712,37 +802,15 @@ const tryUpload = async (
 
     // Try to extract more detailed error information
     let errorMessage = "Upload failed";
-    let validationDetails = null;
+    let parsedError: ParsedUploadError | undefined;
 
-    if (error.response?.data) {
-      const responseData = error.response.data;
+    if (error.response && error.data) {
+      // Parse the error using the error handler
+      parsedError = parseUploadError(error.response, error.data);
+      errorMessage = parsedError.userMessage;
 
-      // Handle different response formats
-      if (typeof responseData === "string") {
-        errorMessage = responseData;
-      } else if (responseData.message) {
-        errorMessage = responseData.message;
-      } else if (responseData.error) {
-        errorMessage = responseData.error;
-      } else if (responseData.errors) {
-        // Handle validation errors array
-        if (Array.isArray(responseData.errors)) {
-          errorMessage = responseData.errors.join(", ");
-        } else if (typeof responseData.errors === "object") {
-          // Handle field-specific validation errors
-          const fieldErrors = Object.entries(responseData.errors)
-            .map(
-              ([field, errors]) =>
-                `${field}: ${Array.isArray(errors) ? errors.join(", ") : errors}`,
-            )
-            .join("; ");
-          errorMessage = fieldErrors;
-          validationDetails = responseData.errors;
-        } else {
-          errorMessage = String(responseData.errors);
-        }
-      } else {
-        errorMessage = JSON.stringify(responseData);
+      if (debugUploads) {
+        console.error("Parsed error:", parsedError);
       }
     } else if (error.message) {
       errorMessage = error.message;
@@ -750,16 +818,14 @@ const tryUpload = async (
 
     if (debugUploads) {
       console.error("Processed error message:", errorMessage);
-      if (validationDetails) {
-        console.error("Validation details:", validationDetails);
-      }
       console.error("=== END ERROR DETAILS ===");
     }
 
     return {
       success: false,
       error: errorMessage,
-      apiResponse: error.response?.data,
+      parsedError,
+      apiResponse: error.data,
     };
   }
 };

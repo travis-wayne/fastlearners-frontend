@@ -129,7 +129,7 @@ export default function SubjectDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <Loader2 className="mx-auto mb-4 size-12 animate-spin text-primary" />
@@ -142,7 +142,7 @@ export default function SubjectDetailPage() {
 
   if (error) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <AlertCircle className="mx-auto mb-4 size-12 text-destructive" />
@@ -168,7 +168,7 @@ export default function SubjectDetailPage() {
 
   if (!topics) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
@@ -193,7 +193,7 @@ export default function SubjectDetailPage() {
 
   if (!hasTopics) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <BookOpen className="mx-auto mb-4 size-12 text-muted-foreground" />
@@ -212,7 +212,7 @@ export default function SubjectDetailPage() {
   }
 
   return (
-    <div className="container mx-auto space-y-6 p-6">
+    <div className="container space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center gap-4">
         <Button variant="outline" size="icon" onClick={() => router.back()}>

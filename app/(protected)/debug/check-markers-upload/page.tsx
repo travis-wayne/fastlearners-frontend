@@ -280,7 +280,7 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
   };
 
   return (
-    <div className="container mx-auto space-y-8 p-6">
+    <div className="container space-y-8 pb-20">
       <div>
         <h1 className="flex items-center gap-2 text-3xl font-bold">
           <Bug className="size-8" />

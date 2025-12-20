@@ -27,9 +27,9 @@ import {
 } from "@/components/ui/table";
 
 import FileUpload from "@/components/lessons/file-upload";
-import { 
-  useSuperadminState, 
-  UploadType 
+import {
+  useSuperadminState,
+  UploadType
 } from "@/components/superadmin/use-superadmin-state";
 import {
   uploadLessonsFileWithValidation,
@@ -45,6 +45,8 @@ import {
   CSV_COLUMNS,
 } from "@/lib/api/lesson-service";
 import { previewCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
+import { parseUploadError, type ParsedUploadError } from "@/lib/api/upload-error-handler";
+import { UploadErrorDisplay } from "@/components/upload/UploadErrorDisplay";
 
 type BulkFileKey = 
   | "lessons_file"
@@ -138,6 +140,7 @@ export default function UploadsPage() {
 
   const [bulkPreviews, setBulkPreviews] = useState<BulkPreviewState>({});
   const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
+  const [bulkParsedError, setBulkParsedError] = useState<ParsedUploadError | null>(null);
 
   // --- Individual Upload Handlers ---
 
@@ -146,6 +149,7 @@ export default function UploadsPage() {
       selectedFile: file,
       error: null,
       success: false,
+      parsedError: undefined,
     });
   };
 
@@ -157,12 +161,12 @@ export default function UploadsPage() {
     const state = uploadStates[type];
     if (!state.selectedFile) return;
 
-    setUploadState(type, { isUploading: true, uploadProgress: 0, error: null });
+    setUploadState(type, { isUploading: true, uploadProgress: 0, error: null, parsedError: undefined });
 
     // Simulate progress using functional update to avoid stale closure
     const progressInterval = setInterval(() => {
-      setUploadState(type, (prev) => ({ 
-        uploadProgress: prev.uploadProgress >= 90 ? 90 : prev.uploadProgress + 10 
+      setUploadState(type, (prev) => ({
+        uploadProgress: prev.uploadProgress >= 90 ? 90 : prev.uploadProgress + 10
       }));
     }, 200);
 
@@ -175,15 +179,23 @@ export default function UploadsPage() {
       clearInterval(progressInterval);
 
       if (result.success) {
-        setUploadState(type, { isUploading: false, uploadProgress: 100, success: true });
+        setUploadState(type, { isUploading: false, uploadProgress: 100, success: true, parsedError: undefined });
         toast.success(`${config.title} uploaded successfully`);
       } else {
-        throw new Error(result.error || "Upload failed");
+        // Upload failed - use parsed error if available
+        const errorMessage = result.parsedError?.userMessage || result.error || "Upload failed";
+        setUploadState(type, {
+          isUploading: false,
+          uploadProgress: 0,
+          error: errorMessage,
+          parsedError: result.parsedError
+        });
+        toast.error(`Failed to upload ${config.title}`, { description: errorMessage });
       }
     } catch (error: any) {
       clearInterval(progressInterval);
       const errorMessage = error.message || "An unexpected error occurred";
-      setUploadState(type, { isUploading: false, uploadProgress: 0, error: errorMessage });
+      setUploadState(type, { isUploading: false, uploadProgress: 0, error: errorMessage, parsedError: undefined });
       toast.error(`Failed to upload ${type}`, { description: errorMessage });
     }
   };
@@ -241,6 +253,7 @@ export default function UploadsPage() {
     }
 
     setBulkStatus({ isBulkUploading: true, bulkProgress: 0, bulkError: null, bulkSuccess: false });
+    setBulkParsedError(null);
 
     // Simulate progress
     const progressInterval = setInterval(() => {
@@ -266,15 +279,28 @@ export default function UploadsPage() {
 
       if (result.success) {
         setBulkStatus({ isBulkUploading: false, bulkProgress: 100, bulkSuccess: true });
-        toast.success("All files uploaded successfully", { 
-          description: result.message || "The database has been updated." 
+        setBulkParsedError(null);
+        toast.success("All files uploaded successfully", {
+          description: result.message || "The database has been updated."
         });
       } else {
         throw new Error(result.message || "Bulk upload failed");
       }
     } catch (error: any) {
       clearInterval(progressInterval);
-      const errorMessage = error.message || "An unexpected error occurred during bulk upload";
+
+      // Parse the error if it has response and data
+      let parsedError: ParsedUploadError | null = null;
+      let errorMessage = error.message || "An unexpected error occurred during bulk upload";
+
+      if (error.response && error.data) {
+        parsedError = parseUploadError(error.response, error.data);
+        errorMessage = parsedError.userMessage;
+        setBulkParsedError(parsedError);
+      } else {
+        setBulkParsedError(null);
+      }
+
       setBulkStatus({ isBulkUploading: false, bulkProgress: 0, bulkError: errorMessage });
       toast.error("Bulk Upload Failed", { description: errorMessage });
     }
@@ -282,11 +308,26 @@ export default function UploadsPage() {
 
   return (
     <div className="space-y-8 duration-500 animate-in slide-in-from-right-4">
-      
-      <div className="grid gap-6">
-        <div className="flex items-center justify-between">
-            <h2 className="text-2xl font-bold tracking-tight">Individual Uploads</h2>
-            <p className="text-sm text-muted-foreground">Upload specific content files one by one</p>
+      {/* Page Header */}
+      <div className="space-y-2">
+        <div className="flex items-center gap-3">
+          <div className="rounded-lg bg-primary/10 p-2">
+            <FileUp className="h-6 w-6 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Content Uploads</h1>
+            <p className="text-muted-foreground">Upload lesson content files to the platform</p>
+          </div>
+        </div>
+      </div>
+
+      <Separator />
+
+      {/* Individual Uploads Section */}
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <h2 className="text-2xl font-semibold tracking-tight">Individual Uploads</h2>
+          <p className="text-sm text-muted-foreground">Upload specific content files one by one for granular control</p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -302,7 +343,9 @@ export default function UploadsPage() {
                 isUploading={uploadStates[config.id].isUploading}
                 uploadProgress={uploadStates[config.id].uploadProgress}
                 error={uploadStates[config.id].error}
+                parsedError={uploadStates[config.id].parsedError}
                 success={uploadStates[config.id].success}
+                onRetry={() => handleUpload(config.id)}
                 />
                 {uploadStates[config.id].selectedFile && !uploadStates[config.id].success && !uploadStates[config.id].isUploading && (
                     <Button 
@@ -318,22 +361,34 @@ export default function UploadsPage() {
         </div>
       </div>
 
-      <Separator className="my-8" />
+      <Separator />
 
       {/* Bulk Upload Section */}
-      <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
-        <div className="flex flex-col space-y-1.5 p-6">
-            <h3 className="text-2xl font-semibold leading-none tracking-tight">Bulk Upload (All-In-One)</h3>
-            <p className="text-sm text-muted-foreground">Upload all lesson files at once. All 6 files are required.</p>
+      <div className="space-y-6">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2">
+            <h2 className="text-2xl font-semibold tracking-tight">Bulk Upload</h2>
+            <Badge variant="secondary" className="text-xs">All-In-One</Badge>
+          </div>
+          <p className="text-sm text-muted-foreground">Upload all 6 lesson files at once for faster processing</p>
         </div>
-        <div className="p-6 pt-0">
-            {bulkError && (
+
+        <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
+          <div className="p-6">
+            {bulkParsedError ? (
+                <div className="mb-6">
+                  <UploadErrorDisplay
+                    error={bulkParsedError}
+                    onRetry={handleBulkUpload}
+                  />
+                </div>
+            ) : bulkError ? (
                 <Alert variant="destructive" className="mb-6">
                 <AlertCircle className="size-4" />
                 <AlertTitle>Upload Failed</AlertTitle>
                 <AlertDescription>{bulkError}</AlertDescription>
                 </Alert>
-            )}
+            ) : null}
             
             {bulkSuccess && (
                 <Alert className="mb-6 border-green-200 bg-green-50 text-green-800">
@@ -487,23 +542,36 @@ export default function UploadsPage() {
                 </div>
             )}
 
-            <div className="mt-6 flex justify-end">
-                <Button 
-                onClick={handleBulkUpload} 
-                disabled={!isBulkReady || isBulkUploading || bulkSuccess}
-                size="lg"
-                className="w-full md:w-auto"
-                >
-                {isBulkUploading ? (
-                    <>Processing...</>
-                ) : (
-                    <>
-                    <FileUp className="mr-2 size-4" />
-                    Upload All Files
-                    </>
+            <div className="mt-6 flex flex-col-reverse sm:flex-row sm:justify-end gap-3">
+                {bulkSuccess && (
+                  <Button
+                    onClick={resetBulkState}
+                    variant="outline"
+                    size="lg"
+                  >
+                    Reset & Upload New Files
+                  </Button>
                 )}
+                <Button
+                  onClick={handleBulkUpload}
+                  disabled={!isBulkReady || isBulkUploading || bulkSuccess}
+                  size="lg"
+                  className="w-full sm:w-auto"
+                >
+                  {isBulkUploading ? (
+                    <>
+                      <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-background border-t-transparent"></div>
+                      Processing...
+                    </>
+                  ) : (
+                    <>
+                      <FileUp className="mr-2 size-4" />
+                      Upload All Files
+                    </>
+                  )}
                 </Button>
             </div>
+          </div>
         </div>
       </div>
     </div>

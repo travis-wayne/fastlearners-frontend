@@ -328,7 +328,7 @@ export default function QuizzesPage() {
 
   if (!currentClass || !currentTerm) {
     return (
-      <div className="container mx-auto p-6">
+      <div className="container py-6">
         <Card>
           <CardContent className="p-8 text-center">
             <Calendar className="mx-auto mb-4 size-12 text-muted-foreground" />
@@ -350,7 +350,7 @@ export default function QuizzesPage() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container mx-auto space-y-6 p-6"
+      className="container space-y-6 pb-20"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>

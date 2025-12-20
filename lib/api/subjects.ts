@@ -226,7 +226,13 @@ export async function getDashboard(token: string): Promise<DashboardData['conten
 
 export async function getStudentSubjects(): Promise<SubjectsResponse> {
   try {
-    const res = await fetch("/api/lessons", {
+    // Call the /api/subjects endpoint which returns:
+    // - subjects: current assigned subjects
+    // - compulsory_selective: available religious study options (JSS only)
+    // - compulsory_selective_status: "selected" or "not_selected"
+    // - selective: available selective/discipline subjects
+    // - selective_status: "selected" or "not_selected"
+    const res = await fetch("/api/subjects", {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -236,7 +242,7 @@ export async function getStudentSubjects(): Promise<SubjectsResponse> {
 
     const data = await res.json();
 
-    if (!res.ok || !data?.success || !data?.content?.subjects) {
+    if (!res.ok || !data?.success) {
       return {
         success: false,
         message: data?.message || "Failed to fetch subjects",
@@ -245,13 +251,13 @@ export async function getStudentSubjects(): Promise<SubjectsResponse> {
       };
     }
 
-    // Normalize lessons response into SubjectsContent
+    // The API returns the correct SubjectsContent structure directly
     const content: SubjectsContent = {
-      subjects: data.content.subjects,
-      compulsory_selective_status: 'selected',
-      compulsory_selective: [],
-      selective_status: 'selected',
-      selective: [],
+      subjects: data.content.subjects || [],
+      compulsory_selective_status: data.content.compulsory_selective_status || 'not_selected',
+      compulsory_selective: data.content.compulsory_selective || [],
+      selective_status: data.content.selective_status || 'not_selected',
+      selective: data.content.selective || [],
     };
 
     return {
