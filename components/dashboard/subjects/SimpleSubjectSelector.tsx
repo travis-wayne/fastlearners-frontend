@@ -303,7 +303,7 @@ export function SimpleSubjectSelector({
     subjectsData.compulsory_selective_status === "selected";
   const selectiveComplete = subjectsData.selective_status === "selected";
   const assignedSubjects = subjectsData.subjects || [];
-  const profileSummary = [profileClass, profileDiscipline]
+  const profileSummary = [derivedClass, profileDiscipline]
     .filter(Boolean)
     .join(" • ");
 
@@ -410,11 +410,10 @@ export function SimpleSubjectSelector({
                     <button
                       key={subject.id}
                       onClick={() => handleCompulsorySelect(subject.id)}
-                      className={`group rounded-lg border-2 p-4 text-left transition-all hover:scale-[1.02] ${
-                        selectedCompulsory === subject.id
+                      className={`group rounded-lg border-2 p-4 text-left transition-all hover:scale-[1.02] ${selectedCompulsory === subject.id
                           ? "border-primary bg-primary/10 shadow-md"
                           : "border-border hover:border-primary/50 hover:bg-primary/5"
-                      } `}
+                        } `}
                     >
                       <div className="flex items-center justify-between">
                         <span className="font-medium transition-colors group-hover:text-primary">
@@ -553,19 +552,17 @@ export function SimpleSubjectSelector({
                         key={subject.id}
                         onClick={() => handleSelectiveToggle(subject.id)}
                         disabled={isDisabled}
-                        className={`group rounded-lg border-2 p-4 text-left transition-all ${
-                          isSelected
+                        className={`group rounded-lg border-2 p-4 text-left transition-all ${isSelected
                             ? "border-primary bg-primary/10 shadow-md hover:scale-[1.02]"
                             : isDisabled
                               ? "cursor-not-allowed border-border opacity-50"
                               : "border-border hover:scale-[1.02] hover:border-primary/50 hover:bg-primary/5"
-                        } `}
+                          } `}
                       >
                         <div className="flex items-center justify-between">
                           <span
-                            className={`font-medium transition-colors ${
-                              !isDisabled && "group-hover:text-primary"
-                            }`}
+                            className={`font-medium transition-colors ${!isDisabled && "group-hover:text-primary"
+                              }`}
                           >
                             {subject.name}
                           </span>
@@ -573,9 +570,8 @@ export function SimpleSubjectSelector({
                             <CheckCircle2 className="size-5 text-primary" />
                           ) : (
                             <Circle
-                              className={`size-5 text-muted-foreground transition-colors ${
-                                !isDisabled && "group-hover:text-primary"
-                              }`}
+                              className={`size-5 text-muted-foreground transition-colors ${!isDisabled && "group-hover:text-primary"
+                                }`}
                             />
                           )}
                         </div>

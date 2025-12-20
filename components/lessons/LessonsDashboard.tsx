@@ -277,9 +277,6 @@ export function LessonsDashboard() {
               <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
                 Interactive Lessons
               </h1>
-              <p className="mt-1 text-muted-foreground">
-                {classDisplay} • {termDisplay}
-              </p>
             </div>
           </div>
           <p className="max-w-2xl text-lg text-muted-foreground">
