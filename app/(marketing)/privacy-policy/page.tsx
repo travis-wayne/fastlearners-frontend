@@ -7,21 +7,16 @@ export const metadata = {
 
 export default function PrivacyPolicyPage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 md:py-20">
+    <div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16 md:py-20 lg:py-24">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Privacy Policy for Fastlearners
           </h1>
-          <div className="flex flex-col space-y-1 text-muted-foreground">
-            <p>Effective Date: 29/11/2025</p>
-            <p>Controller: Fastlearners Limited</p>
-            <p>Contact: info@fastlearnersapp.com, +2347065447436, 3 Chief Aaron Nteubong Street Eastern Obolo, Akwa Ibom State.</p>
-          </div>
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             1. Introduction
           </h2>
           <p className="leading-relaxed text-muted-foreground">
@@ -33,21 +28,20 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             2. What Personal Data We Collect
           </h2>
           <p className="text-muted-foreground">We may collect the following:</p>
-          
+
           <div className="space-y-3">
             <h3 className="text-xl font-medium text-foreground">a. User Account Information</h3>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Full Name</li>
               <li>Username</li>
               <li>Email Address</li>
-              <li>Phone Number</li>
+              <li>Phone Number (optional)</li>
               <li>Password (encrypted)</li>
               <li>Gender</li>
-              <li>Address</li>
             </ul>
           </div>
 
@@ -55,7 +49,7 @@ export default function PrivacyPolicyPage() {
             <h3 className="text-xl font-medium text-foreground">b. Educational Profile</h3>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Class/Grade level</li>
-              <li>School name (if applicable)</li>
+              <li>School name (at user discretion fill anything)</li>
               <li>Subjects and performance analytics</li>
             </ul>
           </div>
@@ -64,7 +58,7 @@ export default function PrivacyPolicyPage() {
             <h3 className="text-xl font-medium text-foreground">c. Usage Data</h3>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>App interactions</li>
-              <li>Device information</li>
+              {/* <li>Device information</li> */}
               <li>Log files (IP address, timestamps)</li>
             </ul>
           </div>
@@ -72,29 +66,29 @@ export default function PrivacyPolicyPage() {
           <div className="space-y-3 pt-2">
             <h3 className="text-xl font-medium text-foreground">d. Payment Information</h3>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
-              <li>Transaction reference</li>
-              <li>Billing details</li>
+              <li>Thrid party Transaction reference as proof of payment.</li>
+              {/* <li>Billing details</li> */}
+              <li>We do NOT store card information.</li>
             </ul>
-            <p className="text-sm italic text-muted-foreground">We do NOT store card information.</p>
           </div>
 
           <div className="space-y-3 pt-2">
             <h3 className="text-xl font-medium text-foreground">e. Children’s Data</h3>
-            <p className="text-muted-foreground">For users below the age of parental consent:</p>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
-              <li>Parent/guardian name</li>
-              <li>Parent/guardian contact details</li>
+              <li>Parents/guardian must supervise profile edit</li>
+              <li>Parent/guardian have access to their wards' profile details</li>
               <li>Consent verification logs</li>
             </ul>
           </div>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             3. Legal Basis for Processing (GDPR Article 6)
           </h2>
           <p className="text-muted-foreground">We rely on:</p>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
+            <li><span className="font-medium text-foreground">Parents/guardian's supervision</span> (for minors and optional features)</li>
             <li><span className="font-medium text-foreground">Consent</span> (for minors and optional features)</li>
             <li><span className="font-medium text-foreground">Contract performance</span> (to provide digital app services)</li>
             <li><span className="font-medium text-foreground">Legitimate interest</span> (service improvement, analytics)</li>
@@ -103,7 +97,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. How We Use Personal Data
           </h2>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
@@ -118,7 +112,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Children’s Data (GDPR Articles 8 & NDPR 2.5)
           </h2>
           <p className="text-muted-foreground">We collect children’s data only with verifiable parental/guardian consent.</p>
@@ -132,20 +126,20 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. Data Sharing
           </h2>
           <p className="text-muted-foreground">We may share data with:</p>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Hosting providers</li>
             <li>Analytics providers</li>
-            <li>Educational institutions (with consent or contract)</li>
+            {/* <li>Educational institutions (with consent or contract)</li> */}
           </ul>
           <p className="text-muted-foreground">All third parties sign binding Data Processing Agreements (DPAs) and meet GDPR/NDPR standards.</p>
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. International Data Transfers
           </h2>
           <p className="text-muted-foreground">Data may be stored or processed outside Nigeria.</p>
@@ -158,7 +152,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             8. Data Retention
           </h2>
           <p className="text-muted-foreground">We retain data only as long as necessary:</p>
@@ -170,7 +164,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             9. Your Rights
           </h2>
           <p className="text-muted-foreground">Under GDPR and NDPR, users can:</p>
@@ -186,7 +180,7 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             10. Security
           </h2>
           <p className="text-muted-foreground">We implement:</p>
@@ -199,12 +193,14 @@ export default function PrivacyPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             11. Contact
           </h2>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
             <p className="mb-2 font-medium text-foreground">Fastlearners Limited</p>
             <div className="space-y-1 text-muted-foreground">
+              <p>Effective Date: 21/12/2025</p>
+              <p>Telephone: +2347065447436</p>
               <p>Email: <a href="mailto:info@fastlearnersapp.com" className="text-primary hover:underline">info@fastlearnersapp.com</a></p>
               <p>Address: 3 Chief Aaron Nteubong Street Okorombokho, Eastern Obolo, Akwa Ibom State</p>
             </div>

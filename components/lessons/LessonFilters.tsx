@@ -108,7 +108,7 @@ export function LessonFilters({
               value={filters.class}
               onValueChange={(value) => handleFilterChange("class", value)}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="h-10 w-full sm:w-32">
                 <SelectValue placeholder="Class" />
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +124,7 @@ export function LessonFilters({
               value={filters.subject}
               onValueChange={(value) => handleFilterChange("subject", value)}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="h-10 w-full sm:w-32">
                 <SelectValue placeholder="Subject" />
               </SelectTrigger>
               <SelectContent>
@@ -140,7 +140,7 @@ export function LessonFilters({
               value={filters.term}
               onValueChange={(value) => handleFilterChange("term", value)}
             >
-              <SelectTrigger className="w-32">
+              <SelectTrigger className="h-10 w-full sm:w-32">
                 <SelectValue placeholder="Term" />
               </SelectTrigger>
               <SelectContent>
@@ -156,7 +156,7 @@ export function LessonFilters({
               value={filters.week}
               onValueChange={(value) => handleFilterChange("week", value)}
             >
-              <SelectTrigger className="w-24">
+              <SelectTrigger className="h-10 w-full sm:w-24">
                 <SelectValue placeholder="Week" />
               </SelectTrigger>
               <SelectContent>
@@ -183,10 +183,10 @@ export function LessonFilters({
               onClick={handleFetchLessons}
               disabled={!canFetchLessons}
               size="sm"
-              className="bg-blue-600 hover:bg-blue-700"
+              className="h-10 flex-1 bg-blue-600 font-semibold hover:bg-blue-700 sm:flex-none"
             >
               <Filter className="mr-2 size-4" />
-              Find Lessons
+              Find
             </Button>
           </>
         )}
@@ -200,12 +200,12 @@ export function LessonFilters({
         <CardHeader className={cn("pb-4", sidebar && "px-0")}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-                <Filter className="size-5 text-primary" />
+              <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 sm:size-10">
+                <Filter className="size-4 text-primary sm:size-5" />
               </div>
               <div>
-                <CardTitle className="text-xl font-bold">Filter Lessons</CardTitle>
-                <p className="mt-1 text-sm text-muted-foreground">
+                <CardTitle className="text-lg font-bold sm:text-xl">Filter Lessons</CardTitle>
+                <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
                   Select filters to find your lessons
                 </p>
               </div>
@@ -231,7 +231,7 @@ export function LessonFilters({
         {isLoadingMetadata ? (
           <div className={cn(
             "grid grid-cols-1 gap-4",
-            !sidebar && "md:grid-cols-2 lg:grid-cols-4"
+            !sidebar && "sm:grid-cols-2 lg:grid-cols-4"
           )}>
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
@@ -336,7 +336,7 @@ export function LessonFilters({
                 value={filters.week}
                 onValueChange={(value) => handleFilterChange("week", value)}
               >
-                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
+                <SelectTrigger className="h-11 bg-muted/50 transition-colors hover:bg-muted sm:h-12">
                   <SelectValue placeholder="Select week" />
                 </SelectTrigger>
                 <SelectContent>
@@ -355,31 +355,31 @@ export function LessonFilters({
         <div className="flex flex-col gap-4 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             {isFiltersSelected && (
-              <Badge variant="default" className="text-sm font-medium">
+              <Badge variant="default" className="text-xs font-medium sm:text-sm">
                 <Filter className="mr-1.5 size-3" />
                 All Filters Applied
               </Badge>
             )}
             {hasAnyFilter && !isFiltersSelected && (
-              <Badge variant="outline" className="text-sm font-medium">
+              <Badge variant="outline" className="text-xs font-medium sm:text-sm">
                 <AlertCircle className="mr-1.5 size-3" />
                 Incomplete Selection
               </Badge>
             )}
             {!hasAnyFilter && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground sm:text-sm">
                 Select filters to find lessons
               </p>
             )}
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col gap-2 sm:flex-row sm:gap-3">
             {hasAnyFilter && (
               <Button
                 variant="outline"
                 onClick={handleClearFilters}
-                size="lg"
-                className="font-medium"
+                size="default"
+                className="w-full font-medium sm:h-11 sm:w-auto sm:px-8"
               >
                 <X className="mr-2 size-4" />
                 Clear All
@@ -389,8 +389,8 @@ export function LessonFilters({
             <Button
               onClick={handleFetchLessons}
               disabled={!canFetchLessons}
-              size="lg"
-              className="bg-primary font-medium shadow-md hover:bg-primary/90"
+              size="default"
+              className="w-full bg-primary font-medium shadow-md hover:bg-primary/90 sm:h-11 sm:w-auto sm:px-8"
             >
               <Search className="mr-2 size-4" />
               Find Lessons

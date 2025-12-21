@@ -137,16 +137,16 @@ export function LoginForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("flex flex-col gap-4 sm:gap-6", className)}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
       <Card>
-        <CardHeader className="text-center">
-          <CardTitle className="text-xl">Welcome back</CardTitle>
-          <CardDescription>Login with your Google account</CardDescription>
+        <CardHeader className="space-y-1 text-center sm:space-y-1.5">
+          <CardTitle className="text-lg sm:text-xl">Welcome back</CardTitle>
+          <CardDescription className="text-sm sm:text-base">Login with your Google account</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           {error && (
             <Alert variant="destructive" className="mb-2">
               <AlertCircle className="size-4" />
@@ -154,8 +154,8 @@ export function LoginForm({
             </Alert>
           )}
 
-          <div className="grid gap-6">
-            <div className="grid gap-3">
+          <div className="grid gap-4 sm:gap-6">
+            <div className="grid gap-2 sm:gap-3">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -173,12 +173,12 @@ export function LoginForm({
               )}
             </div>
 
-            <div className="grid gap-3">
+            <div className="grid gap-2 sm:gap-3">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
                 <Link
                   href="/auth/forgot-password"
-                  className="ml-auto text-sm underline-offset-4 hover:underline"
+                  className="ml-auto px-1 py-2 text-sm underline-offset-4 hover:underline"
                 >
                   Forgot your password?
                 </Link>
@@ -198,9 +198,10 @@ export function LoginForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                  className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading && isHydrated}
+                  aria-label={showPassword ? "Hide password" : "Show password"}
                 >
                   {showPassword ? (
                     <EyeOff className="size-4 text-muted-foreground" />
@@ -218,7 +219,7 @@ export function LoginForm({
 
             <Button
               type="submit"
-              className="w-full"
+              className="h-10 w-full sm:h-11"
               disabled={(isLoading && isHydrated) || isSubmitting}
             >
               {(isLoading && isHydrated) || isSubmitting ? (
@@ -231,7 +232,7 @@ export function LoginForm({
               )}
             </Button>
 
-            <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+            <div className="relative text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border sm:text-sm">
               <span className="relative z-10 bg-background px-2 text-muted-foreground">
                 Or continue with
               </span>
@@ -240,7 +241,7 @@ export function LoginForm({
             <Button
               type="button"
               variant="outline"
-              className="w-full"
+              className="h-10 w-full sm:h-11"
               onClick={handleGoogleLogin}
               disabled={isLoading && isHydrated}
             >
@@ -274,7 +275,7 @@ export function LoginForm({
 
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}
-        <Link href="/auth/register" className="underline underline-offset-4">
+        <Link href="/auth/register" className="px-1 py-2 underline underline-offset-4">
           Sign up
         </Link>
       </div>

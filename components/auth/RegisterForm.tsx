@@ -115,13 +115,13 @@ export function RegisterForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-6", className)}
+      className={cn("flex flex-col gap-4 sm:gap-6", className)}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-bold">Create your account</h1>
-        <p className="text-balance text-sm text-muted-foreground">
+      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2">
+        <h1 className="text-xl font-bold sm:text-2xl">Create your account</h1>
+        <p className="text-balance text-sm text-muted-foreground sm:text-base">
           Enter your email to get started with Fast Learners
         </p>
       </div>
@@ -133,8 +133,8 @@ export function RegisterForm({
         </Alert>
       )}
 
-      <div className="grid gap-6">
-        <div className="grid gap-3">
+      <div className="grid gap-4 sm:gap-6">
+        <div className="grid gap-2 sm:gap-3">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
@@ -144,6 +144,7 @@ export function RegisterForm({
             className={errors.email ? "border-destructive" : ""}
             disabled={isLoading}
             required
+            autoComplete="email"
           />
           {errors.email && (
             <p className="text-sm text-destructive">{errors.email.message}</p>
@@ -152,7 +153,7 @@ export function RegisterForm({
 
         <Button
           type="submit"
-          className="w-full"
+          className="h-10 w-full sm:h-11"
           disabled={isLoading || isSubmitting}
         >
           {isLoading ? (
@@ -165,7 +166,7 @@ export function RegisterForm({
           )}
         </Button>
 
-        <div className="relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
+        <div className="relative text-center text-xs after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border sm:text-sm">
           <span className="relative z-10 bg-background px-2 text-muted-foreground">
             Or continue with
           </span>
@@ -174,7 +175,7 @@ export function RegisterForm({
         <Button
           type="button"
           variant="outline"
-          className="w-full"
+          className="h-10 w-full sm:h-11"
           onClick={handleGoogleSignUp}
           disabled={isLoading}
         >
@@ -202,7 +203,7 @@ export function RegisterForm({
 
       <div className="text-center text-sm">
         Already have an account?{" "}
-        <Link href="/auth/login" className="underline underline-offset-4">
+        <Link href="/auth/login" className="px-1 py-2 underline underline-offset-4">
           Sign in
         </Link>
       </div>

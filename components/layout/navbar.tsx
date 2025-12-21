@@ -41,19 +41,18 @@ export function NavBar({ scroll = false }: NavBarProps) {
 
   return (
     <header
-      className={`sticky top-0 flex w-full justify-center bg-background/60 backdrop-blur-xl transition-all ${
-        scroll ? (scrolled ? "border-b" : "bg-transparent") : "border-b"
-      }`}
+      className={`sticky top-0 flex w-full justify-center bg-background/60 backdrop-blur-xl transition-all ${scroll ? (scrolled ? "border-b" : "bg-transparent") : "border-b"
+        }`}
       style={{ zIndex: Z_INDEX.navbar }}
     >
       <MaxWidthWrapper
-        className="flex h-14 items-center justify-between py-4"
+        className="flex h-12 items-center justify-between py-4 sm:h-14"
         large={documentation}
       >
         <div className="flex gap-6 md:gap-10">
           <Link href="/" className="flex items-center space-x-1.5">
             <Icons.logo />
-            <span className="font-urban text-xl font-bold">
+            <span className="font-urban text-lg font-bold sm:text-xl">
               {siteConfig.name}
             </span>
           </Link>
@@ -66,7 +65,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                   href={item.disabled ? "#" : item.href}
                   prefetch={true}
                   className={cn(
-                    "flex items-center text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
+                    "flex items-center py-2 text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
                     item.href.startsWith(`/${selectedLayout}`)
                       ? "text-foreground"
                       : "text-foreground/60",
@@ -111,7 +110,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
             {isAuthenticated && user ? (
               <Link
                 href={user.role.includes("admin") ? "/admin" : "/dashboard"}
-                className="hidden md:block"
+                className="hidden sm:block"
               >
                 <Button
                   className="gap-2 rounded-full px-5"
@@ -123,7 +122,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               </Link>
             ) : (
               <Button
-                className="hidden gap-2 rounded-full px-5 md:flex"
+                className="hidden gap-2 rounded-full px-5 sm:flex"
                 variant="default"
                 size="sm"
                 onClick={() => setShowSignInModal(true)}

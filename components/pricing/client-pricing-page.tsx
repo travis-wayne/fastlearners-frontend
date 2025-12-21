@@ -14,20 +14,20 @@ export function ClientPricingPage() {
 
   if (user?.role.includes("admin")) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center">
-        <h1 className="text-5xl font-bold">Seriously?</h1>
+      <div className="flex min-h-[400px] flex-col items-center justify-center p-6 text-center">
+        <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">Seriously?</h1>
         <Image
           src="/_static/illustrations/call-waiting.svg"
           alt="403"
           width={560}
           height={560}
-          className="pointer-events-none -my-20 dark:invert"
+          className="pointer-events-none -my-10 size-full max-w-[400px] dark:invert sm:-my-20"
         />
-        <p className="text-balance px-4 text-center text-2xl font-medium">
+        <p className="text-balance px-4 text-center text-lg font-medium sm:text-xl md:text-2xl">
           You are an admin. Back to{" "}
           <Link
             href="/admin"
-            className="text-muted-foreground underline underline-offset-4 hover:text-purple-500"
+            className="text-purple-600 underline underline-offset-4 hover:text-purple-500"
           >
             Dashboard
           </Link>
@@ -61,7 +61,7 @@ export function ClientPricingPage() {
   };
 
   return (
-    <div className="flex w-full flex-col gap-16 py-8 md:py-8">
+    <div className="flex w-full flex-col gap-12 py-10 sm:gap-16 sm:py-12 md:py-16">
       <PricingCards
         userId={user?.id?.toString()}
         subscriptionPlan={subscriptionPlan}

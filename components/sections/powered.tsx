@@ -240,34 +240,20 @@ const logos = [
 
 export default function Powered() {
   return (
-    <section className="py-14 text-muted-foreground">
+    <section className="py-12 text-muted-foreground sm:py-16 md:py-20">
       <MaxWidthWrapper>
-        <h2 className="text-center text-sm font-semibold uppercase">
-          Powered by
+        <h2 className="text-center font-heading text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground/60 sm:text-sm">
+          Built with Modern Technologies
         </h2>
 
-        <div className="mt-10 grid grid-cols-2 place-items-center gap-8 md:grid-cols-4">
-          {logos.slice(0, 4).map((logo) => (
+        <div className="mt-12 grid grid-cols-2 place-items-center gap-x-8 gap-y-10 sm:mt-16 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8 lg:gap-12">
+          {logos.map((logo) => (
             <Link
               target="_blank"
               key={logo.title}
               href={logo.href}
               aria-label={logo.title}
-              className="duration-250 grayscale transition hover:text-foreground hover:grayscale-0"
-            >
-              {logo.icon}
-            </Link>
-          ))}
-        </div>
-
-        <div className="mt-8 grid grid-cols-2 place-items-center gap-8 md:mt-10 md:grid-cols-4">
-          {logos.slice(4, 8).map((logo) => (
-            <Link
-              target="_blank"
-              key={logo.title}
-              href={logo.href}
-              aria-label={logo.title}
-              className="duration-250 grayscale transition hover:text-foreground hover:grayscale-0"
+              className="duration-250 opacity-40 grayscale transition-all hover:opacity-100 hover:grayscale-0"
             >
               {logo.icon}
             </Link>

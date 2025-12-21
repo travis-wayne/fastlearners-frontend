@@ -92,19 +92,18 @@ export function SuperAdminDashboard() {
   return (
     <div className="space-y-8">
       {/* System Stats Overview */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
         {systemStats.map((stat, index) => (
           <Card key={index}>
-            <CardContent className="p-4">
+            <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-muted-foreground">{stat.label}</p>
-                  <p className="text-2xl font-bold">{stat.value}</p>
+                  <p className="text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
+                  <p className="text-xl font-bold sm:text-2xl">{stat.value}</p>
                 </div>
                 <div
-                  className={`text-sm font-medium ${
-                    stat.trend === "up" ? "text-green-600" : "text-red-600"
-                  }`}
+                  className={`text-sm font-medium ${stat.trend === "up" ? "text-green-600" : "text-red-600"
+                    }`}
                 >
                   {stat.change}
                 </div>
@@ -114,7 +113,7 @@ export function SuperAdminDashboard() {
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         {/* User Management */}
         <Card className="lg:col-span-2">
           <CardHeader>
@@ -128,7 +127,7 @@ export function SuperAdminDashboard() {
           </CardHeader>
           <CardContent className="space-y-4">
             {roleDistribution.map((roleData) => (
-              <div key={roleData.role} className="space-y-2">
+              <div key={roleData.role} className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="font-medium">{roleData.role}</span>
                   <div className="flex items-center gap-2">
@@ -140,11 +139,11 @@ export function SuperAdminDashboard() {
                     </span>
                   </div>
                 </div>
-                <Progress value={roleData.percentage} className="h-2" />
+                <Progress value={roleData.percentage} className="h-1.5 sm:h-2" />
               </div>
             ))}
 
-            <div className="flex gap-2 pt-4">
+            <div className="xs:flex-row flex flex-col gap-2 pt-4">
               <Link href="/dashboard/superadmin/users" className="flex-1">
                 <Button className="w-full">
                   <Users className="mr-2 size-4" />
@@ -174,7 +173,7 @@ export function SuperAdminDashboard() {
             {systemAlerts.map((alert) => (
               <div
                 key={alert.id}
-                className="space-y-1 rounded-lg bg-muted/50 p-3"
+                className="space-y-1 rounded-lg bg-muted/50 p-2.5 sm:p-3"
               >
                 <div className="flex items-center gap-2">
                   <Badge
@@ -185,7 +184,7 @@ export function SuperAdminDashboard() {
                           ? "default"
                           : "secondary"
                     }
-                    className="text-xs"
+                    className="text-[10px] sm:text-xs"
                   >
                     {alert.severity}
                   </Badge>
@@ -204,7 +203,7 @@ export function SuperAdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -300,17 +299,16 @@ export function SuperAdminDashboard() {
             {recentActions.map((action) => (
               <div
                 key={action.id}
-                className="flex items-center justify-between rounded-lg bg-muted/50 p-3"
+                className="flex items-center justify-between rounded-lg bg-muted/50 p-2.5 sm:p-3"
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex size-8 items-center justify-center rounded-full ${
-                      action.type === "user"
+                    className={`flex size-7 items-center justify-center rounded-full sm:size-8 ${action.type === "user"
                         ? "bg-blue-100"
                         : action.type === "system"
                           ? "bg-green-100"
                           : "bg-purple-100"
-                    }`}
+                      }`}
                   >
                     {action.type === "user" ? (
                       <Users className="size-4 text-blue-600" />
@@ -321,8 +319,8 @@ export function SuperAdminDashboard() {
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{action.action}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-xs font-medium sm:text-sm">{action.action}</p>
+                    <p className="text-xs text-muted-foreground sm:text-sm">
                       {action.user}
                     </p>
                   </div>

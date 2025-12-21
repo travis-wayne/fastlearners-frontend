@@ -226,7 +226,7 @@ function mapApiSubjectToConfig(
   if (process.env.NODE_ENV === "development") {
     console.warn(
       `[SubjectDashboard] Unmapped API subject: ID=${apiSubject.id}, Name="${apiSubject.name}". ` +
-        `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`,
+      `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`,
     );
   }
 
@@ -437,17 +437,17 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const averageProgress =
     allApiSubjects.length > 0
       ? Math.round(
-          allApiSubjects.reduce((acc, subject) => {
-            const configSubject = mapApiSubjectToConfig(
-              subject,
-              currentClass?.id,
-            );
-            const progress = configSubject
-              ? mockSubjectProgress[configSubject.id]
-              : undefined;
-            return acc + (progress?.termProgress || 0);
-          }, 0) / allApiSubjects.length,
-        )
+        allApiSubjects.reduce((acc, subject) => {
+          const configSubject = mapApiSubjectToConfig(
+            subject,
+            currentClass?.id,
+          );
+          const progress = configSubject
+            ? mockSubjectProgress[configSubject.id]
+            : undefined;
+          return acc + (progress?.termProgress || 0);
+        }, 0) / allApiSubjects.length,
+      )
       : 0;
 
   const upcomingAssessments = allApiSubjects.reduce((acc, subject) => {
@@ -520,23 +520,22 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="container space-y-6 pb-20"
+      className="container mx-auto space-y-6 px-4 pb-20 sm:space-y-8 sm:px-6 lg:px-8"
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-          {/* <div>
-            <h1 className="text-3xl font-bold">Subjects</h1>
-            <p className="text-muted-foreground">
-              Your subjects for {classDisplay} - {termDisplay}
+        <div className="flex flex-col items-center justify-between gap-4 transition-all sm:flex-row">
+          <div className="text-center sm:text-left">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Subjects</h1>
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
+              Your subjects for <span className="font-medium text-primary">{classDisplay}</span> • <span className="font-medium text-primary">{termDisplay}</span>
             </p>
-            <AcademicSelector variant="compact" />
-          </div> */}
-          <div className="flex items-center gap-2">
-            <Link href="/dashboard/subjects/manage">
-              <Button variant="outline">
-                <Settings className="mr-2 size-4" />
-                Manage Subjects
+          </div>
+          <div className="flex w-full items-center justify-center gap-2 sm:w-auto">
+            <Link href="/dashboard/subjects/manage" className="w-full sm:w-auto">
+              <Button variant="outline" size="sm" className="h-9 w-full px-4 font-semibold shadow-sm transition-all hover:shadow-md">
+                <Settings className="mr-2 size-3.5" />
+                Manage
               </Button>
             </Link>
           </div>
@@ -545,50 +544,60 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
 
       {/* Stats Cards */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-          <Card>
-            <CardContent className="p-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-4">
+          <Card className="overflow-hidden border-2 bg-blue-50/30 shadow-sm transition-all hover:shadow-md dark:bg-blue-900/10">
+            <CardContent className="p-3 sm:p-4 md:p-5">
               <div className="flex items-center gap-2">
-                <BookOpen className="size-4 text-blue-600" />
-                <span className="text-sm text-muted-foreground">
-                  Total Subjects
+                <div className="rounded-md bg-blue-100 p-1.5 dark:bg-blue-900/30">
+                  <BookOpen className="size-3 text-blue-600 dark:text-blue-400 sm:size-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:text-xs">
+                  Total
                 </span>
               </div>
-              <p className="mt-1 text-2xl font-bold">{totalSubjects}</p>
+              <p className="mt-1 text-xl font-black text-blue-900 dark:text-blue-100 sm:mt-2 sm:text-2xl">{totalSubjects}</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
+          <Card className="overflow-hidden border-2 bg-emerald-50/30 shadow-sm transition-all hover:shadow-md dark:bg-emerald-900/10">
+            <CardContent className="p-3 sm:p-4 md:p-5">
               <div className="flex items-center gap-2">
-                <Target className="size-4 text-green-600" />
-                <span className="text-sm text-muted-foreground">Completed</span>
+                <div className="rounded-md bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
+                  <Target className="size-3 text-emerald-600 dark:text-emerald-400 sm:size-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:text-xs">
+                  Done
+                </span>
               </div>
-              <p className="mt-1 text-2xl font-bold">{completedSubjects}</p>
+              <p className="mt-1 text-xl font-black text-emerald-900 dark:text-emerald-100 sm:mt-2 sm:text-2xl">{completedSubjects}</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
+          <Card className="overflow-hidden border-2 bg-purple-50/30 shadow-sm transition-all hover:shadow-md dark:bg-purple-900/10">
+            <CardContent className="p-3 sm:p-4 md:p-5">
               <div className="flex items-center gap-2">
-                <TrendingUp className="size-4 text-purple-600" />
-                <span className="text-sm text-muted-foreground">
-                  Avg Progress
+                <div className="rounded-md bg-purple-100 p-1.5 dark:bg-purple-900/30">
+                  <TrendingUp className="size-3 text-purple-600 dark:text-purple-400 sm:size-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:text-xs">
+                  Avg
                 </span>
               </div>
-              <p className="mt-1 text-2xl font-bold">{averageProgress}%</p>
+              <p className="mt-1 text-xl font-black text-purple-900 dark:text-purple-100 sm:mt-2 sm:text-2xl">{averageProgress}%</p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
+          <Card className="overflow-hidden border-2 bg-orange-50/30 shadow-sm transition-all hover:shadow-md dark:bg-orange-900/10">
+            <CardContent className="p-3 sm:p-4 md:p-5">
               <div className="flex items-center gap-2">
-                <Users className="size-4 text-orange-600" />
-                <span className="text-sm text-muted-foreground">
-                  Assessments
+                <div className="rounded-md bg-orange-100 p-1.5 dark:bg-orange-900/30">
+                  <Users className="size-3 text-orange-600 dark:text-orange-400 sm:size-4" />
+                </div>
+                <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground sm:text-xs">
+                  Tests
                 </span>
               </div>
-              <p className="mt-1 text-2xl font-bold">{upcomingAssessments}</p>
+              <p className="mt-1 text-xl font-black text-orange-900 dark:text-orange-100 sm:mt-2 sm:text-2xl">{upcomingAssessments}</p>
             </CardContent>
           </Card>
         </div>
@@ -596,23 +605,23 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
 
       {/* Search and Filters */}
       <motion.div variants={itemVariants}>
-        <div className="flex flex-col gap-4 md:flex-row">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search subjects..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10"
+              className="h-10 pl-10 shadow-sm transition-all focus:ring-2 focus:ring-primary/20 sm:h-11"
             />
           </div>
           <Select value={selectedTrack} onValueChange={setSelectedTrack}>
-            <SelectTrigger className="w-[180px]">
-              <Filter className="mr-2 size-4" />
+            <SelectTrigger className="h-10 w-full font-medium shadow-sm sm:h-11 sm:w-[180px]">
+              <Filter className="mr-2 size-4 text-primary" />
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Subjects</SelectItem>
+              <SelectItem value="all">All Tracks</SelectItem>
               <SelectItem value="core">Core Subjects</SelectItem>
               <SelectItem value="elective">Elective Subjects</SelectItem>
               {currentClass.track && (
@@ -629,16 +638,16 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
 
       {/* Subjects Tabs */}
       <motion.div variants={itemVariants}>
-        <Tabs defaultValue="all" className="space-y-4">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="all">
-              All Subjects ({filteredSubjects.length})
+        <Tabs defaultValue="all" className="space-y-6">
+          <TabsList className="no-scrollbar flex h-auto w-full overflow-x-auto rounded-lg bg-muted/50 p-1">
+            <TabsTrigger value="all" className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm">
+              All <span className="ml-1 hidden sm:inline">Subjects</span> ({filteredSubjects.length})
             </TabsTrigger>
-            <TabsTrigger value="core">
-              Core Subjects ({coreSubjects.length})
+            <TabsTrigger value="core" className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm">
+              Core <span className="ml-1 hidden sm:inline">Subjects</span> ({coreSubjects.length})
             </TabsTrigger>
-            <TabsTrigger value="elective">
-              Electives ({electiveSubjects.length})
+            <TabsTrigger value="elective" className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm">
+              <span className="hidden sm:inline">Electives</span><span className="sm:hidden">Elect.</span> ({electiveSubjects.length})
             </TabsTrigger>
           </TabsList>
 
@@ -659,21 +668,21 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                     );
                     const progress = configSubject
                       ? mockSubjectProgress[configSubject.id] || {
-                          totalTopics: 10,
-                          completedTopics: 0,
-                          currentWeek: 1,
-                          totalWeeks: 12,
-                          upcomingAssessments: 0,
-                          termProgress: 0,
-                        }
+                        totalTopics: 10,
+                        completedTopics: 0,
+                        currentWeek: 1,
+                        totalWeeks: 12,
+                        upcomingAssessments: 0,
+                        termProgress: 0,
+                      }
                       : {
-                          totalTopics: 10,
-                          completedTopics: 0,
-                          currentWeek: 1,
-                          totalWeeks: 12,
-                          upcomingAssessments: 0,
-                          termProgress: 0,
-                        };
+                        totalTopics: 10,
+                        completedTopics: 0,
+                        currentWeek: 1,
+                        totalWeeks: 12,
+                        upcomingAssessments: 0,
+                        termProgress: 0,
+                      };
 
                     const fallback = !configSubject
                       ? getFallbackSubjectDisplay(apiSubject)
@@ -718,21 +727,21 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                     );
                     const progress = configSubject
                       ? mockSubjectProgress[configSubject.id] || {
-                          totalTopics: 8,
-                          completedTopics: 0,
-                          currentWeek: 1,
-                          totalWeeks: 10,
-                          upcomingAssessments: 0,
-                          termProgress: 0,
-                        }
+                        totalTopics: 8,
+                        completedTopics: 0,
+                        currentWeek: 1,
+                        totalWeeks: 10,
+                        upcomingAssessments: 0,
+                        termProgress: 0,
+                      }
                       : {
-                          totalTopics: 8,
-                          completedTopics: 0,
-                          currentWeek: 1,
-                          totalWeeks: 10,
-                          upcomingAssessments: 0,
-                          termProgress: 0,
-                        };
+                        totalTopics: 8,
+                        completedTopics: 0,
+                        currentWeek: 1,
+                        totalWeeks: 10,
+                        upcomingAssessments: 0,
+                        termProgress: 0,
+                      };
 
                     const fallback = !configSubject
                       ? getFallbackSubjectDisplay(apiSubject)
@@ -796,21 +805,21 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 );
                 const progress = configSubject
                   ? mockSubjectProgress[configSubject.id] || {
-                      totalTopics: 10,
-                      completedTopics: 0,
-                      currentWeek: 1,
-                      totalWeeks: 12,
-                      upcomingAssessments: 0,
-                      termProgress: 0,
-                    }
+                    totalTopics: 10,
+                    completedTopics: 0,
+                    currentWeek: 1,
+                    totalWeeks: 12,
+                    upcomingAssessments: 0,
+                    termProgress: 0,
+                  }
                   : {
-                      totalTopics: 10,
-                      completedTopics: 0,
-                      currentWeek: 1,
-                      totalWeeks: 12,
-                      upcomingAssessments: 0,
-                      termProgress: 0,
-                    };
+                    totalTopics: 10,
+                    completedTopics: 0,
+                    currentWeek: 1,
+                    totalWeeks: 12,
+                    upcomingAssessments: 0,
+                    termProgress: 0,
+                  };
 
                 const fallback = !configSubject
                   ? getFallbackSubjectDisplay(apiSubject)
@@ -847,21 +856,21 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 );
                 const progress = configSubject
                   ? mockSubjectProgress[configSubject.id] || {
-                      totalTopics: 8,
-                      completedTopics: 0,
-                      currentWeek: 1,
-                      totalWeeks: 10,
-                      upcomingAssessments: 0,
-                      termProgress: 0,
-                    }
+                    totalTopics: 8,
+                    completedTopics: 0,
+                    currentWeek: 1,
+                    totalWeeks: 10,
+                    upcomingAssessments: 0,
+                    termProgress: 0,
+                  }
                   : {
-                      totalTopics: 8,
-                      completedTopics: 0,
-                      currentWeek: 1,
-                      totalWeeks: 10,
-                      upcomingAssessments: 0,
-                      termProgress: 0,
-                    };
+                    totalTopics: 8,
+                    completedTopics: 0,
+                    currentWeek: 1,
+                    totalWeeks: 10,
+                    upcomingAssessments: 0,
+                    termProgress: 0,
+                  };
 
                 const fallback = !configSubject
                   ? getFallbackSubjectDisplay(apiSubject)

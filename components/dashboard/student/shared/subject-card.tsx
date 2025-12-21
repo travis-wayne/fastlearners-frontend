@@ -59,17 +59,17 @@ export function SubjectCard({
     return (
       <article
         className={cn(
-          "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:shadow-md sm:p-4 md:p-5",
+          "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-3 transition-all duration-300 hover:shadow-md active:scale-[0.98] sm:p-4",
           className,
         )}
       >
         <div className="w-full overflow-hidden rounded-xl border border-border">
           <div
-            className="flex items-center justify-center p-6 sm:p-8"
+            className="flex items-center justify-center p-5 transition-transform group-hover:scale-105 sm:p-8"
             style={{ backgroundColor: `${subject.color}10` }}
           >
             <IconComponent
-              className="size-10 sm:size-12"
+              className="size-8 shadow-sm sm:size-12"
               style={{ color: subject.color }}
             />
           </div>
@@ -246,17 +246,17 @@ export function SubjectCard({
   return (
     <article
       className={cn(
-        "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-4 transition-all duration-300 hover:shadow-lg sm:p-5 md:p-6",
+        "group relative flex flex-col space-y-2 rounded-lg border border-border bg-card p-3.5 transition-all duration-300 hover:shadow-lg active:scale-[0.99] sm:p-5",
         className,
       )}
     >
       <div className="w-full overflow-hidden rounded-xl border border-border">
         <div
-          className="flex items-center justify-center p-8 sm:p-10"
+          className="flex items-center justify-center p-6 transition-transform group-hover:scale-105 sm:p-10"
           style={{ backgroundColor: `${subject.color}10` }}
         >
           <IconComponent
-            className="size-12 sm:size-14"
+            className="size-10 shadow-sm sm:size-14"
             style={{ color: subject.color }}
           />
         </div>

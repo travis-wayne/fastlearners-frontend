@@ -38,29 +38,30 @@ export function NavMobile() {
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed right-2 top-2.5 rounded-full p-2 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted md:hidden",
+          "fixed right-3 top-3 rounded-full p-2.5 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted sm:right-4 sm:top-4 md:hidden",
           open && "hover:bg-muted active:bg-muted",
         )}
         style={{ zIndex: Z_INDEX.floatingToggle }}
       >
         {open ? (
-          <X className="size-5 text-muted-foreground" />
+          <X className="size-6 text-muted-foreground" />
         ) : (
-          <Menu className="size-5 text-muted-foreground" />
+          <Menu className="size-6 text-muted-foreground" />
         )}
       </button>
 
       <nav
         className={cn(
-          "fixed inset-0 z-20 hidden w-full overflow-auto bg-background px-5 py-16 lg:hidden",
+          "fixed inset-0 hidden w-full overflow-auto bg-background px-5 py-16 lg:hidden",
           open && "block",
         )}
+        style={{ zIndex: Z_INDEX.sheetOverlay }}
       >
         <ul className="grid divide-y divide-muted">
           {links &&
             links.length > 0 &&
             links.map(({ title, href }) => (
-              <li key={href} className="py-3">
+              <li key={href} className="py-4">
                 <Link
                   href={href}
                   onClick={() => setOpen(false)}
@@ -75,7 +76,7 @@ export function NavMobile() {
             {isAuthenticated && user ? (
               <>
                 {user.role.includes("admin") ? (
-                  <li className="py-3">
+                  <li className="py-4">
                     <Link
                       href="/admin"
                       onClick={() => setOpen(false)}
@@ -86,7 +87,7 @@ export function NavMobile() {
                   </li>
                 ) : null}
 
-                <li className="py-3">
+                <li className="py-4">
                   <Link
                     href="/dashboard"
                     onClick={() => setOpen(false)}
@@ -98,7 +99,7 @@ export function NavMobile() {
               </>
             ) : (
               <>
-                <li className="py-3">
+                <li className="py-4">
                   <Link
                     href="/auth/login"
                     onClick={() => setOpen(false)}
@@ -108,7 +109,7 @@ export function NavMobile() {
                   </Link>
                 </li>
 
-                <li className="py-3">
+                <li className="py-4">
                   <Link
                     href="/auth/register"
                     onClick={() => setOpen(false)}

@@ -59,33 +59,33 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
 
   const answerClassNames = (answer: string) =>
     cn(
-      "w-full rounded-lg border px-4 py-3 text-left text-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+      "w-full rounded-lg border px-4 py-3.5 text-left text-sm shadow-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary active:scale-[0.98] sm:py-3 sm:text-base",
       {
-        "border-green-500/60 bg-green-50 text-green-900":
+        "border-green-500/60 bg-green-50 text-green-900 font-semibold":
           getAnswerState(answer) === "correct",
-        "border-destructive/60 bg-destructive/5 text-destructive":
+        "border-destructive/60 bg-destructive/5 text-destructive font-medium":
           getAnswerState(answer) === "incorrect",
-        "hover:border-primary/60 hover:bg-primary/5":
+        "hover:border-primary/60 hover:bg-primary/5 hover:shadow-md":
           getAnswerState(answer) === "idle",
       },
     );
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <Card className="border-dashed">
-        <CardContent className="flex flex-wrap items-center justify-between gap-3 p-4">
-          <div>
-            <p className="text-xs uppercase text-muted-foreground">
-              Exercise {index + 1}
+      <Card className="border-dashed bg-muted/30 transition-colors hover:bg-muted/50">
+        <CardContent className="flex items-center justify-between gap-3 p-3 sm:p-4">
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
+              Practice {index + 1}
             </p>
-            <p className="font-medium">
-              {exercise.title || exercise.problem?.slice(0, 60) || "Practice"}
+            <p className="truncate text-sm font-medium sm:text-base">
+              {exercise.title || exercise.problem?.slice(0, 60) || "Practice Exercise"}
             </p>
           </div>
           <DialogTrigger asChild>
-            <Button size="sm" variant="outline">
-              Practice
-              <ArrowRight className="ml-2 size-4" />
+            <Button size="sm" variant="outline" className="h-9 shrink-0 px-4 font-semibold">
+              Go
+              <ArrowRight className="ml-1.5 size-3.5" />
             </Button>
           </DialogTrigger>
         </CardContent>

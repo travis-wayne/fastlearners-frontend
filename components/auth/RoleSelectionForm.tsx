@@ -149,17 +149,17 @@ export function RoleSelectionForm() {
   };
 
   return (
-    <div className="flex flex-col gap-8">
+    <div className="flex flex-col gap-6 sm:gap-8">
       {/* Header */}
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-3xl font-bold tracking-tight">Select your role</h1>
-        <p className="text-muted-foreground">
+      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2">
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Select your role</h1>
+        <p className="text-sm text-muted-foreground sm:text-base">
           Choose how you&apos;ll be using Fast Learners
         </p>
       </div>
 
       {/* Role Cards */}
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
         {roleOptions.map((option) => {
           const Icon = option.icon;
 
@@ -182,28 +182,28 @@ export function RoleSelectionForm() {
                 }
               }}
             >
-              <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
+              <CardContent className="flex flex-col items-center gap-3 p-6 text-center sm:gap-4 sm:p-8">
                 {/* Icon */}
                 <div
                   className={cn(
-                    "flex size-16 items-center justify-center rounded-full transition-transform duration-200",
+                    "flex size-12 items-center justify-center rounded-full transition-transform duration-200 sm:size-14 md:size-16",
                     "group-hover:scale-110",
                     option.iconBg,
                   )}
                 >
-                  <Icon className={cn("size-8", option.iconColor)} />
+                  <Icon className={cn("size-6 sm:size-7 md:size-8", option.iconColor)} />
                 </div>
 
                 {/* Title */}
-                <div className="space-y-2">
-                  <h3 className="text-xl font-semibold">{option.title}</h3>
-                  <p className="text-sm text-muted-foreground">
+                <div className="space-y-1.5 sm:space-y-2">
+                  <h3 className="text-lg font-semibold sm:text-xl">{option.title}</h3>
+                  <p className="text-xs text-muted-foreground sm:text-sm">
                     {option.description}
                   </p>
                 </div>
 
                 {/* Hover indicator */}
-                <div className="mt-2 text-xs font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <div className="mt-1 text-xs font-medium text-primary opacity-0 transition-opacity duration-200 group-hover:opacity-100 sm:mt-2 sm:text-sm">
                   Click to continue →
                 </div>
               </CardContent>
@@ -215,14 +215,14 @@ export function RoleSelectionForm() {
       {/* Guardian Expanded Form */}
       {expandedRole === "guardian" && (
         <Card className="border-2">
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="mb-4">
-              <h3 className="text-lg font-semibold">Guardian Information</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-base font-semibold sm:text-lg">Guardian Information</h3>
+              <p className="text-xs text-muted-foreground sm:text-sm">
                 Provide details to continue as a guardian.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -241,6 +241,9 @@ export function RoleSelectionForm() {
                 <Label htmlFor="phone">Phone</Label>
                 <Input
                   id="phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   placeholder="01234567890"
                   value={formData.phone}
                   onChange={(e) =>
@@ -287,6 +290,9 @@ export function RoleSelectionForm() {
                 <Label htmlFor="child_phone">Child&apos;s Phone</Label>
                 <Input
                   id="child_phone"
+                  type="tel"
+                  inputMode="tel"
+                  autoComplete="tel"
                   placeholder="08098765432"
                   value={formData.child_phone}
                   onChange={(e) =>
@@ -344,15 +350,17 @@ export function RoleSelectionForm() {
                 />
               </div>
             </div>
-            <div className="mt-6 flex items-center justify-end gap-3">
+            <div className="mt-6 flex items-center justify-end gap-2 sm:gap-3">
               <Button
                 variant="outline"
+                className="h-10 sm:h-11"
                 onClick={() => setExpandedRole(null)}
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
+                className="h-10 sm:h-11"
                 onClick={async () => {
                   if (!validateGuardian()) return;
                   try {

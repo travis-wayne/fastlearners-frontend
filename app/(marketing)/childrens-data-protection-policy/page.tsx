@@ -7,16 +7,16 @@ export const metadata = {
 
 export default function ChildrensDataProtectionPolicyPage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 md:py-20">
+    <div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16 md:py-20 lg:py-24">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Children’s Data Protection Policy
           </h1>
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             1. Purpose
           </h2>
           <p className="leading-relaxed text-muted-foreground">
@@ -25,7 +25,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             2. Definition of a Child
           </h2>
           <p className="text-muted-foreground">A child is:</p>
@@ -39,7 +39,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             3. Types of Data Collected
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
@@ -52,7 +52,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Parental Consent
           </h2>
           <p className="text-muted-foreground">We use verifiable parental consent methods:</p>
@@ -64,7 +64,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Parents/Guardians Have Rights To:
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
@@ -76,7 +76,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. Data Sharing
           </h2>
           <p className="text-muted-foreground">
@@ -85,7 +85,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. Data Retention
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
@@ -95,7 +95,7 @@ export default function ChildrensDataProtectionPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             8. Security Measures
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">

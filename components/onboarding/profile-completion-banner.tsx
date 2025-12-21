@@ -76,21 +76,23 @@ export const ProfileCompletionBanner: React.FC = () => {
           <Alert className="border-blue-200 bg-blue-50 text-blue-800 dark:border-blue-800 dark:bg-blue-950 dark:text-blue-200">
             <AlertCircle className="size-4" />
             <div className="flex w-full flex-col items-center justify-between md:flex-row">
-              <div className="flex-1">
-                <AlertTitle>Complete Your Profile</AlertTitle>
+              <div className="flex-1 text-left">
+                <AlertTitle className="text-sm sm:text-base">Complete Your Profile</AlertTitle>
                 <AlertDescription>
                   You&apos;re {percentage}% done! Complete your profile to
                   unlock all features. {missingFields.length} fields remaining.
                 </AlertDescription>
               </div>
-              <div className="mt-2 flex items-center space-x-2 md:mt-0">
-                <Progress value={percentage} className="w-20" />
-                <Button asChild>
+              <div className="mt-3 flex w-full flex-col space-y-2 sm:mt-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0 md:mt-0 md:w-auto">
+                <Progress value={percentage} className="w-full sm:w-16 md:w-20" />
+                <Button asChild className="w-full sm:w-auto" size="sm">
                   <Link href="/onboarding">
-                    Complete Profile <ArrowRight className="size-4" />
+                    <span className="xs:inline hidden">Complete Profile</span>
+                    <span className="xs:hidden">Complete</span>
+                    <ArrowRight className="ml-1 size-3.5" />
                   </Link>
                 </Button>
-                <Button variant="ghost" onClick={handleDismiss}>
+                <Button variant="ghost" onClick={handleDismiss} className="w-full sm:w-auto" size="sm">
                   Remind Me Later
                 </Button>
               </div>

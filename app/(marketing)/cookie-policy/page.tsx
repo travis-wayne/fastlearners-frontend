@@ -7,10 +7,10 @@ export const metadata = {
 
 export default function CookiePolicyPage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 md:py-20">
+    <div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16 md:py-20 lg:py-24">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Cookie Policy
           </h1>
           <div className="flex flex-col space-y-1 text-muted-foreground">
@@ -20,7 +20,7 @@ export default function CookiePolicyPage() {
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             1. Introduction
           </h2>
           <p className="leading-relaxed text-muted-foreground">
@@ -32,7 +32,7 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             2. What Are Cookies?
           </h2>
           <p className="leading-relaxed text-muted-foreground">
@@ -49,12 +49,12 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             3. Types of Cookies We Use
           </h2>
-          
+
           <div className="space-y-3">
-            <h3 className="text-xl font-medium text-foreground">a. Strictly Necessary Cookies</h3>
+            <h3 className="text-lg font-medium text-foreground sm:text-xl">a. Strictly Necessary Cookies</h3>
             <p className="text-muted-foreground">Required for the app to function.</p>
             <div className="border-l-2 border-muted pl-4">
               <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
@@ -70,7 +70,7 @@ export default function CookiePolicyPage() {
           </div>
 
           <div className="space-y-3 pt-2">
-            <h3 className="text-xl font-medium text-foreground">b. Functional Cookies</h3>
+            <h3 className="text-lg font-medium text-foreground sm:text-xl">b. Functional Cookies</h3>
             <p className="text-muted-foreground">Improve app usability.</p>
             <div className="border-l-2 border-muted pl-4">
               <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
@@ -82,7 +82,7 @@ export default function CookiePolicyPage() {
           </div>
 
           <div className="space-y-3 pt-2">
-            <h3 className="text-xl font-medium text-foreground">c. Analytics Cookies</h3>
+            <h3 className="text-lg font-medium text-foreground sm:text-xl">c. Analytics Cookies</h3>
             <p className="text-muted-foreground">Used to understand how users interact with the app.</p>
             <div className="border-l-2 border-muted pl-4">
               <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
@@ -95,12 +95,12 @@ export default function CookiePolicyPage() {
           </div>
 
           <div className="space-y-3 pt-2">
-            <h3 className="text-xl font-medium text-foreground">d. Performance Cookies</h3>
+            <h3 className="text-lg font-medium text-foreground sm:text-xl">d. Performance Cookies</h3>
             <p className="text-muted-foreground">Help optimize speed, loading, and responsiveness.</p>
           </div>
 
           <div className="space-y-3 pt-2">
-            <h3 className="text-xl font-medium text-foreground">e. Third-Party Cookies</h3>
+            <h3 className="text-lg font-medium text-foreground sm:text-xl">e. Third-Party Cookies</h3>
             <p className="text-muted-foreground">These may come from:</p>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Hosting providers</li>
@@ -112,7 +112,7 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Why We Use Cookies
           </h2>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
@@ -125,7 +125,7 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Legal Basis for Using Cookies
           </h2>
           <p className="text-muted-foreground">Under NDPR & GDPR, our legal bases include:</p>
@@ -136,7 +136,7 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. How to Manage or Disable Cookies
           </h2>
           <p className="text-muted-foreground">Users can:</p>
@@ -153,7 +153,7 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. Changes to This Policy
           </h2>
           <p className="text-muted-foreground">
@@ -162,7 +162,7 @@ export default function CookiePolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             8. Contact
           </h2>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">

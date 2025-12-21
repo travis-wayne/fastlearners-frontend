@@ -80,20 +80,20 @@ export function GuestDashboard() {
     <div className="space-y-6">
       {/* Hero banner */}
       <div
-        className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
+        className={`relative overflow-hidden rounded-2xl p-4 sm:p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
       >
-        <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-col gap-4 sm:gap-6 md:flex-row md:items-center md:justify-between">
           <div className="space-y-2">
             <p className="text-sm text-white/90">{today}</p>
-            <h1 className="text-2xl font-bold tracking-tight text-white md:text-3xl">
+            <h1 className="text-xl font-bold tracking-tight text-white sm:text-2xl md:text-3xl">
               Good Morning, {displayName}
             </h1>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="h-5 px-2 text-xs">
+              <Badge variant="secondary" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
                 Role: {roleLabel}
               </Badge>
               {user?.email ? (
-                <Badge variant="outline" className="h-5 px-2 text-xs">
+                <Badge variant="outline" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
                   {user.email}
                 </Badge>
               ) : null}
@@ -104,19 +104,19 @@ export function GuestDashboard() {
             </p>
           </div>
           <div className="hidden select-none md:block">
-            <div className="relative size-28">
+            <div className="relative size-20 sm:size-24 md:size-28">
               <div className="absolute inset-0 rounded-full bg-yellow-300" />
               <div className="absolute inset-1 rounded-full bg-yellow-200" />
-              <div className="absolute right-4 top-6 h-3 w-5 rounded bg-black" />
-              <div className="absolute right-10 top-6 h-3 w-5 rounded bg-black" />
-              <div className="absolute right-7 top-12 h-1.5 w-10 rounded-full bg-amber-700" />
+              <div className="absolute right-3 top-5 h-2.5 w-4 rounded bg-black sm:right-4 sm:top-6 sm:h-3 sm:w-5" />
+              <div className="absolute right-8 top-5 h-2.5 w-4 rounded bg-black sm:right-10 sm:top-6 sm:h-3 sm:w-5" />
+              <div className="absolute right-6 top-10 h-1.5 w-8 rounded-full bg-amber-700 sm:right-7 sm:top-12 sm:h-1.5 sm:w-10" />
             </div>
           </div>
         </div>
       </div>
 
       {/* Quick panels */}
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base">
@@ -128,9 +128,9 @@ export function GuestDashboard() {
               <p key={t}>{t}</p>
             ))}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="p-4 pt-0 sm:p-6 sm:pt-0">
             <Link href="/dashboard/lessons" className="w-full">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="h-10 w-full sm:h-11">
                 View All Lessons
                 <ArrowRight className="ml-2 size-4" />
               </Button>
@@ -149,9 +149,9 @@ export function GuestDashboard() {
               <p key={t}>{t}</p>
             ))}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="p-4 pt-0 sm:p-6 sm:pt-0">
             <Link href="/dashboard/quizzes" className="w-full">
-              <Button className="w-full">
+              <Button className="h-10 w-full sm:h-11">
                 View All Quizzes
                 <ArrowRight className="ml-2 size-4" />
               </Button>
@@ -170,9 +170,9 @@ export function GuestDashboard() {
               <p key={t}>{t}</p>
             ))}
           </CardContent>
-          <CardFooter>
+          <CardFooter className="p-4 pt-0 sm:p-6 sm:pt-0">
             <Link href="/dashboard/past-questions" className="w-full">
-              <Button variant="outline" className="w-full">
+              <Button variant="outline" className="h-10 w-full sm:h-11">
                 View All Quizzes
                 <ArrowRight className="ml-2 size-4" />
               </Button>
@@ -182,14 +182,14 @@ export function GuestDashboard() {
       </div>
 
       {/* Helpful hints */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-base">Upgrade</CardTitle>
             <CardDescription>Access full learning experience</CardDescription>
           </CardHeader>
-          <CardFooter className="pt-0">
-            <Button size="sm" className="w-full">
+          <CardFooter className="p-4 pt-0 sm:p-6 sm:pt-0">
+            <Button size="sm" className="h-9 w-full sm:h-10">
               Upgrade Now
             </Button>
           </CardFooter>
@@ -199,8 +199,8 @@ export function GuestDashboard() {
             <CardTitle className="text-base">Support</CardTitle>
             <CardDescription>We’re here to help</CardDescription>
           </CardHeader>
-          <CardFooter className="pt-0">
-            <Button variant="outline" size="sm" className="w-full">
+          <CardFooter className="p-4 pt-0 sm:p-6 sm:pt-0">
+            <Button variant="outline" size="sm" className="h-9 w-full sm:h-10">
               Contact Support
             </Button>
           </CardFooter>
@@ -210,8 +210,8 @@ export function GuestDashboard() {
             <CardTitle className="text-base">What’s New</CardTitle>
             <CardDescription>Latest features and tips</CardDescription>
           </CardHeader>
-          <CardFooter className="pt-0">
-            <Button variant="ghost" size="sm" className="w-full">
+          <CardFooter className="p-4 pt-0 sm:p-6 sm:pt-0">
+            <Button variant="ghost" size="sm" className="h-9 w-full sm:h-10">
               Learn More
             </Button>
           </CardFooter>

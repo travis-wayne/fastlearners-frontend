@@ -29,7 +29,7 @@ export function LeaderBoard({
 }: LeaderBoardProps) {
   return (
     <Card className="border bg-card">
-      <CardHeader>
+      <CardHeader className="px-4 sm:px-6">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-xl font-semibold text-gray-900 dark:text-slate-100">
@@ -47,25 +47,24 @@ export function LeaderBoard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-3">
+        <div className="space-y-2 sm:space-y-3">
           {entries.map((student) => (
             <div
               key={student.rank}
-              className={`flex items-center gap-3 rounded-lg border p-2 transition-colors ${
-                student.isCurrentUser
+              className={`flex items-center gap-3 rounded-lg border p-2 transition-colors sm:p-3 ${student.isCurrentUser
                   ? "border-primary/30 bg-primary/10"
                   : "hover:bg-muted"
-              }`}
+                }`}
             >
-              <div className="w-6 text-sm font-bold">#{student.rank}</div>
-              <Avatar className="size-8">
+              <div className="w-5 text-sm font-bold sm:w-6">#{student.rank}</div>
+              <Avatar className="size-7 sm:size-8">
                 {student.avatar ? (
                   <AvatarImage src={student.avatar} alt={student.name} />
                 ) : null}
                 <AvatarFallback>{student.name?.[0] ?? "U"}</AvatarFallback>
               </Avatar>
               <div className="flex-1">
-                <div className="text-sm font-medium text-gray-900 dark:text-slate-200">
+                <div className="text-xs font-medium text-gray-900 dark:text-slate-200 sm:text-sm">
                   {student.name}
                 </div>
               </div>

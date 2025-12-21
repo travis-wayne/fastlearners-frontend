@@ -34,7 +34,7 @@ export function ComparePlans() {
               {plansColumns.map((col) => (
                 <th
                   key={col}
-                  className="sticky z-10 w-40 bg-accent p-5 font-heading text-xl capitalize tracking-wide md:w-auto lg:top-14 lg:text-2xl"
+                  className="sticky z-10 w-40 bg-accent p-4 font-heading text-lg capitalize tracking-wide sm:p-5 md:w-auto lg:top-14 lg:text-2xl"
                 >
                   {col}
                 </th>
@@ -49,7 +49,7 @@ export function ComparePlans() {
                   className="sticky left-0 bg-accent md:bg-transparent"
                 >
                   <div className="flex items-center justify-between space-x-2 p-4">
-                    <span className="text-[15px] font-medium lg:text-base">
+                    <span className="text-sm font-medium sm:text-[15px] lg:text-base">
                       {row.feature}
                     </span>
                     {row.tooltip && (
@@ -70,7 +70,7 @@ export function ComparePlans() {
                 {plansColumns.map((col) => (
                   <td
                     key={col}
-                    className="p-4 text-center text-[15px] text-muted-foreground lg:text-base"
+                    className="p-3 text-center text-sm text-muted-foreground sm:p-4 sm:text-[15px] lg:text-base"
                   >
                     {renderCell(row[col])}
                   </td>

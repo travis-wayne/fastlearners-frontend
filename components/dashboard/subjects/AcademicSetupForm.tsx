@@ -133,18 +133,18 @@ export function AcademicSetupForm({
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle>Academic Setup</CardTitle>
-        <CardDescription>
+      <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+        <CardTitle className="text-xl font-bold sm:text-2xl">Academic Setup</CardTitle>
+        <CardDescription className="text-xs sm:text-sm">
           Set up your class, term, and discipline to begin subject registration
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
         {/* Class Selection */}
         <div className="space-y-3">
-          <Label className="text-base font-semibold">Select Your Class</Label>
+          <Label className="text-sm font-bold text-foreground sm:text-base">Select Your Class</Label>
           <RadioGroup value={selectedClass} onValueChange={setSelectedClass}>
-            <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
               {classes.map((cls) => (
                 <div key={cls.value}>
                   <RadioGroupItem
@@ -154,9 +154,9 @@ export function AcademicSetupForm({
                   />
                   <Label
                     htmlFor={cls.value}
-                    className="flex cursor-pointer items-center justify-center rounded-lg border-2 p-4 transition-all hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                    className="flex cursor-pointer items-center justify-center rounded-lg border-2 p-3 shadow-sm transition-all hover:bg-accent active:scale-[0.97] peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 sm:p-4"
                   >
-                    <span className="font-semibold">{cls.label}</span>
+                    <span className="text-sm font-bold sm:text-base">{cls.label}</span>
                   </Label>
                 </div>
               ))}
@@ -167,7 +167,7 @@ export function AcademicSetupForm({
         {/* Discipline Selection (SSS Only) */}
         {isSSS && (
           <div className="space-y-3">
-            <Label className="text-base font-semibold">
+            <Label className="text-sm font-bold text-foreground sm:text-base">
               Select Your Discipline
             </Label>
             <RadioGroup
@@ -184,12 +184,12 @@ export function AcademicSetupForm({
                     />
                     <Label
                       htmlFor={disc.value}
-                      className="flex cursor-pointer items-start gap-4 rounded-lg border-2 p-4 transition-all hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                      className="flex cursor-pointer items-start gap-3 rounded-lg border-2 p-3.5 shadow-sm transition-all hover:bg-accent active:scale-[0.98] peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 sm:gap-4 sm:p-4"
                     >
-                      <span className="text-3xl">{disc.icon}</span>
+                      <span className="shrink-0 text-2xl sm:text-3xl">{disc.icon}</span>
                       <div>
-                        <div className="font-semibold">{disc.label}</div>
-                        <p className="text-sm text-muted-foreground">
+                        <div className="text-sm font-bold leading-tight sm:text-base">{disc.label}</div>
+                        <p className="mt-0.5 text-[11px] text-muted-foreground sm:mt-1 sm:text-sm">
                           {disc.description}
                         </p>
                       </div>
@@ -203,9 +203,9 @@ export function AcademicSetupForm({
 
         {/* Term Selection */}
         <div className="space-y-3">
-          <Label className="text-base font-semibold">Select Current Term</Label>
+          <Label className="text-sm font-bold text-foreground sm:text-base">Select Current Term</Label>
           <RadioGroup value={selectedTerm} onValueChange={setSelectedTerm}>
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
               {academicTerms.map((term) => (
                 <div key={term.id}>
                   <RadioGroupItem
@@ -215,10 +215,10 @@ export function AcademicSetupForm({
                   />
                   <Label
                     htmlFor={`term-${term.id}`}
-                    className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 p-4 transition-all hover:bg-accent peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/5"
+                    className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 p-3.5 shadow-sm transition-all hover:bg-accent active:scale-[0.98] peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 sm:p-4"
                   >
-                    <span className="font-semibold">{term.name}</span>
-                    <span className="text-sm text-muted-foreground">
+                    <span className="text-sm font-bold sm:text-base">{term.name}</span>
+                    <span className="mt-0.5 text-[11px] text-muted-foreground sm:text-sm">
                       {term.description}
                     </span>
                   </Label>
@@ -232,8 +232,8 @@ export function AcademicSetupForm({
         <Button
           onClick={handleSubmit}
           disabled={!canSubmit || isSubmitting}
-          size="lg"
-          className="w-full"
+          size="default"
+          className="mt-2 h-11 w-full font-bold shadow-lg sm:h-12"
         >
           {isSubmitting ? (
             <>

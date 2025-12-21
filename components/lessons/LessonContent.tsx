@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ExerciseModal } from "@/components/lessons/ExerciseModal";
+import { cn } from "@/lib/utils";
 
 interface LessonContentProps {
   content: LessonContentType;
@@ -30,25 +31,25 @@ export function LessonContent({
 }: LessonContentProps) {
   const completionPercentage = content.check_markers
     ? Math.round(
-        (content.check_markers.filter((m: any) => m.completed).length /
-          content.check_markers.length) *
-          100,
-      )
+      (content.check_markers.filter((m: any) => m.completed).length /
+        content.check_markers.length) *
+      100,
+    )
     : 0;
 
   return (
     <div className="space-y-6">
       {/* Progress Header */}
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <p className="text-sm text-muted-foreground">Lesson Progress</p>
-              <Progress value={completionPercentage} className="h-2 w-32" />
+            <div className="max-w-[150px] flex-1 space-y-1.5 sm:max-w-none">
+              <p className="text-xs font-medium text-muted-foreground sm:text-sm">Lesson Progress</p>
+              <Progress value={completionPercentage} className="h-1.5 w-full sm:h-2 sm:w-48" />
             </div>
-            <div className="text-right">
-              <p className="text-sm font-medium">{completionPercentage}%</p>
-              <p className="text-xs text-muted-foreground">Complete</p>
+            <div className="shrink-0 text-right">
+              <p className="text-lg font-bold leading-none text-primary sm:text-xl">{completionPercentage}%</p>
+              <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">Complete</p>
             </div>
           </div>
         </CardContent>
@@ -56,30 +57,32 @@ export function LessonContent({
 
       {/* Video Player */}
       {content.video_path && (
-        <Card>
+        <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
-            <video
-              controls
-              className="w-full rounded-lg"
-              src={content.video_path}
-            >
-              Your browser does not support the video tag.
-            </video>
+            <div className="aspect-video w-full bg-black">
+              <video
+                controls
+                className="size-full"
+                src={content.video_path}
+              >
+                Your browser does not support the video tag.
+              </video>
+            </div>
           </CardContent>
         </Card>
       )}
 
       {/* Overview */}
       {content.overview && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <BookOpen className="size-5" />
+        <Card className="border-2">
+          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <BookOpen className="size-4 text-primary sm:size-5" />
               Overview
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <p className="leading-relaxed text-muted-foreground">
+          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+            <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
               {content.overview}
             </p>
           </CardContent>
@@ -88,14 +91,14 @@ export function LessonContent({
 
       {/* Objectives */}
       {content.objectives && content.objectives.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Target className="size-5" />
+        <Card className="border-2">
+          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Target className="size-4 text-primary sm:size-5" />
               Learning Objectives
             </CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
             <div className="space-y-4">
               {content.objectives.map((objective, index) => (
                 <div key={index} className="space-y-2">
@@ -107,14 +110,14 @@ export function LessonContent({
                   {objective.points &&
                     Array.isArray(objective.points) &&
                     objective.points.length > 0 && (
-                      <ul className="ml-4 space-y-2">
+                      <ul className="ml-2 space-y-2.5 sm:ml-4">
                         {objective.points.map((point, pointIndex) => (
                           <li
                             key={pointIndex}
-                            className="flex items-start gap-2"
+                            className="flex items-start gap-2.5"
                           >
-                            <CheckCircle className="mt-0.5 size-4 shrink-0 text-green-600" />
-                            <span className="text-muted-foreground">
+                            <CheckCircle className="mt-0.5 size-3.5 shrink-0 text-emerald-600 sm:size-4" />
+                            <span className="text-xs leading-snug text-muted-foreground sm:text-sm">
                               {point}
                             </span>
                           </li>
@@ -130,11 +133,11 @@ export function LessonContent({
 
       {/* Key Concepts */}
       {content.key_concepts && Object.keys(content.key_concepts).length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Key Concepts</CardTitle>
+        <Card className="border-2">
+          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+            <CardTitle className="text-lg sm:text-xl">Key Concepts</CardTitle>
           </CardHeader>
-          <CardContent>
+          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
             <div className="space-y-3">
               {Object.entries(content.key_concepts).map(([key, value]) => (
                 <div
@@ -155,11 +158,11 @@ export function LessonContent({
       {content.concepts && content.concepts.length > 0 && (
         <div className="space-y-6">
           {content.concepts.map((concept) => (
-            <Card key={concept.id} id={`concept-${concept.id}`}>
-              <CardHeader>
-                <CardTitle className="text-xl">{concept.title}</CardTitle>
+            <Card className="border-2">
+              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+                <CardTitle className="text-lg font-bold transition-colors group-hover:text-primary sm:text-xl">{concept.title}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4">
+              <CardContent className="space-y-4 p-4 pt-0 sm:space-y-6 sm:p-6 sm:pt-0">
                 {/* Description - array of ConceptDescription objects */}
                 {concept.description &&
                   Array.isArray(concept.description) &&
@@ -271,27 +274,32 @@ export function LessonContent({
 
       {/* Mark Complete Button */}
       {onMarkComplete && (
-        <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="mb-1 font-semibold">
-                  {isCompleted ? "Lesson Completed!" : "Complete this lesson"}
+        <Card className="border-2 bg-gradient-to-br from-primary/5 via-transparent to-primary/5">
+          <CardContent className="p-4 sm:p-6">
+            <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+              <div className="text-center sm:text-left">
+                <h3 className="mb-1 text-lg font-bold">
+                  {isCompleted ? "Lesson Completed!" : "Ready for next step?"}
                 </h3>
-                <p className="text-sm text-muted-foreground">
+                <p className="max-w-sm text-xs text-muted-foreground sm:text-sm">
                   {isCompleted
-                    ? "You've successfully completed this lesson."
-                    : "Mark this lesson as complete when you're done."}
+                    ? "Great job! You've successfully finished this section."
+                    : "Mark this as complete to move on to the next part of the lesson."}
                 </p>
               </div>
               <Button
+                size="lg"
                 onClick={onMarkComplete}
                 disabled={isCompleted}
                 variant={isCompleted ? "outline" : "default"}
+                className={cn(
+                  "w-full min-w-[160px] font-semibold transition-all sm:w-auto",
+                  !isCompleted && "shadow-lg hover:shadow-primary/20"
+                )}
               >
                 {isCompleted ? (
                   <>
-                    <CheckCircle className="mr-2 size-4" />
+                    <CheckCircle className="mr-2 size-4 text-emerald-600" />
                     Completed
                   </>
                 ) : (

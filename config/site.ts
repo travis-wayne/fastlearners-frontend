@@ -6,14 +6,14 @@ const site_url = env.NEXT_PUBLIC_APP_URL;
 export const siteConfig: SiteConfig = {
   name: "FastLearners",
   description:
-    "Get your project off to an explosive start with FastLearners! Harness the power of Next.js 14, Prisma, Neon, Auth.js v5, Resend, React Email, Shadcn/ui and Stripe to build your next big thing.",
+    "Fastlearners is an innovative digital learning platform designed to make education smarter, easier, and more engaging for Nigerian secondary school students.",
   url: site_url,
   ogImage: `${site_url}/_static/og.jpg`,
   links: {
     twitter: "https://fastlearnersapp.com/",
     github: "https://github.com/fastlearners",
   },
-  mailSupport: "support@saas-starter.com",
+  mailSupport: "info@fastlearnersapp.com",
 };
 
 export const footerLinks: SidebarNavItem[] = [

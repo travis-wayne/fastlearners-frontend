@@ -109,8 +109,8 @@ export default function UnifiedDashboardPage() {
 
   const normalizedRoles = Array.isArray(user.role)
     ? user.role
-        .filter((role) => typeof role === "string")
-        .map((role) => role.toLowerCase())
+      .filter((role) => typeof role === "string")
+      .map((role) => role.toLowerCase())
     : [];
 
   const primaryRole = normalizedRoles.find((role) => KNOWN_ROLES.has(role));
@@ -130,7 +130,9 @@ export default function UnifiedDashboardPage() {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-background"
     >
-      <RoleDashboard userRole={primaryRole ?? "unrecognized"} />
+      <div className="container mx-auto px-4 py-6 sm:px-6 sm:py-8">
+        <RoleDashboard userRole={primaryRole ?? "unrecognized"} />
+      </div>
     </motion.div>
   );
 }

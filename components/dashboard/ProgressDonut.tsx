@@ -63,7 +63,7 @@ export function ProgressDonut({
             {title}
           </CardTitle>
           <Select value={value} onValueChange={onChange}>
-            <SelectTrigger className="w-40 border bg-background text-foreground">
+            <SelectTrigger className="w-32 border bg-background text-foreground sm:w-40">
               <SelectValue placeholder="Select subject" />
             </SelectTrigger>
             <SelectContent className="border bg-popover text-popover-foreground">
@@ -81,16 +81,16 @@ export function ProgressDonut({
       </CardHeader>
       <CardContent>
         <div className="relative">
-          <div className="h-[250px]">
-            <ResponsiveContainer width="100%" height={250}>
+          <div className="h-[200px] sm:h-[220px] md:h-[250px]">
+            <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={data}
                   dataKey="value"
                   cx="50%"
                   cy="50%"
-                  innerRadius={70}
-                  outerRadius={90}
+                  innerRadius={typeof window !== 'undefined' && window.innerWidth < 640 ? 60 : 70}
+                  outerRadius={typeof window !== 'undefined' && window.innerWidth < 640 ? 80 : 90}
                   startAngle={90}
                   endAngle={-270}
                   stroke="#0f172a" // slate-900 background
@@ -122,7 +122,7 @@ export function ProgressDonut({
           {/* Center label */}
           <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
             <div className="text-center">
-              <p className="text-4xl font-bold text-gray-900 dark:text-slate-100">
+              <p className="text-3xl font-bold text-gray-900 dark:text-slate-100 sm:text-4xl">
                 {percentage}%
               </p>
               <p className="text-sm text-gray-500 dark:text-slate-400">
@@ -133,7 +133,7 @@ export function ProgressDonut({
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-4">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 overflow-x-auto">
           <div className="flex items-center gap-2">
             <div
               className="size-3 rounded-full"

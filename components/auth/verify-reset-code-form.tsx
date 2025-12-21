@@ -171,20 +171,20 @@ export function VerifyResetCodeForm({
   const codeValue = watch("code") || "";
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-4 sm:gap-6", className)} {...props}>
       <Card>
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-blue-100">
-            <Shield className="size-6 text-blue-600" />
+        <CardHeader className="space-y-1 text-center sm:space-y-1.5">
+          <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-full bg-blue-100 sm:mb-4 sm:size-12">
+            <Shield className="size-5 text-blue-600 sm:size-6" />
           </div>
-          <CardTitle>Enter reset code</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl">Enter reset code</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             We sent a 6-digit code to
             <br />
             <span className="font-medium text-foreground">{email}</span>
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="size-4" />
@@ -193,12 +193,12 @@ export function VerifyResetCodeForm({
           )}
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="code" className="text-center">
                   Reset code
                 </Label>
-                <div className="flex justify-center gap-2">
+                <div className="flex justify-center gap-1.5 sm:gap-2">
                   {[...Array(6)].map((_, index) => (
                     <Input
                       key={index}
@@ -208,7 +208,7 @@ export function VerifyResetCodeForm({
                       type="text"
                       inputMode="numeric"
                       maxLength={1}
-                      className="size-12 text-center text-lg font-semibold"
+                      className="size-10 text-center text-base font-semibold sm:size-12 sm:text-lg md:size-14"
                       value={codeValue[index] || ""}
                       onChange={(e) => handleInputChange(index, e.target.value)}
                       onKeyDown={(e) => handleKeyDown(index, e)}
@@ -226,7 +226,7 @@ export function VerifyResetCodeForm({
 
               <Button
                 type="submit"
-                className="w-full"
+                className="h-10 w-full sm:h-11"
                 disabled={isLoading || isSubmitting || codeValue.length !== 6}
               >
                 {isLoading ? (

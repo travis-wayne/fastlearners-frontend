@@ -68,31 +68,31 @@ function LoadingSkeleton() {
     <div className="space-y-6">
       {/* Progress Card Skeleton */}
       <Card className="border-2 bg-gradient-to-r from-primary/5 via-primary/5 to-background">
-        <CardContent className="p-6">
+        <CardContent className="p-4 sm:p-5 md:p-6">
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
               <div className="flex items-center gap-3">
-                <Skeleton className="size-10 rounded-lg" />
+                <Skeleton className="size-8 rounded-lg sm:size-10" />
                 <div>
-                  <Skeleton className="mb-1 h-4 w-24" />
-                  <Skeleton className="h-8 w-16" />
+                  <Skeleton className="mb-1 h-3 w-20 sm:h-4 sm:w-24" />
+                  <Skeleton className="h-6 w-12 sm:h-8 sm:w-16" />
                 </div>
               </div>
-              <Skeleton className="h-6 w-20 rounded-full" />
+              <Skeleton className="h-5 w-16 rounded-full sm:h-6 sm:w-20" />
             </div>
-            <Skeleton className="h-3 w-full rounded-full" />
+            <Skeleton className="h-2 w-full rounded-full sm:h-3" />
           </div>
         </CardContent>
       </Card>
 
       {/* Breadcrumb Skeleton */}
       <Card className="border-2">
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2">
+        <CardContent className="p-3 sm:p-4">
+          <div className="flex items-center gap-2 overflow-x-auto">
             {Array.from({ length: 4 }).map((_, index) => (
               <React.Fragment key={index}>
-                <Skeleton className="h-6 w-16" />
-                {index < 3 && <Skeleton className="size-4" />}
+                <Skeleton className="h-5 w-12 shrink-0 sm:h-6 sm:w-16" />
+                {index < 3 && <Skeleton className="size-3 shrink-0 sm:size-4" />}
               </React.Fragment>
             ))}
           </div>
@@ -148,11 +148,11 @@ function LoadingSkeleton() {
 
       {/* Navigation Skeleton */}
       <Card className="border-2">
-        <CardContent className="p-6">
-          <div className="flex items-center justify-between gap-4">
-            <Skeleton className="h-12 w-32 rounded-lg" />
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-12 w-32 rounded-lg" />
+        <CardContent className="p-4 sm:p-5 md:p-6">
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <Skeleton className="h-10 w-full rounded-lg sm:h-12 sm:w-32" />
+            <Skeleton className="hidden h-4 w-24 sm:block" />
+            <Skeleton className="h-10 w-full rounded-lg sm:h-12 sm:w-32" />
           </div>
         </CardContent>
       </Card>
@@ -265,7 +265,7 @@ export function LessonViewer({
   }, [selectedLesson, progress]);
 
   const estimatedTimeRemaining = calculateEstimatedTimeRemaining();
-  
+
   // Reset auto-advance flag when lesson changes
   useEffect(() => {
     setHasAutoAdvanced(false);
@@ -377,7 +377,7 @@ export function LessonViewer({
   // Screen reader announcements for progress updates
   useEffect(() => {
     if (typeof document === 'undefined' || progress <= 0 || progress >= 100) return;
-    
+
     const announcement = `Lesson progress: ${progress} percent complete`;
     const ariaLive = document.createElement('div');
     ariaLive.setAttribute('aria-live', 'polite');
@@ -395,7 +395,7 @@ export function LessonViewer({
         document.body.removeChild(ariaLive);
       }
     }, 1000);
-    
+
     return () => {
       clearTimeout(timeoutId);
       if (document.body.contains(ariaLive)) {
@@ -454,7 +454,7 @@ export function LessonViewer({
   // Keyboard shortcuts (placed after navigation handlers to avoid TDZ issues)
   useEffect(() => {
     if (typeof window === 'undefined') return;
-    
+
     const handleKeyDown = (event: KeyboardEvent) => {
       if (!selectedLesson) return;
 
@@ -608,7 +608,7 @@ export function LessonViewer({
   return (
     <div
       ref={containerRef}
-      className="space-y-8"
+      className="space-y-4 sm:space-y-6 md:space-y-8"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -618,46 +618,46 @@ export function LessonViewer({
         <Card className={cn(
           "border-2 bg-gradient-to-r from-primary/5 via-primary/10 to-background transition-all duration-300",
           progress >= 100 && "border-green-200 bg-gradient-to-r from-green-50 via-green-100 to-background",
-          progressCardCollapsed && "md:hidden"
+          progressCardCollapsed && "lg:hidden"
         )}>
-          <CardContent className="p-4 md:p-6">
+          <CardContent className="p-3 sm:p-4 md:p-6">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-10 items-center justify-center rounded-lg bg-primary/20 transition-colors">
+                <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+                  <div className="flex size-8 items-center justify-center rounded-lg bg-primary/20 transition-colors sm:size-10">
                     {progress >= 100 ? (
-                      <Trophy className="size-5 text-green-600" />
+                      <Trophy className="size-4 text-green-600 sm:size-5" />
                     ) : (
-                      <Target className="size-5 text-primary" />
+                      <Target className="size-4 text-primary sm:size-5" />
                     )}
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-muted-foreground">
+                    <p className="text-xs font-medium text-muted-foreground sm:text-sm">
                       Lesson Progress
                     </p>
-                    <p className="text-2xl font-bold text-foreground">
+                    <p className="text-xl font-bold text-foreground sm:text-2xl">
                       {progress}%
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
                   {estimatedTimeRemaining && (
-                    <Badge variant="outline" className="text-xs">
+                    <Badge variant="outline" className="text-[10px] sm:text-xs">
                       <Clock className="mr-1 size-3" />
                       ~{estimatedTimeRemaining}min left
                     </Badge>
                   )}
-                  <Badge variant="secondary" className="text-sm font-medium">
+                  <Badge variant="secondary" className="text-[10px] font-medium sm:text-xs">
                     {currentStepIndex + 1} of {concepts.length + 3} sections
                   </Badge>
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setProgressCardCollapsed(!progressCardCollapsed)}
-                    className="md:hidden"
+                    className="size-8 p-0 lg:hidden"
                     aria-label={progressCardCollapsed ? "Show progress" : "Hide progress"}
                   >
-                    {progressCardCollapsed ? <Eye className="size-4" /> : <EyeOff className="size-4" />}
+                    {progressCardCollapsed ? <Eye className="size-3.5" /> : <EyeOff className="size-3.5" />}
                   </Button>
                 </div>
               </div>
@@ -683,22 +683,25 @@ export function LessonViewer({
       )}
 
       {/* Enhanced Section Breadcrumb Navigation */}
-      <Card className="sticky top-4 z-20 border-2 bg-background/95 backdrop-blur transition-shadow supports-[backdrop-filter]:backdrop-blur">
-        <CardContent className="p-4">
-          <SectionBreadcrumb
-            lessonId={lesson.id}
-            concepts={concepts}
-            currentStepIndex={currentStepIndex}
-            onNavigate={handleNavigateToSection}
-          />
-          <div className="mt-2 text-center text-xs text-muted-foreground">
+      <Card className="sticky top-16 z-20 border-2 bg-background/95 backdrop-blur transition-shadow supports-[backdrop-filter]:backdrop-blur sm:top-20">
+        <CardContent className="p-3 sm:p-4">
+          <div className="custom-scrollbar -mx-1 overflow-x-auto px-1 pb-1">
+            <SectionBreadcrumb
+              lessonId={lesson.id}
+              concepts={concepts}
+              currentStepIndex={currentStepIndex}
+              onNavigate={handleNavigateToSection}
+              className="text-xs sm:text-sm"
+            />
+          </div>
+          <div className="mt-2 hidden text-center text-[10px] text-muted-foreground sm:block sm:text-xs">
             Use ← → arrow keys or 1-9 number keys to navigate
           </div>
         </CardContent>
       </Card>
 
       {/* Main Content */}
-      <div className="min-h-[600px] flex-1 rounded-xl">
+      <div className="min-h-[400px] flex-1 rounded-xl sm:min-h-[500px] md:min-h-[600px]">
         {/* Overview Step */}
         {currentStepIndex === 0 && (
           <LessonOverview lesson={lesson} />
@@ -734,35 +737,35 @@ export function LessonViewer({
           <div className="flex items-center justify-between gap-4">
             <Button
               variant="outline"
-              size="lg"
+              size="default"
+              className="min-w-[44px] font-medium sm:h-11 sm:min-w-[120px] sm:px-8"
               onClick={handlePrev}
               disabled={currentStepIndex === 0}
-              className="min-w-[120px] font-medium"
               aria-label="Go to previous section"
             >
-              <ArrowLeft className="mr-2 size-4" />
+              <ArrowLeft className="size-4 sm:mr-2" />
               <span className="hidden sm:inline">Previous</span>
             </Button>
-            <div className="flex flex-col items-center gap-1 text-sm text-muted-foreground">
-              <span className="font-medium">
-                Section {currentStepIndex + 1} of {concepts.length + 3}
+            <div className="flex flex-col items-center gap-0.5 text-[10px] font-medium text-muted-foreground sm:text-xs">
+              <span className="text-xs font-semibold text-foreground sm:text-sm">
+                {currentStepIndex + 1} / {concepts.length + 3}
               </span>
-              <span className="hidden text-xs sm:block">
-                Swipe or use keyboard shortcuts
+              <span className="hidden sm:block">
+                Swipe or use keys
               </span>
             </div>
             <Button
-              size="lg"
-              onClick={handleNext}
+              size="default"
               className={cn(
-                "min-w-[120px] font-medium transition-all",
+                "min-w-[44px] font-medium shadow-sm transition-all sm:h-11 sm:min-w-[120px] sm:px-8",
                 progress >= 100 && "bg-green-600 hover:bg-green-700"
               )}
+              onClick={handleNext}
               aria-label={currentStepIndex === concepts.length + 2 ? "Finish lesson" : "Go to next section"}
             >
               {currentStepIndex === concepts.length + 2 ? (
                 <>
-                  <Trophy className="mr-2 size-4" />
+                  <Trophy className="size-4 sm:mr-2" />
                   <span className="hidden sm:inline">Finish Lesson</span>
                   <span className="sm:hidden">Finish</span>
                 </>
@@ -770,7 +773,7 @@ export function LessonViewer({
                 <>
                   <span className="hidden sm:inline">Continue</span>
                   <span className="sm:hidden">Next</span>
-                  <ChevronRight className="ml-2 size-4" />
+                  <ChevronRight className="size-4 sm:ml-2" />
                 </>
               )}
             </Button>

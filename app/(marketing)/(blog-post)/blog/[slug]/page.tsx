@@ -42,7 +42,7 @@ export async function generateMetadata({
   const { title, description, image } = post;
 
   return constructMetadata({
-    title: `${title} – SaaS Starter`,
+    title: `${title} – Fastlearners`,
     description: description,
     image,
   });
@@ -108,10 +108,10 @@ export default async function PostPage({
               {formatDate(post.date)}
             </time>
           </div>
-          <h1 className="font-heading text-3xl text-foreground sm:text-4xl">
+          <h1 className="text-balance font-heading text-3xl text-foreground sm:text-4xl md:text-5xl lg:text-6xl">
             {post.title}
           </h1>
-          <p className="text-base text-muted-foreground md:text-lg">
+          <p className="text-pretty text-base text-muted-foreground sm:text-lg md:text-xl">
             {post.description}
           </p>
           <div className="flex flex-nowrap items-center space-x-5 pt-1 md:space-x-8">
@@ -138,7 +138,7 @@ export default async function PostPage({
               src={post.image}
               sizes="(max-width: 768px) 770px, 1000px"
             />
-            <div className="px-[.8rem] pb-10 md:px-8">
+            <div className="px-4 pb-10 sm:px-6 md:px-8">
               <Mdx code={post.body.code} images={images} />
             </div>
           </div>
@@ -152,26 +152,31 @@ export default async function PostPage({
       <MaxWidthWrapper>
         {relatedArticles.length > 0 && (
           <div className="flex flex-col space-y-4 pb-16">
-            <p className="font-heading text-2xl text-foreground">
+            <p className="font-heading text-2xl text-foreground sm:text-3xl">
               More Articles
             </p>
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:gap-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:gap-8">
               {relatedArticles.map((post) => (
                 <Link
                   key={post.slug}
                   href={post.slug}
-                  className="flex flex-col space-y-2 rounded-xl border p-5 transition-colors duration-300 hover:bg-muted/80"
+                  className="group flex flex-col space-y-3 rounded-2xl border bg-card p-5 transition-all duration-300 hover:border-primary/50 hover:shadow-md sm:p-6"
                 >
-                  <h3 className="font-heading text-xl text-foreground">
+                  <h3 className="line-clamp-2 font-heading text-xl text-foreground transition-colors group-hover:text-primary sm:text-2xl">
                     {post.title}
                   </h3>
-                  <p className="line-clamp-2 text-[15px] text-muted-foreground">
+                  <p className="line-clamp-2 text-pretty text-sm text-muted-foreground sm:text-base">
                     {post.description}
                   </p>
-                  <p className="text-sm text-muted-foreground">
-                    {formatDate(post.date)}
-                  </p>
+                  <div className="flex items-center space-x-2 pt-2">
+                    <time
+                      dateTime={post.date}
+                      className="text-xs font-medium text-muted-foreground sm:text-sm"
+                    >
+                      {formatDate(post.date)}
+                    </time>
+                  </div>
                 </Link>
               ))}
             </div>

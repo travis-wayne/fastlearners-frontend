@@ -7,12 +7,12 @@ export default function SetRolePage() {
       <div className="relative hidden bg-muted lg:block">
         <div className="absolute inset-0 bg-[#00519C]">
           <div className="absolute inset-0 bg-black/20" />
-          <div className="relative flex h-full flex-col items-center justify-center p-10 text-white">
-            <div className="space-y-4 text-center">
+          <div className="relative flex h-full flex-col items-center justify-center p-6 text-white sm:p-8 md:p-10">
+            <div className="space-y-3 text-center sm:space-y-4">
               <div className="flex justify-center">
-                <h2 className="text-3xl font-bold">Fast Learners</h2>
+                <h2 className="text-2xl font-bold sm:text-3xl">Fast Learners</h2>
               </div>
-              <p className="text-lg opacity-90">
+              <p className="text-base opacity-90 sm:text-lg">
                 Complete your registration by selecting your role
               </p>
               <div className="mt-8 space-y-2 text-sm opacity-75">
@@ -27,12 +27,12 @@ export default function SetRolePage() {
       </div>
 
       {/* Right side - Form */}
-      <div className="flex flex-col gap-4 p-4 sm:p-6 lg:p-10">
+      <div className="flex flex-col gap-4 p-4 sm:gap-6 sm:p-6 md:p-8 lg:p-10">
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-6xl">
+          <div className="w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
             {/* Logo for mobile */}
-            <div className="mb-8 flex justify-center lg:hidden">
-              <h2 className="text-2xl font-bold text-primary">Fast Learners</h2>
+            <div className="mb-6 flex justify-center sm:mb-8 lg:hidden">
+              <h2 className="text-xl font-bold text-primary sm:text-2xl">Fast Learners</h2>
             </div>
 
             <RoleSelectionForm />

@@ -156,18 +156,18 @@ export function ResetPasswordForm({
   };
 
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
+    <div className={cn("flex flex-col gap-4 sm:gap-6", className)} {...props}>
       <Card>
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-green-100">
-            <KeyRound className="size-6 text-green-600" />
+        <CardHeader className="space-y-1 text-center sm:space-y-1.5">
+          <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-full bg-green-100 sm:mb-4 sm:size-12">
+            <KeyRound className="size-5 text-green-600 sm:size-6" />
           </div>
-          <CardTitle>Set new password</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg sm:text-xl">Set new password</CardTitle>
+          <CardDescription className="text-sm sm:text-base">
             Create a strong password for your account
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4 sm:p-6">
           {error && (
             <Alert variant="destructive" className="mb-6">
               <AlertCircle className="size-4" />
@@ -176,8 +176,8 @@ export function ResetPasswordForm({
           )}
 
           <form onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col gap-6">
-              <div className="grid gap-3">
+            <div className="flex flex-col gap-4 sm:gap-6">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="password">New password</Label>
                 <div className="relative">
                   <Input
@@ -190,14 +190,16 @@ export function ResetPasswordForm({
                     }
                     disabled={isLoading}
                     required
+                    autoComplete="new-password"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
                   >
                     {showPassword ? (
                       <EyeOff className="size-4 text-muted-foreground" />
@@ -209,13 +211,13 @@ export function ResetPasswordForm({
 
                 {/* Password Requirements */}
                 {password && (
-                  <div className="space-y-2 text-sm">
+                  <div className="space-y-1.5 text-xs sm:space-y-2 sm:text-sm">
                     {passwordRequirements.map((req, index) => (
                       <div key={index} className="flex items-center gap-2">
                         {req.met ? (
-                          <CheckCircle2 className="size-4 text-green-500" />
+                          <CheckCircle2 className="size-3.5 text-green-500 sm:size-4" />
                         ) : (
-                          <X className="size-4 text-muted-foreground" />
+                          <X className="size-3.5 text-muted-foreground sm:size-4" />
                         )}
                         <span
                           className={
@@ -236,7 +238,7 @@ export function ResetPasswordForm({
                 )}
               </div>
 
-              <div className="grid gap-3">
+              <div className="grid gap-2 sm:gap-3">
                 <Label htmlFor="confirmPassword">Confirm new password</Label>
                 <div className="relative">
                   <Input
@@ -251,14 +253,16 @@ export function ResetPasswordForm({
                     }
                     disabled={isLoading}
                     required
+                    autoComplete="new-password"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-0 top-0 h-full px-3 py-2 hover:bg-transparent"
+                    className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isLoading}
+                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="size-4 text-muted-foreground" />
@@ -276,7 +280,7 @@ export function ResetPasswordForm({
 
               <Button
                 type="submit"
-                className="w-full"
+                className="h-10 w-full sm:h-11"
                 disabled={
                   isLoading ||
                   isSubmitting ||
@@ -297,7 +301,7 @@ export function ResetPasswordForm({
             <div className="mt-4 text-center text-sm">
               <Link
                 href="/auth/login"
-                className="text-muted-foreground hover:text-foreground"
+                className="px-1 py-2 text-muted-foreground hover:text-foreground"
               >
                 Back to sign in
               </Link>

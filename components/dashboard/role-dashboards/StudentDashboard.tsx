@@ -290,7 +290,7 @@ export function StudentDashboard() {
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
         <div
-          className={`relative overflow-hidden rounded-2xl p-8 ${headerGradientClass} transition-all duration-700 ease-in-out`}
+          className={`relative overflow-hidden rounded-2xl p-4 sm:p-6 md:p-8 ${headerGradientClass} transition-all duration-700 ease-in-out`}
         >
           <div className="relative z-10 max-w-lg">
             {/* Header with date and time */}
@@ -299,14 +299,14 @@ export function StudentDashboard() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
-                className="mb-4 flex items-center justify-between text-gray-900 dark:text-white/90"
+                className="xs:flex-row xs:items-center xs:justify-between mb-4 flex flex-col gap-2 text-gray-900 dark:text-white/90"
               >
-                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm dark:bg-white/20">
-                  <Calendar className="size-4 text-gray-900 dark:text-white" />
+                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-2 py-1.5 backdrop-blur-sm dark:bg-white/20 sm:px-3 sm:py-2">
+                  <Calendar className="size-3 text-gray-900 dark:text-white sm:size-4" />
                   <span className="text-sm font-medium">{timeData.date}</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-3 py-2 backdrop-blur-sm dark:bg-white/20">
-                  <Clock className="size-4 text-gray-900 dark:text-white" />
+                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-2 py-1.5 backdrop-blur-sm dark:bg-white/20 sm:px-3 sm:py-2">
+                  <Clock className="size-3 text-gray-900 dark:text-white sm:size-4" />
                   <span className="font-mono text-sm font-medium">
                     {timeData.time}
                   </span>
@@ -323,12 +323,12 @@ export function StudentDashboard() {
             >
               <div className="mb-2 flex items-center gap-2">
                 {getPeriodIcon()}
-                <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
                   {timeData?.greeting || "Good day"},{" "}
                   {dashboardData?.name || "Student"}! 🎓
                 </h2>
               </div>
-              <p className="text-base leading-relaxed text-gray-800 dark:text-white/90">
+              <p className="text-sm leading-relaxed text-gray-800 dark:text-white/90 sm:text-base">
                 Ready to learn something amazing today?
               </p>
             </motion.div>
@@ -364,13 +364,13 @@ export function StudentDashboard() {
               transition={{ delay: 0.5 }}
               className="flex items-center gap-4"
             >
-              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 backdrop-blur-sm">
+              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-2 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2">
                 <span className="text-sm text-white">🔥</span>
                 <span className="text-sm font-medium text-white">
                   7 day streak
                 </span>
               </div>
-              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-3 py-2 backdrop-blur-sm">
+              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-2 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2">
                 <span className="text-sm text-white">📚</span>
                 <span className="text-sm font-medium text-white">
                   3 lessons today
@@ -420,7 +420,7 @@ export function StudentDashboard() {
       {/* Top Stats Grid */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4"
+        className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
       >
         {stats.map((stat, index) => (
           <motion.div
@@ -429,16 +429,16 @@ export function StudentDashboard() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
-              <CardContent className="p-4">
+              <CardContent className="p-3 sm:p-4">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">
                     {stat.label}
                   </p>
                   <div className="flex items-baseline gap-2">
-                    <h3 className="text-2xl font-bold">{stat.value}</h3>
+                    <h3 className="text-xl font-bold sm:text-2xl">{stat.value}</h3>
                     <Badge
                       variant={stat.positive ? "default" : "secondary"}
-                      className="text-xs"
+                      className="text-[10px] sm:text-xs"
                     >
                       {stat.change}
                     </Badge>
@@ -456,7 +456,7 @@ export function StudentDashboard() {
       {/* Progress + Achievements + Overview row */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 gap-4 lg:grid-cols-3"
+        className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
       >
         {/* Progress Donut - Phase B replacement */}
         <ProgressDonut
@@ -475,37 +475,39 @@ export function StudentDashboard() {
         <AchievementsSection items={achievementHighlights} />
 
         {/* Overview grid - extracted */}
-        {isLoadingDashboard ? (
-          <Card className="h-full border bg-card">
-            <CardContent className="flex items-center justify-center p-8">
-              <Loader2 className="size-6 animate-spin text-muted-foreground" />
-            </CardContent>
-          </Card>
-        ) : (
-          <OverviewGrid
-            stats={[
-              {
-                label: "Subjects",
-                value: dashboardData?.subjects || "N/A",
-              },
-              {
-                label: "Lessons",
-                value: dashboardData?.lessons || "N/A",
-              },
-              {
-                label: "Quizzes",
-                value: dashboardData?.quizzes || "N/A",
-              },
-              {
-                label: "Subscription Status",
-                value: dashboardData?.subscription_status
-                  ? dashboardData.subscription_status.charAt(0).toUpperCase() +
+        <div className="md:col-span-2 lg:col-span-1">
+          {isLoadingDashboard ? (
+            <Card className="h-full border bg-card">
+              <CardContent className="flex items-center justify-center p-8">
+                <Loader2 className="size-6 animate-spin text-muted-foreground" />
+              </CardContent>
+            </Card>
+          ) : (
+            <OverviewGrid
+              stats={[
+                {
+                  label: "Subjects",
+                  value: dashboardData?.subjects || "N/A",
+                },
+                {
+                  label: "Lessons",
+                  value: dashboardData?.lessons || "N/A",
+                },
+                {
+                  label: "Quizzes",
+                  value: dashboardData?.quizzes || "N/A",
+                },
+                {
+                  label: "Subscription Status",
+                  value: dashboardData?.subscription_status
+                    ? dashboardData.subscription_status.charAt(0).toUpperCase() +
                     dashboardData.subscription_status.slice(1)
-                  : "N/A",
-              },
-            ]}
-          />
-        )}
+                    : "N/A",
+                },
+              ]}
+            />
+          )}
+        </div>
 
         {/* Progress Card */}
         {dashboardData?.progress && (
@@ -541,11 +543,11 @@ export function StudentDashboard() {
                       value={
                         dashboardData.progress.covered +
                           dashboardData.progress.left >
-                        0
+                          0
                           ? (dashboardData.progress.covered /
-                              (dashboardData.progress.covered +
-                                dashboardData.progress.left)) *
-                            100
+                            (dashboardData.progress.covered +
+                              dashboardData.progress.left)) *
+                          100
                           : 0
                       }
                       className="h-3"
@@ -604,7 +606,7 @@ export function StudentDashboard() {
               {todaysLessonsTable.map((lesson) => (
                 <div
                   key={`lesson-card-${lesson.id}`}
-                  className="rounded-2xl border bg-background p-4 shadow-sm"
+                  className="rounded-2xl border bg-background p-3 shadow-sm sm:p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -639,8 +641,8 @@ export function StudentDashboard() {
               ))}
             </div>
 
-            <div className="hidden w-full sm:block">
-              <Table className="min-w-[560px] lg:min-w-[680px]">
+            <div className="hidden w-full overflow-x-auto sm:block">
+              <Table className="min-w-[640px]">
                 <TableHeader>
                   <TableRow>
                     <TableHead>Subject</TableHead>
@@ -676,6 +678,7 @@ export function StudentDashboard() {
                       <TableCell>
                         <Button
                           size="sm"
+                          className="h-9"
                           variant={
                             lesson.progress === 0 ? "default" : "outline"
                           }
@@ -706,7 +709,7 @@ export function StudentDashboard() {
       </motion.div>
 
       {/* Performance (bars) + Achievements - Original */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
         {/* Weekly Progress - extracted (takes 2 columns) */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <PerformanceSection
@@ -733,7 +736,7 @@ export function StudentDashboard() {
               </CardTitle>
               <CardDescription>Your learning milestones</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-3">
+            <CardContent className="space-y-2 sm:space-y-3">
               {achievements.map((achievement, index) => (
                 <motion.div
                   key={index}
@@ -741,24 +744,22 @@ export function StudentDashboard() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 * index }}
                   whileHover={{ scale: 1.02 }}
-                  className={`flex items-center gap-3 rounded-lg p-3 transition-colors ${
-                    achievement.earned
-                      ? "border border-primary/20 bg-primary/5"
-                      : "bg-muted/30"
-                  }`}
+                  className={`flex items-center gap-3 rounded-lg p-2.5 transition-colors sm:p-3 ${achievement.earned
+                    ? "border border-primary/20 bg-primary/5"
+                    : "bg-muted/30"
+                    }`}
                 >
                   <div
-                    className={`text-xl ${achievement.earned ? "" : "opacity-50 grayscale"}`}
+                    className={`text-base sm:text-xl ${achievement.earned ? "" : "opacity-50 grayscale"}`}
                   >
                     {achievement.icon}
                   </div>
                   <div className="flex-1">
                     <span
-                      className={`font-medium ${
-                        achievement.earned
-                          ? "text-foreground"
-                          : "text-muted-foreground"
-                      }`}
+                      className={`font-medium ${achievement.earned
+                        ? "text-foreground"
+                        : "text-muted-foreground"
+                        }`}
                     >
                       {achievement.title}
                     </span>
@@ -769,7 +770,7 @@ export function StudentDashboard() {
                       animate={{ scale: 1, rotate: 0 }}
                       transition={{ type: "spring", delay: 0.3 }}
                     >
-                      <Star className="size-4 fill-current text-yellow-500" />
+                      <Star className="size-3.5 fill-current text-yellow-500 sm:size-4" />
                     </motion.div>
                   )}
                 </motion.div>

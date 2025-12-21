@@ -12,8 +12,8 @@ function ResetPasswordContent() {
   const token = searchParams.get("token") || "";
 
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
+    <div className="flex min-h-svh w-full items-center justify-center p-4 sm:p-6 md:p-8 lg:p-10">
+      <div className="w-full max-w-sm md:max-w-md">
         <ResetPasswordForm email={email} token={token} />
       </div>
     </div>
@@ -24,8 +24,8 @@ export default function ResetPasswordPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-          <div className="flex w-full max-w-sm items-center justify-center">
+        <div className="flex min-h-svh w-full items-center justify-center p-4 sm:p-6 md:p-8 lg:p-10">
+          <div className="flex w-full max-w-sm items-center justify-center md:max-w-md">
             <Loader2 className="size-6 animate-spin" />
           </div>
         </div>

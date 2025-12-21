@@ -7,10 +7,10 @@ export const metadata = {
 
 export default function TermsOfServicePage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 md:py-20">
+    <div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16 md:py-20 lg:py-24">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Terms of Service (TOS)
           </h1>
           <div className="flex flex-col space-y-1 text-muted-foreground">
@@ -19,7 +19,7 @@ export default function TermsOfServicePage() {
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             1. Acceptance of Terms
           </h2>
           <p className="leading-relaxed text-muted-foreground">
@@ -28,7 +28,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             2. Eligibility
           </h2>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
@@ -38,7 +38,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             3. User Responsibilities
           </h2>
           <div className="space-y-3">
@@ -58,7 +58,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Intellectual Property
           </h2>
           <p className="text-muted-foreground">All:</p>
@@ -77,7 +77,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Third-Party Services
           </h2>
           <p className="text-muted-foreground">
@@ -89,7 +89,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. Termination
           </h2>
           <p className="text-muted-foreground">We may suspend or terminate accounts for:</p>
@@ -101,7 +101,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. Disclaimer of Warranties
           </h2>
           <p className="text-muted-foreground">
@@ -110,7 +110,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             8. Limitation of Liability
           </h2>
           <p className="text-muted-foreground">Fastlearners is not liable for:</p>
@@ -125,7 +125,7 @@ export default function TermsOfServicePage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             9. Governing Law
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">

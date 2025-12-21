@@ -157,7 +157,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
           <Bell className="size-5" />
           {unreadCount > 0 && (
             <Badge
-              className="absolute -right-2 -top-2 flex size-5 items-center justify-center rounded-full p-0 text-xs"
+              className="absolute -right-1 -top-1 flex size-5 items-center justify-center rounded-full p-0 text-xs sm:-right-2 sm:-top-2"
               variant="destructive"
             >
               {unreadCount > 9 ? "9+" : unreadCount}
@@ -170,7 +170,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-80" align="end" forceMount>
+      <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-80" align="end" forceMount>
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notifications</span>
           {unreadCount > 0 && (
@@ -193,13 +193,13 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
           </div>
         ) : (
           <>
-            <ScrollArea className="h-[300px]">
+            <ScrollArea className="h-[250px] sm:h-[300px]">
               <div className="space-y-1">
                 {notifications.map((notification) => (
                   <div
                     key={notification.id}
                     className={cn(
-                      "group relative cursor-pointer border-l-2 p-3 text-left text-sm transition-colors hover:bg-muted/50",
+                      "group relative cursor-pointer border-l-2 p-2 text-left text-sm transition-colors hover:bg-muted/50 sm:p-3",
                       getNotificationColors(notification.type),
                       !notification.isRead && "font-medium",
                     )}
@@ -211,13 +211,13 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                       {getNotificationIcon(notification.type)}
                       <div className="flex-1 space-y-1">
                         <div className="flex items-center justify-between">
-                          <p className="font-medium leading-none">
+                          <p className="text-sm font-medium leading-none sm:text-base">
                             {notification.title}
                           </p>
                           <Button
                             variant="ghost"
                             size="sm"
-                            className="size-6 p-0 opacity-0 hover:bg-background/50 group-hover:opacity-100"
+                            className="size-8 p-0 opacity-100 hover:bg-background/50 sm:size-6 sm:opacity-0 sm:group-hover:opacity-100"
                             onClick={(e) => {
                               e.stopPropagation();
                               removeNotification(notification.id);

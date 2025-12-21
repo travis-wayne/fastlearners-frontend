@@ -23,7 +23,7 @@ export default function VerifyEmailPage() {
     <Suspense
       fallback={
         <AuthLayout subtitle="Verify your email to continue">
-          <div className="flex items-center justify-center p-6">
+          <div className="flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-10">
             <Loader2 className="size-6 animate-spin" />
           </div>
         </AuthLayout>

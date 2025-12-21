@@ -74,13 +74,13 @@ export function UserAccountNav() {
               </div>
             </div>
 
-            <ul role="list" className="mb-14 mt-1 w-full text-muted-foreground">
+            <ul role="list" className="mb-14 mt-1 flex w-full flex-col gap-1 text-muted-foreground">
               {user.role && user.role.includes("admin") ? (
                 <li className="rounded-lg text-foreground hover:bg-muted">
                   <Link
                     href="/admin"
                     onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 px-2.5 py-2"
+                    className="flex w-full items-center gap-3 p-2.5"
                   >
                     <Lock className="size-4" />
                     <p className="text-sm">Admin</p>
@@ -92,7 +92,7 @@ export function UserAccountNav() {
                 <Link
                   href="/dashboard"
                   onClick={closeDrawer}
-                  className="flex w-full items-center gap-3 px-2.5 py-2"
+                  className="flex w-full items-center gap-3 p-2.5"
                 >
                   <LayoutDashboard className="size-4" />
                   <p className="text-sm">Dashboard</p>
@@ -103,7 +103,7 @@ export function UserAccountNav() {
                 <Link
                   href="/dashboard/settings"
                   onClick={closeDrawer}
-                  className="flex w-full items-center gap-3 px-2.5 py-2"
+                  className="flex w-full items-center gap-3 p-2.5"
                 >
                   <Settings className="size-4" />
                   <p className="text-sm">Settings</p>
@@ -121,7 +121,7 @@ export function UserAccountNav() {
                   });
                 }}
               >
-                <div className="flex w-full items-center gap-3 px-2.5 py-2">
+                <div className="flex w-full items-center gap-3 p-2.5">
                   <LogOut className="size-4" />
                   <p className="text-sm">Log out </p>
                 </div>
@@ -141,7 +141,7 @@ export function UserAccountNav() {
           className="size-8 border"
         />
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-[200px] sm:w-[240px]">
         <div className="flex items-center justify-start gap-2 p-2">
           <div className="flex flex-col space-y-1 leading-none">
             {user.name && <p className="font-medium">{user.name}</p>}

@@ -15,7 +15,7 @@ export default function ProjectSwitcher() {
         alt="Fast Learners Logo"
         width={100}
         height={16}
-        className="h-4 w-auto object-contain"
+        className="h-5 w-auto object-contain sm:h-4"
       />
     </Link>
   );

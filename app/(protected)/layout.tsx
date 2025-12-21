@@ -81,10 +81,10 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
 
           <div className="flex flex-1 flex-col">
             <header
-              className="sticky top-0 flex h-14 border-b border-border/40 bg-background/80 px-4 backdrop-blur-md lg:h-[60px] xl:px-8"
+              className="sticky top-0 flex h-14 border-b border-border/40 bg-background/80 px-3 backdrop-blur-md sm:px-4 lg:h-[60px] xl:px-8"
               style={{ zIndex: Z_INDEX.navbar }}
             >
-              <div className="flex w-full items-center gap-x-3">
+              <div className="flex w-full items-center gap-x-1.5 sm:gap-x-2 md:gap-x-3">
                 <MobileSheetSidebar links={filteredLinks} />
 
                 <div className="w-full flex-1">
@@ -106,8 +106,8 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
               <ProfileCompletionBanner />
             </div>
 
-            <main className="flex-1 px-4 pb-16 pt-4 xl:px-8">
-              <div className="flex size-full flex-col gap-4 lg:gap-6">
+            <main className="flex-1 px-3 pb-12 pt-3 sm:px-4 sm:pb-16 sm:pt-4 xl:px-8">
+              <div className="flex size-full flex-col gap-3 sm:gap-4 lg:gap-6">
                 {children}
               </div>
             </main>

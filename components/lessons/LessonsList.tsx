@@ -62,9 +62,9 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
   if (compact) {
     return (
       <Card
-          className={cn(
-            "group relative cursor-pointer border-2 bg-gradient-to-br from-card to-muted/30 transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-lg",
-          )}
+        className={cn(
+          "group relative cursor-pointer border-2 bg-gradient-to-br from-card to-muted/30 transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-lg",
+        )}
         onClick={handleClick}
       >
         <CardContent className="p-4">
@@ -78,22 +78,22 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
                 )}
                 <Badge
                   variant="outline"
-                  className={cn("text-xs font-medium", statusColor)}
+                  className={cn("text-[10px] font-medium sm:text-xs", statusColor)}
                 >
                   {lesson.status === "in_progress" ? "In Progress" : lesson.status}
                 </Badge>
               </div>
-              <h3 className="line-clamp-2 font-semibold text-foreground transition-colors group-hover:text-primary">
+              <h3 className="line-clamp-2 text-sm font-semibold text-foreground transition-colors group-hover:text-primary sm:text-base">
                 {lesson.topic}
               </h3>
-              <p className="mt-1.5 text-sm text-muted-foreground">
+              <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
                 {lesson.class} • {lesson.subject}
               </p>
-              <div className="mt-2 flex items-center gap-2">
-                <Badge variant="secondary" className="text-xs">
+              <div className="mt-2 flex items-center gap-1.5 sm:gap-2">
+                <Badge variant="secondary" className="text-[10px] sm:text-xs">
                   {lesson.term} Term
                 </Badge>
-                <Badge variant="secondary" className="text-xs">
+                <Badge variant="secondary" className="text-[10px] sm:text-xs">
                   Week {lesson.week}
                 </Badge>
               </div>
@@ -128,22 +128,22 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
               )}
             />
 
-            <CardHeader className="pb-4">
+            <CardHeader className="p-4 pb-2 sm:p-5 sm:pb-3 md:p-6 md:pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="mb-3 flex items-center gap-2">
                     <div
                       className={cn(
-                        "flex size-10 items-center justify-center rounded-xl transition-colors",
+                        "flex size-8 items-center justify-center rounded-xl transition-colors sm:size-10",
                         isCompleted
                           ? "bg-emerald-100 dark:bg-emerald-900/30"
                           : "bg-primary/10 group-hover:bg-primary/20",
                       )}
                     >
                       {isCompleted ? (
-                        <Award className="size-5 text-emerald-600 dark:text-emerald-400" />
+                        <Award className="size-4 text-emerald-600 dark:text-emerald-400 sm:size-5" />
                       ) : (
-                        <PlayCircle className="size-5 text-primary" />
+                        <PlayCircle className="size-4 text-primary sm:size-5" />
                       )}
                     </div>
                     <Badge
@@ -167,7 +167,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
                       )}
                     </Badge>
                   </div>
-                  <h3 className="line-clamp-2 text-xl font-bold text-foreground transition-colors group-hover:text-primary">
+                  <h3 className="line-clamp-2 text-lg font-bold text-foreground transition-colors group-hover:text-primary sm:text-xl">
                     {lesson.topic}
                   </h3>
                 </div>
@@ -182,27 +182,27 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-4 pt-0">
+            <CardContent className="space-y-3 p-4 pt-0 sm:space-y-4 sm:p-5 sm:pt-0 md:p-6 md:pt-0">
               {/* Subject and Class Info */}
-              <div className="flex items-center gap-4 text-sm">
-                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-1.5">
-                  <Users className="size-4 text-muted-foreground" />
+              <div className="flex flex-wrap items-center gap-2 text-xs sm:gap-4 sm:text-sm">
+                <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
+                  <Users className="size-3.5 text-muted-foreground sm:size-4" />
                   <span className="font-medium">{lesson.class}</span>
                 </div>
-                <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-1.5">
-                  <FileText className="size-4 text-muted-foreground" />
+                <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
+                  <FileText className="size-3.5 text-muted-foreground sm:size-4" />
                   <span className="font-medium">{lesson.subject}</span>
                 </div>
               </div>
 
               {/* Term and Week Info */}
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className="text-xs font-medium">
-                  <Calendar className="mr-1.5 size-3" />
+              <div className="flex items-center gap-1.5 sm:gap-2">
+                <Badge variant="outline" className="text-[10px] font-medium sm:text-xs">
+                  <Calendar className="mr-1 size-3 sm:mr-1.5" />
                   {lesson.term} Term
                 </Badge>
-                <Badge variant="outline" className="text-xs font-medium">
-                  <Clock className="mr-1.5 size-3" />
+                <Badge variant="outline" className="text-[10px] font-medium sm:text-xs">
+                  <Clock className="mr-1 size-3 sm:mr-1.5" />
                   Week {lesson.week}
                 </Badge>
               </div>
@@ -246,13 +246,13 @@ function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
   if (compact) {
     return (
       <Card className="bg-card">
-        <CardContent className="p-4">
-          <div className="space-y-3">
-            <Skeleton className="h-5 w-3/4" />
-            <Skeleton className="h-4 w-1/2" />
-            <div className="flex gap-2">
-              <Skeleton className="h-5 w-16" />
-              <Skeleton className="h-5 w-16" />
+        <CardContent className="p-3 sm:p-4">
+          <div className="space-y-2 sm:space-y-3">
+            <Skeleton className="h-4 w-3/4 sm:h-5" />
+            <Skeleton className="h-3 w-1/2 sm:h-4" />
+            <div className="flex gap-1.5 sm:gap-2">
+              <Skeleton className="h-4 w-14 sm:h-5 sm:w-16" />
+              <Skeleton className="h-4 w-14 sm:h-5 sm:w-16" />
             </div>
           </div>
         </CardContent>
@@ -262,28 +262,28 @@ function LoadingSkeleton({ compact = false }: { compact?: boolean }) {
 
   return (
     <Card className="bg-card">
-      <CardHeader className="pb-4">
-        <div className="space-y-3">
+      <CardHeader className="p-4 pb-2 sm:p-5 sm:pb-3 md:p-6 md:pb-4">
+        <div className="space-y-2 sm:space-y-3">
           <div className="flex items-center gap-2">
-            <Skeleton className="size-5" />
-            <Skeleton className="h-5 w-16" />
+            <Skeleton className="size-4 sm:size-5" />
+            <Skeleton className="h-4 w-14 sm:h-5 sm:w-16" />
           </div>
-          <Skeleton className="h-6 w-3/4" />
+          <Skeleton className="h-5 w-3/4 sm:h-6" />
         </div>
       </CardHeader>
-      <CardContent className="pt-0">
-        <div className="space-y-3">
-          <div className="flex gap-4">
-            <Skeleton className="h-4 w-20" />
-            <Skeleton className="h-4 w-24" />
+      <CardContent className="p-4 pt-0 sm:p-5 sm:pt-0 md:p-6 md:pt-0">
+        <div className="space-y-3 sm:space-y-4">
+          <div className="flex gap-3 sm:gap-4">
+            <Skeleton className="h-3 w-16 sm:h-4 sm:w-20" />
+            <Skeleton className="h-3 w-20 sm:h-4 sm:w-24" />
           </div>
-          <div className="flex gap-2">
-            <Skeleton className="h-6 w-20" />
-            <Skeleton className="h-6 w-16" />
+          <div className="flex gap-1.5 sm:gap-2">
+            <Skeleton className="h-5 w-16 sm:h-6 sm:w-20" />
+            <Skeleton className="h-5 w-14 sm:h-6 sm:w-16" />
           </div>
-          <div className="flex justify-between">
-            <Skeleton className="h-3 w-24" />
-            <Skeleton className="h-3 w-24" />
+          <div className="flex justify-between border-t pt-3">
+            <Skeleton className="h-2.5 w-20 sm:h-3 sm:w-24" />
+            <Skeleton className="h-2.5 w-20 sm:h-3 sm:w-24" />
           </div>
         </div>
       </CardContent>
@@ -329,8 +329,8 @@ export function LessonsList({
         className={cn(
           "grid gap-4",
           compact
-            ? "grid-cols-1 md:grid-cols-2"
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+            ? "grid-cols-1 sm:grid-cols-2"
+            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
         )}
       >
         {Array.from({ length: skeletonCount }).map((_, index) => (
@@ -364,14 +364,14 @@ export function LessonsList({
   if (!lessons || lessons.length === 0) {
     return (
       <Card className="border-2 border-dashed">
-        <CardContent className="flex flex-col items-center justify-center py-16">
-          <div className="mb-6 flex size-20 items-center justify-center rounded-full bg-muted">
-            <BookOpen className="size-10 text-muted-foreground" />
+        <CardContent className="flex flex-col items-center justify-center py-10 sm:py-16">
+          <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-muted sm:mb-6 sm:size-20">
+            <BookOpen className="size-8 text-muted-foreground sm:size-10" />
           </div>
-          <h3 className="mb-2 text-2xl font-bold text-foreground">
+          <h3 className="mb-2 text-xl font-bold text-foreground sm:text-2xl">
             No lessons found
           </h3>
-          <p className="max-w-md text-center text-muted-foreground">
+          <p className="max-w-md text-center text-sm text-muted-foreground sm:text-base">
             Try adjusting your filters to find lessons. Make sure you&apos;ve
             selected a class, subject, term, and week.
           </p>
@@ -384,13 +384,13 @@ export function LessonsList({
     <div className="space-y-6">
       {/* Results header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
-            <BookOpen className="size-5 text-primary" />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 sm:size-10">
+            <BookOpen className="size-4 text-primary sm:size-5" />
           </div>
           <div>
-            <h3 className="text-2xl font-bold text-foreground">Lessons</h3>
-            <p className="text-sm text-muted-foreground">
+            <h3 className="text-xl font-bold text-foreground sm:text-2xl">Lessons</h3>
+            <p className="text-xs text-muted-foreground sm:text-sm">
               {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"} available
             </p>
           </div>
@@ -398,7 +398,7 @@ export function LessonsList({
 
         {showPagination && totalPages > 1 && (
           <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
-            <Badge variant="secondary" className="text-sm font-medium">
+            <Badge variant="secondary" className="text-xs font-medium sm:text-sm">
               Page {currentPage} of {totalPages}
             </Badge>
           </div>
@@ -410,8 +410,8 @@ export function LessonsList({
         className={cn(
           "grid gap-6",
           compact
-            ? "grid-cols-1 md:grid-cols-2"
-            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
+            ? "grid-cols-1 sm:grid-cols-2"
+            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
         )}
       >
         {lessons.map((lesson) => (
@@ -429,10 +429,10 @@ export function LessonsList({
         <div className="flex items-center justify-center gap-2 pt-6">
           <Button
             variant="outline"
-            size="lg"
+            size="default"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="font-medium"
+            className="font-medium sm:h-11 sm:px-8"
           >
             Previous
           </Button>
@@ -454,12 +454,12 @@ export function LessonsList({
 
                   <Button
                     variant={currentPage === page ? "default" : "outline"}
-                    size="lg"
+                    size="default"
                     onClick={() => handlePageChange(page)}
                     className={cn(
-                      "min-w-10 font-medium",
+                      "min-w-9 font-medium sm:h-11 sm:min-w-10",
                       currentPage === page &&
-                        "bg-primary shadow-md hover:bg-primary/90",
+                      "bg-primary shadow-md hover:bg-primary/90",
                     )}
                   >
                     {page}
@@ -470,10 +470,10 @@ export function LessonsList({
 
           <Button
             variant="outline"
-            size="lg"
+            size="default"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
-            className="font-medium"
+            className="font-medium sm:h-11 sm:px-8"
           >
             Next
           </Button>

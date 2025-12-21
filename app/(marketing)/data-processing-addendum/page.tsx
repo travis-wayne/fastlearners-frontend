@@ -7,17 +7,17 @@ export const metadata = {
 
 export default function DataProcessingAddendumPage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 md:py-20">
+    <div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16 md:py-20 lg:py-24">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Data Processing Addendum (DPA)
           </h1>
-          <p className="text-xl text-muted-foreground">For Schools, NGOs & Partners</p>
+          <p className="text-lg text-muted-foreground sm:text-xl">For Schools, NGOs & Partners</p>
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             1. Parties
           </h2>
           <p className="text-muted-foreground">This Data Processing Addendum (“DPA”) is between:</p>
@@ -29,7 +29,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             2. Purpose of Processing
           </h2>
           <p className="text-muted-foreground">Fastlearners processes personal data to:</p>
@@ -41,7 +41,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             3. Categories of Data Subjects
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
@@ -53,7 +53,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Types of Data
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
@@ -67,7 +67,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Processor Obligations (Fastlearners)
           </h2>
           <p className="text-muted-foreground">Fastlearners shall:</p>
@@ -83,7 +83,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. Sub-processors
           </h2>
           <p className="text-muted-foreground">Fastlearners may use:</p>
@@ -97,7 +97,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. International Transfers
           </h2>
           <p className="text-muted-foreground">Permitted only with:</p>
@@ -108,7 +108,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             8. Termination
           </h2>
           <p className="text-muted-foreground">Upon termination:</p>
@@ -119,7 +119,7 @@ export default function DataProcessingAddendumPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             9. Governing Law
           </h2>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">

@@ -51,14 +51,15 @@ export function SearchCommand({
       <Button
         variant="outline"
         className={cn(
-          "relative h-9 w-full justify-start rounded-md bg-muted/50 text-sm font-normal text-muted-foreground shadow-none sm:pr-12 md:w-72",
+          "relative size-9 justify-center rounded-md bg-muted/50 p-0 text-sm font-normal text-muted-foreground shadow-none sm:w-full sm:justify-start sm:px-3 sm:pr-12 md:w-64 lg:w-72",
           className,
         )}
         onClick={() => setOpen(true)}
       >
-        <span className="inline-flex">
+        <Icons.search className="size-4 sm:mr-2" />
+        <span className="hidden sm:inline-flex">
           Search
-          <span className="hidden sm:inline-flex">&nbsp;documentation</span>...
+          <span className="hidden md:inline-flex">&nbsp;documentation</span>...
         </span>
         <kbd className="pointer-events-none absolute right-[0.3rem] top-[0.45rem] hidden h-5 select-none items-center gap-1 rounded border bg-muted px-1.5 font-mono text-[10px] font-medium opacity-100 sm:flex">
           <span className="text-xs">⌘</span>K

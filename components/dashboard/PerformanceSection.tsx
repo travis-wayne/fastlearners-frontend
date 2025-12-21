@@ -40,26 +40,26 @@ export function PerformanceSection({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-6">
-        <div className="space-y-4">
+      <CardContent className="space-y-4 sm:space-y-6">
+        <div className="space-y-3 sm:space-y-4">
           {items.map((perf, index) => (
             <div key={`${perf.subject}-${index}`} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-muted p-2">{perf.icon}</div>
-                  <span className="font-medium text-slate-200">
+                  <div className="rounded-lg bg-muted p-1.5 sm:p-2">{perf.icon}</div>
+                  <span className="font-medium text-slate-900 dark:text-slate-100">
                     {perf.subject}
                   </span>
                 </div>
-                <span className="text-lg font-semibold text-gray-900 dark:text-slate-100">
+                <span className="text-base font-semibold text-gray-900 dark:text-slate-100 sm:text-lg">
                   {perf.percentage}%
                 </span>
               </div>
               <div className="relative">
-                <Progress value={perf.percentage} className="h-2.5" />
+                <Progress value={perf.percentage} className="h-2 sm:h-2.5" />
                 {typeof perf.target === "number" && (
                   <div
-                    className="absolute top-0 h-2.5 w-1 rounded-full bg-primary/70"
+                    className="absolute top-0 h-2 w-1 rounded-full bg-primary/70 sm:h-2.5"
                     style={{
                       left: `${Math.min(Math.max(perf.target, 0), 100)}%`,
                     }}

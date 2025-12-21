@@ -84,7 +84,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
             )}
           >
             <div className="flex h-full max-h-screen flex-1 flex-col gap-2">
-              <div className="flex h-14 items-center p-4 lg:h-[60px]">
+              <div className="flex h-14 items-center p-3 lg:h-[60px] lg:p-4">
                 {isSidebarExpanded ? <ProjectSwitcher /> : null}
 
                 <Button
@@ -135,12 +135,12 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                   path === item.href ? "page" : undefined
                                 }
                                 className={cn(
-                                  "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+                                  "flex min-h-[44px] items-center gap-3 rounded-md p-2.5 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background sm:p-2",
                                   path === item.href
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
                                   item.disabled &&
-                                    "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                  "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                 )}
                               >
                                 <Icon className="size-5" aria-hidden="true" />
@@ -165,12 +165,12 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                       path === item.href ? "page" : undefined
                                     }
                                     className={cn(
-                                      "flex items-center gap-3 rounded-md py-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+                                      "flex min-h-[44px] items-center gap-3 rounded-md py-2.5 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background sm:py-2",
                                       path === item.href
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
                                       item.disabled &&
-                                        "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                      "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                                     )}
                                   >
                                     <span
@@ -299,7 +299,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
         <SheetContent side="left" className="flex flex-col p-0">
           <ScrollArea className="h-full overflow-y-auto">
             <div className="flex h-screen flex-col">
-              <nav className="flex flex-1 flex-col gap-y-8 p-6 text-lg font-medium">
+              <nav className="flex flex-1 flex-col gap-y-8 p-4 text-lg font-medium sm:p-6">
                 <Link
                   href="#"
                   className="flex items-center gap-2 text-lg font-semibold"
@@ -337,12 +337,12 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                 pathname === item.href ? "page" : undefined
                               }
                               className={cn(
-                                "flex items-center gap-3 rounded-md p-2 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background",
+                                "flex min-h-[44px] items-center gap-3 rounded-md p-2.5 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background sm:p-2",
                                 pathname === item.href
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",
                                 item.disabled &&
-                                  "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
                               )}
                             >
                               <Icon className="size-5" aria-hidden="true" />

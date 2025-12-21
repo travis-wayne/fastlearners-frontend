@@ -131,8 +131,8 @@ export function GuardianDashboard() {
   ];
 
   const Donut = ({ value }: { value: number }) => (
-    <div className="relative size-24">
-      <svg viewBox="0 0 36 36" className="size-24">
+    <div className="relative size-20 sm:size-24">
+      <svg viewBox="0 0 36 36" className="size-20 sm:size-24">
         <path
           className="fill-none stroke-muted"
           strokeWidth="3"
@@ -150,7 +150,7 @@ export function GuardianDashboard() {
         />
       </svg>
       <div className="absolute inset-0 grid place-items-center">
-        <span className="text-lg font-semibold">{value}%</span>
+        <span className="text-base font-semibold sm:text-lg">{value}%</span>
       </div>
     </div>
   );
@@ -159,20 +159,20 @@ export function GuardianDashboard() {
     <div className="container mx-auto space-y-6 p-4 md:p-6">
       {/* Header banner */}
       <div
-        className={`relative overflow-hidden rounded-2xl p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
+        className={`relative overflow-hidden rounded-2xl p-4 sm:p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
       >
-        <div className="grid gap-6 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <p className="text-sm text-gray-900 dark:text-white/90">{today}</p>
-            <h2 className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">
+            <h2 className="mt-1 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
               Good Morning, {displayName}
             </h2>
             <div className="mt-1 flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="h-5 px-2 text-xs">
+              <Badge variant="secondary" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
                 Role: {roleLabel}
               </Badge>
               {user?.email ? (
-                <Badge variant="outline" className="h-5 px-2 text-xs">
+                <Badge variant="outline" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
                   {user.email}
                 </Badge>
               ) : null}
@@ -183,25 +183,25 @@ export function GuardianDashboard() {
             </p>
           </div>
           <div className="hidden select-none md:block">
-            <div className="relative size-28">
+            <div className="relative size-20 sm:size-24 md:size-28">
               <div className="absolute inset-0 rounded-full bg-yellow-300" />
               <div className="absolute inset-1 rounded-full bg-yellow-200" />
-              <div className="absolute right-4 top-6 h-3 w-5 rounded bg-black" />
-              <div className="absolute right-10 top-6 h-3 w-5 rounded bg-black" />
-              <div className="absolute right-7 top-12 h-1.5 w-10 rounded-full bg-amber-700" />
+              <div className="absolute right-3 top-5 h-2.5 w-4 rounded bg-black sm:right-4 sm:top-6 sm:h-3 sm:w-5" />
+              <div className="absolute right-8 top-5 h-2.5 w-4 rounded bg-black sm:right-10 sm:top-6 sm:h-3 sm:w-5" />
+              <div className="absolute right-6 top-10 h-1.5 w-8 rounded-full bg-amber-700 sm:right-7 sm:top-12 sm:h-1.5 sm:w-10" />
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3">
         {/* Progress */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Progress</CardTitle>
             <CardDescription>Physics</CardDescription>
           </CardHeader>
-          <CardContent className="flex items-center justify-center">
+          <CardContent className="flex items-center justify-center p-4 sm:p-6">
             <Donut value={72} />
           </CardContent>
         </Card>
@@ -211,11 +211,11 @@ export function GuardianDashboard() {
           <CardHeader>
             <CardTitle className="text-base">Achievements</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="space-y-2 p-4 sm:p-6">
             {achievements.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-md border p-2"
+                className="flex items-center justify-between rounded-md border p-1.5 sm:p-2"
               >
                 <div className="flex items-center gap-2 text-sm">
                   {a.icon}
@@ -236,7 +236,7 @@ export function GuardianDashboard() {
             <div className="flex items-center justify-between">
               <CardTitle className="text-base">Select Ward</CardTitle>
               <Select defaultValue={wards[0].id}>
-                <SelectTrigger className="w-[160px]">
+                <SelectTrigger className="w-[120px] sm:w-[160px]">
                   <SelectValue placeholder="Select Ward" />
                 </SelectTrigger>
                 <SelectContent>
@@ -249,7 +249,7 @@ export function GuardianDashboard() {
               </Select>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3">
+          <CardContent className="space-y-3 p-4 sm:p-6">
             <div>
               <p className="text-sm font-medium">Overview</p>
             </div>
@@ -282,28 +282,49 @@ export function GuardianDashboard() {
         </CardHeader>
         <CardContent>
           <div className="rounded-md border">
-            <div className="grid grid-cols-1 items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground md:grid-cols-[220px_1fr]">
-              <span>Performance</span>
-              <span>Lesson&apos;s Progress</span>
-            </div>
-            <Separator />
-            <div className="divide-y">
-              {performance.map((row) => (
-                <div
-                  key={row.subject}
-                  className="grid grid-cols-1 items-center gap-4 px-4 py-3 md:grid-cols-[220px_1fr]"
-                >
-                  <span className="text-sm">{row.subject}</span>
-                  <div className="flex items-center gap-3">
-                    <div className="h-2 w-full rounded bg-muted">
-                      <div
-                        className="h-2 rounded bg-primary"
-                        style={{ width: `${row.pct}%` }}
-                      />
+            {/* Desktop Table View */}
+            <div className="hidden md:block">
+              <div className="grid grid-cols-1 items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground md:grid-cols-[180px_1fr] lg:grid-cols-[220px_1fr]">
+                <span>Performance</span>
+                <span>Lesson&apos;s Progress</span>
+              </div>
+              <Separator />
+              <div className="divide-y">
+                {performance.map((row) => (
+                  <div
+                    key={row.subject}
+                    className="grid grid-cols-1 items-center gap-4 px-4 py-3 md:grid-cols-[180px_1fr] lg:grid-cols-[220px_1fr]"
+                  >
+                    <span className="text-sm">{row.subject}</span>
+                    <div className="flex items-center gap-3">
+                      <div className="h-2 w-full rounded bg-muted">
+                        <div
+                          className="h-2 rounded bg-primary"
+                          style={{ width: `${row.pct}%` }}
+                        />
+                      </div>
+                      <span className="w-10 shrink-0 text-right text-xs text-muted-foreground">
+                        {row.pct}%
+                      </span>
                     </div>
-                    <span className="w-10 shrink-0 text-right text-xs text-muted-foreground">
-                      {row.pct}%
-                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="space-y-3 p-3 md:hidden">
+              {performance.map((row) => (
+                <div key={row.subject} className="rounded-lg border bg-muted/30 p-3">
+                  <div className="mb-2 flex items-center justify-between text-sm font-medium">
+                    <span>{row.subject}</span>
+                    <span className="text-muted-foreground">{row.pct}%</span>
+                  </div>
+                  <div className="h-1.5 w-full rounded bg-muted">
+                    <div
+                      className="h-1.5 rounded bg-primary"
+                      style={{ width: `${row.pct}%` }}
+                    />
                   </div>
                 </div>
               ))}

@@ -16,9 +16,9 @@ interface ExerciseCardProps {
 }
 
 export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
-  const { 
-    exerciseProgress, 
-    selectedLesson, 
+  const {
+    exerciseProgress,
+    selectedLesson,
     currentStepIndex,
     startSectionTimer,
     endSectionTimer,
@@ -76,7 +76,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
     if (selectedLesson && !sectionTimerStartedRef.current) {
       const conceptsCount = selectedLesson.concepts?.length || 0;
       let sectionId = '';
-      
+
       if (currentStepIndex <= conceptsCount && currentStepIndex > 0) {
         const conceptIndex = currentStepIndex - 1;
         const concept = selectedLesson.concepts?.[conceptIndex];
@@ -84,18 +84,18 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       } else if (currentStepIndex === conceptsCount + 2) {
         sectionId = 'general_exercises';
       }
-      
+
       if (sectionId) {
         startSectionTimer(sectionId);
         sectionTimerStartedRef.current = true;
       }
     }
-    
+
     return () => {
       if (selectedLesson && sectionTimerStartedRef.current) {
         const conceptsCount = selectedLesson.concepts?.length || 0;
         let sectionId = '';
-        
+
         if (currentStepIndex <= conceptsCount && currentStepIndex > 0) {
           const conceptIndex = currentStepIndex - 1;
           const concept = selectedLesson.concepts?.[conceptIndex];
@@ -103,7 +103,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         } else if (currentStepIndex === conceptsCount + 2) {
           sectionId = 'general_exercises';
         }
-        
+
         if (sectionId) {
           endSectionTimer(sectionId);
         }
@@ -219,10 +219,10 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
       if (result && typeof result === 'object') {
         // Determine if answer is correct
-        const isAnswerCorrect = result.isCorrect === true || 
-                                result.success === true ||
-                                (result.code === 200 && result.message?.toLowerCase().includes('already answered'));
-        
+        const isAnswerCorrect = result.isCorrect === true ||
+          result.success === true ||
+          (result.code === 200 && result.message?.toLowerCase().includes('already answered'));
+
         setIsCorrect(isAnswerCorrect);
 
         let message = result.message;
@@ -251,8 +251,8 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
           // Show detailed validation errors if available
           if (result.errors) {
             const errorMessages = Object.entries(result.errors)
-              .flatMap(([field, errors]) => 
-                Array.isArray(errors) 
+              .flatMap(([field, errors]) =>
+                Array.isArray(errors)
                   ? errors.map(err => `${field}: ${err}`)
                   : [`${field}: ${errors}`]
               )
@@ -266,7 +266,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         }
 
         setFeedbackMessage(message);
-        
+
         // Update analytics after answer submission
         if (selectedLesson) {
           updateAnalytics(selectedLesson.id);
@@ -279,7 +279,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         setFeedbackMessage(correct ? "Correct!" : "Incorrect. Try again.");
         if (correct) setSuccess(true);
         else setShake(true);
-        
+
         // Update analytics after answer submission
         if (selectedLesson) {
           updateAnalytics(selectedLesson.id);
@@ -320,10 +320,11 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
   return (
     <Card className={cn("border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10", success && "animate-pulse")}>
-      <CardHeader className="pb-2">
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-base font-medium text-blue-900 dark:text-blue-100">
-            Exercise {index + 1}
+      <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+        <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+          <CardTitle className="flex items-center gap-2 text-sm font-semibold text-blue-900 dark:text-blue-100 sm:text-base">
+            <Badge variant="secondary" className="h-5 px-1.5 text-[10px] sm:text-xs">Q{index + 1}</Badge>
+            Exercise Content
           </CardTitle>
           <div className="flex items-center gap-2">
             {isFirstTry && <Badge variant="secondary" className="text-xs">First Try!</Badge>}
@@ -336,8 +337,8 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         </div>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="rounded-md bg-white p-4 shadow-sm dark:bg-slate-950">
-          <p className="font-medium text-slate-800 dark:text-slate-200">
+        <div className="rounded-md bg-white p-3 shadow-sm dark:bg-slate-950 sm:p-4">
+          <p className="text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200 sm:text-base">
             {exercise.problem}
           </p>
         </div>
@@ -358,9 +359,9 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
               <div
                 key={i}
                 className={cn(
-                  "flex items-center space-x-2 rounded-md border p-3 transition-all duration-300",
+                  "flex min-h-12 items-center space-x-3 rounded-md border p-3.5 transition-all duration-300 sm:p-3",
                   isSelected
-                    ? "scale-105 border-blue-500 bg-blue-50 dark:border-blue-400 dark:bg-blue-900/20"
+                    ? "scale-[1.02] border-blue-500 bg-blue-50 shadow-sm dark:border-blue-400 dark:bg-blue-900/20"
                     : "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900",
                   isRevealed &&
                   isCorrectAnswer &&
@@ -376,7 +377,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                 <RadioGroupItem value={optionKey} id={`ex-${exercise.id}-opt-${i}`} />
                 <Label
                   htmlFor={`ex-${exercise.id}-opt-${i}`}
-                  className="flex-1 cursor-pointer"
+                  className="flex-1 cursor-pointer py-1 text-sm sm:text-base"
                 >
                   {answer}
                 </Label>
@@ -392,8 +393,8 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
             <Button
               onClick={handleSubmit}
               disabled={!selectedOptionKey || isSubmitting || !isOnline}
-              className="mt-3 bg-blue-600 hover:bg-blue-700"
-              size="sm"
+              className="mt-3 h-11 w-full bg-blue-600 font-semibold hover:bg-blue-700 sm:h-10 sm:w-auto"
+              size="default"
               aria-label="Submit your answer"
             >
               {isSubmitting ? "Checking..." : "Submit Answer"}
@@ -424,21 +425,21 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
               {!isCorrect && (
                 <div className="mt-3 space-y-2">
                   {!showSolution ? (
-                    <div className="flex gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                    <div className="flex flex-col gap-2 sm:flex-row">
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={() => setShowSolution(true)}
-                        className="h-8 text-xs"
+                        className="h-10 text-xs font-medium sm:h-8"
                         aria-label="Show solution"
                       >
                         Show Solution
                       </Button>
-                      <Button 
-                        variant="default" 
-                        size="sm" 
+                      <Button
+                        variant="default"
+                        size="sm"
                         onClick={handleTryAgain}
-                        className="h-8 bg-blue-600 text-xs hover:bg-blue-700"
+                        className="h-10 bg-blue-600 text-xs font-medium hover:bg-blue-700 sm:h-8"
                         aria-label="Try again"
                       >
                         Try Again
@@ -451,9 +452,9 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                       </p>
                       {exercise.solution_steps && exercise.solution_steps.length > 0 && (
                         <div className="mt-2">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={() => setShowSolutionDetails(!showSolutionDetails)}
                             className="h-8 text-xs"
                           >
@@ -468,9 +469,9 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                           )}
                         </div>
                       )}
-                      <Button 
-                        variant="default" 
-                        size="sm" 
+                      <Button
+                        variant="default"
+                        size="sm"
                         onClick={handleTryAgain}
                         className="mt-2 h-8 bg-blue-600 text-xs hover:bg-blue-700"
                         aria-label="Try again"

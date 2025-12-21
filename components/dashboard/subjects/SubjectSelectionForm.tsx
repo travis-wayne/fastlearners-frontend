@@ -9,6 +9,7 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { CheckCircle2, Circle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { cn } from "@/lib/utils";
 
 import {
   getSubjects,
@@ -231,17 +232,17 @@ export function SubjectSelectionForm({
     <div className="space-y-6">
       {/* Compulsory Selective Section */}
       <Card>
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+          <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
-              <CardTitle>Core Subject (Religious Studies)</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-lg font-bold sm:text-xl">Core Subject (Religious Studies)</CardTitle>
+              <CardDescription className="text-xs sm:text-sm">
                 Select ONE religious study subject
               </CardDescription>
             </div>
             {compulsoryComplete && (
-              <Badge variant="default" className="bg-green-600">
-                <CheckCircle2 className="mr-1 size-4" />
+              <Badge variant="default" className="self-start bg-green-600 sm:self-center">
+                <CheckCircle2 className="mr-1.5 size-3.5 sm:size-4" />
                 Complete
               </Badge>
             )}
@@ -256,18 +257,20 @@ export function SubjectSelectionForm({
                   !compulsoryComplete && setSelectedCompulsory(subject.id)
                 }
                 disabled={compulsoryComplete}
-                className={`rounded-lg border-2 p-4 text-left transition-all ${
+                className={cn(
+                  "group rounded-lg border-2 p-3.5 text-left transition-all active:scale-[0.98] sm:p-4",
                   selectedCompulsory === subject.id
-                    ? "border-primary bg-primary/5"
-                    : "border-border hover:border-primary/50"
-                } ${compulsoryComplete ? "cursor-not-allowed opacity-50" : ""} `}
+                    ? "border-primary bg-primary/5 shadow-sm"
+                    : "border-border hover:border-primary/50",
+                  compulsoryComplete && "cursor-not-allowed opacity-50"
+                )}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <span className="text-3xl">
+                    <span className="text-2xl transition-transform group-hover:scale-110 sm:text-3xl">
                       {getSubjectIcon(subject.name)}
                     </span>
-                    <span className="font-semibold">{subject.name}</span>
+                    <span className="text-sm font-bold sm:text-base">{subject.name}</span>
                   </div>
                   {selectedCompulsory === subject.id && (
                     <CheckCircle2 className="size-5 text-primary" />
@@ -299,15 +302,15 @@ export function SubjectSelectionForm({
       {/* Elective Subjects Section */}
       {showElectives && (
         <Card>
-          <CardHeader>
-            <div className="flex items-center justify-between">
+          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+            <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
-                <CardTitle>Elective Subjects</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-lg font-bold sm:text-xl">Elective Subjects</CardTitle>
+                <CardDescription className="text-xs sm:text-sm">
                   Select {requiredElectives} subjects from the list
                 </CardDescription>
               </div>
-              <Badge variant="secondary" className="px-4 py-1 text-lg">
+              <Badge variant="secondary" className="self-start px-3 py-1 text-base font-bold sm:self-center sm:px-4 sm:text-lg">
                 {selectedElectives.length}/{requiredElectives}
               </Badge>
             </div>
@@ -317,7 +320,7 @@ export function SubjectSelectionForm({
               value={(selectedElectives.length / requiredElectives) * 100}
             />
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
               {subjectsData.selective.map((subject) => {
                 const isSelected = selectedElectives.includes(subject.id);
                 const isDisabled =
@@ -328,20 +331,21 @@ export function SubjectSelectionForm({
                     key={subject.id}
                     onClick={() => !isDisabled && toggleElective(subject.id)}
                     disabled={isDisabled}
-                    className={`rounded-lg border-2 p-4 text-left transition-all ${
+                    className={cn(
+                      "group rounded-lg border-2 p-3.5 text-left transition-all active:scale-[0.98] sm:p-4",
                       isSelected
-                        ? "border-primary bg-primary/5"
+                        ? "border-primary bg-primary/5 shadow-sm"
                         : isDisabled
                           ? "cursor-not-allowed border-border opacity-50"
                           : "border-border hover:border-primary/50"
-                    } `}
+                    )}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <span className="text-3xl">
+                        <span className="text-2xl transition-transform group-hover:scale-110 sm:text-3xl">
                           {getSubjectIcon(subject.name)}
                         </span>
-                        <span className="font-semibold">{subject.name}</span>
+                        <span className="text-sm font-bold sm:text-base">{subject.name}</span>
                       </div>
                       {isSelected ? (
                         <CheckCircle2 className="size-5 text-primary" />
@@ -359,8 +363,8 @@ export function SubjectSelectionForm({
               disabled={
                 selectedElectives.length !== requiredElectives || isSubmitting
               }
-              size="lg"
-              className="w-full"
+              size="default"
+              className="h-11 w-full font-bold shadow-lg sm:h-12"
             >
               {isSubmitting ? (
                 <>
@@ -369,7 +373,7 @@ export function SubjectSelectionForm({
                 </>
               ) : (
                 <>
-                  <CheckCircle2 className="mr-2 size-4" />
+                  <CheckCircle2 className="mr-2 size-5" />
                   Complete Registration ({selectedElectives.length}/
                   {requiredElectives})
                 </>

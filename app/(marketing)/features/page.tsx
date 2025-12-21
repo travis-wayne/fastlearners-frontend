@@ -7,17 +7,17 @@ export const metadata = {
 
 export default function FeaturesPage() {
   return (
-    <div className="container mx-auto max-w-7xl px-4 py-12 md:py-20">
-      <div className="space-y-20">
+    <div className="container mx-auto max-w-7xl px-4 py-10 sm:py-16 md:py-20">
+      <div className="space-y-12 sm:space-y-16 md:space-y-20">
         {/* Hero Section */}
         <div className="space-y-6 text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl md:text-6xl">
+          <h1 className="text-balance font-urban text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
             Powerful Features for{" "}
-            <span className="text-gradient_indigo-purple font-extrabold">
+            <span className="text-gradient_indigo-purple">
               Every Learner
             </span>
           </h1>
-          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-muted-foreground">
+          <p className="mx-auto max-w-3xl text-balance text-base leading-relaxed text-muted-foreground sm:text-lg md:text-xl">
             From personalized learning paths to exam preparation tools, Fastlearners provides everything you need to excel academically.
           </p>
         </div>
@@ -25,18 +25,19 @@ export default function FeaturesPage() {
         {/* Why Choose Fastlearners */}
         <section className="space-y-8">
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               Why Choose Fastlearners App
             </h2>
-            <p className="mx-auto max-w-3xl text-muted-foreground">
+            <div className="mx-auto h-1.5 w-24 rounded-full bg-gradient-to-r from-primary to-primary/50"></div>
+            <p className="mx-auto max-w-3xl text-balance text-muted-foreground sm:text-lg">
               Fastlearners isn&apos;t just another study tool — it&apos;s a purpose-built learning ecosystem created for Nigerian secondary school students, teachers, and guardians.
             </p>
           </div>
 
-          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 sm:gap-8 lg:grid-cols-3">
             {/* Feature 1 */}
-            <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
-              <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
+            <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-lg sm:p-5 md:p-6">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 sm:size-12 md:size-14">
                 <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -62,8 +63,8 @@ export default function FeaturesPage() {
             </div>
 
             {/* Feature 2 */}
-            <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
-              <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
+            <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-lg sm:p-5 md:p-6">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 sm:size-12 md:size-14">
                 <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -89,8 +90,8 @@ export default function FeaturesPage() {
             </div>
 
             {/* Feature 3 */}
-            <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
-              <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
+            <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-lg sm:p-5 md:p-6">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 sm:size-12 md:size-14">
                 <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -116,8 +117,8 @@ export default function FeaturesPage() {
             </div>
 
             {/* Feature 4 */}
-            <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
-              <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
+            <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-lg sm:p-5 md:p-6">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 sm:size-12 md:size-14">
                 <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
@@ -143,8 +144,8 @@ export default function FeaturesPage() {
             </div>
 
             {/* Feature 5 */}
-            <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
-              <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
+            <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-lg sm:p-5 md:p-6">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 sm:size-12 md:size-14">
                 <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                 </svg>
@@ -170,8 +171,8 @@ export default function FeaturesPage() {
             </div>
 
             {/* Feature 6 */}
-            <div className="group rounded-xl border-2 border-primary/20 bg-card p-6 shadow-sm transition-all hover:border-primary hover:shadow-lg">
-              <div className="mb-4 flex size-14 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70">
+            <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-lg sm:p-5 md:p-6">
+              <div className="mb-4 flex size-10 items-center justify-center rounded-lg bg-gradient-to-br from-primary to-primary/70 sm:size-12 md:size-14">
                 <svg className="size-7 text-primary-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
                 </svg>
@@ -201,72 +202,73 @@ export default function FeaturesPage() {
         {/* Core Features */}
         <section className="space-y-8">
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               Core Platform Features
             </h2>
-            <p className="mx-auto max-w-3xl text-muted-foreground">
+            <div className="mx-auto h-1.5 w-24 rounded-full bg-gradient-to-r from-primary to-primary/50"></div>
+            <p className="mx-auto max-w-3xl text-balance text-muted-foreground sm:text-lg">
               Everything you need to learn, practice, and excel in one comprehensive platform.
             </p>
           </div>
 
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Progress Tracking</h3>
               <p className="text-muted-foreground">
                 Stay on top of your learning journey with intelligent progress tracking. Every lesson, quiz, and topic is automatically recorded to show how far you&apos;ve come.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Performance Tracking</h3>
               <p className="text-muted-foreground">
                 Understand your academic strengths and weaknesses through real-time performance insights with detailed analytics on test results.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Quiz Platform</h3>
               <p className="text-muted-foreground">
                 Turn learning into fun challenges. Test your knowledge across subjects, compete with classmates, and earn badges for excellence.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Past Questions Platform</h3>
               <p className="text-muted-foreground">
                 Access a comprehensive library of past examination questions from WAEC, NECO, JAMB, organized by subject and year.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Subject Selection</h3>
               <p className="text-muted-foreground">
                 Customize your study plan according to your class and areas of interest with full access to all curriculum subjects.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Comprehensive Lessons</h3>
               <p className="text-muted-foreground">
                 Detailed, curriculum-aligned lesson notes created by expert educators with visual aids, examples, and self-assessment exercises.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Leaderboard</h3>
               <p className="text-muted-foreground">
                 Learn, compete, and rise to the top! Rankings based on quiz performance, activity level, and consistency to inspire engagement.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Profile Management</h3>
               <p className="text-muted-foreground">
                 Manage your learning space effortlessly with a personalized dashboard. Update details, view reports, and manage subscriptions.
               </p>
             </div>
 
-            <div className="rounded-lg border-2 border-primary/20 bg-card p-6 shadow-sm">
+            <div className="rounded-lg border-2 border-primary/20 bg-card p-4 shadow-sm sm:p-5 md:p-6">
               <h3 className="mb-2 text-lg font-semibold text-foreground">Complaints Platform</h3>
               <p className="text-muted-foreground">
                 Easily report issues, give feedback, or request assistance. Our support team ensures every concern is attended to promptly.
@@ -278,17 +280,18 @@ export default function FeaturesPage() {
         {/* Dashboard Features */}
         <section className="space-y-8">
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               Powerful Dashboards for Everyone
             </h2>
-            <p className="mx-auto max-w-3xl text-muted-foreground">
+            <div className="mx-auto h-1.5 w-24 rounded-full bg-gradient-to-r from-primary to-primary/50"></div>
+            <p className="mx-auto max-w-3xl text-balance text-muted-foreground sm:text-lg">
               Tailored experiences for students, guardians, and guests with role-specific insights and controls.
             </p>
           </div>
 
           <div className="grid gap-8 lg:grid-cols-3">
-            <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-8 shadow-lg">
-              <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-5 shadow-lg md:p-8">
+              <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 sm:size-14 md:size-16">
                 <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
@@ -317,8 +320,8 @@ export default function FeaturesPage() {
               </ul>
             </div>
 
-            <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-8 shadow-lg">
-              <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-5 shadow-lg md:p-8">
+              <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 sm:size-14 md:size-16">
                 <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
@@ -347,8 +350,8 @@ export default function FeaturesPage() {
               </ul>
             </div>
 
-            <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-8 shadow-lg">
-              <div className="mb-4 flex size-16 items-center justify-center rounded-full bg-primary/10">
+            <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5 p-5 shadow-lg md:p-8">
+              <div className="mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 sm:size-14 md:size-16">
                 <svg className="size-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -383,17 +386,18 @@ export default function FeaturesPage() {
         {/* How It Works */}
         <section className="space-y-8">
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               How It Works
             </h2>
-            <p className="mx-auto max-w-3xl text-muted-foreground">
+            <div className="mx-auto h-1.5 w-24 rounded-full bg-gradient-to-r from-primary to-primary/50"></div>
+            <p className="mx-auto max-w-3xl text-balance text-muted-foreground sm:text-lg">
               A seamless journey from sign-up to success in just 9 simple steps.
             </p>
           </div>
 
           <div className="relative">
             <div className="absolute inset-y-0 left-8 hidden w-0.5 bg-gradient-to-b from-primary via-primary/50 to-transparent md:block"></div>
-            
+
             <div className="space-y-8">
               {[
                 { num: 1, title: "Sign Up & Role Selection", desc: "Get started in seconds! Choose your role — Student, Guardian, or Guest — and create your account." },
@@ -406,8 +410,8 @@ export default function FeaturesPage() {
                 { num: 8, title: "Track Performance", desc: "Measure scores from exercises, quizzes, and past questions to identify improvement areas." },
                 { num: 9, title: "Leaderboard", desc: "Compete with peers and climb the ranks to celebrate academic excellence." },
               ].map((step) => (
-                <div key={step.num} className="relative flex items-start gap-6">
-                  <div className="flex size-16 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-2xl font-bold text-primary-foreground shadow-lg">
+                <div key={step.num} className="relative flex items-start gap-4 sm:gap-6">
+                  <div className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-primary to-primary/70 text-xl font-bold text-primary-foreground shadow-lg sm:size-16 sm:text-2xl">
                     {step.num}
                   </div>
                   <div className="flex-1 pt-2">
@@ -423,10 +427,11 @@ export default function FeaturesPage() {
         {/* Who It's Built For */}
         <section className="space-y-8">
           <div className="space-y-4 text-center">
-            <h2 className="text-3xl font-bold tracking-tight text-foreground md:text-4xl">
+            <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl md:text-4xl">
               Who Fastlearners is Built For
             </h2>
-            <p className="mx-auto max-w-3xl text-muted-foreground">
+            <div className="mx-auto h-1.5 w-24 rounded-full bg-gradient-to-r from-primary to-primary/50"></div>
+            <p className="mx-auto max-w-3xl text-balance text-muted-foreground sm:text-lg">
               Designed for everyone in the education ecosystem — from students to institutions.
             </p>
           </div>
@@ -531,26 +536,30 @@ export default function FeaturesPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="rounded-2xl bg-gradient-to-r from-primary to-primary/80 p-12 text-center shadow-xl">
-          <h2 className="mb-4 text-3xl font-bold text-primary-foreground md:text-4xl">
-            Ready to Experience It?
-          </h2>
-          <p className="mb-8 text-lg text-primary-foreground/90">
-            Join thousands of learners building brighter futures.
-          </p>
-          <div className="flex flex-wrap justify-center gap-4">
-            <a
-              href="/signup"
-              className="rounded-lg bg-background px-8 py-3 font-semibold text-foreground shadow-lg transition-all hover:scale-105 hover:shadow-xl"
-            >
-              Get Started Free
-            </a>
-            <a
-              href="/pricing"
-              className="rounded-lg border-2 border-primary-foreground bg-transparent px-8 py-3 font-semibold text-primary-foreground transition-all hover:bg-primary-foreground hover:text-primary"
-            >
-              See Plans for Schools
-            </a>
+        <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary to-primary/80 p-8 text-center shadow-xl sm:p-12 md:p-16">
+          <div className="absolute -right-20 -top-20 size-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 size-64 rounded-full bg-white/10 blur-3xl" />
+          <div className="relative z-10">
+            <h2 className="mb-4 font-heading text-3xl font-bold text-primary-foreground sm:text-4xl md:text-5xl">
+              Ready to Experience It?
+            </h2>
+            <p className="mx-auto mb-10 max-w-2xl text-pretty text-lg text-primary-foreground/90 sm:text-xl">
+              Join thousands of learners building brighter futures with Fastlearners.
+            </p>
+            <div className="flex flex-wrap justify-center gap-4">
+              <a
+                href="/signup"
+                className="rounded-full bg-background px-8 py-3.5 font-bold text-foreground shadow-lg transition-all hover:scale-105 hover:bg-muted"
+              >
+                Get Started Free
+              </a>
+              <a
+                href="/pricing"
+                className="rounded-full border-2 border-primary-foreground bg-transparent px-8 py-3 font-semibold text-primary-foreground transition-all hover:bg-primary-foreground hover:text-primary"
+              >
+                See Plans for Schools
+              </a>
+            </div>
           </div>
         </section>
       </div>

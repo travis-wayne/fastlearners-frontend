@@ -22,40 +22,44 @@ export function BlogCard({
       className={cn(
         "group relative",
         horizontale
-          ? "grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-6"
-          : "flex flex-col space-y-2",
+          ? "grid grid-cols-1 gap-6 md:grid-cols-2 md:gap-10 lg:gap-12"
+          : "flex flex-col space-y-4",
       )}
     >
-      {data.image && (
-        <div className="w-full overflow-hidden rounded-xl border">
-          <BlurImage
-            alt={data.title}
-            blurDataURL={data.blurDataURL ?? placeholderBlurhash}
-            className={cn(
-              "size-full object-cover object-center",
-              horizontale ? "lg:h-72" : null,
-            )}
-            width={800}
-            height={400}
-            priority={priority}
-            placeholder="blur"
-            src={data.image}
-            sizes="(max-width: 768px) 750px, 600px"
-          />
-        </div>
-      )}
+      <div className="w-full overflow-hidden rounded-2xl border bg-muted/20 shadow-sm">
+        <BlurImage
+          alt={data.title}
+          blurDataURL={data.blurDataURL ?? placeholderBlurhash}
+          className={cn(
+            "size-full object-cover object-center transition-transform duration-500 group-hover:scale-105",
+            horizontale ? "h-64 sm:h-72 md:h-80 lg:h-96" : "aspect-video",
+          )}
+          width={800}
+          height={400}
+          priority={priority}
+          placeholder="blur"
+          src={data.image}
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+      </div>
       <div
         className={cn(
           "flex flex-1 flex-col",
           horizontale ? "justify-center" : "justify-between",
         )}
       >
-        <div className="w-full">
-          <h2 className="my-1.5 line-clamp-2 font-heading text-2xl">
+        <div className="w-full space-y-2">
+          <h2 className={cn(
+            "line-clamp-2 font-heading text-foreground transition-colors group-hover:text-primary",
+            horizontale ? "text-3xl sm:text-4xl md:text-5xl" : "text-xl sm:text-2xl"
+          )}>
             {data.title}
           </h2>
           {data.description && (
-            <p className="line-clamp-2 text-muted-foreground">
+            <p className={cn(
+              "line-clamp-3 text-pretty text-muted-foreground",
+              horizontale ? "text-base sm:text-lg md:text-xl" : "text-sm sm:text-base"
+            )}>
               {data.description}
             </p>
           )}

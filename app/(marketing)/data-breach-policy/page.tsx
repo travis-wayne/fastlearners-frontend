@@ -7,10 +7,10 @@ export const metadata = {
 
 export default function DataBreachPolicyPage() {
   return (
-    <div className="container mx-auto max-w-4xl px-4 py-12 md:py-20">
+    <div className="container mx-auto max-w-4xl px-4 py-10 sm:py-16 md:py-20 lg:py-24">
       <div className="space-y-8">
         <div className="space-y-4">
-          <h1 className="text-4xl font-bold tracking-tight text-foreground sm:text-5xl">
+          <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Data Breach Response Policy
           </h1>
           <div className="flex flex-col space-y-1 text-muted-foreground">
@@ -20,7 +20,7 @@ export default function DataBreachPolicyPage() {
         </div>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             1. Purpose
           </h2>
           <p className="leading-relaxed text-muted-foreground">
@@ -38,7 +38,7 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             2. What is a Data Breach?
           </h2>
           <p className="text-muted-foreground">A data breach includes:</p>
@@ -53,10 +53,10 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             3. Responsibilities
           </h2>
-          
+
           <div className="space-y-3">
             <h3 className="text-xl font-medium text-foreground">a. Data Protection Officer (DPO) or Appointed Lead</h3>
             <p className="mb-2 text-muted-foreground">Responsible for:</p>
@@ -89,13 +89,13 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Breach Response Procedure
           </h2>
-          
+
           <div className="space-y-4">
             <div className="border-l-4 border-primary py-1 pl-4">
-              <h3 className="text-xl font-medium text-foreground">Step 1: Identification</h3>
+              <h3 className="text-lg font-medium text-foreground sm:text-xl">Step 1: Identification</h3>
               <p className="mt-2 text-muted-foreground">A breach may be detected through:</p>
               <ul className="mt-1 list-disc space-y-1 pl-6 text-muted-foreground">
                 <li>User reports</li>
@@ -107,7 +107,7 @@ export default function DataBreachPolicyPage() {
             </div>
 
             <div className="border-l-4 border-primary py-1 pl-4">
-              <h3 className="text-xl font-medium text-foreground">Step 2: Containment</h3>
+              <h3 className="text-lg font-medium text-foreground sm:text-xl">Step 2: Containment</h3>
               <p className="mt-2 text-muted-foreground">Immediately:</p>
               <ul className="mt-1 list-disc space-y-1 pl-6 text-muted-foreground">
                 <li>Disable compromised accounts</li>
@@ -119,7 +119,7 @@ export default function DataBreachPolicyPage() {
             </div>
 
             <div className="border-l-4 border-primary py-1 pl-4">
-              <h3 className="text-xl font-medium text-foreground">Step 3: Assessment (within 24 hours)</h3>
+              <h3 className="text-lg font-medium text-foreground sm:text-xl">Step 3: Assessment (within 24 hours)</h3>
               <p className="mt-2 text-muted-foreground">Determine:</p>
               <ul className="mt-1 list-disc space-y-1 pl-6 text-muted-foreground">
                 <li>Type of data involved</li>
@@ -131,7 +131,7 @@ export default function DataBreachPolicyPage() {
             </div>
 
             <div className="border-l-4 border-primary py-1 pl-4">
-              <h3 className="text-xl font-medium text-foreground">Step 4: Notification</h3>
+              <h3 className="text-lg font-medium text-foreground sm:text-xl">Step 4: Notification</h3>
               <div className="mt-2 space-y-3">
                 <div>
                   <h4 className="font-medium text-foreground">Regulators</h4>
@@ -157,7 +157,7 @@ export default function DataBreachPolicyPage() {
             </div>
 
             <div className="border-l-4 border-primary py-1 pl-4">
-              <h3 className="text-xl font-medium text-foreground">Step 5: Documentation</h3>
+              <h3 className="text-lg font-medium text-foreground sm:text-xl">Step 5: Documentation</h3>
               <p className="mt-2 text-muted-foreground">Every breach is logged with:</p>
               <ul className="mt-1 list-disc space-y-1 pl-6 text-muted-foreground">
                 <li>Date/time</li>
@@ -171,7 +171,7 @@ export default function DataBreachPolicyPage() {
             </div>
 
             <div className="border-l-4 border-primary py-1 pl-4">
-              <h3 className="text-xl font-medium text-foreground">Step 6: Remediation</h3>
+              <h3 className="text-lg font-medium text-foreground sm:text-xl">Step 6: Remediation</h3>
               <p className="mt-2 text-muted-foreground">Actions may include:</p>
               <ul className="mt-1 list-disc space-y-1 pl-6 text-muted-foreground">
                 <li>Patching systems</li>
@@ -186,7 +186,7 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Security Measures in Place
           </h2>
           <p className="text-muted-foreground">Fastlearners applies:</p>
@@ -201,7 +201,7 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. Special Handling of Children’s Data Breaches
           </h2>
           <p className="text-muted-foreground">If a child’s data is affected:</p>
@@ -213,7 +213,7 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. Review and Updates
           </h2>
           <p className="text-muted-foreground">
@@ -222,7 +222,7 @@ export default function DataBreachPolicyPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-2xl font-semibold tracking-tight text-foreground">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             8. Contact
           </h2>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">

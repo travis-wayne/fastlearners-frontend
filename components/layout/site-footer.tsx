@@ -16,19 +16,19 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
     <footer className={cn("border-t", className)}>
       <SectionWrapper
         as="div"
-        className="grid grid-cols-1 gap-8 py-12 md:grid-cols-3 lg:grid-cols-5"
+        className="grid grid-cols-1 gap-10 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
       >
         {footerLinks.map((section) => (
           <div key={section.title}>
             <span className="text-sm font-medium text-foreground">
               {section.title}
             </span>
-            <ul className="mt-4 list-inside space-y-3">
+            <ul className="mt-4 list-inside space-y-3 sm:space-y-4">
               {section.items?.map((link) => (
                 <li key={link.title}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground hover:text-primary"
+                    className="block py-1 text-sm text-muted-foreground hover:text-primary"
                   >
                     {link.title}
                   </Link>
@@ -46,9 +46,9 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
         <SectionWrapper
           as="div"
           disableVerticalPadding
-          className="flex flex-col items-start justify-between gap-4 py-4 sm:flex-row"
+          className="flex flex-col items-center justify-between gap-4 py-6 sm:flex-row sm:py-4"
         >
-          <span className="text-sm text-muted-foreground">
+          <span className="text-center text-sm text-muted-foreground sm:text-left">
             Copyright &copy; {currentYear}. All rights reserved.
           </span>
           <div className="flex items-center gap-3">

@@ -36,14 +36,14 @@ export function AchievementsSection({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <CardContent className="grid grid-cols-2 gap-2 p-4 sm:grid-cols-3 sm:gap-3 sm:p-6">
         {items.map((a, i) => (
           <div
             key={`${a.title}-${i}`}
-            className="rounded-xl border bg-card p-4 text-center shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md"
+            className="rounded-xl border bg-card p-3 text-center shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-4"
           >
-            <div className="text-2xl">{a.icon}</div>
-            <div className="mt-1 text-sm font-medium text-gray-900 dark:text-slate-100">
+            <div className="text-xl sm:text-2xl">{a.icon}</div>
+            <div className="mt-1 text-xs font-medium text-gray-900 dark:text-slate-100 sm:text-sm">
               {a.title}
             </div>
           </div>

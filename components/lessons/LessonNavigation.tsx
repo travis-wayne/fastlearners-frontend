@@ -41,32 +41,32 @@ export function LessonNavigation({
     <div className="flex items-center justify-between gap-4">
       <Button
         variant="outline"
-        size="lg"
+        size="default"
         onClick={handlePrevious}
         disabled={!previousUrl}
         className={cn(
-          "group h-12 rounded-lg border-2 font-medium transition-all",
+          "group h-10 rounded-lg border-2 px-3 font-medium transition-all sm:h-12 sm:px-6",
           previousUrl
             ? "hover:border-primary hover:shadow-md"
             : "opacity-50",
         )}
       >
-        <ChevronLeft className="mr-2 size-4 transition-transform group-hover:-translate-x-1" />
-        Previous Lesson
+        <ChevronLeft className="size-4 transition-transform group-hover:-translate-x-1 sm:mr-2" />
+        <span className="hidden sm:inline">Previous Lesson</span>
       </Button>
 
       <Button
         variant="default"
-        size="lg"
+        size="default"
         onClick={handleNext}
         disabled={!nextUrl}
         className={cn(
-          "group h-12 rounded-lg border-2 font-medium shadow-sm transition-all hover:shadow-md",
+          "group h-10 rounded-lg border-2 px-3 font-medium shadow-sm transition-all hover:shadow-md sm:h-12 sm:px-6",
           !nextUrl && "opacity-50",
         )}
       >
-        Next Lesson
-        <ChevronRight className="ml-2 size-4 transition-transform group-hover:translate-x-1" />
+        <span className="hidden sm:inline">Next Lesson</span>
+        <ChevronRight className="size-4 transition-transform group-hover:translate-x-1 sm:ml-2" />
       </Button>
     </div>
   );
