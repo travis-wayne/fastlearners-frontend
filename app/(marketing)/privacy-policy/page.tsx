@@ -77,7 +77,6 @@ export default function PrivacyPolicyPage() {
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
               <li>Parents/guardian must supervise profile edit</li>
               <li>Parent/guardian have access to their wards&apos; profile details</li>
-              <li>Consent verification logs</li>
             </ul>
           </div>
         </section>
@@ -89,7 +88,6 @@ export default function PrivacyPolicyPage() {
           <p className="text-muted-foreground">We rely on:</p>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
             <li><span className="font-medium text-foreground">Parents/guardian&apos;s supervision</span> (for minors and optional features)</li>
-            <li><span className="font-medium text-foreground">Consent</span> (for minors and optional features)</li>
             <li><span className="font-medium text-foreground">Contract performance</span> (to provide digital app services)</li>
             <li><span className="font-medium text-foreground">Legitimate interest</span> (service improvement, analytics)</li>
             <li><span className="font-medium text-foreground">Legal obligation</span> (records required by law)</li>
