@@ -15,6 +15,7 @@ interface SectionBreadcrumbProps {
   concepts: any[];
   currentStepIndex: number;
   onNavigate: (stepIndex: number) => void;
+  className?: string;
 }
 
 export function SectionBreadcrumb({
@@ -22,6 +23,7 @@ export function SectionBreadcrumb({
   concepts,
   currentStepIndex,
   onNavigate,
+  className,
 }: SectionBreadcrumbProps) {
   const { sectionProgress } = useLessonsStore();
 
@@ -49,7 +51,7 @@ export function SectionBreadcrumb({
   ];
 
   return (
-    <HorizontalScroll className="block pb-2">
+    <HorizontalScroll className={cn("block pb-2", className)}>
       <div className="flex items-center gap-2">
         {sections.map((section, index) => {
           const progress = sectionProgress[section.id];
