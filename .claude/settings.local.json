@@ -6,7 +6,8 @@
       "Bash(Where-Object { $_FullName -like \"*subjects*\" })",
       "Bash(Select-Object FullName)",
       "Bash(Select-Object -ExpandProperty FullName)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(ls:*)"
     ]
   }
 }

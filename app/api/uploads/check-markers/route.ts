@@ -61,9 +61,9 @@ export async function POST(req: NextRequest) {
     }
 
     // Create new FormData for upstream
-    // Note: API expects "check_marker_file" (singular) but we accept "check_markers_file" (plural) for consistency
+    // API expects "check_markers_file" (plural) - confirmed via HTTPie testing
     const upstreamFormData = new FormData();
-    upstreamFormData.append("check_marker_file", file);
+    upstreamFormData.append("check_markers_file", file);
 
     const upstream = await fetch(
       `${BASE_API_URL}/superadmin/lessons/uploads/check-markers`,
