@@ -137,16 +137,16 @@ export function LoginForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-4 sm:gap-6", className)}
+      className={cn("flex flex-col gap-component-md sm:gap-component-lg", className)}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
       <Card>
-        <CardHeader className="space-y-1 text-center sm:space-y-1.5">
-          <CardTitle className="text-lg sm:text-xl">Welcome back</CardTitle>
+        <CardHeader className="text-center">
+          <CardTitle>Welcome back</CardTitle>
           <CardDescription className="text-sm sm:text-base">Login with your Google account</CardDescription>
         </CardHeader>
-        <CardContent className="p-4 sm:p-6">
+        <CardContent>
           {error && (
             <Alert variant="destructive" className="mb-2">
               <AlertCircle className="size-4" />
@@ -154,8 +154,8 @@ export function LoginForm({
             </Alert>
           )}
 
-          <div className="grid gap-4 sm:gap-6">
-            <div className="grid gap-2 sm:gap-3">
+          <div className="grid gap-component-md sm:gap-component-lg">
+            <div className="grid gap-component-sm sm:gap-component-md">
               <Label htmlFor="email">Email</Label>
               <Input
                 id="email"
@@ -173,7 +173,7 @@ export function LoginForm({
               )}
             </div>
 
-            <div className="grid gap-2 sm:gap-3">
+            <div className="grid gap-component-sm sm:gap-component-md">
               <div className="flex items-center">
                 <Label htmlFor="password">Password</Label>
                 <Link
@@ -198,7 +198,7 @@ export function LoginForm({
                   type="button"
                   variant="ghost"
                   size="sm"
-                  className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
+                  className="absolute right-0 top-0 h-full w-control-sm px-3 py-2 hover:bg-transparent sm:w-control-md"
                   onClick={() => setShowPassword(!showPassword)}
                   disabled={isLoading && isHydrated}
                   aria-label={showPassword ? "Hide password" : "Show password"}
@@ -219,7 +219,8 @@ export function LoginForm({
 
             <Button
               type="submit"
-              className="h-10 w-full sm:h-11"
+              size="responsive"
+              className="w-full"
               disabled={(isLoading && isHydrated) || isSubmitting}
             >
               {(isLoading && isHydrated) || isSubmitting ? (
@@ -241,7 +242,8 @@ export function LoginForm({
             <Button
               type="button"
               variant="outline"
-              className="h-10 w-full sm:h-11"
+              size="responsive"
+              className="w-full"
               onClick={handleGoogleLogin}
               disabled={isLoading && isHydrated}
             >

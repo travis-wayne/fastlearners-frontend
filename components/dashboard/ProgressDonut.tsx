@@ -54,6 +54,20 @@ export function ProgressDonut({
   );
 
   const [activeIndex, setActiveIndex] = React.useState<number | null>(null);
+  const [isSmallScreen, setIsSmallScreen] = React.useState(false);
+
+  React.useEffect(() => {
+    const checkScreenSize = () => {
+      setIsSmallScreen(window.innerWidth < 640);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
+
+  const innerRadius = isSmallScreen ? 60 : 70;
+  const outerRadius = isSmallScreen ? 80 : 90;
 
   return (
     <Card className="border bg-card">
@@ -79,9 +93,9 @@ export function ProgressDonut({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent>
+      <CardContent className="responsive-padding">
         <div className="relative">
-          <div className="h-[200px] sm:h-[220px] md:h-[250px]">
+          <div className="h-[12.5rem] sm:h-[13.75rem] md:h-[15.625rem]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
@@ -89,8 +103,8 @@ export function ProgressDonut({
                   dataKey="value"
                   cx="50%"
                   cy="50%"
-                  innerRadius={typeof window !== 'undefined' && window.innerWidth < 640 ? 60 : 70}
-                  outerRadius={typeof window !== 'undefined' && window.innerWidth < 640 ? 80 : 90}
+                  innerRadius={innerRadius}
+                  outerRadius={outerRadius}
                   startAngle={90}
                   endAngle={-270}
                   stroke="#0f172a" // slate-900 background
@@ -133,7 +147,7 @@ export function ProgressDonut({
         </div>
 
         {/* Legend */}
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-4 overflow-x-auto">
+        <div className="mt-4 flex flex-wrap items-center justify-center gap-component-md overflow-x-auto">
           <div className="flex items-center gap-2">
             <div
               className="size-3 rounded-full"

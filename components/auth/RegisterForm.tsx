@@ -115,12 +115,12 @@ export function RegisterForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-4 sm:gap-6", className)}
+      className={cn("flex flex-col gap-component-md sm:gap-component-lg", className)}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2">
-        <h1 className="text-xl font-bold sm:text-2xl">Create your account</h1>
+      <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
+        <h1 className="text-heading-xl font-bold sm:text-2xl">Create your account</h1>
         <p className="text-balance text-sm text-muted-foreground sm:text-base">
           Enter your email to get started with Fast Learners
         </p>
@@ -133,8 +133,8 @@ export function RegisterForm({
         </Alert>
       )}
 
-      <div className="grid gap-4 sm:gap-6">
-        <div className="grid gap-2 sm:gap-3">
+      <div className="grid gap-component-md sm:gap-component-lg">
+        <div className="grid gap-component-sm sm:gap-component-md">
           <Label htmlFor="email">Email</Label>
           <Input
             id="email"
@@ -153,7 +153,8 @@ export function RegisterForm({
 
         <Button
           type="submit"
-          className="h-10 w-full sm:h-11"
+          size="responsive"
+          className="w-full"
           disabled={isLoading || isSubmitting}
         >
           {isLoading ? (
@@ -175,7 +176,8 @@ export function RegisterForm({
         <Button
           type="button"
           variant="outline"
-          className="h-10 w-full sm:h-11"
+          size="responsive"
+          className="w-full"
           onClick={handleGoogleSignUp}
           disabled={isLoading}
         >

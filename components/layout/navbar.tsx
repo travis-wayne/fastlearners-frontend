@@ -46,10 +46,10 @@ export function NavBar({ scroll = false }: NavBarProps) {
       style={{ zIndex: Z_INDEX.navbar }}
     >
       <MaxWidthWrapper
-        className="flex h-12 items-center justify-between py-4 sm:h-14"
+        className="flex h-14 items-center justify-between lg:h-[60px]"
         large={documentation}
       >
-        <div className="flex gap-6 md:gap-10">
+        <div className="flex gap-component-lg md:gap-component-xl">
           <Link href="/" className="flex items-center space-x-1.5">
             <Icons.logo />
             <span className="font-urban text-lg font-bold sm:text-xl">
@@ -58,17 +58,17 @@ export function NavBar({ scroll = false }: NavBarProps) {
           </Link>
 
           {links && links.length > 0 ? (
-            <nav className="hidden gap-6 md:flex">
+            <nav className="hidden gap-component-lg md:flex">
               {links.map((item, index) => (
                 <Link
                   key={index}
                   href={item.disabled ? "#" : item.href}
                   prefetch={true}
                   className={cn(
-                    "flex items-center py-2 text-lg font-medium transition-colors hover:text-foreground/80 sm:text-sm",
+                    "mobile-touch-target flex items-center responsive-text font-medium transition-colors",
                     item.href.startsWith(`/${selectedLayout}`)
                       ? "text-foreground"
-                      : "text-foreground/60",
+                      : "text-foreground/60 hover:text-foreground/80",
                     item.disabled && "cursor-not-allowed opacity-80",
                   )}
                 >
@@ -79,23 +79,23 @@ export function NavBar({ scroll = false }: NavBarProps) {
           ) : null}
         </div>
 
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-component-sm">
           {/* right header for docs */}
           {documentation ? (
-            <div className="hidden flex-1 items-center space-x-4 sm:justify-end lg:flex">
+            <div className="hidden flex-1 items-center space-x-component-md sm:justify-end lg:flex">
               <div className="hidden lg:flex lg:grow-0">
                 <DocsSearch />
               </div>
               <div className="flex lg:hidden">
                 <Icons.search className="size-6 text-muted-foreground" />
               </div>
-              <div className="flex space-x-4">
+              <div className="flex space-x-component-md">
                 <Link
                   href={siteConfig.links.github}
                   target="_blank"
                   rel="noreferrer"
                 >
-                  <Icons.gitHub className="size-7" />
+                  <Icons.gitHub className="size-5" />
                   <span className="sr-only">GitHub</span>
                 </Link>
               </div>
@@ -113,7 +113,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                 className="hidden sm:block"
               >
                 <Button
-                  className="gap-2 rounded-full px-5"
+                  className="gap-component-xs rounded-full px-5"
                   variant="default"
                   size="sm"
                 >
@@ -122,7 +122,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
               </Link>
             ) : (
               <Button
-                className="hidden gap-2 rounded-full px-5 sm:flex"
+                className="mobile-touch-target hidden gap-component-xs rounded-full px-5 sm:flex"
                 variant="default"
                 size="sm"
                 onClick={() => setShowSignInModal(true)}

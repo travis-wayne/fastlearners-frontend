@@ -162,15 +162,15 @@ export function VerifyOtpForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-4 sm:gap-6", className)}
+      className={cn("flex flex-col gap-component-md sm:gap-component-lg", className)}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
-      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2">
-        <div className="flex size-10 items-center justify-center rounded-full bg-primary/10 sm:size-12">
-          <Mail className="size-5 text-primary sm:size-6" />
+      <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
+        <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+          <Mail className="size-6 text-primary" />
         </div>
-        <h1 className="text-xl font-bold sm:text-2xl">Check your email</h1>
+        <h1 className="text-heading-xl font-bold sm:text-2xl">Check your email</h1>
         <p className="text-balance text-sm text-muted-foreground sm:text-base">
           We sent a verification code to
           <br />
@@ -185,12 +185,12 @@ export function VerifyOtpForm({
         </Alert>
       )}
 
-      <div className="grid gap-4 sm:gap-6">
-        <div className="grid gap-2 sm:gap-3">
+      <div className="grid gap-component-md sm:gap-component-lg">
+        <div className="grid gap-component-sm sm:gap-component-md">
           <Label htmlFor="code" className="text-center">
             Verification code
           </Label>
-          <div className="flex justify-center gap-1.5 sm:gap-2">
+          <div className="flex justify-center gap-component-xs sm:gap-component-sm">
             {[...Array(6)].map((_, index) => (
               <Input
                 key={index}
@@ -200,7 +200,7 @@ export function VerifyOtpForm({
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
-                className="size-10 text-center text-base font-semibold sm:size-12 sm:text-lg md:size-14"
+                className="size-12 text-center text-base font-semibold sm:size-14 sm:text-heading-md"
                 value={codeValue[index] || ""}
                 onChange={(e) => handleInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleKeyDown(index, e)}
@@ -218,7 +218,8 @@ export function VerifyOtpForm({
 
         <Button
           type="submit"
-          className="h-10 w-full sm:h-11"
+          size="responsive"
+          className="w-full"
           disabled={isLoading || isSubmitting || codeValue.length !== 6}
         >
           {isLoading ? (

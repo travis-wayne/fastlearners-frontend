@@ -32,7 +32,7 @@ export function PerformanceSection({
 }: PerformanceSectionProps) {
   return (
     <Card className="h-full border bg-card">
-      <CardHeader>
+      <CardHeader className="responsive-padding pb-component-sm">
         <CardTitle className="text-xl font-semibold text-gray-900 dark:text-slate-100">
           {title}
         </CardTitle>
@@ -40,13 +40,13 @@ export function PerformanceSection({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 sm:space-y-6">
-        <div className="space-y-3 sm:space-y-4">
+      <CardContent className="responsive-padding space-y-component-md sm:space-y-component-lg">
+        <div className="space-y-component-sm sm:space-y-component-md">
           {items.map((perf, index) => (
             <div key={`${perf.subject}-${index}`} className="space-y-2">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="rounded-lg bg-muted p-1.5 sm:p-2">{perf.icon}</div>
+                <div className="flex items-center gap-component-md">
+                  <div className="rounded-lg bg-muted p-component-xs sm:p-component-sm">{perf.icon}</div>
                   <span className="font-medium text-slate-900 dark:text-slate-100">
                     {perf.subject}
                   </span>

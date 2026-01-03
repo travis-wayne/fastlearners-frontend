@@ -25,9 +25,9 @@ import TransactionsList from "@/components/dashboard/transactions-list";
 
 export function AdminDashboard() {
   return (
-    <div className="space-y-6 sm:space-y-8">
+    <div className="dashboard-spacing">
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -38,8 +38,8 @@ export function AdminDashboard() {
               Upload, organize, and manage educational content
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 p-4 sm:p-6">
-            <div className="grid gap-1.5 sm:gap-2">
+          <CardContent className="responsive-padding space-y-component-md">
+            <div className="grid gap-component-sm sm:gap-component-md">
               <Link href="/dashboard/admin-tools/lessons">
                 <Button className="w-full justify-start">
                   <BookOpen className="mr-2 size-4 sm:size-5" />
@@ -66,8 +66,8 @@ export function AdminDashboard() {
               Manage students, teachers, and administrators
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-3 p-4 sm:p-6">
-            <div className="grid gap-1.5 sm:gap-2">
+          <CardContent className="responsive-padding space-y-component-md">
+            <div className="grid gap-component-sm sm:gap-component-md">
               <Link href="/dashboard/admin-tools/users">
                 <Button className="w-full justify-start">
                   <Users className="mr-2 size-4 sm:size-5" />
@@ -94,7 +94,7 @@ export function AdminDashboard() {
               Platform usage and performance metrics
             </CardDescription>
           </CardHeader>
-          <CardContent className="p-4 sm:p-6">
+          <CardContent className="responsive-padding">
             <Link href="/dashboard/admin-tools/analytics">
               <Button className="w-full">
                 <BarChart3 className="mr-2 size-4 sm:size-5" />
@@ -106,7 +106,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Statistics */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-4">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
         <InfoCard />
         <InfoCard />
         <InfoCard />
@@ -114,7 +114,7 @@ export function AdminDashboard() {
       </div>
 
       {/* Recent Activity */}
-      <div className="space-y-4 sm:space-y-6">
+      <div className="space-y-component-md sm:space-y-component-lg">
         <h3 className="text-base font-semibold sm:text-lg">Recent Activity</h3>
         <TransactionsList />
         <TransactionsList />

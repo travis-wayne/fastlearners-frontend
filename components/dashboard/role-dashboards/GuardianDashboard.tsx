@@ -156,12 +156,12 @@ export function GuardianDashboard() {
   );
 
   return (
-    <div className="container mx-auto space-y-6 p-4 md:p-6">
+    <div className="dashboard-spacing dashboard-container">
       {/* Header banner */}
       <div
-        className={`relative overflow-hidden rounded-2xl p-4 sm:p-6 ${headerGradient} transition-all duration-700 ease-in-out`}
+        className={`relative overflow-hidden rounded-2xl responsive-padding ${headerGradient} transition-all duration-700 ease-in-out`}
       >
-        <div className="grid gap-4 sm:gap-6 md:grid-cols-[1fr_auto] md:items-center">
+        <div className="responsive-gap grid md:grid-cols-[1fr_auto] md:items-center">
           <div>
             <p className="text-sm text-gray-900 dark:text-white/90">{today}</p>
             <h2 className="mt-1 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
@@ -194,14 +194,14 @@ export function GuardianDashboard() {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 md:grid-cols-3">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {/* Progress */}
         <Card>
           <CardHeader>
             <CardTitle className="text-base">Progress</CardTitle>
             <CardDescription>Physics</CardDescription>
           </CardHeader>
-          <CardContent className="flex items-center justify-center p-4 sm:p-6">
+          <CardContent className="responsive-padding flex items-center justify-center">
             <Donut value={72} />
           </CardContent>
         </Card>
@@ -211,11 +211,11 @@ export function GuardianDashboard() {
           <CardHeader>
             <CardTitle className="text-base">Achievements</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-2 p-4 sm:p-6">
+          <CardContent className="responsive-padding space-y-component-sm">
             {achievements.map((a) => (
               <div
                 key={a.id}
-                className="flex items-center justify-between rounded-md border p-1.5 sm:p-2"
+                className="flex items-center justify-between rounded-md border p-component-sm sm:p-component-md"
               >
                 <div className="flex items-center gap-2 text-sm">
                   {a.icon}
@@ -249,11 +249,11 @@ export function GuardianDashboard() {
               </Select>
             </div>
           </CardHeader>
-          <CardContent className="space-y-3 p-4 sm:p-6">
+          <CardContent className="responsive-padding space-y-component-md">
             <div>
               <p className="text-sm font-medium">Overview</p>
             </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="grid grid-cols-2 gap-component-md text-sm">
               <div>
                 <p className="text-muted-foreground">Time Spent Learning</p>
                 <p className="font-medium">{overview.learningHours} hrs</p>
@@ -313,9 +313,9 @@ export function GuardianDashboard() {
             </div>
 
             {/* Mobile Card View */}
-            <div className="space-y-3 p-3 md:hidden">
+            <div className="space-y-component-md p-component-md md:hidden">
               {performance.map((row) => (
-                <div key={row.subject} className="rounded-lg border bg-muted/30 p-3">
+                <div key={row.subject} className="rounded-lg border bg-muted/30 p-component-md">
                   <div className="mb-2 flex items-center justify-between text-sm font-medium">
                     <span>{row.subject}</span>
                     <span className="text-muted-foreground">{row.pct}%</span>

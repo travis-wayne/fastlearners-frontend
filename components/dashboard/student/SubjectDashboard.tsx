@@ -546,7 +546,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       <motion.div variants={itemVariants}>
         <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-4">
           <Card className="overflow-hidden border-2 bg-blue-50/30 shadow-sm transition-all hover:shadow-md dark:bg-blue-900/10">
-            <CardContent className="p-3 sm:p-4 md:p-5">
+            <CardContent className="responsive-padding">
               <div className="flex items-center gap-2">
                 <div className="rounded-md bg-blue-100 p-1.5 dark:bg-blue-900/30">
                   <BookOpen className="size-3 text-blue-600 dark:text-blue-400 sm:size-4" />
@@ -560,7 +560,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
           </Card>
 
           <Card className="overflow-hidden border-2 bg-emerald-50/30 shadow-sm transition-all hover:shadow-md dark:bg-emerald-900/10">
-            <CardContent className="p-3 sm:p-4 md:p-5">
+            <CardContent className="responsive-padding">
               <div className="flex items-center gap-2">
                 <div className="rounded-md bg-emerald-100 p-1.5 dark:bg-emerald-900/30">
                   <Target className="size-3 text-emerald-600 dark:text-emerald-400 sm:size-4" />
@@ -574,7 +574,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
           </Card>
 
           <Card className="overflow-hidden border-2 bg-purple-50/30 shadow-sm transition-all hover:shadow-md dark:bg-purple-900/10">
-            <CardContent className="p-3 sm:p-4 md:p-5">
+            <CardContent className="responsive-padding">
               <div className="flex items-center gap-2">
                 <div className="rounded-md bg-purple-100 p-1.5 dark:bg-purple-900/30">
                   <TrendingUp className="size-3 text-purple-600 dark:text-purple-400 sm:size-4" />
@@ -588,7 +588,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
           </Card>
 
           <Card className="overflow-hidden border-2 bg-orange-50/30 shadow-sm transition-all hover:shadow-md dark:bg-orange-900/10">
-            <CardContent className="p-3 sm:p-4 md:p-5">
+            <CardContent className="responsive-padding">
               <div className="flex items-center gap-2">
                 <div className="rounded-md bg-orange-100 p-1.5 dark:bg-orange-900/30">
                   <Users className="size-3 text-orange-600 dark:text-orange-400 sm:size-4" />

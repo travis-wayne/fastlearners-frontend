@@ -285,12 +285,12 @@ export function StudentDashboard() {
       variants={containerVariants}
       initial="hidden"
       animate="visible"
-      className="space-y-8"
+      className="dashboard-spacing"
     >
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
         <div
-          className={`relative overflow-hidden rounded-2xl p-4 sm:p-6 md:p-8 ${headerGradientClass} transition-all duration-700 ease-in-out`}
+          className={`relative overflow-hidden rounded-2xl responsive-padding ${headerGradientClass} transition-all duration-700 ease-in-out`}
         >
           <div className="relative z-10 max-w-lg">
             {/* Header with date and time */}
@@ -420,7 +420,7 @@ export function StudentDashboard() {
       {/* Top Stats Grid */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4"
+        className="responsive-gap grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
       >
         {stats.map((stat, index) => (
           <motion.div
@@ -429,7 +429,7 @@ export function StudentDashboard() {
             transition={{ type: "spring", stiffness: 300, damping: 30 }}
           >
             <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
-              <CardContent className="p-3 sm:p-4">
+              <CardContent className="responsive-padding">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-muted-foreground">
                     {stat.label}
@@ -456,7 +456,7 @@ export function StudentDashboard() {
       {/* Progress + Achievements + Overview row */}
       <motion.div
         variants={itemVariants}
-        className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3"
+        className="responsive-gap grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3"
       >
         {/* Progress Donut - Phase B replacement */}
         <ProgressDonut
@@ -602,11 +602,11 @@ export function StudentDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-3 sm:hidden">
+            <div className="space-y-component-sm sm:hidden">
               {todaysLessonsTable.map((lesson) => (
                 <div
                   key={`lesson-card-${lesson.id}`}
-                  className="rounded-2xl border bg-background p-3 shadow-sm sm:p-4"
+                  className="rounded-2xl border bg-background responsive-padding shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>
@@ -709,7 +709,7 @@ export function StudentDashboard() {
       </motion.div>
 
       {/* Performance (bars) + Achievements - Original */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3 lg:gap-6">
+      <div className="responsive-gap grid grid-cols-1 lg:grid-cols-3">
         {/* Weekly Progress - extracted (takes 2 columns) */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <PerformanceSection
@@ -736,7 +736,7 @@ export function StudentDashboard() {
               </CardTitle>
               <CardDescription>Your learning milestones</CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 sm:space-y-3">
+            <CardContent className="space-y-component-sm sm:space-y-component-md">
               {achievements.map((achievement, index) => (
                 <motion.div
                   key={index}
@@ -744,7 +744,7 @@ export function StudentDashboard() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.1 * index }}
                   whileHover={{ scale: 1.02 }}
-                  className={`flex items-center gap-3 rounded-lg p-2.5 transition-colors sm:p-3 ${achievement.earned
+                  className={`flex items-center gap-component-md rounded-lg p-component-sm transition-colors sm:p-component-md ${achievement.earned
                     ? "border border-primary/20 bg-primary/5"
                     : "bg-muted/30"
                     }`}

@@ -38,7 +38,7 @@ export function NavMobile() {
       <button
         onClick={() => setOpen(!open)}
         className={cn(
-          "fixed right-3 top-3 rounded-full p-2.5 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted sm:right-4 sm:top-4 md:hidden",
+          "mobile-touch-target fixed right-component-sm top-component-sm rounded-full p-2.5 transition-colors duration-200 hover:bg-muted focus:outline-none active:bg-muted sm:right-component-md sm:top-component-md md:hidden",
           open && "hover:bg-muted active:bg-muted",
         )}
         style={{ zIndex: Z_INDEX.floatingToggle }}
@@ -52,7 +52,7 @@ export function NavMobile() {
 
       <nav
         className={cn(
-          "fixed inset-0 hidden w-full overflow-auto bg-background px-5 py-16 lg:hidden",
+          "fixed inset-0 hidden w-full overflow-auto bg-background px-component-md py-component-xl lg:hidden",
           open && "block",
         )}
         style={{ zIndex: Z_INDEX.sheetOverlay }}
@@ -61,7 +61,7 @@ export function NavMobile() {
           {links &&
             links.length > 0 &&
             links.map(({ title, href }) => (
-              <li key={href} className="py-4">
+              <li key={href} className="mobile-touch-target py-component-md">
                 <Link
                   href={href}
                   onClick={() => setOpen(false)}
@@ -76,7 +76,7 @@ export function NavMobile() {
             {isAuthenticated && user ? (
               <>
                 {user.role.includes("admin") ? (
-                  <li className="py-4">
+                  <li className="py-component-md">
                     <Link
                       href="/admin"
                       onClick={() => setOpen(false)}
@@ -87,7 +87,7 @@ export function NavMobile() {
                   </li>
                 ) : null}
 
-                <li className="py-4">
+                <li className="py-component-md">
                   <Link
                     href="/dashboard"
                     onClick={() => setOpen(false)}
@@ -99,7 +99,7 @@ export function NavMobile() {
               </>
             ) : (
               <>
-                <li className="py-4">
+                <li className="py-component-md">
                   <Link
                     href="/auth/login"
                     onClick={() => setOpen(false)}
@@ -109,7 +109,7 @@ export function NavMobile() {
                   </Link>
                 </li>
 
-                <li className="py-4">
+                <li className="py-component-md">
                   <Link
                     href="/auth/register"
                     onClick={() => setOpen(false)}
@@ -124,12 +124,12 @@ export function NavMobile() {
         </ul>
 
         {documentation ? (
-          <div className="mt-8 block md:hidden">
+          <div className="mt-component-lg block md:hidden">
             <DocsSidebarNav setOpen={setOpen} />
           </div>
         ) : null}
 
-        <div className="mt-5 flex items-center justify-end space-x-4">
+        <div className="mt-component-md flex items-center justify-end space-x-component-md">
           <Link href={siteConfig.links.github} target="_blank" rel="noreferrer">
             <Icons.gitHub className="size-6" />
             <span className="sr-only">GitHub</span>

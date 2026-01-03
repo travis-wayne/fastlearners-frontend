@@ -5,11 +5,11 @@ import { LoginForm } from "@/components/auth/LoginForm";
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center gap-4 bg-background p-4 text-foreground sm:gap-6 sm:p-6 md:p-8 lg:p-10">
-      <div className="flex w-full max-w-sm flex-col gap-4 sm:gap-6 md:max-w-md">
+    <div className="flex min-h-svh flex-col items-center justify-center gap-component-md bg-background p-component-md text-foreground sm:gap-component-lg sm:p-component-lg lg:p-component-xl">
+      <div className="flex w-full max-w-sm flex-col gap-component-md sm:gap-component-lg md:max-w-md">
         <a
           href="/"
-          className="mb-8 flex items-center gap-2 self-center font-medium sm:mb-12"
+          className="mb-component-xl flex items-center gap-2 self-center font-medium sm:mb-12"
           aria-label="Fast Learners"
         >
           <Image

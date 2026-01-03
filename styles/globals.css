@@ -106,6 +106,47 @@
   .dashboard-spacing {
     @apply space-y-6 sm:space-y-8;
   }
+
+  .form-control-base {
+    @apply h-control-md rounded-md border border-input bg-background px-padding-input-x py-padding-input-y text-sm ring-offset-background transition-colors;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+    @apply disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .card-base {
+    @apply rounded-lg border bg-card text-card-foreground shadow-sm;
+  }
+
+  .overlay-base {
+    @apply fixed inset-0 bg-black/80 backdrop-blur-sm;
+    @apply data-[state=open]:animate-in data-[state=closed]:animate-out;
+    @apply data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0;
+  }
+
+  .interactive-base {
+    @apply transition-colors duration-200 ease-in-out;
+    @apply focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2;
+  }
+
+  .responsive-padding {
+    @apply p-component-sm sm:p-component-md lg:p-component-lg;
+  }
+
+  .responsive-gap {
+    @apply gap-2 sm:gap-3 lg:gap-4;
+  }
+
+  .responsive-text {
+    @apply text-sm sm:text-base;
+  }
+
+  .responsive-heading {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+
+  .mobile-touch-target {
+    @apply min-h-[44px] min-w-[44px];
+  }
 }
 
 .text-gradient_indigo-purple {

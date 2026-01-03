@@ -29,7 +29,7 @@ export function LeaderBoard({
 }: LeaderBoardProps) {
   return (
     <Card className="border bg-card">
-      <CardHeader className="px-4 sm:px-6">
+      <CardHeader className="responsive-padding pb-component-sm">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="text-xl font-semibold text-gray-900 dark:text-slate-100">
@@ -46,12 +46,12 @@ export function LeaderBoard({
           </Button>
         </div>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2 sm:space-y-3">
+      <CardContent className="responsive-padding">
+        <div className="space-y-component-sm">
           {entries.map((student) => (
             <div
               key={student.rank}
-              className={`flex items-center gap-3 rounded-lg border p-2 transition-colors sm:p-3 ${student.isCurrentUser
+              className={`flex items-center gap-component-md rounded-lg border p-component-sm transition-colors sm:p-component-md ${student.isCurrentUser
                   ? "border-primary/30 bg-primary/10"
                   : "hover:bg-muted"
                 }`}

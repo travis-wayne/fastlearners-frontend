@@ -20,7 +20,7 @@ export function AuthLayout({
       <div className="relative hidden bg-muted lg:block">
         <div className="absolute inset-0 bg-[#00519C]">
           <div className="absolute inset-0 bg-black/20" />
-          <div className="relative flex h-full flex-col items-center justify-center p-6 text-white sm:p-8 md:p-10">
+          <div className="relative flex h-full flex-col items-center justify-center p-component-lg text-white sm:p-component-xl">
             {/* <div className="text-center space-y-4">
               <div className="flex justify-center md:justify-start">
                 <a href="/" aria-label={title} className="inline-flex items-center">
@@ -38,11 +38,11 @@ export function AuthLayout({
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-4 p-4 sm:gap-6 sm:p-6 md:p-8 lg:p-10">
+      <div className="flex flex-col gap-component-md p-component-md sm:gap-component-lg sm:p-component-lg lg:p-component-xl">
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-sm md:max-w-md">
             {showLogo && (
-              <div className="mb-12 flex justify-center">
+              <div className="mb-component-xl flex justify-center sm:mb-12">
                 <a
                   href="/"
                   aria-label={title}

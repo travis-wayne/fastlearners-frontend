@@ -46,7 +46,7 @@ export function UserAccountNav() {
         <Drawer.Trigger onClick={() => setOpen(true)}>
           <UserAvatar
             user={{ name: user.name || null, image: user.image || null }}
-            className="size-9 border"
+            className="mobile-touch-target size-9 border"
           />
         </Drawer.Trigger>
         <Drawer.Portal>
@@ -56,14 +56,14 @@ export function UserAccountNav() {
             onClick={closeDrawer}
           />
           <Drawer.Content
-            className="fixed inset-x-0 bottom-0 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-3 text-sm"
+            className="fixed inset-x-0 bottom-0 mt-24 overflow-hidden rounded-t-[10px] border bg-background px-component-sm text-sm"
             style={{ zIndex: Z_INDEX.drawerOverlay + 1 }}
           >
             <div className="sticky top-0 z-20 flex w-full items-center justify-center bg-inherit">
-              <div className="my-3 h-1.5 w-16 rounded-full bg-muted-foreground/20" />
+              <div className="my-component-sm h-1.5 w-16 rounded-full bg-muted-foreground/20" />
             </div>
 
-            <div className="flex items-center justify-start gap-2 p-2">
+            <div className="flex items-center justify-start gap-component-xs p-component-xs">
               <div className="flex flex-col">
                 {user.name && <p className="font-medium">{user.name}</p>}
                 {user.email && (
@@ -74,13 +74,13 @@ export function UserAccountNav() {
               </div>
             </div>
 
-            <ul role="list" className="mb-14 mt-1 flex w-full flex-col gap-1 text-muted-foreground">
+            <ul role="list" className="mb-control-lg mt-1 flex w-full flex-col gap-1 text-muted-foreground">
               {user.role && user.role.includes("admin") ? (
-                <li className="rounded-lg text-foreground hover:bg-muted">
+                <li className="mobile-touch-target rounded-lg text-foreground hover:bg-muted">
                   <Link
                     href="/admin"
                     onClick={closeDrawer}
-                    className="flex w-full items-center gap-3 p-2.5"
+                    className="flex w-full items-center gap-component-sm p-component-sm"
                   >
                     <Lock className="size-4" />
                     <p className="text-sm">Admin</p>
@@ -88,22 +88,22 @@ export function UserAccountNav() {
                 </li>
               ) : null}
 
-              <li className="rounded-lg text-foreground hover:bg-muted">
+              <li className="mobile-touch-target rounded-lg text-foreground hover:bg-muted">
                 <Link
                   href="/dashboard"
                   onClick={closeDrawer}
-                  className="flex w-full items-center gap-3 p-2.5"
+                  className="flex w-full items-center gap-component-sm p-component-sm"
                 >
                   <LayoutDashboard className="size-4" />
                   <p className="text-sm">Dashboard</p>
                 </Link>
               </li>
 
-              <li className="rounded-lg text-foreground hover:bg-muted">
+              <li className="mobile-touch-target rounded-lg text-foreground hover:bg-muted">
                 <Link
                   href="/dashboard/settings"
                   onClick={closeDrawer}
-                  className="flex w-full items-center gap-3 p-2.5"
+                  className="flex w-full items-center gap-component-sm p-component-sm"
                 >
                   <Settings className="size-4" />
                   <p className="text-sm">Settings</p>
@@ -111,7 +111,7 @@ export function UserAccountNav() {
               </li>
 
               <li
-                className="rounded-lg text-foreground hover:bg-muted"
+                className="mobile-touch-target rounded-lg text-foreground hover:bg-muted"
                 onClick={(event) => {
                   event.preventDefault();
                   closeDrawer();
@@ -121,7 +121,7 @@ export function UserAccountNav() {
                   });
                 }}
               >
-                <div className="flex w-full items-center gap-3 p-2.5">
+                <div className="flex w-full items-center gap-component-sm p-component-sm">
                   <LogOut className="size-4" />
                   <p className="text-sm">Log out </p>
                 </div>
@@ -138,11 +138,11 @@ export function UserAccountNav() {
       <DropdownMenuTrigger>
         <UserAvatar
           user={{ name: user.name || null, image: user.image || null }}
-          className="size-8 border"
+          className="mobile-touch-target size-8 border"
         />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[200px] sm:w-[240px]">
-        <div className="flex items-center justify-start gap-2 p-2">
+        <div className="flex items-center justify-start gap-component-xs p-component-xs">
           <div className="flex flex-col space-y-1 leading-none">
             {user.name && <p className="font-medium">{user.name}</p>}
             {user.email && (
@@ -156,7 +156,7 @@ export function UserAccountNav() {
 
         {user.role && user.role.includes("admin") ? (
           <DropdownMenuItem asChild>
-            <Link href="/admin" className="flex items-center space-x-2.5">
+            <Link href="/admin" className="flex items-center space-x-component-sm">
               <Lock className="size-4" />
               <p className="text-sm">Admin</p>
             </Link>
@@ -164,7 +164,7 @@ export function UserAccountNav() {
         ) : null}
 
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="flex items-center space-x-2.5">
+          <Link href="/dashboard" className="flex items-center space-x-component-sm">
             <LayoutDashboard className="size-4" />
             <p className="text-sm">Dashboard</p>
           </Link>
@@ -173,7 +173,7 @@ export function UserAccountNav() {
         <DropdownMenuItem asChild>
           <Link
             href="/dashboard/settings"
-            className="flex items-center space-x-2.5"
+            className="flex items-center space-x-component-sm"
           >
             <Settings className="size-4" />
             <p className="text-sm">Settings</p>
@@ -190,7 +190,7 @@ export function UserAccountNav() {
             });
           }}
         >
-          <div className="flex items-center space-x-2.5">
+          <div className="flex items-center space-x-component-sm">
             <LogOut className="size-4" />
             <p className="text-sm">Log out </p>
           </div>

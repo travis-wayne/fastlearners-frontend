@@ -26,7 +26,7 @@ export function SubjectSelectionCard({
       onClick={() => !isDisabled && onClick(id)}
       disabled={isDisabled}
       className={cn(
-        "group relative flex items-center gap-3 rounded-lg border-2 p-4 text-left transition-all duration-200",
+        "group relative flex items-center gap-3 rounded-lg border-2 p-3.5 text-left transition-all duration-200 sm:p-4",
         "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
         isSelected
           ? "border-primary bg-primary/10 shadow-sm"
@@ -50,7 +50,7 @@ export function SubjectSelectionCard({
       {/* Subject Name */}
       <span
         className={cn(
-          "font-medium transition-colors",
+          "text-sm font-medium transition-colors sm:text-base",
           isSelected ? "text-primary" : "text-foreground group-hover:text-primary"
         )}
       >

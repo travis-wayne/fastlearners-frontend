@@ -38,7 +38,7 @@ export function OverviewGrid({
 }: OverviewGridProps) {
   return (
     <Card className="h-full border bg-card">
-      <CardHeader className="pb-3 sm:pb-4">
+      <CardHeader className="responsive-padding pb-component-sm">
         <CardTitle className="text-xl font-semibold text-gray-900 dark:text-slate-100">
           {title}
         </CardTitle>
@@ -46,16 +46,16 @@ export function OverviewGrid({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+      <CardContent className="responsive-padding">
+        <div className="grid grid-cols-1 gap-component-sm sm:grid-cols-2 sm:gap-component-md">
           {stats.map((stat) => (
             <div
               key={stat.label}
-              className="rounded-lg border border-border bg-muted p-2.5 sm:p-3"
+              className="rounded-lg border border-border bg-muted p-component-sm sm:p-component-md"
             >
               <div className="mb-2 flex items-center justify-between text-gray-900 dark:text-slate-100">
                 <div
-                  className={`rounded-lg bg-muted p-1.5 sm:p-2 ${stat.iconColorClass ?? ""}`}
+                  className={`rounded-lg bg-muted p-component-xs sm:p-component-sm ${stat.iconColorClass ?? ""}`}
                 >
                   {stat.icon}
                 </div>

@@ -152,7 +152,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
         <Button
           variant="ghost"
           size="icon"
-          className={cn("relative size-9", className)}
+          className={cn("mobile-touch-target relative size-9", className)}
         >
           <Bell className="size-5" />
           {unreadCount > 0 && (
@@ -199,7 +199,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                   <div
                     key={notification.id}
                     className={cn(
-                      "group relative cursor-pointer border-l-2 p-2 text-left text-sm transition-colors hover:bg-muted/50 sm:p-3",
+                      "group relative cursor-pointer border-l-2 responsive-padding text-left text-sm transition-colors hover:bg-muted/50",
                       getNotificationColors(notification.type),
                       !notification.isRead && "font-medium",
                     )}

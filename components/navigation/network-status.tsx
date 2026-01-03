@@ -251,7 +251,7 @@ export function NetworkStatus({
         <TooltipTrigger asChild>
           <div
             className={cn(
-              "flex cursor-pointer items-center space-x-1.5 rounded-md px-1.5 py-1 transition-colors sm:px-2",
+              "mobile-touch-target responsive-padding flex cursor-pointer items-center space-x-1.5 rounded-md transition-colors",
               config.bgColor,
               className,
             )}

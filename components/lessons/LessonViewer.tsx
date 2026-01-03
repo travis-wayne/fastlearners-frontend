@@ -68,7 +68,7 @@ function LoadingSkeleton() {
     <div className="space-y-6">
       {/* Progress Card Skeleton */}
       <Card className="border-2 bg-gradient-to-r from-primary/5 via-primary/5 to-background">
-        <CardContent className="p-4 sm:p-5 md:p-6">
+        <CardContent className="responsive-padding">
           <div className="space-y-3">
             <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
               <div className="flex items-center gap-3">
@@ -148,7 +148,7 @@ function LoadingSkeleton() {
 
       {/* Navigation Skeleton */}
       <Card className="border-2">
-        <CardContent className="p-4 sm:p-5 md:p-6">
+        <CardContent className="responsive-padding">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <Skeleton className="h-10 w-full rounded-lg sm:h-12 sm:w-32" />
             <Skeleton className="hidden h-4 w-24 sm:block" />
@@ -608,7 +608,7 @@ export function LessonViewer({
   return (
     <div
       ref={containerRef}
-      className="space-y-4 sm:space-y-6 md:space-y-8"
+      className="dashboard-spacing"
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
@@ -620,10 +620,10 @@ export function LessonViewer({
           progress >= 100 && "border-green-200 bg-gradient-to-r from-green-50 via-green-100 to-background",
           progressCardCollapsed && "lg:hidden"
         )}>
-          <CardContent className="p-3 sm:p-4 md:p-6">
+          <CardContent className="responsive-padding">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+                <div className="flex flex-col items-start justify-between responsive-gap sm:flex-row sm:items-center">
                   <div className="flex size-8 items-center justify-center rounded-lg bg-primary/20 transition-colors sm:size-10">
                     {progress >= 100 ? (
                       <Trophy className="size-4 text-green-600 sm:size-5" />
@@ -685,7 +685,7 @@ export function LessonViewer({
       {/* Enhanced Section Breadcrumb Navigation */}
       <Card className="sticky top-16 z-20 border-2 bg-background/95 backdrop-blur transition-shadow supports-[backdrop-filter]:backdrop-blur sm:top-20">
         <CardContent className="p-3 sm:p-4">
-          <div className="custom-scrollbar -mx-1 overflow-x-auto px-1 pb-1">
+          <div className="-mx-1 overflow-x-auto px-1 pb-1 custom-scrollbar">
             <SectionBreadcrumb
               lessonId={lesson.id}
               concepts={concepts}
@@ -738,7 +738,7 @@ export function LessonViewer({
             <Button
               variant="outline"
               size="default"
-              className="min-w-[44px] font-medium sm:h-11 sm:min-w-[120px] sm:px-8"
+              className="mobile-touch-target font-medium sm:h-11 sm:min-w-[120px] sm:px-8"
               onClick={handlePrev}
               disabled={currentStepIndex === 0}
               aria-label="Go to previous section"
@@ -757,7 +757,7 @@ export function LessonViewer({
             <Button
               size="default"
               className={cn(
-                "min-w-[44px] font-medium shadow-sm transition-all sm:h-11 sm:min-w-[120px] sm:px-8",
+                "mobile-touch-target font-medium shadow-sm transition-all sm:h-11 sm:min-w-[120px] sm:px-8",
                 progress >= 100 && "bg-green-600 hover:bg-green-700"
               )}
               onClick={handleNext}

@@ -267,7 +267,7 @@ export function LessonsDashboard() {
   return (
     <div className="space-y-8">
       {/* Hero Section */}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background p-4 sm:p-6 md:p-8 lg:p-12">
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-primary/10 via-primary/5 to-background responsive-padding">
         <div className="relative z-10">
           <div className="mb-4 flex items-center gap-2">
             <div className="flex size-8 items-center justify-center rounded-xl bg-primary/20 sm:size-10 md:size-12">
@@ -351,7 +351,7 @@ export function LessonsDashboard() {
               router.push(newUrl);
             }}
           >
-            <SelectTrigger className="h-12 text-base sm:h-14">
+            <SelectTrigger className="h-control-lg text-base sm:h-14">
               <SelectValue placeholder="Select Subject" />
             </SelectTrigger>
             <SelectContent>
@@ -402,12 +402,12 @@ export function LessonsDashboard() {
                 </div>
               ) : selectedSubjectTopics ? (
                 <Tabs defaultValue="first_term" className="w-full">
-                  <TabsList className="mb-6 flex w-full flex-nowrap overflow-x-auto bg-muted/50 p-1">
+                  <TabsList className="mb-6 flex w-full flex-nowrap overflow-x-auto no-scrollbar bg-muted/50 p-1">
                     {selectedSubjectTopics.first_term &&
                       selectedSubjectTopics.first_term.length > 0 && (
                         <TabsTrigger value="first_term" className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm">
                           <span className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
-                            <TrendingUp className="size-3 sm:size-4" />
+                            <TrendingUp className="size-4 sm:size-5" />
                             <span className="whitespace-nowrap">First Term</span>
                             <Badge variant="secondary" className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100">
                               {selectedSubjectTopics.first_term.length}
@@ -419,7 +419,7 @@ export function LessonsDashboard() {
                       selectedSubjectTopics.second_term.length > 0 && (
                         <TabsTrigger value="second_term" className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm">
                           <span className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
-                            <TrendingUp className="size-3 sm:size-4" />
+                            <TrendingUp className="size-4 sm:size-5" />
                             <span className="whitespace-nowrap">Second Term</span>
                             <Badge variant="secondary" className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100">
                               {selectedSubjectTopics.second_term.length}
@@ -431,7 +431,7 @@ export function LessonsDashboard() {
                       selectedSubjectTopics.third_term.length > 0 && (
                         <TabsTrigger value="third_term" className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm">
                           <span className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
-                            <TrendingUp className="size-3 sm:size-4" />
+                            <TrendingUp className="size-4 sm:size-5" />
                             <span className="whitespace-nowrap">Third Term</span>
                             <Badge variant="secondary" className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100">
                               {selectedSubjectTopics.third_term.length}
@@ -460,11 +460,11 @@ export function LessonsDashboard() {
                                       )
                                     }
                                   >
-                                    <CardContent className="p-4 sm:p-5 md:p-6">
+                                    <CardContent className="responsive-padding">
                                       <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 sm:gap-4">
+                                        <div className="flex items-center responsive-gap">
                                           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/20 sm:size-12">
-                                            <PlayCircle className="size-5 sm:size-6" />
+                                            <PlayCircle className="size-4 sm:size-5" />
                                           </div>
                                           <div>
                                             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -517,11 +517,11 @@ export function LessonsDashboard() {
                                       )
                                     }
                                   >
-                                    <CardContent className="p-4 sm:p-5 md:p-6">
+                                    <CardContent className="responsive-padding">
                                       <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 sm:gap-4">
+                                        <div className="flex items-center responsive-gap">
                                           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/20 sm:size-12">
-                                            <PlayCircle className="size-5 sm:size-6" />
+                                            <PlayCircle className="size-4 sm:size-5" />
                                           </div>
                                           <div>
                                             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
@@ -574,11 +574,11 @@ export function LessonsDashboard() {
                                       )
                                     }
                                   >
-                                    <CardContent className="p-4 sm:p-5 md:p-6">
+                                    <CardContent className="responsive-padding">
                                       <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-3 sm:gap-4">
+                                        <div className="flex items-center responsive-gap">
                                           <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary transition-colors group-hover:bg-primary/20 sm:size-12">
-                                            <PlayCircle className="size-5 sm:size-6" />
+                                            <PlayCircle className="size-4 sm:size-5" />
                                           </div>
                                           <div>
                                             <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">

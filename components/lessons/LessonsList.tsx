@@ -67,7 +67,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
         )}
         onClick={handleClick}
       >
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-start justify-between gap-3">
             <div className="min-w-0 flex-1">
               <div className="mb-2 flex items-center gap-2">
@@ -128,7 +128,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
               )}
             />
 
-            <CardHeader className="p-4 pb-2 sm:p-5 sm:pb-3 md:p-6 md:pb-4">
+            <CardHeader className="responsive-padding pb-2 sm:pb-3 md:pb-4">
               <div className="flex items-start justify-between gap-4">
                 <div className="min-w-0 flex-1">
                   <div className="mb-3 flex items-center gap-2">
@@ -143,7 +143,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
                       {isCompleted ? (
                         <Award className="size-4 text-emerald-600 dark:text-emerald-400 sm:size-5" />
                       ) : (
-                        <PlayCircle className="size-4 text-primary sm:size-5" />
+                        <PlayCircle className="size-4 sm:size-5 text-primary" />
                       )}
                     </div>
                     <Badge
@@ -182,15 +182,15 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-3 p-4 pt-0 sm:space-y-4 sm:p-5 sm:pt-0 md:p-6 md:pt-0">
+            <CardContent className="space-y-3 responsive-padding pt-0 sm:space-y-4 sm:pt-0 md:pt-0">
               {/* Subject and Class Info */}
               <div className="flex flex-wrap items-center gap-2 text-xs sm:gap-4 sm:text-sm">
                 <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
-                  <Users className="size-3.5 text-muted-foreground sm:size-4" />
+                  <Users className="size-4 sm:size-5 text-muted-foreground" />
                   <span className="font-medium">{lesson.class}</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
-                  <FileText className="size-3.5 text-muted-foreground sm:size-4" />
+                  <FileText className="size-4 sm:size-5 text-muted-foreground" />
                   <span className="font-medium">{lesson.subject}</span>
                 </div>
               </div>
@@ -330,7 +330,7 @@ export function LessonsList({
           "grid gap-4",
           compact
             ? "grid-cols-1 sm:grid-cols-2"
-            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
         )}
       >
         {Array.from({ length: skeletonCount }).map((_, index) => (
@@ -408,10 +408,10 @@ export function LessonsList({
       {/* Lessons grid */}
       <div
         className={cn(
-          "grid gap-6",
+          "grid gap-4 sm:gap-6",
           compact
             ? "grid-cols-1 sm:grid-cols-2"
-            : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3",
+            : "grid-cols-1 md:grid-cols-2 lg:grid-cols-3",
         )}
       >
         {lessons.map((lesson) => (
@@ -432,7 +432,7 @@ export function LessonsList({
             size="default"
             onClick={() => handlePageChange(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="font-medium sm:h-11 sm:px-8"
+            className="mobile-touch-target font-medium sm:h-11 sm:px-8"
           >
             Previous
           </Button>
@@ -473,7 +473,7 @@ export function LessonsList({
             size="default"
             onClick={() => handlePageChange(currentPage + 1)}
             disabled={currentPage >= totalPages}
-            className="font-medium sm:h-11 sm:px-8"
+            className="mobile-touch-target font-medium sm:h-11 sm:px-8"
           >
             Next
           </Button>

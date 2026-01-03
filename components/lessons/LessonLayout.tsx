@@ -28,16 +28,16 @@ export function LessonLayout({
       <div className="sticky top-16 z-30 flex items-center justify-between gap-2 border-b bg-background/95 p-2 backdrop-blur lg:hidden">
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2">
+            <Button variant="outline" size="sm" className="h-11 gap-2">
               <List className="size-4" />
               <span>{leftSidebarTitle}</span>
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-[300px] p-0 sm:w-[400px]">
+          <SheetContent side="left" className="w-[280px] p-0 sm:w-[360px] md:w-[400px]">
             <SheetHeader className="border-b p-4">
               <SheetTitle>{leftSidebarTitle}</SheetTitle>
             </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-5rem)] p-4">
+            <ScrollArea className="h-[calc(100vh-5rem)] responsive-padding">
               {leftSidebar}
             </ScrollArea>
           </SheetContent>
@@ -45,16 +45,16 @@ export function LessonLayout({
 
         <Sheet>
           <SheetTrigger asChild>
-            <Button variant="outline" size="sm" className="h-9 gap-2">
+            <Button variant="outline" size="sm" className="h-11 gap-2">
               <span>{rightSidebarTitle}</span>
               <PanelRight className="size-4" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[300px] p-0 sm:w-[400px]">
+          <SheetContent side="right" className="w-[280px] p-0 sm:w-[360px] md:w-[400px]">
             <SheetHeader className="border-b p-4">
               <SheetTitle>{rightSidebarTitle}</SheetTitle>
             </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-5rem)] p-4">
+            <ScrollArea className="h-[calc(100vh-5rem)] responsive-padding">
               {rightSidebar}
             </ScrollArea>
           </SheetContent>
@@ -64,7 +64,7 @@ export function LessonLayout({
       {/* Left Sidebar - Desktop */}
       <aside className="hidden lg:col-span-3 lg:block">
         <div className="sticky top-20">
-          <ScrollArea className="h-[calc(100vh-7rem)] border-r pr-4">
+          <ScrollArea className="h-[calc(100vh-7rem)] border-r px-component-md">
             {leftSidebar}
           </ScrollArea>
         </div>
@@ -80,7 +80,7 @@ export function LessonLayout({
       {/* Right Sidebar - Desktop */}
       <aside className="hidden lg:col-span-3 lg:block">
         <div className="sticky top-20">
-          <ScrollArea className="h-[calc(100vh-7rem)] border-l pl-4">
+          <ScrollArea className="h-[calc(100vh-7rem)] border-l px-component-md">
             {rightSidebar}
           </ScrollArea>
         </div>

@@ -232,7 +232,7 @@ export function SubjectSelectionForm({
     <div className="space-y-6">
       {/* Compulsory Selective Section */}
       <Card>
-        <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+        <CardHeader className="responsive-padding pb-2 sm:pb-3">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
               <CardTitle className="text-lg font-bold sm:text-xl">Core Subject (Religious Studies)</CardTitle>
@@ -248,7 +248,7 @@ export function SubjectSelectionForm({
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 responsive-padding">
           <div className="grid gap-3">
             {subjectsData.compulsory_selective.map((subject) => (
               <button
@@ -284,7 +284,7 @@ export function SubjectSelectionForm({
             <Button
               onClick={handleSubmitCompulsory}
               disabled={!selectedCompulsory || isSubmitting}
-              className="w-full"
+              className="mobile-touch-target w-full"
             >
               {isSubmitting ? (
                 <>
@@ -302,7 +302,7 @@ export function SubjectSelectionForm({
       {/* Elective Subjects Section */}
       {showElectives && (
         <Card>
-          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+          <CardHeader className="responsive-padding pb-2 sm:pb-3">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
                 <CardTitle className="text-lg font-bold sm:text-xl">Elective Subjects</CardTitle>
@@ -315,7 +315,7 @@ export function SubjectSelectionForm({
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-4 responsive-padding">
             <Progress
               value={(selectedElectives.length / requiredElectives) * 100}
             />
@@ -364,7 +364,7 @@ export function SubjectSelectionForm({
                 selectedElectives.length !== requiredElectives || isSubmitting
               }
               size="default"
-              className="h-11 w-full font-bold shadow-lg sm:h-12"
+              className="mobile-touch-target w-full font-bold shadow-lg sm:h-12"
             >
               {isSubmitting ? (
                 <>

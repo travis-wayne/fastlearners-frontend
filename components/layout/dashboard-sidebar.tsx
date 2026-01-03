@@ -79,18 +79,18 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
         <ScrollArea className="h-full overflow-y-auto border-r">
           <aside
             className={cn(
-              isSidebarExpanded ? "w-56 lg:w-60 xl:w-64" : "w-[68px]",
+              isSidebarExpanded ? "w-sidebar-expanded-sm lg:w-sidebar-expanded-lg xl:w-sidebar-expanded-xl" : "w-sidebar-collapsed",
               "hidden h-screen md:block",
             )}
           >
             <div className="flex h-full max-h-screen flex-1 flex-col gap-2">
-              <div className="flex h-14 items-center p-3 lg:h-[60px] lg:p-4">
+              <div className="flex h-14 items-center p-component-sm lg:h-[60px] lg:p-component-md">
                 {isSidebarExpanded ? <ProjectSwitcher /> : null}
 
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="ml-auto size-9 lg:size-8"
+                  className="mobile-touch-target ml-auto size-9 lg:size-8"
                   onClick={toggleSidebar}
                 >
                   {isSidebarExpanded ? (
@@ -108,11 +108,11 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                 </Button>
               </div>
 
-              <nav className="flex flex-1 flex-col gap-8 px-4 pt-4">
+              <nav className="flex flex-1 flex-col gap-component-lg px-component-md pt-component-md">
                 {links.map((section) => (
                   <section
                     key={section.title}
-                    className="flex flex-col gap-0.5"
+                    className="flex flex-col gap-1"
                   >
                     {isSidebarExpanded ? (
                       <p className="text-xs text-muted-foreground">
@@ -135,12 +135,12 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                   path === item.href ? "page" : undefined
                                 }
                                 className={cn(
-                                  "flex min-h-[44px] items-center gap-3 rounded-md p-2.5 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background sm:p-2",
+                                  "flex mobile-touch-target items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                                   path === item.href
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
                                   item.disabled &&
-                                  "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                  "cursor-not-allowed opacity-80 hover:bg-transparent",
                                 )}
                               >
                                 <Icon className="size-5" aria-hidden="true" />
@@ -165,12 +165,12 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                       path === item.href ? "page" : undefined
                                     }
                                     className={cn(
-                                      "flex min-h-[44px] items-center gap-3 rounded-md py-2.5 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background sm:py-2",
+                                      "flex mobile-touch-target items-center gap-component-sm rounded-md py-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                                       path === item.href
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
                                       item.disabled &&
-                                      "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                      "cursor-not-allowed opacity-80 hover:bg-transparent",
                                     )}
                                   >
                                     <span
@@ -194,7 +194,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                 ))}
               </nav>
 
-              <div className="mb-14 xl:p-4">
+              <div className="mb-control-lg xl:p-4">
                 {isSidebarExpanded ? (
                   isGuest ? (
                     <UpgradeCard />
@@ -290,7 +290,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
           <Button
             variant="outline"
             size="icon"
-            className="size-9 shrink-0 md:hidden"
+            className="mobile-touch-target size-9 shrink-0 md:hidden"
           >
             <Menu className="size-5" />
             <span className="sr-only">Toggle navigation menu</span>
@@ -299,7 +299,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
         <SheetContent side="left" className="flex flex-col p-0">
           <ScrollArea className="h-full overflow-y-auto">
             <div className="flex h-screen flex-col">
-              <nav className="flex flex-1 flex-col gap-y-8 p-4 text-lg font-medium sm:p-6">
+              <nav className="flex flex-1 flex-col gap-y-8 p-component-md text-lg font-medium sm:p-component-lg">
                 <Link
                   href="#"
                   className="flex items-center gap-2 text-lg font-semibold"
@@ -315,7 +315,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                 {links.map((section) => (
                   <section
                     key={section.title}
-                    className="flex flex-col gap-0.5"
+                    className="flex flex-col gap-1"
                   >
                     <p className="text-xs text-muted-foreground">
                       {section.title}
@@ -337,12 +337,12 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                 pathname === item.href ? "page" : undefined
                               }
                               className={cn(
-                                "flex min-h-[44px] items-center gap-3 rounded-md p-2.5 text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-background sm:p-2",
+                                "flex mobile-touch-target items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                                 pathname === item.href
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",
                                 item.disabled &&
-                                "cursor-not-allowed opacity-80 hover:bg-transparent hover:text-muted-foreground",
+                                "cursor-not-allowed opacity-80 hover:bg-transparent",
                               )}
                             >
                               <Icon className="size-5" aria-hidden="true" />

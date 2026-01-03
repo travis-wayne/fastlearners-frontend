@@ -84,9 +84,9 @@ export function TeacherDashboard() {
   ];
 
   return (
-    <div className="space-y-8">
+    <div className="dashboard-spacing">
       {/* Classes Overview */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2">
         {classes.map((classItem) => (
           <Card key={classItem.id}>
             <CardHeader>
@@ -109,7 +109,7 @@ export function TeacherDashboard() {
                 </Badge>
               </div>
             </CardHeader>
-            <CardContent className="space-y-4 p-4 sm:p-6">
+            <CardContent className="responsive-padding space-y-component-md">
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Average Progress</span>
@@ -125,7 +125,7 @@ export function TeacherDashboard() {
                 <span>{classItem.recentActivity}</span>
               </div>
 
-              <div className="xs:flex-row flex flex-col gap-2 pt-2">
+              <div className="xs:flex-row flex flex-col gap-component-sm pt-2">
                 <Link
                   href={`/teacher/class/${classItem.id}`}
                   className="flex-1"
@@ -145,7 +145,7 @@ export function TeacherDashboard() {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {/* Today's Tasks */}
         <Card>
           <CardHeader>
@@ -155,11 +155,11 @@ export function TeacherDashboard() {
             </CardTitle>
             <CardDescription>Your priority tasks for today</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 sm:space-y-3">
+          <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
             {todayTasks.map((task) => (
               <div
                 key={task.id}
-                className="flex items-center justify-between rounded-lg bg-muted/50 p-1.5 sm:p-2"
+                className="flex items-center justify-between rounded-lg bg-muted/50 p-component-sm sm:p-component-md"
               >
                 <div className="flex-1">
                   <p className="text-sm font-medium">{task.task}</p>
@@ -196,11 +196,11 @@ export function TeacherDashboard() {
             </CardTitle>
             <CardDescription>Your latest content</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-2 sm:space-y-3">
+          <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
             {recentUploads.map((upload) => (
               <div
                 key={upload.id}
-                className="space-y-1 rounded-lg bg-muted/50 p-1.5 sm:p-2"
+                className="space-y-1 rounded-lg bg-muted/50 p-component-sm sm:p-component-md"
               >
                 <p className="text-sm font-medium">{upload.title}</p>
                 <div className="flex items-center justify-between">
@@ -228,7 +228,7 @@ export function TeacherDashboard() {
             </CardTitle>
             <CardDescription>This week&apos;s overview</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="responsive-padding space-y-component-md">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary sm:text-3xl">52</div>
               <div className="text-sm text-muted-foreground">
@@ -252,10 +252,10 @@ export function TeacherDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-4">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="responsive-padding">
+            <div className="flex items-center gap-component-md">
               <div className="flex size-9 items-center justify-center rounded-lg bg-blue-100 sm:size-10">
                 <PlusCircle className="size-4 text-blue-600 sm:size-5" />
               </div>
@@ -268,8 +268,8 @@ export function TeacherDashboard() {
         </Card>
 
         <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="responsive-padding">
+            <div className="flex items-center gap-component-md">
               <div className="flex size-9 items-center justify-center rounded-lg bg-green-100 sm:size-10">
                 <Upload className="size-4 text-green-600 sm:size-5" />
               </div>
@@ -282,8 +282,8 @@ export function TeacherDashboard() {
         </Card>
 
         <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="responsive-padding">
+            <div className="flex items-center gap-component-md">
               <div className="flex size-9 items-center justify-center rounded-lg bg-purple-100 sm:size-10">
                 <MessageSquare className="size-4 text-purple-600 sm:size-5" />
               </div>
@@ -298,8 +298,8 @@ export function TeacherDashboard() {
         </Card>
 
         <Card className="cursor-pointer transition-shadow hover:shadow-lg">
-          <CardContent className="p-3 sm:p-4">
-            <div className="flex items-center gap-3">
+          <CardContent className="responsive-padding">
+            <div className="flex items-center gap-component-md">
               <div className="flex size-9 items-center justify-center rounded-lg bg-orange-100 sm:size-10">
                 <FileText className="size-4 text-orange-600 sm:size-5" />
               </div>

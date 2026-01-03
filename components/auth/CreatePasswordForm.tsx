@@ -87,11 +87,11 @@ export function CreatePasswordForm() {
 
   if (success) {
     return (
-      <div className="flex flex-col gap-4 sm:gap-6">
+      <div className="flex flex-col gap-component-md sm:gap-component-lg">
         <div className="flex flex-col items-center gap-3 text-center sm:gap-4">
-          <CheckCircle2 className="size-12 text-green-500 sm:size-14 md:size-16" />
+          <CheckCircle2 className="size-12 text-green-500 sm:size-16" />
           <div>
-            <h1 className="text-xl font-bold text-green-800 sm:text-2xl">
+            <h1 className="text-heading-xl font-bold text-green-800 sm:text-2xl">
               Password Created!
             </h1>
             <p className="mt-1.5 text-sm text-green-600 sm:mt-2 sm:text-base">
@@ -100,8 +100,8 @@ export function CreatePasswordForm() {
           </div>
         </div>
 
-        <div className="space-y-3">
-          <Button onClick={handleManualRedirect} className="h-10 w-full sm:h-11" size="lg">
+        <div className="space-y-component-sm">
+          <Button onClick={handleManualRedirect} size="responsive" className="w-full">
             Continue to Role Selection
           </Button>
 
@@ -114,9 +114,9 @@ export function CreatePasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-4 sm:gap-6">
-      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2">
-        <h1 className="text-xl font-bold sm:text-2xl">Create your password</h1>
+    <form onSubmit={handleSubmit} className="flex flex-col gap-component-md sm:gap-component-lg">
+      <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
+        <h1 className="text-heading-xl font-bold sm:text-2xl">Create your password</h1>
         <p className="text-balance text-sm text-muted-foreground sm:text-base">
           Choose a strong password to secure your account
         </p>
@@ -129,9 +129,9 @@ export function CreatePasswordForm() {
         </Alert>
       )}
 
-      <div className="space-y-3 sm:space-y-4">
+      <div className="space-y-component-sm sm:space-y-component-md">
         {/* Password Input */}
-        <div className="space-y-2">
+        <div className="space-y-component-sm">
           <Label htmlFor="password">Password</Label>
           <div className="relative">
             <Input
@@ -148,7 +148,7 @@ export function CreatePasswordForm() {
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
+              className="absolute right-0 top-0 h-full w-control-sm px-3 py-2 hover:bg-transparent sm:w-control-md"
               onClick={() => setShowPassword(!showPassword)}
               aria-label={showPassword ? "Hide password" : "Show password"}
             >
@@ -163,13 +163,13 @@ export function CreatePasswordForm() {
 
         {/* Password Requirements */}
         {password && (
-          <div className="space-y-1.5 text-xs sm:space-y-2 sm:text-sm">
+          <div className="space-y-component-xs text-xs sm:space-y-component-sm sm:text-sm">
             <p className="font-medium">Password requirements:</p>
             {passwordRequirements.map((req, index) => (
               <div key={index} className="flex items-center gap-2">
                 <CheckCircle2
                   className={
-                    req.met ? "size-3.5 text-green-500 sm:size-4" : "size-3.5 text-gray-300 sm:size-4"
+                    req.met ? "size-4 text-green-500" : "size-4 text-gray-300"
                   }
                 />
                 <span
@@ -185,7 +185,7 @@ export function CreatePasswordForm() {
         )}
 
         {/* Confirm Password Input */}
-        <div className="space-y-2">
+        <div className="space-y-component-sm">
           <Label htmlFor="confirmPassword">Confirm password</Label>
           <div className="relative">
             <Input
@@ -202,7 +202,7 @@ export function CreatePasswordForm() {
               type="button"
               variant="ghost"
               size="sm"
-              className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
+              className="absolute right-0 top-0 h-full w-control-sm px-3 py-2 hover:bg-transparent sm:w-control-md"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
             >
@@ -227,8 +227,8 @@ export function CreatePasswordForm() {
         <Button
           type="submit"
           disabled={!canSubmit}
-          className="h-10 w-full sm:h-11"
-          size="lg"
+          size="responsive"
+          className="w-full"
         >
           {isLoading ? (
             <>

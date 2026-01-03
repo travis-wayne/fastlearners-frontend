@@ -94,7 +94,7 @@ export function LessonFilters({
 
   if (compact) {
     return (
-      <div className="flex flex-wrap items-center gap-2">
+      <div className="flex flex-col flex-wrap items-center gap-2 sm:flex-row">
         {isLoadingMetadata ? (
           <div className="flex gap-2">
             <Skeleton className="h-10 w-32" />
@@ -108,7 +108,7 @@ export function LessonFilters({
               value={filters.class}
               onValueChange={(value) => handleFilterChange("class", value)}
             >
-              <SelectTrigger className="h-10 w-full sm:w-32">
+              <SelectTrigger className="h-10 w-full sm:h-11 sm:w-32">
                 <SelectValue placeholder="Class" />
               </SelectTrigger>
               <SelectContent>
@@ -124,7 +124,7 @@ export function LessonFilters({
               value={filters.subject}
               onValueChange={(value) => handleFilterChange("subject", value)}
             >
-              <SelectTrigger className="h-10 w-full sm:w-32">
+              <SelectTrigger className="h-10 w-full sm:h-11 sm:w-32">
                 <SelectValue placeholder="Subject" />
               </SelectTrigger>
               <SelectContent>
@@ -140,7 +140,7 @@ export function LessonFilters({
               value={filters.term}
               onValueChange={(value) => handleFilterChange("term", value)}
             >
-              <SelectTrigger className="h-10 w-full sm:w-32">
+              <SelectTrigger className="h-10 w-full sm:h-11 sm:w-32">
                 <SelectValue placeholder="Term" />
               </SelectTrigger>
               <SelectContent>
@@ -156,7 +156,7 @@ export function LessonFilters({
               value={filters.week}
               onValueChange={(value) => handleFilterChange("week", value)}
             >
-              <SelectTrigger className="h-10 w-full sm:w-24">
+              <SelectTrigger className="h-10 w-full sm:h-11 sm:w-24">
                 <SelectValue placeholder="Week" />
               </SelectTrigger>
               <SelectContent>
@@ -220,7 +220,7 @@ export function LessonFilters({
         </CardHeader>
       )}
 
-      <CardContent className={cn("space-y-6", sidebar && "px-0")}>
+      <CardContent className={cn("space-y-6 responsive-padding", sidebar && "px-0")}>
         {error && (
           <Alert variant="destructive" className="border-2">
             <AlertCircle className="size-4" />
@@ -258,7 +258,7 @@ export function LessonFilters({
                 value={filters.class}
                 onValueChange={(value) => handleFilterChange("class", value)}
               >
-                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
+                <SelectTrigger className="h-10 bg-muted/50 transition-colors hover:bg-muted sm:h-11">
                   <SelectValue placeholder="Select class" />
                 </SelectTrigger>
                 <SelectContent>
@@ -284,7 +284,7 @@ export function LessonFilters({
                 value={filters.subject}
                 onValueChange={(value) => handleFilterChange("subject", value)}
               >
-                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
+                <SelectTrigger className="h-10 bg-muted/50 transition-colors hover:bg-muted sm:h-11">
                   <SelectValue placeholder="Select subject" />
                 </SelectTrigger>
                 <SelectContent>
@@ -310,7 +310,7 @@ export function LessonFilters({
                 value={filters.term}
                 onValueChange={(value) => handleFilterChange("term", value)}
               >
-                <SelectTrigger className="h-12 bg-muted/50 transition-colors hover:bg-muted">
+                <SelectTrigger className="h-10 bg-muted/50 transition-colors hover:bg-muted sm:h-11">
                   <SelectValue placeholder="Select term" />
                 </SelectTrigger>
                 <SelectContent>
@@ -379,7 +379,7 @@ export function LessonFilters({
                 variant="outline"
                 onClick={handleClearFilters}
                 size="default"
-                className="w-full font-medium sm:h-11 sm:w-auto sm:px-8"
+                className="mobile-touch-target w-full font-medium sm:h-11 sm:w-auto sm:px-8"
               >
                 <X className="mr-2 size-4" />
                 Clear All
@@ -390,7 +390,7 @@ export function LessonFilters({
               onClick={handleFetchLessons}
               disabled={!canFetchLessons}
               size="default"
-              className="w-full bg-primary font-medium shadow-md hover:bg-primary/90 sm:h-11 sm:w-auto sm:px-8"
+              className="mobile-touch-target w-full bg-primary font-medium shadow-md hover:bg-primary/90 sm:h-11 sm:w-auto sm:px-8"
             >
               <Search className="mr-2 size-4" />
               Find Lessons

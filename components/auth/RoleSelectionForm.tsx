@@ -149,9 +149,9 @@ export function RoleSelectionForm() {
   };
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8">
+    <div className="flex flex-col gap-component-lg sm:gap-component-xl">
       {/* Header */}
-      <div className="flex flex-col items-center gap-1.5 text-center sm:gap-2">
+      <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
         <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Select your role</h1>
         <p className="text-sm text-muted-foreground sm:text-base">
           Choose how you&apos;ll be using Fast Learners
@@ -159,7 +159,7 @@ export function RoleSelectionForm() {
       </div>
 
       {/* Role Cards */}
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
+      <div className="grid grid-cols-1 gap-component-sm sm:grid-cols-2 sm:gap-component-md lg:grid-cols-3">
         {roleOptions.map((option) => {
           const Icon = option.icon;
 
@@ -182,21 +182,21 @@ export function RoleSelectionForm() {
                 }
               }}
             >
-              <CardContent className="flex flex-col items-center gap-3 p-6 text-center sm:gap-4 sm:p-8">
+              <CardContent className="flex flex-col items-center gap-component-sm p-component-lg text-center sm:gap-component-md sm:p-component-xl">
                 {/* Icon */}
                 <div
                   className={cn(
-                    "flex size-12 items-center justify-center rounded-full transition-transform duration-200 sm:size-14 md:size-16",
+                    "flex size-12 items-center justify-center rounded-full transition-transform duration-200 sm:size-16",
                     "group-hover:scale-110",
                     option.iconBg,
                   )}
                 >
-                  <Icon className={cn("size-6 sm:size-7 md:size-8", option.iconColor)} />
+                  <Icon className={cn("size-6 sm:size-8", option.iconColor)} />
                 </div>
 
                 {/* Title */}
-                <div className="space-y-1.5 sm:space-y-2">
-                  <h3 className="text-lg font-semibold sm:text-xl">{option.title}</h3>
+                <div className="space-y-component-xs sm:space-y-component-sm">
+                  <h3 className="text-heading-lg font-semibold sm:text-heading-xl">{option.title}</h3>
                   <p className="text-xs text-muted-foreground sm:text-sm">
                     {option.description}
                   </p>
@@ -215,14 +215,14 @@ export function RoleSelectionForm() {
       {/* Guardian Expanded Form */}
       {expandedRole === "guardian" && (
         <Card className="border-2">
-          <CardContent className="p-4 sm:p-6">
-            <div className="mb-4">
-              <h3 className="text-base font-semibold sm:text-lg">Guardian Information</h3>
+          <CardContent className="p-component-md sm:p-component-lg">
+            <div className="mb-component-md">
+              <h3 className="text-heading-sm font-semibold sm:text-heading-lg">Guardian Information</h3>
               <p className="text-xs text-muted-foreground sm:text-sm">
                 Provide details to continue as a guardian.
               </p>
             </div>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+            <div className="grid grid-cols-1 gap-component-sm sm:grid-cols-2 sm:gap-component-md">
               <div>
                 <Label htmlFor="name">Full Name</Label>
                 <Input
@@ -350,17 +350,17 @@ export function RoleSelectionForm() {
                 />
               </div>
             </div>
-            <div className="mt-6 flex items-center justify-end gap-2 sm:gap-3">
+            <div className="mt-component-lg flex items-center justify-end gap-component-sm sm:gap-component-md">
               <Button
                 variant="outline"
-                className="h-10 sm:h-11"
+                size="responsive"
                 onClick={() => setExpandedRole(null)}
                 disabled={isSubmitting}
               >
                 Cancel
               </Button>
               <Button
-                className="h-10 sm:h-11"
+                size="responsive"
                 onClick={async () => {
                   if (!validateGuardian()) return;
                   try {

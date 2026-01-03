@@ -41,7 +41,7 @@ export function LessonContent({
     <div className="space-y-6">
       {/* Progress Header */}
       <Card>
-        <CardContent className="p-3 sm:p-4">
+        <CardContent className="responsive-padding">
           <div className="flex items-center justify-between">
             <div className="max-w-[150px] flex-1 space-y-1.5 sm:max-w-none">
               <p className="text-xs font-medium text-muted-foreground sm:text-sm">Lesson Progress</p>
@@ -75,13 +75,13 @@ export function LessonContent({
       {/* Overview */}
       {content.overview && (
         <Card className="border-2">
-          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+          <CardHeader className="responsive-padding pb-2 sm:pb-3">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <BookOpen className="size-4 text-primary sm:size-5" />
               Overview
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          <CardContent className="responsive-padding pt-0 sm:pt-0">
             <p className="text-sm leading-relaxed text-muted-foreground sm:text-base">
               {content.overview}
             </p>
@@ -92,13 +92,13 @@ export function LessonContent({
       {/* Objectives */}
       {content.objectives && content.objectives.length > 0 && (
         <Card className="border-2">
-          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+          <CardHeader className="responsive-padding pb-2 sm:pb-3">
             <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
               <Target className="size-4 text-primary sm:size-5" />
               Learning Objectives
             </CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          <CardContent className="responsive-padding pt-0 sm:pt-0">
             <div className="space-y-4">
               {content.objectives.map((objective, index) => (
                 <div key={index} className="space-y-2">
@@ -110,7 +110,7 @@ export function LessonContent({
                   {objective.points &&
                     Array.isArray(objective.points) &&
                     objective.points.length > 0 && (
-                      <ul className="ml-2 space-y-2.5 sm:ml-4">
+                      <ul className="ml-component-sm space-y-2.5 sm:ml-component-md">
                         {objective.points.map((point, pointIndex) => (
                           <li
                             key={pointIndex}
@@ -134,10 +134,10 @@ export function LessonContent({
       {/* Key Concepts */}
       {content.key_concepts && Object.keys(content.key_concepts).length > 0 && (
         <Card className="border-2">
-          <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+          <CardHeader className="responsive-padding pb-2 sm:pb-3">
             <CardTitle className="text-lg sm:text-xl">Key Concepts</CardTitle>
           </CardHeader>
-          <CardContent className="p-4 pt-0 sm:p-6 sm:pt-0">
+          <CardContent className="responsive-padding pt-0 sm:pt-0">
             <div className="space-y-3">
               {Object.entries(content.key_concepts).map(([key, value]) => (
                 <div
@@ -159,10 +159,10 @@ export function LessonContent({
         <div className="space-y-6">
           {content.concepts.map((concept) => (
             <Card className="border-2">
-              <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
+              <CardHeader className="responsive-padding pb-2 sm:pb-3">
                 <CardTitle className="text-lg font-bold transition-colors group-hover:text-primary sm:text-xl">{concept.title}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 p-4 pt-0 sm:space-y-6 sm:p-6 sm:pt-0">
+              <CardContent className="space-y-4 responsive-padding pt-0 sm:space-y-6 sm:pt-0">
                 {/* Description - array of ConceptDescription objects */}
                 {concept.description &&
                   Array.isArray(concept.description) &&
@@ -213,7 +213,7 @@ export function LessonContent({
                     {concept.examples.map((example, index) => (
                       <div
                         key={example.id || index}
-                        className="space-y-2 rounded-lg border bg-muted/50 p-4"
+                        className="space-y-2 rounded-lg border bg-muted/50 responsive-padding"
                       >
                         {example.title && (
                           <h5 className="font-medium">{example.title}</h5>

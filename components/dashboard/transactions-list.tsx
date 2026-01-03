@@ -36,9 +36,9 @@ export default function TransactionsList() {
           </Link>
         </Button>
       </CardHeader>
-      <CardContent>
+      <CardContent className="responsive-padding">
         {/* Mobile Card View */}
-        <div className="space-y-3 sm:hidden">
+        <div className="space-y-component-sm sm:hidden">
           {[
             { id: 1, name: "Liam Johnson", email: "liam@example.com", type: "Sale", status: "Approved", date: "2023-06-23", amount: "$250.00" },
             { id: 2, name: "Olivia Smith", email: "olivia@example.com", type: "Refund", status: "Declined", date: "2023-06-24", amount: "$150.00" },
@@ -46,7 +46,7 @@ export default function TransactionsList() {
             { id: 4, name: "Emma Brown", email: "emma@example.com", type: "Sale", status: "Approved", date: "2023-06-26", amount: "$450.00" },
             { id: 5, name: "Liam Johnson", email: "liam@example.com", type: "Sale", status: "Approved", date: "2023-06-27", amount: "$550.00" },
           ].map((tx) => (
-            <div key={tx.id} className="rounded-lg border p-3 shadow-sm">
+            <div key={tx.id} className="rounded-lg border p-component-sm shadow-sm sm:p-component-md">
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-foreground">{tx.name}</div>
@@ -54,7 +54,7 @@ export default function TransactionsList() {
                 </div>
                 <div className="text-right">
                   <div className="font-semibold text-foreground">{tx.amount}</div>
-                  <Badge variant="outline" className="mt-1 text-[10px]">
+                  <Badge variant="outline" className="mt-1 text-xs">
                     {tx.status}
                   </Badge>
                 </div>
