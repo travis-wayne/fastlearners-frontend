@@ -290,7 +290,7 @@ export function StudentDashboard() {
       {/* Enhanced Welcome Header with time-based gradient */}
       <motion.div variants={itemVariants}>
         <div
-          className={`relative overflow-hidden rounded-2xl responsive-padding ${headerGradientClass} transition-all duration-700 ease-in-out`}
+          className={`responsive-padding relative overflow-hidden rounded-2xl ${headerGradientClass} transition-all duration-700 ease-in-out`}
         >
           <div className="relative z-10 max-w-lg">
             {/* Header with date and time */}
@@ -606,7 +606,7 @@ export function StudentDashboard() {
               {todaysLessonsTable.map((lesson) => (
                 <div
                   key={`lesson-card-${lesson.id}`}
-                  className="rounded-2xl border bg-background responsive-padding shadow-sm"
+                  className="responsive-padding rounded-2xl border bg-background shadow-sm"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div>

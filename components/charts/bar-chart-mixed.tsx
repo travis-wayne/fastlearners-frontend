@@ -55,12 +55,12 @@ const chartConfig = {
 export function BarChartMixed() {
   return (
     <Card className="flex flex-col">
-      <CardHeader>
+      <CardHeader className="p-component-sm sm:p-component-md">
         {/* <CardTitle>Bar Chart - Mixed</CardTitle>
         <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
-      <CardContent className="flex-1">
-        <ChartContainer config={chartConfig}>
+      <CardContent className="flex-1 p-component-sm sm:p-component-md">
+        <ChartContainer config={chartConfig} className="h-[200px] w-full sm:h-[250px] lg:h-[300px]">
           <BarChart
             accessibilityLayer
             data={chartData}
@@ -73,8 +73,9 @@ export function BarChartMixed() {
               dataKey="browser"
               type="category"
               tickLine={false}
-              tickMargin={10}
+              tickMargin={8}
               axisLine={false}
+              tick={{ fontSize: 12 }}
               tickFormatter={(value) =>
                 chartConfig[value as keyof typeof chartConfig]?.label
               }
@@ -88,11 +89,11 @@ export function BarChartMixed() {
           </BarChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className="flex-col gap-2 text-pretty text-center text-sm">
-        <div className="flex items-center gap-2 font-medium leading-none">
-          Trending up by 5.2% this month <TrendingUp className="size-4" />
+      <CardFooter className="flex-col gap-component-xs text-pretty p-component-sm text-center sm:p-component-md">
+        <div className="flex items-center justify-center gap-2 text-xs font-medium leading-none sm:text-sm">
+          Trending up by 5.2% this month <TrendingUp className="size-3 sm:size-4" />
         </div>
-        <div className="leading-none text-muted-foreground">
+        <div className="text-xs leading-none text-muted-foreground sm:text-sm">
           Results for the top 5 browsers
         </div>
       </CardFooter>

@@ -135,7 +135,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                   path === item.href ? "page" : undefined
                                 }
                                 className={cn(
-                                  "flex mobile-touch-target items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                                  "mobile-touch-target flex items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                                   path === item.href
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
@@ -165,7 +165,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                       path === item.href ? "page" : undefined
                                     }
                                     className={cn(
-                                      "flex mobile-touch-target items-center gap-component-sm rounded-md py-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                                      "mobile-touch-target flex items-center gap-component-sm rounded-md py-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                                       path === item.href
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
@@ -337,7 +337,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                 pathname === item.href ? "page" : undefined
                               }
                               className={cn(
-                                "flex mobile-touch-target items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
+                                "mobile-touch-target flex items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
                                 pathname === item.href
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",

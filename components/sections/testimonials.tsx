@@ -14,14 +14,14 @@ export default function Testimonials() {
           subtitle="Discover insights and feedback from students and educators using Fastlearners to transform their educational experience."
         />
 
-        <div className="columns-1 gap-4 space-y-4 sm:columns-2 sm:gap-6 sm:space-y-6 lg:columns-3">
+        <div className="columns-1 gap-component-md space-y-component-md sm:columns-2 sm:gap-component-lg sm:space-y-component-lg lg:columns-3">
           {testimonials.map((item) => (
             <div className="break-inside-avoid" key={item.name}>
-              <div className="relative rounded-xl border bg-muted/25">
-                <div className="flex flex-col p-4 sm:p-5 md:p-6">
+              <div className="relative rounded-lg border bg-muted/25">
+                <div className="flex flex-col p-component-md sm:p-component-lg">
                   <div>
                     <div className="relative mb-4 flex items-center gap-3">
-                      <span className="relative inline-flex size-8 shrink-0 items-center justify-center rounded-full text-base sm:size-10">
+                      <span className="relative inline-flex size-10 shrink-0 items-center justify-center rounded-full text-base sm:size-12">
                         <Image
                           width={40}
                           height={40}
@@ -31,7 +31,7 @@ export default function Testimonials() {
                         />
                       </span>
                       <div>
-                        <p className="text-sm font-semibold text-foreground">
+                        <p className="text-sm font-semibold text-foreground sm:text-base">
                           {item.name}
                         </p>
                         <p className="text-xs text-muted-foreground sm:text-sm">

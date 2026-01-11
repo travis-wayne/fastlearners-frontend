@@ -63,15 +63,15 @@ export function DeleteAccountModal({
       setShowModal={setShowDeleteAccountModal}
       className="gap-0"
     >
-      <div className="flex flex-col items-center justify-center space-y-3 border-b p-4 pt-8 sm:px-16">
+      <div className="flex flex-col items-center justify-center space-y-3 border-b px-component-md py-component-lg pt-component-xl sm:px-component-lg md:px-component-xl">
         <UserAvatar
           user={{
             name: user?.name || null,
             image: user?.image || null,
           }}
         />
-        <h3 className="text-lg font-semibold">Delete Account</h3>
-        <p className="text-center text-sm text-muted-foreground">
+        <h3 className="text-heading-lg font-semibold sm:text-heading-xl">Delete Account</h3>
+        <p className="responsive-text text-center text-muted-foreground">
           <b>Warning:</b> This will permanently delete your account and your
           active subscription!
         </p>
@@ -88,10 +88,10 @@ export function DeleteAccountModal({
             error: (err) => err,
           });
         }}
-        className="flex flex-col space-y-6 bg-accent px-4 py-8 text-left sm:px-16"
+        className="flex flex-col space-y-component-md bg-accent px-component-md py-component-xl text-left sm:space-y-component-lg sm:px-component-lg md:px-component-xl"
       >
         <div>
-          <label htmlFor="verification" className="block text-sm">
+          <label htmlFor="verification" className="block text-sm sm:text-base">
             To verify, type{" "}
             <span className="font-semibold text-black dark:text-white">
               confirm delete account
@@ -106,13 +106,14 @@ export function DeleteAccountModal({
             required
             autoFocus={false}
             autoComplete="off"
-            className="mt-1 w-full border bg-background"
+            className="mt-component-xs h-control-md w-full border bg-background sm:h-control-lg"
           />
         </div>
 
         <Button
           variant="destructive"
           disabled={deleting}
+          className="mobile-touch-target h-control-md sm:h-control-lg"
         >
           Confirm delete account
         </Button>

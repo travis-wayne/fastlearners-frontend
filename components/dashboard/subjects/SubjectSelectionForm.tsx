@@ -248,7 +248,7 @@ export function SubjectSelectionForm({
             )}
           </div>
         </CardHeader>
-        <CardContent className="space-y-4 responsive-padding">
+        <CardContent className="responsive-padding space-y-4">
           <div className="grid gap-3">
             {subjectsData.compulsory_selective.map((subject) => (
               <button
@@ -315,7 +315,7 @@ export function SubjectSelectionForm({
               </Badge>
             </div>
           </CardHeader>
-          <CardContent className="space-y-4 responsive-padding">
+          <CardContent className="responsive-padding space-y-4">
             <Progress
               value={(selectedElectives.length / requiredElectives) * 100}
             />

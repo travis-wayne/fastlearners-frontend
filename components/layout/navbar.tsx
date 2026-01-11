@@ -65,7 +65,7 @@ export function NavBar({ scroll = false }: NavBarProps) {
                   href={item.disabled ? "#" : item.href}
                   prefetch={true}
                   className={cn(
-                    "mobile-touch-target flex items-center responsive-text font-medium transition-colors",
+                    "mobile-touch-target responsive-text flex items-center font-medium transition-colors",
                     item.href.startsWith(`/${selectedLayout}`)
                       ? "text-foreground"
                       : "text-foreground/60 hover:text-foreground/80",

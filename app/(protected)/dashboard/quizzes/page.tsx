@@ -122,72 +122,72 @@ function QuizCard({ quiz, onClick }: QuizCardProps) {
       className="cursor-pointer"
     >
       <Card className="h-full transition-shadow hover:shadow-md">
-        <CardHeader className="pb-3">
+        <CardHeader className="p-component-sm pb-2 sm:p-component-md sm:pb-3">
           <div className="flex items-start justify-between">
-            <div className="flex flex-1 items-center gap-3">
+            <div className="flex flex-1 items-center gap-2 sm:gap-3">
               <div
-                className="flex shrink-0 items-center justify-center rounded-lg p-2"
+                className="flex shrink-0 items-center justify-center rounded-lg p-1.5 sm:p-2"
                 style={{ backgroundColor: `${subject?.color || "#6B7280"}20` }}
               >
                 <HelpCircle
-                  className="size-5"
+                  className="size-4 sm:size-5"
                   style={{ color: subject?.color || "#6B7280" }}
                 />
               </div>
               <div className="min-w-0 flex-1">
-                <CardTitle className="mb-1 text-base leading-tight">
+                <CardTitle className="mb-1 text-sm leading-tight sm:text-base">
                   {quiz.title}
                 </CardTitle>
-                <CardDescription className="line-clamp-2 text-sm">
+                <CardDescription className="line-clamp-2 text-xs sm:text-sm">
                   {quiz.description}
                 </CardDescription>
               </div>
             </div>
             {isCompleted ? (
-              <CheckCircle className="size-5 shrink-0 text-green-600" />
+              <CheckCircle className="size-4 shrink-0 text-green-600 sm:size-5" />
             ) : (
-              <Circle className="size-5 shrink-0 text-muted-foreground" />
+              <Circle className="size-4 shrink-0 text-muted-foreground sm:size-5" />
             )}
           </div>
         </CardHeader>
 
-        <CardContent className="space-y-4 pt-0">
+        <CardContent className="space-y-component-xs p-component-sm pt-0 sm:space-y-component-sm sm:p-component-md">
           {/* Quiz Details */}
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+          <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground sm:gap-3 sm:text-sm">
             <div className="flex items-center gap-1">
-              <Clock className="size-4" />
+              <Clock className="size-3 sm:size-4" />
               <span>
                 {quiz.timeLimit === 0 ? "No limit" : `${quiz.timeLimit} min`}
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <Target className="size-4" />
+              <Target className="size-3 sm:size-4" />
               <span>{quiz.totalQuestions} questions</span>
             </div>
             <div className="flex items-center gap-1">
-              <Award className="size-4" />
+              <Award className="size-3 sm:size-4" />
               <span>{quiz.totalPoints} pts</span>
             </div>
           </div>
 
           {/* Badges */}
-          <div className="flex gap-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
             <Badge
               variant="outline"
-              className={`text-xs ${getDifficultyColor(quiz.difficulty)}`}
+              className={`text-[10px] sm:text-xs ${getDifficultyColor(quiz.difficulty)}`}
             >
               {quiz.difficulty}
             </Badge>
             <Badge
               variant="outline"
-              className={`text-xs ${getScopeColor(quiz.scope)}`}
+              className={`text-[10px] sm:text-xs ${getScopeColor(quiz.scope)}`}
             >
               {quiz.scope}
             </Badge>
             {quiz.dueDate && (
               <Badge
                 variant="outline"
-                className="bg-red-50 text-xs text-red-600"
+                className="bg-red-50 text-[10px] text-red-600 sm:text-xs"
               >
                 Due {new Date(quiz.dueDate).toLocaleDateString()}
               </Badge>
@@ -354,13 +354,13 @@ export default function QuizzesPage() {
     >
       {/* Header */}
       <motion.div variants={itemVariants}>
-        <div className="mb-4 flex items-center justify-between">
+        <div className="mb-3 flex flex-col gap-3 sm:mb-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="flex items-center gap-3 text-3xl font-bold">
-              <HelpCircle className="size-8 text-primary" />
+            <h1 className="flex items-center gap-2 text-xl font-bold sm:gap-3 sm:text-2xl lg:text-3xl">
+              <HelpCircle className="size-6 text-primary sm:size-7 lg:size-8" />
               Quizzes & Assessments
             </h1>
-            <p className="mt-1 text-muted-foreground">
+            <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
               Test your knowledge for {classDisplay} - {termDisplay}
             </p>
           </div>
@@ -370,37 +370,37 @@ export default function QuizzesPage() {
 
       {/* Stats Cards */}
       <motion.div variants={itemVariants}>
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-4">
           <Card>
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <TrendingUp className="size-4 text-blue-600" />
-                <span className="text-sm text-muted-foreground">
+            <CardContent className="p-3 sm:p-4">
+              <div className="mb-1 flex items-center gap-1 sm:mb-2 sm:gap-2">
+                <TrendingUp className="size-3 text-blue-600 sm:size-4" />
+                <span className="text-xs text-muted-foreground sm:text-sm">
                   Total Quizzes
                 </span>
               </div>
-              <p className="text-2xl font-bold">{stats.total}</p>
+              <p className="text-xl font-bold sm:text-2xl">{stats.total}</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <Circle className="size-4 text-orange-600" />
-                <span className="text-sm text-muted-foreground">Available</span>
+            <CardContent className="p-3 sm:p-4">
+              <div className="mb-1 flex items-center gap-1 sm:mb-2 sm:gap-2">
+                <Circle className="size-3 text-orange-600 sm:size-4" />
+                <span className="text-xs text-muted-foreground sm:text-sm">Available</span>
               </div>
-              <p className="text-2xl font-bold">{availableQuizzes.length}</p>
+              <p className="text-xl font-bold sm:text-2xl">{availableQuizzes.length}</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <CheckCircle className="size-4 text-green-600" />
-                <span className="text-sm text-muted-foreground">Completed</span>
+            <CardContent className="p-3 sm:p-4">
+              <div className="mb-1 flex items-center gap-1 sm:mb-2 sm:gap-2">
+                <CheckCircle className="size-3 text-green-600 sm:size-4" />
+                <span className="text-xs text-muted-foreground sm:text-sm">Completed</span>
               </div>
-              <p className="text-2xl font-bold">{stats.completed}</p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xl font-bold sm:text-2xl">{stats.completed}</p>
+              <p className="text-[10px] text-muted-foreground sm:text-xs">
                 {stats.total > 0
                   ? Math.round((stats.completed / stats.total) * 100)
                   : 0}
@@ -410,14 +410,14 @@ export default function QuizzesPage() {
           </Card>
 
           <Card>
-            <CardContent className="p-4">
-              <div className="mb-2 flex items-center gap-2">
-                <Award className="size-4 text-yellow-600" />
-                <span className="text-sm text-muted-foreground">
+            <CardContent className="p-3 sm:p-4">
+              <div className="mb-1 flex items-center gap-1 sm:mb-2 sm:gap-2">
+                <Award className="size-3 text-yellow-600 sm:size-4" />
+                <span className="text-xs text-muted-foreground sm:text-sm">
                   Avg Score
                 </span>
               </div>
-              <p className="text-2xl font-bold">
+              <p className="text-xl font-bold sm:text-2xl">
                 {stats.average > 0 ? `${stats.average}%` : "N/A"}
               </p>
             </CardContent>

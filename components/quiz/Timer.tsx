@@ -36,23 +36,23 @@ export function Timer({ timeLeft, totalTime, onTimeUp, className }: TimerProps) 
   const percentage = (timeLeft / totalTime) * 100;
 
   return (
-    <div className={cn("flex items-center gap-3", className)}>
+    <div className={cn("flex items-center gap-2 sm:gap-3", className)}>
       <Clock
         className={cn(
-          "size-5 transition-colors",
+          "size-4 transition-colors sm:size-5",
           isWarning ? "text-red-500" : "text-muted-foreground"
         )}
       />
       <div className="flex flex-col">
         <span
           className={cn(
-            "font-mono text-lg font-semibold transition-colors",
+            "font-mono text-base font-semibold transition-colors sm:text-lg",
             isWarning && "animate-pulse text-red-600"
           )}
         >
           {formatTime(timeLeft)}
         </span>
-        <div className="h-1 w-24 overflow-hidden rounded-full bg-muted">
+        <div className="h-1 w-20 overflow-hidden rounded-full bg-muted sm:w-24 lg:w-32">
           <div
             className={cn(
               "h-full transition-all duration-1000",

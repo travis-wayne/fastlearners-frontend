@@ -137,33 +137,33 @@ export function FileUploadCard({
         className,
       )}
     >
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileText className="size-5" />
+      <CardHeader className="p-component-sm sm:p-component-md">
+        <CardTitle className="flex items-center gap-2 text-heading-md sm:text-heading-lg">
+          <FileText className="size-4 sm:size-5" />
           {title}
           {success && <Check className="size-4 text-green-600" />}
           {disabled && <AlertCircle className="size-4 text-yellow-600" />}
         </CardTitle>
-        <CardDescription>{description}</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">{description}</CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-component-sm p-component-sm sm:space-y-component-md sm:p-component-md">
         {/* File Upload Area */}
         {!file && !success && (
           <div
             className={cn(
-              "cursor-pointer rounded-lg border-2 border-dashed p-6 text-center transition-colors",
+              "min-h-[120px] cursor-pointer rounded-lg border-2 border-dashed p-4 text-center transition-colors sm:min-h-[150px] sm:p-6",
               disabled
                 ? "cursor-not-allowed border-gray-200 bg-gray-50"
                 : "border-muted-foreground/25 hover:border-muted-foreground/50",
             )}
             onClick={() => !disabled && fileInputRef.current?.click()}
           >
-            <Upload className="mx-auto mb-3 size-8 text-muted-foreground" />
-            <p className="mb-1 text-sm font-medium">
+            <Upload className="mx-auto mb-2 size-6 text-muted-foreground sm:mb-3 sm:size-8" />
+            <p className="mb-1 text-xs font-medium sm:text-sm">
               {disabled ? "Upload disabled" : "Click to select file"}
             </p>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-[10px] text-muted-foreground sm:text-xs">
               CSV or TXT files only (max 10MB)
             </p>
           </div>
@@ -181,19 +181,19 @@ export function FileUploadCard({
 
         {/* Selected File Display */}
         {file && !success && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between rounded-lg bg-muted p-3">
+          <div className="space-y-component-xs sm:space-y-component-sm">
+            <div className="flex flex-col gap-3 rounded-lg bg-muted p-3 sm:flex-row sm:items-center sm:justify-between sm:p-4">
               <div className="flex items-center gap-3">
-                <FileText className="size-6 text-primary" />
+                <FileText className="size-5 text-primary sm:size-6" />
                 <div>
-                  <p className="text-sm font-medium">{file.name}</p>
-                  <p className="text-xs text-muted-foreground">
+                  <p className="text-xs font-medium sm:text-sm">{file.name}</p>
+                  <p className="text-[10px] text-muted-foreground sm:text-xs">
                     {formatFileSize(file.size)}
                   </p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={error ? "destructive" : "secondary"}>
+                <Badge variant={error ? "destructive" : "secondary"} className="text-[10px] sm:text-xs">
                   {error ? "Error" : "Ready"}
                 </Badge>
                 {!isUploading && (
@@ -206,8 +206,8 @@ export function FileUploadCard({
 
             {/* Upload Progress */}
             {isUploading && (
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm">
+              <div className="space-y-component-xs">
+                <div className="flex justify-between text-xs sm:text-sm">
                   <span>Uploading...</span>
                   <span>{progress}%</span>
                 </div>
@@ -225,12 +225,12 @@ export function FileUploadCard({
               {isUploading ? (
                 <>
                   <Loader2 className="mr-2 size-4 animate-spin" />
-                  Uploading...
+                  <span className="text-sm sm:text-base">Uploading...</span>
                 </>
               ) : (
                 <>
                   <Upload className="mr-2 size-4" />
-                  Upload File
+                  <span className="text-sm sm:text-base">Upload File</span>
                 </>
               )}
             </Button>

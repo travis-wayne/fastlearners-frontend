@@ -75,13 +75,13 @@ export function UserNameForm({ user }: UserNameFormProps) {
         title="Your Name"
         description="Please enter a display name you are comfortable with."
       >
-        <div className="flex w-full items-center gap-2">
+        <div className="flex w-full items-center gap-component-sm sm:gap-component-md">
           <Label className="sr-only" htmlFor="name">
             Name
           </Label>
           <Input
             id="name"
-            className="flex-1"
+            className="h-control-sm flex-1 sm:h-control-md"
             size={32}
             {...register("name")}
             onChange={(e) => checkUpdate(e.target.value)}
@@ -90,10 +90,10 @@ export function UserNameForm({ user }: UserNameFormProps) {
             type="submit"
             variant={updated ? "default" : "secondary"}
             disabled={isPending || !updated}
-            className="w-[67px] shrink-0 px-0 sm:w-[130px]"
+            className="mobile-touch-target w-[67px] shrink-0 px-0 sm:w-[130px]"
           >
             {isPending ? (
-              <Icons.spinner className="size-4 animate-spin" />
+              <Icons.spinner className="size-4 animate-spin sm:size-5" />
             ) : (
               <p>
                 Save
@@ -104,11 +104,11 @@ export function UserNameForm({ user }: UserNameFormProps) {
         </div>
         <div className="flex flex-col justify-between p-1">
           {errors?.name && (
-            <p className="pb-0.5 text-[13px] text-red-600">
+            <p className="pb-0.5 text-xs text-destructive sm:text-sm">
               {errors.name.message}
             </p>
           )}
-          <p className="text-[13px] text-muted-foreground">Max 32 characters</p>
+          <p className="text-xs text-muted-foreground sm:text-sm">Max 32 characters</p>
         </div>
       </SectionColumns>
     </form>

@@ -162,7 +162,7 @@ export function LessonContent({
               <CardHeader className="responsive-padding pb-2 sm:pb-3">
                 <CardTitle className="text-lg font-bold transition-colors group-hover:text-primary sm:text-xl">{concept.title}</CardTitle>
               </CardHeader>
-              <CardContent className="space-y-4 responsive-padding pt-0 sm:space-y-6 sm:pt-0">
+              <CardContent className="responsive-padding space-y-4 pt-0 sm:space-y-6 sm:pt-0">
                 {/* Description - array of ConceptDescription objects */}
                 {concept.description &&
                   Array.isArray(concept.description) &&
@@ -213,7 +213,7 @@ export function LessonContent({
                     {concept.examples.map((example, index) => (
                       <div
                         key={example.id || index}
-                        className="space-y-2 rounded-lg border bg-muted/50 responsive-padding"
+                        className="responsive-padding space-y-2 rounded-lg border bg-muted/50"
                       >
                         {example.title && (
                           <h5 className="font-medium">{example.title}</h5>

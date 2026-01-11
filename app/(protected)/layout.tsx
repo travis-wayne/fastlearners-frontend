@@ -84,7 +84,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
               className="sticky top-0 flex h-14 border-b border-border/40 bg-background/80 px-component-sm backdrop-blur-md sm:px-component-md lg:h-[60px] xl:px-component-lg"
               style={{ zIndex: Z_INDEX.navbar }}
             >
-              <div className="flex w-full items-center responsive-gap">
+              <div className="responsive-gap flex w-full items-center">
                 <MobileSheetSidebar links={filteredLinks} />
 
                 <div className="w-full flex-1">
@@ -107,7 +107,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
             </div>
 
             <main className="flex-1 px-component-sm pb-control-lg pt-component-sm sm:px-component-md sm:pb-16 sm:pt-component-md xl:px-component-lg">
-              <div className="flex size-full flex-col responsive-gap">
+              <div className="responsive-gap flex size-full flex-col">
                 {children}
               </div>
             </main>

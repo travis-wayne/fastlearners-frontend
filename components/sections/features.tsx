@@ -15,12 +15,12 @@ export default function Features() {
         subtitle="From progress tracking to past questions, leaderboards to personalized learning — discover the powerful features that make Fastlearners the ultimate study companion."
       />
 
-      <div className="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-6 lg:grid-cols-3">
+      <div className="mt-10 grid grid-cols-1 gap-component-md sm:grid-cols-2 sm:gap-component-lg lg:grid-cols-3">
         {features.map((feature) => {
           const Icon = Icons[feature.icon || "nextjs"];
           return (
             <div
-              className="group relative overflow-hidden rounded-2xl border bg-background p-4 sm:p-5 md:p-6 lg:p-8"
+              className="group relative overflow-hidden rounded-lg border bg-background p-component-md sm:p-component-lg lg:p-component-xl"
               key={feature.title}
             >
               <div
@@ -28,11 +28,11 @@ export default function Features() {
                 className="absolute inset-0 aspect-video -translate-y-1/2 rounded-full border bg-gradient-to-b from-purple-500/80 to-white opacity-25 blur-2xl duration-300 group-hover:-translate-y-1/4 dark:from-white dark:to-white dark:opacity-5 dark:group-hover:opacity-10"
               />
               <div className="relative">
-                <div className="relative flex size-10 rounded-2xl border border-border shadow-sm *:relative *:m-auto *:size-5 sm:size-12 sm:*:size-6">
+                <div className="relative flex size-control-md rounded-2xl border border-border shadow-sm *:relative *:m-auto *:size-5 sm:size-control-lg sm:*:size-6">
                   <Icon />
                 </div>
 
-                <p className="mt-6 pb-6 text-sm text-muted-foreground sm:text-base md:text-lg">
+                <p className="mt-6 pb-6 text-sm text-muted-foreground sm:text-base">
                   {feature.description}
                 </p>
 

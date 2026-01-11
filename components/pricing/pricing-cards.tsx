@@ -37,21 +37,21 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
     return (
       <div
         className={cn(
-          "relative flex min-h-[400px] flex-col overflow-hidden rounded-3xl border shadow-sm sm:min-h-[450px]",
+          "relative flex flex-col overflow-hidden rounded-xl border shadow-sm",
           offer.title.toLocaleLowerCase() === "pro"
             ? "-m-0.5 border-2 border-purple-400"
             : "",
         )}
         key={offer.title}
       >
-        <div className="min-h-[150px] items-start space-y-4 bg-muted/50 p-4 sm:p-5 md:p-6">
-          <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground">
+        <div className="min-h-[150px] items-start space-y-4 bg-muted/50 p-component-md sm:p-component-lg lg:p-component-xl">
+          <p className="flex font-urban text-sm font-bold uppercase tracking-wider text-muted-foreground sm:text-base">
             {offer.title}
           </p>
 
           <div className="flex flex-row">
             <div className="flex items-end">
-              <div className="flex text-left text-2xl font-semibold leading-6 sm:text-3xl">
+              <div className="flex text-left text-2xl font-semibold leading-6 sm:text-3xl lg:text-4xl">
                 {isYearly && offer.prices.monthly > 0 ? (
                   <>
                     <span className="mr-2 text-muted-foreground/80 line-through">
@@ -77,8 +77,8 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           ) : null}
         </div>
 
-        <div className="flex h-full flex-col justify-between gap-16 p-4 sm:p-5 md:p-6">
-          <ul className="space-y-2 text-left text-sm font-medium leading-normal sm:space-y-3">
+        <div className="flex h-full flex-col justify-between gap-16 p-component-md sm:p-component-lg lg:p-component-xl">
+          <ul className="space-y-2 text-left text-sm font-medium leading-normal sm:space-y-3 sm:text-base">
             {offer.benefits.map((feature) => (
               <li className="flex items-start gap-x-3" key={feature}>
                 <Icons.check className="size-5 shrink-0 text-purple-500" />
@@ -166,7 +166,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           </ToggleGroup>
         </div>
 
-        <div className="grid grid-cols-1 gap-5 bg-inherit py-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-component-lg bg-inherit py-5 sm:grid-cols-2 lg:grid-cols-3">
           {pricingData.map((offer) => (
             <PricingCard offer={offer} key={offer.title} />
           ))}

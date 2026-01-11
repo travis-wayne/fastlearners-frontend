@@ -199,7 +199,7 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
                   <div
                     key={notification.id}
                     className={cn(
-                      "group relative cursor-pointer border-l-2 responsive-padding text-left text-sm transition-colors hover:bg-muted/50",
+                      "responsive-padding group relative cursor-pointer border-l-2 text-left text-sm transition-colors hover:bg-muted/50",
                       getNotificationColors(notification.type),
                       !notification.isRead && "font-medium",
                     )}

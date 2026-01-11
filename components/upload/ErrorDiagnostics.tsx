@@ -173,26 +173,26 @@ export function ErrorDiagnostics({
 
   return (
     <Card className={className}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <AlertCircle className="size-5 text-red-500" />
+      <CardHeader className="p-component-sm sm:p-component-md">
+        <CardTitle className="flex items-center gap-2 text-heading-md sm:text-heading-lg">
+          <AlertCircle className="size-4 text-red-500 sm:size-5" />
           Upload Error Diagnostics
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
           Analysis and suggestions for fixing the upload error
         </CardDescription>
       </CardHeader>
 
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-component-sm p-component-sm sm:space-y-component-md sm:p-component-md">
         {/* Error Analysis */}
-        <div className="space-y-3">
-          <h4 className="text-sm font-medium">Identified Issues:</h4>
+        <div className="space-y-component-xs sm:space-y-component-sm">
+          <h4 className="text-xs font-medium sm:text-sm">Identified Issues:</h4>
           {diagnostics.map((diagnostic, index) => (
             <Alert
               key={index}
               variant={diagnostic.type === "error" ? "destructive" : "default"}
             >
-              <div className="space-y-2">
+              <div className="space-y-component-xs">
                 <div className="flex items-center gap-2">
                   {diagnostic.type === "error" ? (
                     <AlertCircle className="size-4" />
@@ -201,10 +201,10 @@ export function ErrorDiagnostics({
                   ) : (
                     <FileText className="size-4" />
                   )}
-                  <span className="font-medium">{diagnostic.message}</span>
+                  <span className="text-xs font-medium sm:text-sm">{diagnostic.message}</span>
                 </div>
                 {diagnostic.solution && (
-                  <AlertDescription className="mt-2">
+                  <AlertDescription className="mt-2 text-xs sm:text-sm">
                     <strong>Solution:</strong> {diagnostic.solution}
                   </AlertDescription>
                 )}
@@ -215,13 +215,13 @@ export function ErrorDiagnostics({
 
         {/* Required Columns */}
         {requiredColumns.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="text-sm font-medium">
+          <div className="space-y-component-xs">
+            <h4 className="text-xs font-medium sm:text-sm">
               Required Columns for {fileType}:
             </h4>
             <div className="flex flex-wrap gap-1">
               {requiredColumns.map((column) => (
-                <Badge key={column} variant="outline" className="text-xs">
+                <Badge key={column} variant="outline" className="text-[10px] sm:text-xs">
                   {column}
                 </Badge>
               ))}
@@ -230,17 +230,17 @@ export function ErrorDiagnostics({
         )}
 
         {/* Raw Error */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Raw Error Message:</h4>
-          <div className="break-words rounded-lg bg-muted p-3 font-mono text-sm">
+        <div className="space-y-component-xs">
+          <h4 className="text-xs font-medium sm:text-sm">Raw Error Message:</h4>
+          <div className="break-words rounded-lg bg-muted p-2 font-mono text-[10px] sm:p-3 sm:text-xs">
             {error}
           </div>
         </div>
 
         {/* Common Solutions */}
-        <div className="space-y-2">
-          <h4 className="text-sm font-medium">Common Solutions:</h4>
-          <ul className="space-y-1 text-sm text-muted-foreground">
+        <div className="space-y-component-xs">
+          <h4 className="text-xs font-medium sm:text-sm">Common Solutions:</h4>
+          <ul className="space-y-1 text-xs text-muted-foreground sm:text-sm">
             <li>
               • Ensure all required columns are present and spelled correctly
             </li>

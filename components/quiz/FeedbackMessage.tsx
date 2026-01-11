@@ -35,13 +35,13 @@ export function FeedbackMessage({
   return (
     <div
       className={cn(
-        "flex items-start gap-3 rounded-lg border p-4",
+        "flex items-start gap-2 rounded-lg border p-3 sm:gap-3 sm:p-4",
         styles[type],
         className
       )}
     >
-      <Icon className="mt-0.5 size-5 shrink-0" />
-      <p className="flex-1 font-medium">{message}</p>
+      <Icon className="mt-0.5 size-4 shrink-0 sm:size-5" />
+      <p className="flex-1 text-sm font-medium sm:text-base">{message}</p>
     </div>
   );
 }

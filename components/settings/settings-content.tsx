@@ -161,9 +161,10 @@ export function SettingsPage() {
         <Button
           variant="outline"
           size="icon"
+          className="size-11"
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
-          {sidebarOpen ? <X className="size-4" /> : <Menu className="size-4" />}
+          {sidebarOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
         </Button>
       </div>
 
@@ -175,8 +176,8 @@ export function SettingsPage() {
         )}
         style={{ zIndex: Z_INDEX.drawerOverlay + 1 }}
       >
-        <div className="p-6">
-          <nav className="space-y-2">
+        <div className="px-component-md py-component-lg sm:px-component-lg">
+          <nav className="space-y-component-xs">
             {sidebarItems.map((item) => {
               const Icon = item.icon;
               return (
@@ -187,13 +188,13 @@ export function SettingsPage() {
                     setSidebarOpen(false);
                   }}
                   className={cn(
-                    "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors",
+                    "flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-sm font-medium transition-colors sm:text-base",
                     activeSection === item.id
                       ? "bg-secondary text-secondary-foreground"
                       : "text-muted-foreground hover:bg-secondary/50 hover:text-foreground",
                   )}
                 >
-                  <Icon className="size-4" />
+                  <Icon className="size-4 sm:size-5" />
                   {item.label}
                 </button>
               );
@@ -204,7 +205,7 @@ export function SettingsPage() {
 
       {/* Main content */}
       <div className="lg:ml-[var(--settings-sidebar-width)]">
-        <div className="p-6 lg:p-8">
+        <div className="px-component-md py-component-lg sm:px-component-lg sm:py-component-xl lg:px-component-xl">
           <div className="mx-auto max-w-4xl">{renderContent()}</div>
         </div>
       </div>
@@ -223,58 +224,59 @@ export function SettingsPage() {
 
 function ProfileSection() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="text-balance text-2xl font-semibold">
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">
           Personal information
         </h1>
       </div>
 
       <Card>
-        <CardContent className="p-6">
-          <div className="space-y-6">
-            <div className="flex items-center gap-4">
-              <Avatar className="size-20">
+        <CardContent className="responsive-padding">
+          <div className="space-y-component-md sm:space-y-component-lg">
+            <div className="flex items-center gap-component-sm sm:gap-component-md">
+              <Avatar className="size-16 sm:size-20">
                 <AvatarImage src="https://bundui-images.netlify.app/avatars/10.png" />
                 <AvatarFallback>AG</AvatarFallback>
               </Avatar>
-              <div className="flex gap-2">
-                <Button size="sm">
-                  <Upload />
+              <div className="flex gap-component-xs sm:gap-component-sm">
+                <Button size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+                  <Upload className="size-4" />
                   Upload image
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
                   Remove
                 </Button>
               </div>
             </div>
 
             {/* Personal info form */}
-            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="firstName">First name</Label>
-                <Input id="firstName" defaultValue="Angelina" />
+            <div className="grid grid-cols-1 gap-component-sm sm:gap-component-md md:grid-cols-2">
+              <div className="space-y-component-xs">
+                <Label htmlFor="firstName" className="text-sm sm:text-base">First name</Label>
+                <Input id="firstName" defaultValue="Angelina" className="h-control-sm sm:h-control-md" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="userName">User name</Label>
-                <Input id="userName" defaultValue="Gotelli" />
+              <div className="space-y-component-xs">
+                <Label htmlFor="userName" className="text-sm sm:text-base">User name</Label>
+                <Input id="userName" defaultValue="Gotelli" className="h-control-sm sm:h-control-md" />
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+            <div className="space-y-component-xs">
+              <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
               <Input
                 id="email"
                 type="email"
                 defaultValue="carolyn_h@hotmail.com"
+                className="h-control-sm sm:h-control-md"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone number</Label>
-              <div className="flex gap-2">
+            <div className="space-y-component-xs">
+              <Label htmlFor="phone" className="text-sm sm:text-base">Phone number</Label>
+              <div className="flex gap-component-xs sm:gap-component-sm">
                 <Select defaultValue="us">
-                  <SelectTrigger className="w-20">
+                  <SelectTrigger className="h-control-sm w-20 sm:h-control-md sm:w-24">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -282,7 +284,7 @@ function ProfileSection() {
                     <SelectItem value="uk">🇬🇧 +44</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input className="flex-1" defaultValue="121231234" />
+                <Input className="h-control-sm flex-1 sm:h-control-md" defaultValue="121231234" />
               </div>
             </div>
           </div>
@@ -290,14 +292,14 @@ function ProfileSection() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Address information</CardTitle>
+        <CardHeader className="responsive-padding">
+          <CardTitle className="text-heading-md sm:text-heading-lg">Address information</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="country">Country</Label>
+        <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
+          <div className="space-y-component-xs">
+            <Label htmlFor="country" className="text-sm sm:text-base">Country</Label>
             <Select defaultValue="us">
-              <SelectTrigger>
+              <SelectTrigger className="h-control-sm sm:h-control-md">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -307,24 +309,24 @@ function ProfileSection() {
             </Select>
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input id="address" defaultValue="123 Main St" />
+          <div className="space-y-component-xs">
+            <Label htmlFor="address" className="text-sm sm:text-base">Address</Label>
+            <Input id="address" defaultValue="123 Main St" className="h-control-sm sm:h-control-md" />
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="city">City</Label>
-              <Input id="city" defaultValue="New York" />
+          <div className="grid grid-cols-1 gap-component-sm sm:gap-component-md md:grid-cols-2">
+            <div className="space-y-component-xs">
+              <Label htmlFor="city" className="text-sm sm:text-base">City</Label>
+              <Input id="city" defaultValue="New York" className="h-control-sm sm:h-control-md" />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="postalCode">Postal Code</Label>
-              <Input id="postalCode" defaultValue="10001" />
+            <div className="space-y-component-xs">
+              <Label htmlFor="postalCode" className="text-sm sm:text-base">Postal Code</Label>
+              <Input id="postalCode" defaultValue="10001" className="h-control-sm sm:h-control-md" />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <Button>Save</Button>
+            <Button className="mobile-touch-target h-control-md sm:h-control-lg">Save</Button>
           </div>
         </CardContent>
       </Card>
@@ -334,63 +336,65 @@ function ProfileSection() {
 
 function SecuritySection() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="text-balance text-2xl font-semibold">Password</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Password</h1>
+        <p className="responsive-text mt-component-xs text-muted-foreground">
           Remember, your password is your digital key to your account. Keep it
           safe, keep it secure!
         </p>
       </div>
 
       <Card>
-        <CardContent className="space-y-4 p-6">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current password</Label>
+        <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
+          <div className="space-y-component-xs">
+            <Label htmlFor="currentPassword" className="text-sm sm:text-base">Current password</Label>
             <Input
               id="currentPassword"
               type="password"
               defaultValue="••••••••"
+              className="h-control-sm sm:h-control-md"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="newPassword">New password</Label>
-            <Input id="newPassword" type="password" defaultValue="••••••••" />
+          <div className="space-y-component-xs">
+            <Label htmlFor="newPassword" className="text-sm sm:text-base">New password</Label>
+            <Input id="newPassword" type="password" defaultValue="••••••••" className="h-control-sm sm:h-control-md" />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm new password</Label>
+          <div className="space-y-component-xs">
+            <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirm new password</Label>
             <Input
               id="confirmPassword"
               type="password"
               defaultValue="••••••••"
+              className="h-control-sm sm:h-control-md"
             />
           </div>
 
           <div className="flex justify-end">
-            <Button>Update</Button>
+            <Button className="mobile-touch-target h-control-md sm:h-control-lg">Update</Button>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>2-Step verification</CardTitle>
-          <CardDescription>
+        <CardHeader className="responsive-padding">
+          <CardTitle className="text-heading-md sm:text-heading-lg">2-Step verification</CardTitle>
+          <CardDescription className="responsive-text">
             Your account holds great value to hackers. Enable two-step
             verification to safeguard your account!
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-full bg-red-100">
+        <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
+          <div className="flex items-center justify-between rounded-lg border p-component-sm sm:p-component-md">
+            <div className="flex items-center gap-component-xs sm:gap-component-sm">
+              <div className="flex size-8 items-center justify-center rounded-full bg-red-100 sm:size-10">
                 <span className="text-sm font-semibold text-red-600">G</span>
               </div>
               <div>
-                <h4 className="font-medium">Google Authenticator</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="text-sm font-medium sm:text-base">Google Authenticator</h4>
+                <p className="responsive-text text-muted-foreground">
                   Using Google Authenticator app generates time-sensitive codes
                   for secure logins.
                 </p>
@@ -401,37 +405,37 @@ function SecuritySection() {
             </Badge>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-full bg-blue-100">
+          <div className="flex items-center justify-between rounded-lg border p-component-sm sm:p-component-md">
+            <div className="flex items-center gap-component-xs sm:gap-component-sm">
+              <div className="flex size-8 items-center justify-center rounded-full bg-blue-100 sm:size-10">
                 <span className="text-sm font-semibold text-blue-600">O</span>
               </div>
               <div>
-                <h4 className="font-medium">Okta Verify</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="text-sm font-medium sm:text-base">Okta Verify</h4>
+                <p className="responsive-text text-muted-foreground">
                   Receive push notifications from Okta Verify app on your phone
                   for quick login approval.
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
               Enable
             </Button>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-full bg-orange-100">
+          <div className="flex items-center justify-between rounded-lg border p-component-sm sm:p-component-md">
+            <div className="flex items-center gap-component-xs sm:gap-component-sm">
+              <div className="flex size-8 items-center justify-center rounded-full bg-orange-100 sm:size-10">
                 <span className="text-sm font-semibold text-orange-600">@</span>
               </div>
               <div>
-                <h4 className="font-medium">E Mail verification</h4>
-                <p className="text-sm text-muted-foreground">
+                <h4 className="text-sm font-medium sm:text-base">E Mail verification</h4>
+                <p className="responsive-text text-muted-foreground">
                   Unique codes sent to email for confirming logins.
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
               Enable
             </Button>
           </div>
@@ -443,17 +447,17 @@ function SecuritySection() {
 
 function NotificationsSection() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="text-balance text-2xl font-semibold">Notification</h1>
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Notification</h1>
       </div>
 
       <Card>
-        <CardContent className="space-y-6 p-6">
+        <CardContent className="responsive-padding space-y-component-md sm:space-y-component-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">Enable desktop notification</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-sm font-medium sm:text-base">Enable desktop notification</h3>
+              <p className="responsive-text text-muted-foreground">
                 Decide whether you want to be notified of new message & updates
               </p>
             </div>
@@ -464,8 +468,8 @@ function NotificationsSection() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">Enable unread notification badge</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-sm font-medium sm:text-base">Enable unread notification badge</h3>
+              <p className="responsive-text text-muted-foreground">
                 Display a red indicator on of the notification icon when you
                 have unread message
               </p>
@@ -475,17 +479,17 @@ function NotificationsSection() {
 
           <Separator />
 
-          <div className="space-y-4">
-            <h3 className="font-medium">Enable unread notification badge</h3>
+          <div className="space-y-component-sm sm:space-y-component-md">
+            <h3 className="text-sm font-medium sm:text-base">Enable unread notification badge</h3>
 
-            <RadioGroup defaultValue="mentions" className="space-y-4">
+            <RadioGroup defaultValue="mentions" className="space-y-component-sm sm:space-y-component-md">
               <div className="flex items-start space-x-3">
                 <RadioGroupItem value="all" id="all" className="mt-1" />
                 <div>
-                  <Label htmlFor="all" className="font-medium">
+                  <Label htmlFor="all" className="text-sm font-medium sm:text-base">
                     All new messages
                   </Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="responsive-text text-muted-foreground">
                     Broadcast notifications to the channel for each new message
                   </p>
                 </div>
@@ -498,10 +502,10 @@ function NotificationsSection() {
                   className="mt-1"
                 />
                 <div>
-                  <Label htmlFor="mentions" className="font-medium">
+                  <Label htmlFor="mentions" className="text-sm font-medium sm:text-base">
                     Mentions only
                   </Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="responsive-text text-muted-foreground">
                     Only alert me in the channel if someone mentions me in a
                     message
                   </p>
@@ -511,10 +515,10 @@ function NotificationsSection() {
               <div className="flex items-start space-x-3">
                 <RadioGroupItem value="nothing" id="nothing" className="mt-1" />
                 <div>
-                  <Label htmlFor="nothing" className="font-medium">
+                  <Label htmlFor="nothing" className="text-sm font-medium sm:text-base">
                     Nothing
                   </Label>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="responsive-text text-muted-foreground">
                     Don&apos;t notify me anything
                   </p>
                 </div>
@@ -526,8 +530,8 @@ function NotificationsSection() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-medium">Email notification</h3>
-              <p className="text-sm text-muted-foreground">
+              <h3 className="text-sm font-medium sm:text-base">Email notification</h3>
+              <p className="responsive-text text-muted-foreground">
                 Substance can send you email notification for any new direct
                 message
               </p>
@@ -535,14 +539,14 @@ function NotificationsSection() {
             <Switch defaultChecked />
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-component-sm sm:space-y-component-md">
             <div className="flex items-center space-x-3">
               <Checkbox id="news" defaultChecked />
               <div>
-                <Label htmlFor="news" className="font-medium">
+                <Label htmlFor="news" className="text-sm font-medium sm:text-base">
                   News & updates
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="responsive-text text-muted-foreground">
                   New about product and features update
                 </p>
               </div>
@@ -551,10 +555,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="tips" defaultChecked />
               <div>
-                <Label htmlFor="tips" className="font-medium">
+                <Label htmlFor="tips" className="text-sm font-medium sm:text-base">
                   Tips & tutorials
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="responsive-text text-muted-foreground">
                   Tips & trick in order to increase your performance efficiency
                 </p>
               </div>
@@ -563,10 +567,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="offers" />
               <div>
-                <Label htmlFor="offers" className="font-medium">
+                <Label htmlFor="offers" className="text-sm font-medium sm:text-base">
                   Offer & promotions
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="responsive-text text-muted-foreground">
                   Promotion about product price & latest discount
                 </p>
               </div>
@@ -575,10 +579,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="reminders" />
               <div>
-                <Label htmlFor="reminders" className="font-medium">
+                <Label htmlFor="reminders" className="text-sm font-medium sm:text-base">
                   Follow up reminder
                 </Label>
-                <p className="text-sm text-muted-foreground">
+                <p className="responsive-text text-muted-foreground">
                   Receive notification all the reminder that have been made
                 </p>
               </div>
@@ -592,21 +596,21 @@ function NotificationsSection() {
 
 function BillingSection() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="text-balance text-2xl font-semibold">Billing</h1>
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Billing</h1>
       </div>
 
       <Card>
-        <CardContent className="p-6">
+        <CardContent className="responsive-padding">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="flex size-10 items-center justify-center rounded-full bg-green-100">
+            <div className="flex items-center gap-component-xs sm:gap-component-sm">
+              <div className="flex size-10 items-center justify-center rounded-full bg-green-100 sm:size-12">
                 <span className="font-semibold text-green-600">⚡</span>
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="font-semibold">Business board basic</h3>
+                  <h3 className="text-sm font-semibold sm:text-base">Business board basic</h3>
                   <Badge
                     variant="secondary"
                     className="bg-green-100 text-green-700"
@@ -614,62 +618,62 @@ function BillingSection() {
                     Active
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="responsive-text text-muted-foreground">
                   Billing monthly | Next payment on 02/09/2025 for{" "}
                   <span className="font-medium">$59.90</span>
                 </p>
               </div>
             </div>
-            <Button>Change plan</Button>
+            <Button className="mobile-touch-target h-control-md sm:h-control-lg">Change plan</Button>
           </div>
         </CardContent>
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Payment method</CardTitle>
+        <CardHeader className="responsive-padding">
+          <CardTitle className="text-heading-md sm:text-heading-lg">Payment method</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100">
+        <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
+          <div className="flex items-center justify-between rounded-lg border p-component-sm sm:p-component-md">
+            <div className="flex items-center gap-component-xs sm:gap-component-sm">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-blue-100 sm:size-10">
                 <span className="text-xs font-bold text-blue-600">VISA</span>
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="font-medium">Carolyn Perkins •••• 0392</span>
+                  <span className="text-sm font-medium sm:text-base">Carolyn Perkins •••• 0392</span>
                   <Badge variant="outline" className="text-xs">
                     Primary
                   </Badge>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="responsive-text text-muted-foreground">
                   Expired Dec 2025
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
               Edit
             </Button>
           </div>
 
-          <div className="flex items-center justify-between rounded-lg border p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-lg bg-orange-100">
+          <div className="flex items-center justify-between rounded-lg border p-component-sm sm:p-component-md">
+            <div className="flex items-center gap-component-xs sm:gap-component-sm">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-orange-100 sm:size-10">
                 <span className="text-xs font-bold text-orange-600">MC</span>
               </div>
               <div>
-                <span className="font-medium">Carolyn Perkins •••• 8461</span>
-                <p className="text-sm text-muted-foreground">
+                <span className="text-sm font-medium sm:text-base">Carolyn Perkins •••• 8461</span>
+                <p className="responsive-text text-muted-foreground">
                   Expired Jun 2025
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm">
+            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
               Edit
             </Button>
           </div>
 
-          <Button variant="outline" className="w-full bg-transparent">
+          <Button variant="outline" className="mobile-touch-target h-control-md w-full bg-transparent sm:h-control-lg">
             <Plus className="mr-2 size-4" />
             Add payment method
           </Button>
@@ -677,12 +681,12 @@ function BillingSection() {
       </Card>
 
       <Card>
-        <CardHeader>
-          <CardTitle>Transaction history</CardTitle>
+        <CardHeader className="responsive-padding">
+          <CardTitle className="text-heading-md sm:text-heading-lg">Transaction history</CardTitle>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-4">
-            <div className="grid grid-cols-5 gap-4 border-b pb-2 text-sm font-medium text-muted-foreground">
+        <CardContent className="responsive-padding">
+          <div className="space-y-component-sm sm:space-y-component-md">
+            <div className="responsive-text grid grid-cols-5 gap-component-sm border-b pb-2 font-medium text-muted-foreground sm:gap-component-md">
               <div>REFERENCE</div>
               <div>PRODUCT</div>
               <div>STATUS</div>
@@ -693,7 +697,7 @@ function BillingSection() {
             {transactions.map((transaction) => (
               <div
                 key={transaction.id}
-                className="grid grid-cols-5 gap-4 py-2 text-sm"
+                className="responsive-text grid grid-cols-5 gap-component-sm py-2 sm:gap-component-md"
               >
                 <div className="font-medium">{transaction.id}</div>
                 <div>{transaction.product}</div>
@@ -726,33 +730,33 @@ function BillingSection() {
 
 function IntegrationsSection() {
   return (
-    <div className="space-y-6">
+    <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="text-balance text-2xl font-semibold">Integration</h1>
-        <p className="mt-1 text-muted-foreground">
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Integration</h1>
+        <p className="responsive-text mt-component-xs text-muted-foreground">
           Supercharge your workflow using these integration
         </p>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-component-sm sm:space-y-component-md">
         {integrations.map((integration) => (
           <Card key={integration.name}>
-            <CardContent className="p-6">
+            <CardContent className="responsive-padding">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="text-2xl">{integration.icon}</div>
+                <div className="flex items-center gap-component-xs sm:gap-component-sm">
+                  <div className="text-xl sm:text-2xl">{integration.icon}</div>
                   <div>
-                    <h3 className="font-semibold">{integration.name}</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="text-sm font-semibold sm:text-base">{integration.name}</h3>
+                    <p className="responsive-text text-muted-foreground">
                       {integration.description}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-component-xs sm:gap-component-sm">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-muted-foreground"
+                    className="mobile-touch-target h-control-sm text-muted-foreground sm:h-control-md"
                   >
                     Learn more
                   </Button>

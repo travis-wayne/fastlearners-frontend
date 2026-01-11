@@ -39,7 +39,7 @@ const InfiniteLogoSlider = () => {
               alt={`Logo ${index + 1}`}
               width={100}
               height={40}
-              className="h-7 w-auto object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert sm:h-9 md:h-11"
+              className="h-8 w-auto object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert sm:h-10 lg:h-12"
             />
           </div>
         ))}
@@ -52,13 +52,13 @@ export default function HeroLanding() {
   return (
     <SectionWrapper
       as="section"
-      className="space-y-12 pt-12 sm:pt-16 md:pt-20 lg:pt-24"
+      className="space-y-8 pt-12 sm:space-y-10 sm:pt-16 md:pt-20 lg:space-y-12 lg:pt-24"
     >
       <div className="grid grid-cols-1 gap-10 lg:grid-cols-2 lg:gap-12 xl:gap-16">
         {/* Left content */}
         <div className="relative z-10 flex flex-col justify-center space-y-8">
           <div className="space-y-6">
-            <h1 className="text-balance font-urban text-4xl font-extrabold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl xl:text-[72px]">
+            <h1 className="text-balance font-heading text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
               Built for{" "}
               <span className="text-gradient_indigo-purple font-extrabold">
                 Learners{" "}
@@ -67,7 +67,7 @@ export default function HeroLanding() {
             </h1>
 
             <p
-              className="max-w-2xl text-balance text-base leading-normal text-muted-foreground sm:text-lg sm:leading-8 md:text-xl"
+              className="max-w-2xl text-balance text-sm leading-relaxed text-muted-foreground sm:text-base lg:text-lg"
               style={{
                 animationDelay: "0.35s",
                 animationFillMode: "forwards",
@@ -92,8 +92,8 @@ export default function HeroLanding() {
                 href="/auth/register"
                 prefetch={true}
                 className={cn(
-                  buttonVariants({ size: "default" }),
-                  "w-full gap-2 rounded-full sm:w-auto sm:px-8 sm:py-6 sm:text-lg",
+                  buttonVariants({ size: "lg" }),
+                  "mobile-touch-target w-full gap-2 rounded-full sm:w-auto",
                 )}
               >
                 <span>Create free account</span>
@@ -113,9 +113,9 @@ export default function HeroLanding() {
                 className={cn(
                   buttonVariants({
                     variant: "outline",
-                    size: "default",
+                    size: "lg",
                   }),
-                  "w-full gap-2 rounded-full sm:w-auto sm:px-8 sm:py-6 sm:text-lg",
+                  "mobile-touch-target w-full gap-2 rounded-full sm:w-auto",
                 )}
               >
                 <span>Learn More</span>
@@ -126,8 +126,8 @@ export default function HeroLanding() {
         </div>
 
         {/* Right image */}
-        <div className="relative min-h-[300px] sm:min-h-[400px] md:min-h-[500px] lg:min-h-[600px]">
-          <div className="absolute inset-0 -z-10 overflow-hidden rounded-2xl border bg-muted/20 shadow-2xl">
+        <div className="relative aspect-square lg:aspect-[4/3]">
+          <div className="absolute inset-0 -z-10 overflow-hidden rounded-xl border bg-muted/20 shadow-2xl">
             <BlurImage
               src="/OBJECTS.jpg"
               alt="Abstract background"

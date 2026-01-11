@@ -47,28 +47,28 @@ export default function UploadPage() {
         text="Choose your preferred method to upload lesson content and materials"
       />
 
-      <div className="space-y-8">
+      <div className="space-y-component-md sm:space-y-component-lg">
         {/* Upload Options */}
-        <div className="grid gap-6 md:grid-cols-2">
+        <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
           {/* Individual Upload */}
           <Card className="relative">
-            <CardHeader>
+            <CardHeader className="p-component-sm sm:p-component-md">
               <div className="flex items-center gap-2">
-                <FileText className="size-6 text-primary" />
-                <CardTitle>Individual File Upload</CardTitle>
+                <FileText className="size-5 text-primary sm:size-6" />
+                <CardTitle className="text-base sm:text-lg">Individual File Upload</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 Upload lesson components one at a time with detailed control and
                 validation.
               </CardDescription>
-              <Badge className="absolute right-4 top-4" variant="secondary">
+              <Badge className="absolute right-3 top-3 text-[10px] sm:right-4 sm:top-4 sm:text-xs" variant="secondary">
                 Recommended
               </Badge>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Benefits:</h4>
-                <ul className="space-y-1 text-sm text-muted-foreground">
+            <CardContent className="space-y-component-xs p-component-sm sm:space-y-component-sm sm:p-component-md">
+              <div className="space-y-component-xs">
+                <h4 className="text-xs font-medium sm:text-sm">Benefits:</h4>
+                <ul className="space-y-1 text-xs text-muted-foreground sm:text-sm">
                   <li>• Step-by-step upload process</li>
                   <li>• Individual file validation</li>
                   <li>• Detailed error reporting</li>
@@ -76,8 +76,8 @@ export default function UploadPage() {
                 </ul>
               </div>
 
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">File Types:</h4>
+              <div className="space-y-component-xs">
+                <h4 className="text-xs font-medium sm:text-sm">File Types:</h4>
                 <div className="flex flex-wrap gap-1">
                   {[
                     "Lessons",
@@ -88,7 +88,7 @@ export default function UploadPage() {
                     "Check Markers",
                     "Scheme of Work",
                   ].map((type) => (
-                    <Badge key={type} variant="outline" className="text-xs">
+                    <Badge key={type} variant="outline" className="text-[10px] sm:text-xs">
                       {type}
                     </Badge>
                   ))}
@@ -98,7 +98,7 @@ export default function UploadPage() {
               <Link href="/dashboard/teacher/lessons/upload/individual">
                 <Button className="w-full" size="lg">
                   <FileText className="mr-2 size-4" />
-                  Start Individual Upload
+                  <span className="text-sm sm:text-base">Start Individual Upload</span>
                 </Button>
               </Link>
             </CardContent>
@@ -106,20 +106,20 @@ export default function UploadPage() {
 
           {/* Bulk Upload */}
           <Card>
-            <CardHeader>
+            <CardHeader className="p-component-sm sm:p-component-md">
               <div className="flex items-center gap-2">
-                <FileStack className="size-6 text-primary" />
-                <CardTitle>Bulk File Upload</CardTitle>
+                <FileStack className="size-5 text-primary sm:size-6" />
+                <CardTitle className="text-base sm:text-lg">Bulk File Upload</CardTitle>
               </div>
-              <CardDescription>
+              <CardDescription className="text-xs sm:text-sm">
                 Upload all lesson components at once for efficient batch
                 processing.
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Benefits:</h4>
-                <ul className="space-y-1 text-sm text-muted-foreground">
+            <CardContent className="space-y-component-xs p-component-sm sm:space-y-component-sm sm:p-component-md">
+              <div className="space-y-component-xs">
+                <h4 className="text-xs font-medium sm:text-sm">Benefits:</h4>
+                <ul className="space-y-1 text-xs text-muted-foreground sm:text-sm">
                   <li>• Upload all files simultaneously</li>
                   <li>• Faster for complete lesson sets</li>
                   <li>• Maintains data consistency</li>
@@ -127,9 +127,9 @@ export default function UploadPage() {
                 </ul>
               </div>
 
-              <div className="space-y-2">
-                <h4 className="text-sm font-medium">Requirements:</h4>
-                <ul className="space-y-1 text-sm text-muted-foreground">
+              <div className="space-y-component-xs">
+                <h4 className="text-xs font-medium sm:text-sm">Requirements:</h4>
+                <ul className="space-y-1 text-xs text-muted-foreground sm:text-sm">
                   <li>• All 6 files must be ready</li>
                   <li>• Data must be consistent across files</li>
                   <li>• Cannot upload partial sets</li>
@@ -139,7 +139,7 @@ export default function UploadPage() {
               <Link href="/dashboard/teacher/lessons/upload/bulk">
                 <Button className="w-full" size="lg" variant="outline">
                   <FileStack className="mr-2 size-4" />
-                  Start Bulk Upload
+                  <span className="text-sm sm:text-base">Start Bulk Upload</span>
                 </Button>
               </Link>
             </CardContent>
@@ -148,26 +148,27 @@ export default function UploadPage() {
 
         {/* CSV Templates */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Download className="size-5" />
+          <CardHeader className="p-component-sm sm:p-component-md">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Download className="size-4 sm:size-5" />
               CSV Templates
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Download template files to understand the required format for each
               lesson component
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+          <CardContent className="p-component-sm sm:p-component-md">
+            <div className="grid gap-2 sm:gap-3 md:grid-cols-2 lg:grid-cols-3">
               {templateFiles.map((template) => (
                 <Button
                   key={template.name}
                   variant="outline"
-                  className="justify-start"
+                  className="justify-start text-xs sm:text-sm"
+                  size="sm"
                   onClick={() => downloadTemplate(template.name)}
                 >
-                  <Download className="mr-2 size-4" />
+                  <Download className="mr-2 size-3 sm:size-4" />
                   {template.label}
                 </Button>
               ))}
@@ -177,20 +178,20 @@ export default function UploadPage() {
 
         {/* Upload Guidelines */}
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Info className="size-5" />
+          <CardHeader className="p-component-sm sm:p-component-md">
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+              <Info className="size-4 sm:size-5" />
               Upload Guidelines
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Important information to ensure successful uploads
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
+          <CardContent className="p-component-sm sm:p-component-md">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
               <div>
-                <h4 className="mb-3 font-medium">File Format Requirements:</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <h4 className="mb-2 text-xs font-medium sm:mb-3 sm:text-sm">File Format Requirements:</h4>
+                <ul className="space-y-1.5 text-xs text-muted-foreground sm:space-y-2 sm:text-sm">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
                     <span>Use CSV or TXT format only</span>
@@ -215,8 +216,8 @@ export default function UploadPage() {
               </div>
 
               <div>
-                <h4 className="mb-3 font-medium">Data Consistency:</h4>
-                <ul className="space-y-2 text-sm text-muted-foreground">
+                <h4 className="mb-2 text-xs font-medium sm:mb-3 sm:text-sm">Data Consistency:</h4>
+                <ul className="space-y-1.5 text-xs text-muted-foreground sm:space-y-2 sm:text-sm">
                   <li className="flex items-start gap-2">
                     <span className="text-primary">•</span>
                     <span>Lesson topics must match between files</span>
@@ -241,9 +242,9 @@ export default function UploadPage() {
               </div>
             </div>
 
-            <div className="mt-6 rounded-lg bg-muted/50 p-4">
-              <h4 className="mb-2 text-sm font-medium">💡 Pro Tip:</h4>
-              <p className="text-sm text-muted-foreground">
+            <div className="mt-4 rounded-lg bg-muted/50 p-3 sm:mt-6 sm:p-4">
+              <h4 className="mb-1.5 text-xs font-medium sm:mb-2 sm:text-sm">💡 Pro Tip:</h4>
+              <p className="text-xs text-muted-foreground sm:text-sm">
                 Start with the individual upload method if you&apos;re new to
                 the system. It provides better feedback and allows you to
                 understand the data structure before attempting bulk uploads.

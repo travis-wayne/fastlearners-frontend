@@ -5,9 +5,9 @@ import { SectionWrapper } from "@/components/shared/section-wrapper";
 export default function BentoGrid() {
   return (
     <SectionWrapper as="section" className="py-12 sm:py-16 md:py-20 lg:py-24">
-      <div className="relative z-10 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-6 md:gap-6 lg:gap-8">
+      <div className="relative z-10 grid grid-cols-1 gap-component-md sm:grid-cols-2 sm:gap-component-lg md:grid-cols-6">
         {/* First card */}
-        <div className="relative col-span-full flex min-h-[200px] overflow-hidden rounded-2xl border bg-background p-4 sm:col-span-2 sm:min-h-[240px] sm:p-5 md:col-span-3 md:p-6 lg:col-span-2 lg:p-8">
+        <div className="relative col-span-full flex min-h-[200px] overflow-hidden rounded-lg border bg-background p-component-lg sm:col-span-2 sm:min-h-[240px] sm:p-component-xl md:col-span-3 lg:col-span-2">
           <div className="relative m-auto size-fit">
             <div className="relative flex h-24 w-56 items-center">
               <svg
@@ -25,7 +25,7 @@ export default function BentoGrid() {
                 100%
               </span>
             </div>
-            <h2 className="mt-4 text-center font-heading text-2xl sm:mt-6 sm:text-3xl md:text-4xl lg:text-[40px]">
+            <h2 className="mt-4 text-center font-heading text-xl sm:mt-6 sm:text-2xl lg:text-3xl">
               Curriculum Coverage
             </h2>
           </div>
@@ -91,7 +91,7 @@ export default function BentoGrid() {
               <h2 className="text-lg font-semibold text-foreground sm:text-xl">
                 Secure & Private
               </h2>
-              <p className="text-pretty text-sm text-muted-foreground sm:text-[15px]">
+              <p className="text-pretty text-sm text-muted-foreground sm:text-base">
                 Your data is protected with end-to-end encryption, secure authentication, and role-based access control. We take student privacy seriously.
               </p>
             </div>
@@ -187,7 +187,7 @@ export default function BentoGrid() {
               <h2 className="text-lg font-semibold text-foreground sm:text-xl">
                 Performance Analytics
               </h2>
-              <p className="text-pretty text-sm text-muted-foreground sm:text-[15px]">
+              <p className="text-pretty text-sm text-muted-foreground sm:text-base">
                 Detailed insights into your learning journey with visual progress charts, mastery heatmaps, and performance breakdowns by topic and subject.
               </p>
             </div>
@@ -218,7 +218,7 @@ export default function BentoGrid() {
                 <h2 className="text-lg font-semibold text-foreground sm:text-xl">
                   Real-Time Progress
                 </h2>
-                <p className="text-pretty text-sm text-muted-foreground sm:text-[15px]">
+                <p className="text-pretty text-sm text-muted-foreground sm:text-base">
                   Track your learning in real-time with live updates on completed lessons, quiz scores, and topic mastery across all subjects.
                 </p>
               </div>
@@ -302,7 +302,7 @@ export default function BentoGrid() {
                 <h2 className="text-lg font-semibold text-foreground sm:text-xl">
                   Collaborative Learning
                 </h2>
-                <p className="text-pretty text-sm text-muted-foreground sm:text-[15px]">
+                <p className="text-pretty text-sm text-muted-foreground sm:text-base">
                   Connect with classmates, compete on leaderboards, and learn together in a supportive community of Nigerian students.
                 </p>
               </div>

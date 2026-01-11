@@ -106,15 +106,15 @@ export function QuestionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-h-[90vh] max-w-3xl overflow-y-auto">
+      <DialogContent className="max-h-[90vh] max-w-full overflow-y-auto p-component-sm sm:max-w-2xl sm:p-component-md lg:max-w-3xl lg:p-component-lg">
         <DialogHeader>
-          <div className="flex items-center justify-between gap-4">
-            <DialogTitle className="text-xl">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <DialogTitle className="text-lg sm:text-xl">
               Question {questionNumber} of {totalQuestions}
             </DialogTitle>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col items-end gap-2 sm:flex-row sm:items-center sm:gap-3">
               {contestants?.length ? (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <div className="flex -space-x-2">
                     {contestants.slice(0, 5).map((contestant) => (
                       <Avatar
@@ -132,14 +132,14 @@ export function QuestionModal({
                     ))}
                   </div>
                   {contestants.length > 5 && (
-                    <span className="text-xs text-muted-foreground">
+                    <span className="text-xs text-muted-foreground sm:text-sm">
                       +{contestants.length - 5} more
                     </span>
                   )}
                 </div>
               ) : null}
               {showTimerBlock && (
-                <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 font-mono text-sm">
+                <div className="flex items-center gap-2 rounded-full bg-muted px-3 py-1 font-mono text-xs sm:text-sm">
                   <Clock className="size-4 text-muted-foreground" />
                   <span>{formatTime(timeLeft)}</span>
                 </div>
@@ -156,10 +156,10 @@ export function QuestionModal({
           </div>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-component-sm sm:space-y-component-md">
           {/* Progress Bar */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
+          <div className="space-y-component-xs sm:space-y-component-sm">
+            <div className="responsive-text flex items-center justify-between">
               <span className="text-muted-foreground">Progress</span>
               <span className="font-medium">
                 {questionNumber}/{totalQuestions}
@@ -203,7 +203,7 @@ export function QuestionModal({
                       <div
                         key={optionId}
                         className={cn(
-                          "flex items-center space-x-3 rounded-lg border p-4 transition-colors",
+                          "flex min-h-[44px] items-center space-x-3 rounded-lg border p-3 transition-colors sm:p-4",
                           showFeedback &&
                           isCorrectOption &&
                           "border-green-500 bg-green-50",
@@ -224,7 +224,7 @@ export function QuestionModal({
                         />
                         <Label
                           htmlFor={optionId}
-                          className="flex-1 cursor-pointer text-base"
+                          className="flex-1 cursor-pointer text-sm sm:text-base"
                         >
                           {option}
                         </Label>
@@ -264,7 +264,7 @@ export function QuestionModal({
                       <div
                         key={option}
                         className={cn(
-                          "flex items-center space-x-3 rounded-lg border p-4 transition-colors",
+                          "flex min-h-[44px] items-center space-x-3 rounded-lg border p-3 transition-colors sm:p-4",
                           showFeedback &&
                           isCorrectOption &&
                           "border-green-500 bg-green-50",
@@ -281,7 +281,7 @@ export function QuestionModal({
                         <RadioGroupItem value={option} id={optionId} />
                         <Label
                           htmlFor={optionId}
-                          className="flex-1 cursor-pointer text-base"
+                          className="flex-1 cursor-pointer text-sm sm:text-base"
                         >
                           {option}
                         </Label>
@@ -362,21 +362,23 @@ export function QuestionModal({
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between border-t pt-4">
+          <div className="flex flex-col gap-2 border-t pt-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3 lg:gap-4">
             <Button
               variant="outline"
               onClick={onPrevious}
               disabled={isFirstQuestion}
+              className="w-full sm:w-auto"
             >
               <ArrowLeft className="mr-2 size-4" />
               Previous
             </Button>
 
             <div className="flex gap-2">
-              {showExplanation && question.explanation && (
+              {question.explanation && (
                 <Button
                   variant="outline"
                   onClick={() => setShowExplanation(!showExplanation)}
+                  className="w-full sm:w-auto"
                 >
                   {showExplanation ? "Hide" : "Show"} Explanation
                 </Button>
@@ -384,11 +386,11 @@ export function QuestionModal({
             </div>
 
             {isLastQuestion ? (
-              <Button onClick={onNext} disabled={!selectedAnswer}>
+              <Button onClick={onNext} disabled={!selectedAnswer} className="w-full sm:w-auto">
                 Submit Quiz
               </Button>
             ) : (
-              <Button onClick={onNext} disabled={!selectedAnswer}>
+              <Button onClick={onNext} disabled={!selectedAnswer} className="w-full sm:w-auto">
                 Next
                 <ArrowRight className="ml-2 size-4" />
               </Button>

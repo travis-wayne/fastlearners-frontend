@@ -6,14 +6,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { format, parse } from "date-fns";
 import {
   AlertCircle,
-  CheckCircle,
+  CheckCircle2,
   Mail,
   Phone,
-  RefreshCw,
-  Save,
-  Shield,
+  School,
   User,
-  UserCheck,
+  MapPin,
+  Calendar,
+  Save,
+  Loader2,
+  GraduationCap
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,8 +31,6 @@ import {
   validateProfileData,
 } from "@/lib/api/profile";
 import { ProfilePageData } from "@/lib/types/profile";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,14 +39,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -58,6 +50,8 @@ import {
 } from "@/components/ui/select";
 import { DatePicker } from "@/components/date-picker";
 import { useAcademicContext } from "@/components/providers/academic-context";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Separator } from "@/components/ui/separator";
 
 // Form validation schema
 const profileSchema = z
@@ -109,15 +103,12 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
   const [metadata, setMetadata] = useState<ProfilePageData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [showClassChangeWarning, setShowClassChangeWarning] = useState(false);
-  const [pendingClassChange, setPendingClassChange] = useState<string | null>(
-    null,
-  );
+  const [pendingClassChange, setPendingClassChange] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isDirty },
     setValue,
     watch,
     reset,
@@ -157,14 +148,10 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         setProfile(profileData);
         setMetadata(metadataData);
 
-        // Derive primary role from array
         const primaryRole = Array.isArray(profileData.role)
           ? profileData.role[0]
           : profileData.role;
 
-        // For guest users, set role to empty string to enable selection
-        // For student/guardian, set role accordingly
-        // For other roles (teacher/admin/superadmin), don't set form role
         const formRole =
           primaryRole === "guest"
             ? ""
@@ -172,8 +159,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
               ? primaryRole
               : "";
 
-        // Populate form with profile data
-        const genderValue: "male" | "female" | undefined =
+        const genderValue =
           profileData.gender === "male"
             ? "male"
             : profileData.gender === "female"
@@ -212,59 +198,43 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
   const onSubmit = async (data: ProfileFormData) => {
     try {
       setIsSaving(true);
-
-      // Role-first submission: if primaryRole is guest, submit role alone first
       const roleValue = data.role as string;
+      const effectiveRole = roleValue || primaryRole;
+
+      // Guest user handling
       if (primaryRole === "guest") {
-        // Role is required for guests
-        if (!roleValue || roleValue === "") {
-          toast.error("Role is required. Please select Student or Guardian.");
+        if (!roleValue) {
+          toast.error("Please select a role (Student or Guardian) to proceed.");
           setIsSaving(false);
           return;
         }
 
-        // Submit role alone first
         try {
           const roleUpdateResult = await updateProfile({
             role: roleValue as "student" | "guardian",
           });
-
-          // Refresh profile to get updated role
           const refreshedProfile = await getProfile();
           setProfile(refreshedProfile);
+          
+           // Update auth store
+           const roles = Array.isArray(roleUpdateResult.role)
+           ? roleUpdateResult.role
+           : [roleUpdateResult.role];
+           
+           updateUserProfile({
+             ...roleUpdateResult,
+             role: roles,
+             username: roleUpdateResult.username || "" // Ensure username is string
+           } as any);
 
-          // Update auth store
-          const roles = Array.isArray(roleUpdateResult.role)
-            ? roleUpdateResult.role
-            : [roleUpdateResult.role];
-          updateUserProfile({
-            name: roleUpdateResult.name,
-            email: roleUpdateResult.email,
-            phone: roleUpdateResult.phone,
-            role: roles,
-            username: roleUpdateResult.username || "",
-            school: roleUpdateResult.school,
-            class: roleUpdateResult.class,
-            discipline: roleUpdateResult.discipline,
-            date_of_birth: roleUpdateResult.date_of_birth,
-            country: roleUpdateResult.country,
-            state: roleUpdateResult.state,
-            city: roleUpdateResult.city,
-            address: roleUpdateResult.address,
-            gender: roleUpdateResult.gender,
-          } as any);
-
-          toast.success(
-            "Role updated successfully. You can now update other fields.",
-          );
+          toast.success("Account type setup complete! Proceeding to save details...");
         } catch (error: any) {
-          toast.error(error.message || "Failed to update role");
-          setIsSaving(false);
-          return;
+          toast.error("Failed to set account type.");
+          throw error;
         }
       }
 
-      // Prepare data for submission - exclude email and role (already submitted if guest)
+      // Prepare submission data
       const submitData: any = {
         name: data.name,
         phone: data.phone,
@@ -282,65 +252,39 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         child_phone: data.child_phone,
       };
 
-      // Only include discipline for SSS classes
       if (data.class && data.class.startsWith("SSS")) {
         submitData.discipline = data.discipline;
       }
 
-      // Only include role if it changed (and user is not guest)
-      if (primaryRole !== "guest" && roleValue && roleValue !== primaryRole) {
-        submitData.role = roleValue as "student" | "guardian";
-      }
-
-      // Validate guardian-specific fields if role is guardian (either selected or existing)
-      const effectiveRole = roleValue || primaryRole;
+      // Validations
       if (effectiveRole === "guardian") {
-        if (!data.child_email || !data.child_phone) {
-          toast.error("Child email and phone are required for guardians");
-          return;
-        }
+         // Guardian specific validations if needed
       }
 
-      // Validate data
-      const validationErrors = validateProfileData(
-        submitData as ProfileEditData,
-      );
+      const validationErrors = validateProfileData(submitData as ProfileEditData);
       if (validationErrors.length > 0) {
         toast.error(validationErrors[0]);
+        setIsSaving(false);
         return;
       }
 
-      // Update profile
+      // Final Update
       const updatedProfile = await updateProfile(submitData as ProfileEditData);
-
-      // Normalize role to array before updating auth store
+      
       const roles = Array.isArray(updatedProfile.role)
         ? updatedProfile.role
         : [updatedProfile.role];
 
-      // Update auth store with full profile data
       updateUserProfile({
-        name: updatedProfile.name,
-        email: updatedProfile.email,
-        phone: updatedProfile.phone,
+        ...updatedProfile,
         role: roles,
-        username: updatedProfile.username || "",
-        school: updatedProfile.school,
-        class: updatedProfile.class,
-        discipline: updatedProfile.discipline,
-        date_of_birth: updatedProfile.date_of_birth,
-        country: updatedProfile.country,
-        state: updatedProfile.state,
-        city: updatedProfile.city,
-        address: updatedProfile.address,
-        gender: updatedProfile.gender,
+        username: updatedProfile.username || ""
       } as any);
 
       setProfile(updatedProfile);
-      toast.success("Profile updated successfully");
+      toast.success("Profile changes saved successfully.");
       onSuccess?.(updatedProfile);
 
-      // Update academic context if class changed
       if (data.class && data.class !== profile?.class) {
         const normalizedClass = normalizeClassString(data.class);
         const classLevel = normalizedClass
@@ -359,635 +303,248 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
 
   if (isLoading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-12">
-          <div className="flex items-center gap-2">
-            <RefreshCw className="size-4 animate-spin" />
-            <span>Loading profile...</span>
-          </div>
-        </CardContent>
-      </Card>
+      <div className="flex h-64 items-center justify-center rounded-2xl border bg-card/50">
+        <div className="flex flex-col items-center gap-3 text-muted-foreground">
+          <Loader2 className="size-8 animate-spin text-primary" />
+          <p>Loading your profile...</p>
+        </div>
+      </div>
     );
   }
 
+  // Helper to initals
+  const initials = profile?.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
+
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <User className="size-5" />
-          Profile Information
-        </CardTitle>
-        <CardDescription>
-          Update your personal information and account settings.
-        </CardDescription>
-      </CardHeader>
-
-      <CardContent className="space-y-6">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          {/* Basic Information */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <UserCheck className="size-4" />
-              Basic Information
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="name">Full Name</Label>
-                <Input
-                  id="name"
-                  {...register("name")}
-                  placeholder="Enter your full name"
-                  disabled={primaryRole === "guest"}
-                />
-                {primaryRole === "guest" && (
-                  <p className="text-xs text-muted-foreground">
-                    Please select a role first to unlock other fields.
-                  </p>
-                )}
-                {errors.name && (
-                  <p className="text-sm text-red-600">{errors.name.message}</p>
-                )}
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <div className="flex flex-col gap-6 lg:flex-row lg:items-start">
+        {/* Left Column: Avatar & Basic Info */}
+        <div className="flex flex-col gap-6 lg:w-1/3">
+          <Card className="overflow-hidden border-border/60 shadow-sm transition-all hover:shadow-md">
+            <CardHeader className="bg-muted/30 pb-8 pt-6 text-center">
+              <div className="mx-auto mb-4 flex size-24 items-center justify-center rounded-full bg-background p-1 shadow-sm ring-4 ring-background">
+                 <Avatar className="size-full">
+                    <AvatarImage src={profile?.avatar || undefined} />
+                    <AvatarFallback className="bg-primary/10 text-2xl font-bold text-primary">{initials}</AvatarFallback>
+                 </Avatar>
               </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  {...register("username")}
-                  placeholder="Enter your username"
-                  disabled={
-                    primaryRole === "guest" ||
-                    Boolean(
-                      profile?.username &&
-                      typeof profile.username === "string" &&
-                      profile.username.trim() !== "",
-                    )
-                  }
-                />
-                {Boolean(
-                  profile?.username &&
-                  typeof profile.username === "string" &&
-                  profile.username.trim() !== "",
-                ) && (
-                    <p className="text-xs text-muted-foreground">
-                      Username cannot be changed once set.
-                    </p>
-                  )}
-                {errors.username && (
-                  <p className="text-sm text-red-600">
-                    {errors.username.message}
-                  </p>
-                )}
-              </div>
-
-              {primaryRole === "guest" ||
-                primaryRole === "student" ||
-                primaryRole === "guardian" ? (
-                <div className="space-y-2">
-                  <Label htmlFor="role">Account Type</Label>
-                  <Select
-                    value={selectedRole || undefined}
-                    onValueChange={async (value) => {
-                      setValue("role", value as "student" | "guardian");
-
-                      // If role changed and user is guest, submit role immediately
-                      if (primaryRole === "guest") {
-                        try {
-                          setIsSaving(true);
-                          const updatedProfile = await updateProfile({
-                            role: value as "student" | "guardian",
-                          });
-
-                          // Refresh profile
-                          const refreshedProfile = await getProfile();
-                          setProfile(refreshedProfile);
-
-                          // Update auth store
-                          const roles = Array.isArray(updatedProfile.role)
-                            ? updatedProfile.role
-                            : [updatedProfile.role];
-                          updateUserProfile({
-                            name: updatedProfile.name,
-                            email: updatedProfile.email,
-                            phone: updatedProfile.phone,
-                            role: roles,
-                            username: updatedProfile.username || "",
-                            school: updatedProfile.school,
-                            class: updatedProfile.class,
-                            discipline: updatedProfile.discipline,
-                            date_of_birth: updatedProfile.date_of_birth,
-                            country: updatedProfile.country,
-                            state: updatedProfile.state,
-                            city: updatedProfile.city,
-                            address: updatedProfile.address,
-                            gender: updatedProfile.gender,
-                          } as any);
-
-                          toast.success(
-                            "Role updated successfully. You can now update other fields.",
-                          );
-                        } catch (error: any) {
-                          toast.error(error.message || "Failed to update role");
-                          // Reset role selection on error
-                          setValue("role", "");
-                        } finally {
-                          setIsSaving(false);
-                        }
-                      }
-                    }}
-                    disabled={primaryRole !== "guest"}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select account type" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="student">Student</SelectItem>
-                      <SelectItem value="guardian">Guardian</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  {primaryRole !== "guest" && (
-                    <p className="text-xs text-muted-foreground">
-                      Role cannot be changed once set.
-                    </p>
-                  )}
-                  {errors.role && (
-                    <p className="text-sm text-red-600">
-                      {errors.role.message}
-                    </p>
-                  )}
-                </div>
-              ) : null}
-            </div>
-          </div>
-
-          {/* Contact Information */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Mail className="size-4" />
-              Contact Information
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="email">Email Address</Label>
-                <div className="relative">
-                  <Input
-                    id="email"
-                    type="email"
-                    {...register("email")}
-                    placeholder="your.email@example.com"
-                    disabled
-                    readOnly
-                  />
-                  {profile?.email_verified_at && (
-                    <CheckCircle className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-green-600" />
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  Email cannot be changed here. Please contact support if you
-                  need to update your email.
-                </p>
-                {!profile?.email_verified_at && (
-                  <div className="flex items-center gap-1 text-xs text-amber-600">
-                    <AlertCircle className="size-3" />
-                    Email not verified
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <div className="relative">
-                  <Input
-                    id="phone"
-                    type="tel"
-                    {...register("phone")}
-                    placeholder="+1 (555) 123-4567"
-                    disabled={primaryRole === "guest"}
-                  />
-                  {profile?.phone_verified_at && (
-                    <CheckCircle className="absolute right-3 top-1/2 size-4 -translate-y-1/2 text-green-600" />
-                  )}
-                </div>
-                {errors.phone && (
-                  <p className="text-sm text-red-600">{errors.phone.message}</p>
-                )}
-                {!profile?.phone_verified_at && (
-                  <div className="flex items-center gap-1 text-xs text-amber-600">
-                    <AlertCircle className="size-3" />
-                    Phone not verified
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Student Information */}
-          {(selectedRole === "student" || primaryRole === "student") && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <User className="size-4" />
-                Student Information
-              </div>
-
-              <div className="grid gap-4 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="school">School</Label>
-                  <Input
-                    id="school"
-                    {...register("school")}
-                    placeholder="Enter your school name"
-                    disabled={primaryRole === "guest"}
-                  />
-                  {errors.school && (
-                    <p className="text-sm text-red-600">
-                      {errors.school.message}
-                    </p>
-                  )}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="class">Class</Label>
-                  <Select
-                    value={selectedClass}
-                    onValueChange={(value) => {
-                      if (
-                        profile?.class &&
-                        profile.class.trim() !== "" &&
-                        profile.class !== value
-                      ) {
-                        setPendingClassChange(value);
-                        setShowClassChangeWarning(true);
-                      } else {
-                        setValue("class", value);
-                      }
-                    }}
-                    disabled={primaryRole === "guest"}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your class" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {metadata?.classes.map((cls) => (
-                        <SelectItem key={cls.name} value={cls.name}>
-                          {cls.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {errors.class && (
-                    <p className="text-sm text-red-600">
-                      {errors.class.message}
-                    </p>
-                  )}
-                </div>
-
-                {(selectedClass?.startsWith("SS") ||
-                  selectedClass?.startsWith("SSS")) && (
-                    <div className="space-y-2">
-                      <Label htmlFor="discipline">Discipline</Label>
-                      <Select
-                        value={watch("discipline")}
-                        onValueChange={(value) => setValue("discipline", value)}
-                        disabled={
-                          primaryRole === "guest" ||
-                          Boolean(
-                            profile?.discipline &&
-                            typeof profile.discipline === "string" &&
-                            profile.discipline.trim() !== "",
-                          )
-                        }
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select your discipline" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {metadata?.discipline &&
-                            metadata.discipline.length > 0 ? (
-                            metadata.discipline.map((disc) => (
-                              <SelectItem key={disc.name} value={disc.name}>
-                                {disc.name}
-                              </SelectItem>
-                            ))
-                          ) : (
-                            // Fallback to hardcoded list if metadata unavailable
-                            <>
-                              <SelectItem value="Art">Art</SelectItem>
-                              <SelectItem value="Commercial">
-                                Commercial
-                              </SelectItem>
-                              <SelectItem value="Science">Science</SelectItem>
-                            </>
-                          )}
-                        </SelectContent>
-                      </Select>
-                      {Boolean(
-                        profile?.discipline &&
-                        typeof profile.discipline === "string" &&
-                        profile.discipline.trim() !== "",
-                      ) && (
-                          <p className="text-xs text-muted-foreground">
-                            Discipline cannot be changed once set.
-                          </p>
-                        )}
-                      {errors.discipline && (
-                        <p className="text-sm text-red-600">
-                          {errors.discipline.message}
-                        </p>
-                      )}
+              <CardTitle>{profile?.name}</CardTitle>
+              <CardDescription className="flex items-center justify-center gap-1">
+                {(selectedRole || primaryRole) ? (
+                    <span className="badge rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium capitalize text-primary">
+                        {primaryRole || selectedRole}
+                    </span>
+                ) : "Guest User"}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4 p-6">
+                 <div className="space-y-2">
+                    <Label htmlFor="name">Full Name</Label>
+                    <div className="relative">
+                        <User className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                        <Input 
+                            id="name" 
+                            {...register("name")} 
+                            className="pl-9" 
+                            disabled={primaryRole === "guest"}
+                        />
                     </div>
-                  )}
-              </div>
-            </div>
-          )}
+                    {errors.name && <p className="text-xs text-destructive">{errors.name.message}</p>}
+                 </div>
 
-          {/* Location */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <User className="size-4" />
-              Location
-            </div>
+                 <div className="space-y-2">
+                    <Label htmlFor="username">Username</Label>
+                    <div className="relative">
+                        <span className="absolute left-3 top-2.5 font-mono text-muted-foreground">@</span>
+                        <Input 
+                            id="username" 
+                            {...register("username")} 
+                            className="pl-8" 
+                            placeholder="username"
+                            disabled={primaryRole === "guest" || !!profile?.username}
+                        />
+                    </div>
+                     {!!profile?.username && <p className="text-xs text-muted-foreground">Username cannot be changed.</p>}
+                 </div>
+            </CardContent>
+          </Card>
 
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="country">Country</Label>
-                <Input
-                  id="country"
-                  {...register("country")}
-                  placeholder="Enter your country"
-                  disabled={primaryRole === "guest"}
-                />
-                {errors.country && (
-                  <p className="text-sm text-red-600">
-                    {errors.country.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="state">State</Label>
-                <Input
-                  id="state"
-                  {...register("state")}
-                  placeholder="Enter your state"
-                  disabled={primaryRole === "guest"}
-                />
-                {errors.state && (
-                  <p className="text-sm text-red-600">{errors.state.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="city">City</Label>
-                <Input
-                  id="city"
-                  {...register("city")}
-                  placeholder="Enter your city"
-                  disabled={primaryRole === "guest"}
-                />
-                {errors.city && (
-                  <p className="text-sm text-red-600">{errors.city.message}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Personal Information */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <User className="size-4" />
-              Personal Information
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2">
-              <div className="space-y-2">
-                <Label>Date of Birth</Label>
-                <DatePicker
-                  selected={watch("date_of_birth")}
-                  onSelect={(date) => {
-                    if (
-                      !Boolean(
-                        profile?.date_of_birth &&
-                        typeof profile.date_of_birth === "string" &&
-                        profile.date_of_birth.trim() !== "",
-                      )
-                    ) {
-                      setValue("date_of_birth", date);
-                    }
-                  }}
-                  placeholder="Select your date of birth"
-                  disabled={
-                    primaryRole === "guest" ||
-                    Boolean(
-                      profile?.date_of_birth &&
-                      typeof profile.date_of_birth === "string" &&
-                      profile.date_of_birth.trim() !== "",
-                    )
-                  }
-                />
-                {Boolean(
-                  profile?.date_of_birth &&
-                  typeof profile.date_of_birth === "string" &&
-                  profile.date_of_birth.trim() !== "",
-                ) && (
-                    <p className="text-xs text-muted-foreground">
-                      Date of birth cannot be changed once set.
-                    </p>
-                  )}
-                {errors.date_of_birth && (
-                  <p className="text-sm text-red-600">
-                    {errors.date_of_birth.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gender">Gender</Label>
-                <Select
-                  value={watch("gender")}
-                  onValueChange={(value) => {
-                    if (value === "male" || value === "female") {
-                      setValue("gender", value);
-                    }
-                  }}
-                  disabled={
-                    primaryRole === "guest" ||
-                    Boolean(
-                      profile?.gender &&
-                      typeof profile.gender === "string" &&
-                      profile.gender.trim() !== "",
-                    )
-                  }
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select your gender" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Male</SelectItem>
-                    <SelectItem value="female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-                {Boolean(
-                  profile?.gender &&
-                  typeof profile.gender === "string" &&
-                  profile.gender.trim() !== "",
-                ) && (
-                    <p className="text-xs text-muted-foreground">
-                      Gender cannot be changed once set.
-                    </p>
-                  )}
-                {errors.gender && (
-                  <p className="text-sm text-red-600">
-                    {errors.gender.message}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Guardian-specific fields */}
-          {(selectedRole === "guardian" || primaryRole === "guardian") && (
-            <div className="space-y-4">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Shield className="size-4" />
-                Child Information
-                <Badge variant="secondary" className="ml-auto">
-                  Guardian Required
-                </Badge>
-              </div>
-
-              <Alert>
-                <AlertCircle className="size-4" />
-                <AlertDescription>
-                  As a guardian, you need to provide your child&apos;s contact
-                  information for account management and communication purposes.
-                </AlertDescription>
-              </Alert>
-
-              <div className="grid gap-4 md:grid-cols-2">
+          {/* Contact Information Card */}
+          <Card className="border-border/60 shadow-sm">
+             <CardHeader>
+                <CardTitle className="flex items-center gap-2 text-lg">
+                    <Phone className="size-5 text-primary" />
+                    Contact Details
+                </CardTitle>
+             </CardHeader>
+             <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="child_email">Child&apos;s Email</Label>
-                  <Input
-                    id="child_email"
-                    type="email"
-                    {...register("child_email")}
-                    placeholder="child@example.com"
-                    disabled={primaryRole === "guest"}
-                  />
-                  {errors.child_email && (
-                    <p className="text-sm text-red-600">
-                      {errors.child_email.message}
-                    </p>
-                  )}
+                    <Label>Email Address</Label>
+                    <div className="relative">
+                         <Mail className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                         <Input value={profile?.email} disabled readOnly className="bg-muted/50 pl-9" />
+                    </div>
+                    <div className="flex items-center gap-2 text-xs">
+                         {profile?.email_verified_at ? (
+                             <span className="flex items-center gap-1 text-green-600"><CheckCircle2 className="size-3"/> Verified</span>
+                         ) : (
+                             <span className="flex items-center gap-1 text-amber-600"><AlertCircle className="size-3"/> Unverified</span>
+                         )}
+                    </div>
                 </div>
-
+                
                 <div className="space-y-2">
-                  <Label htmlFor="child_phone">Child&apos;s Phone</Label>
-                  <Input
-                    id="child_phone"
-                    type="tel"
-                    {...register("child_phone")}
-                    placeholder="+1 (555) 987-6543"
-                    disabled={primaryRole === "guest"}
-                  />
-                  {errors.child_phone && (
-                    <p className="text-sm text-red-600">
-                      {errors.child_phone.message}
-                    </p>
-                  )}
+                    <Label htmlFor="phone">Phone Number</Label>
+                     <div className="relative">
+                         <Phone className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                         <Input id="phone" {...register("phone")} className="pl-9" placeholder="+123..." />
+                    </div>
+                     {errors.phone && <p className="text-xs text-destructive">{errors.phone.message}</p>}
                 </div>
-              </div>
+             </CardContent>
+          </Card>
+        </div>
+
+        {/* Right Column: Detailed Forms */}
+        <div className="flex-1 space-y-6">
+            
+            {/* Academic Section */}
+            {(selectedRole === "student" || primaryRole === "student") && (
+                <Card className="border-border/60 shadow-sm">
+                    <CardHeader className="border-b bg-muted/20">
+                        <div className="flex items-center gap-3">
+                            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <GraduationCap className="size-6" />
+                            </div>
+                            <div>
+                                <CardTitle>Academic Profile</CardTitle>
+                                <CardDescription>Your school and class details.</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
+                        <div className="space-y-2 sm:col-span-2">
+                            <Label htmlFor="school">School Name</Label>
+                             <div className="relative">
+                                <School className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                                <Input id="school" {...register("school")} className="pl-9" placeholder="Enter school name" />
+                            </div>
+                             {errors.school && <p className="text-xs text-destructive">{errors.school.message}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                             <Label htmlFor="class">Current Class</Label>
+                             <Select onValueChange={(val) => setValue("class", val)} value={selectedClass}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Class" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {metadata?.classes.map((cls) => (
+                                        <SelectItem key={cls.name} value={cls.name}>{cls.name}</SelectItem>
+                                    ))}
+                                </SelectContent>
+                             </Select>
+                        </div>
+
+                        {(selectedClass?.startsWith("SS") || selectedClass?.startsWith("SSS")) && (
+                            <div className="space-y-2">
+                                <Label htmlFor="discipline">Discipline (Department)</Label>
+                                 <Select 
+                                    onValueChange={(val) => setValue("discipline", val)} 
+                                    value={watch("discipline")}
+                                    disabled={!!profile?.discipline}
+                                 >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Select Discipline" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {metadata?.discipline?.map((d) => (
+                                         <SelectItem key={d.name} value={d.name}>{d.name}</SelectItem>
+                                    )) || (
+                                        <>
+                                            <SelectItem value="Science">Science</SelectItem>
+                                            <SelectItem value="Art">Art</SelectItem>
+                                            <SelectItem value="Commercial">Commercial</SelectItem>
+                                        </>
+                                    )}
+                                </SelectContent>
+                             </Select>
+                            </div>
+                        )}
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Personal Details */}
+             <Card className="border-border/60 shadow-sm">
+                <CardHeader>
+                    <div className="flex items-center gap-2">
+                         <User className="size-5 text-primary" />
+                         <CardTitle className="text-lg">Personal Details</CardTitle>
+                    </div>
+                </CardHeader>
+                <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
+                      <div className="space-y-2">
+                        <Label>Date of Birth</Label>
+                        <DatePicker 
+                            selected={watch("date_of_birth")} 
+                            onSelect={(d) => d && setValue("date_of_birth", d)} 
+                            disabled={!!profile?.date_of_birth}
+                        />
+                         {!!profile?.date_of_birth && <p className="text-xs text-muted-foreground">Contact support to change DOB.</p>}
+                      </div>
+                      
+                      <div className="space-y-2">
+                          <Label>Gender</Label>
+                          <Select onValueChange={(v) => setValue("gender", v as "male" | "female")} value={watch("gender")}>
+                              <SelectTrigger>
+                                  <SelectValue placeholder="Select Gender" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                  <SelectItem value="male">Male</SelectItem>
+                                  <SelectItem value="female">Female</SelectItem>
+                              </SelectContent>
+                          </Select>
+                      </div>
+
+                      <div className="space-y-2">
+                           <Label>Country</Label>
+                           <Input {...register("country")} />
+                      </div>
+                       <div className="space-y-2">
+                           <Label>State</Label>
+                           <Input {...register("state")} />
+                      </div>
+                       <div className="space-y-2">
+                           <Label>City</Label>
+                           <Input {...register("city")} />
+                      </div>
+                </CardContent>
+            </Card>
+
+            {/* Save Button */}
+            <div className="flex justify-end pt-4">
+                <Button type="submit" size="lg" disabled={isSaving || !isDirty} className="min-w-[140px]">
+                    {isSaving ? (
+                        <>
+                            <Loader2 className="mr-2 size-4 animate-spin" />
+                            Saving...
+                        </>
+                    ) : (
+                        <>
+                            <Save className="mr-2 size-4" />
+                            Save Changes
+                        </>
+                    )}
+                </Button>
             </div>
-          )}
-
-          {/* Account Status */}
-          <div className="space-y-4">
-            <div className="flex items-center gap-2 text-sm font-medium">
-              <Shield className="size-4" />
-              Account Status
-            </div>
-
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="flex items-center justify-between rounded-lg border p-3">
-                <div className="flex items-center gap-2">
-                  <Mail className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Email Verification</span>
-                </div>
-                <Badge
-                  variant={profile?.email_verified_at ? "default" : "secondary"}
-                >
-                  {profile?.email_verified_at ? "Verified" : "Pending"}
-                </Badge>
-              </div>
-
-              <div className="flex items-center justify-between rounded-lg border p-3">
-                <div className="flex items-center gap-2">
-                  <Phone className="size-4 text-muted-foreground" />
-                  <span className="text-sm">Phone Verification</span>
-                </div>
-                <Badge
-                  variant={profile?.phone_verified_at ? "default" : "secondary"}
-                >
-                  {profile?.phone_verified_at ? "Verified" : "Pending"}
-                </Badge>
-              </div>
-            </div>
-          </div>
-
-          {/* Submit Button */}
-          <div className="flex justify-end">
-            <Button type="submit" disabled={isSaving}>
-              {isSaving ? (
-                <>
-                  <RefreshCw className="mr-2 size-4 animate-spin" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <Save className="mr-2 size-4" />
-                  Update Profile
-                </>
-              )}
-            </Button>
-          </div>
-        </form>
-      </CardContent>
-
-      <Dialog
-        open={showClassChangeWarning}
-        onOpenChange={setShowClassChangeWarning}
-      >
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Class Change</DialogTitle>
-            <DialogDescription>
-              Changing your class will reset your subject selections. You will
-              need to re-select your subjects for the new class. Are you sure
-              you want to proceed?
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button
-              variant="outline"
-              onClick={() => setShowClassChangeWarning(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                if (pendingClassChange) {
-                  setValue("class", pendingClassChange);
-                  setPendingClassChange(null);
-                }
-                setShowClassChangeWarning(false);
-              }}
-            >
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </Card>
+        </div>
+      </div>
+    </form>
   );
 }

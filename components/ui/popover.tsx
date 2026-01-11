@@ -32,7 +32,7 @@ function PopoverContent({
         sideOffset={sideOffset}
         style={{ zIndex: Z_INDEX.tooltip }}
         className={cn(
-          "outline-hidden w-[calc(100vw-2rem)] sm:w-72 md:w-80 origin-[--radix-popover-content-transform-origin] rounded-md border bg-popover p-component-md sm:p-component-lg text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2",
+          "outline-hidden w-[calc(100vw-2rem)] origin-[--radix-popover-content-transform-origin] rounded-md border bg-popover p-component-md text-popover-foreground shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 sm:w-72 sm:p-component-lg md:w-80",
           className,
         )}
         {...props}

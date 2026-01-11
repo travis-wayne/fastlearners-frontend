@@ -143,7 +143,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
                       {isCompleted ? (
                         <Award className="size-4 text-emerald-600 dark:text-emerald-400 sm:size-5" />
                       ) : (
-                        <PlayCircle className="size-4 sm:size-5 text-primary" />
+                        <PlayCircle className="size-4 text-primary sm:size-5" />
                       )}
                     </div>
                     <Badge
@@ -182,15 +182,15 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
               </div>
             </CardHeader>
 
-            <CardContent className="space-y-3 responsive-padding pt-0 sm:space-y-4 sm:pt-0 md:pt-0">
+            <CardContent className="responsive-padding space-y-3 pt-0 sm:space-y-4 sm:pt-0 md:pt-0">
               {/* Subject and Class Info */}
               <div className="flex flex-wrap items-center gap-2 text-xs sm:gap-4 sm:text-sm">
                 <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
-                  <Users className="size-4 sm:size-5 text-muted-foreground" />
+                  <Users className="size-4 text-muted-foreground sm:size-5" />
                   <span className="font-medium">{lesson.class}</span>
                 </div>
                 <div className="flex items-center gap-1.5 rounded-lg bg-muted/50 px-2 py-1 sm:gap-2 sm:px-3 sm:py-1.5">
-                  <FileText className="size-4 sm:size-5 text-muted-foreground" />
+                  <FileText className="size-4 text-muted-foreground sm:size-5" />
                   <span className="font-medium">{lesson.subject}</span>
                 </div>
               </div>

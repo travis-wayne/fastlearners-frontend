@@ -140,11 +140,11 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         </div>
 
         {/* Layout body */}
-        <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row lg:gap-6 xl:gap-8">
-          <aside className="lg:sticky lg:top-4 lg:w-1/4 xl:w-1/5">
+        <div className="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row lg:gap-10 xl:gap-12">
+          <aside className="w-full min-w-[240px] lg:sticky lg:top-4 lg:w-1/4 xl:w-1/5">
             <SidebarNav items={sidebarNavItems} />
           </aside>
-          <div className="flex min-h-0 w-full flex-col overflow-y-auto rounded-2xl border bg-card/70 p-2 shadow-sm backdrop-blur-sm">
+          <div className="flex min-h-0 w-full flex-col">
             {children}
           </div>
         </div>

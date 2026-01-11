@@ -220,7 +220,7 @@ export function LessonFilters({
         </CardHeader>
       )}
 
-      <CardContent className={cn("space-y-6 responsive-padding", sidebar && "px-0")}>
+      <CardContent className={cn("responsive-padding space-y-6", sidebar && "px-0")}>
         {error && (
           <Alert variant="destructive" className="border-2">
             <AlertCircle className="size-4" />

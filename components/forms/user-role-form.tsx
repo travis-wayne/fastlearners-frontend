@@ -131,7 +131,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
           title="Your Role"
           description="Select the role what you want for test the app."
         >
-          <div className="flex w-full items-center gap-2">
+          <div className="flex w-full items-center gap-component-sm sm:gap-component-md">
             <FormField
               control={form.control}
               name="role"
@@ -150,7 +150,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                     defaultValue={mapAuthRoleToEnum(user.role[0]).toString()}
                   >
                     <FormControl>
-                      <SelectTrigger className="w-full">
+                      <SelectTrigger className="h-control-sm w-full sm:h-control-md">
                         <SelectValue placeholder="Select a role" />
                       </SelectTrigger>
                     </FormControl>
@@ -171,10 +171,10 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
               type="submit"
               variant={updated ? "default" : "secondary"}
               disabled={isPending || !updated}
-              className="w-[67px] shrink-0 px-0 sm:w-[130px]"
+              className="mobile-touch-target w-[67px] shrink-0 px-0 sm:w-[130px]"
             >
               {isPending ? (
-                <Icons.spinner className="size-4 animate-spin" />
+                <Icons.spinner className="size-4 animate-spin sm:size-5" />
               ) : (
                 <p>
                   Save
@@ -184,7 +184,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
             </Button>
           </div>
           <div className="flex flex-col justify-between p-1">
-            <p className="text-[13px] text-muted-foreground">
+            <p className="text-xs text-muted-foreground sm:text-sm">
               Remove this field on real production
             </p>
           </div>

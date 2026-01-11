@@ -623,7 +623,7 @@ export function LessonViewer({
           <CardContent className="responsive-padding">
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <div className="flex flex-col items-start justify-between responsive-gap sm:flex-row sm:items-center">
+                <div className="responsive-gap flex flex-col items-start justify-between sm:flex-row sm:items-center">
                   <div className="flex size-8 items-center justify-center rounded-lg bg-primary/20 transition-colors sm:size-10">
                     {progress >= 100 ? (
                       <Trophy className="size-4 text-green-600 sm:size-5" />
@@ -685,7 +685,7 @@ export function LessonViewer({
       {/* Enhanced Section Breadcrumb Navigation */}
       <Card className="sticky top-16 z-20 border-2 bg-background/95 backdrop-blur transition-shadow supports-[backdrop-filter]:backdrop-blur sm:top-20">
         <CardContent className="p-3 sm:p-4">
-          <div className="-mx-1 overflow-x-auto px-1 pb-1 custom-scrollbar">
+          <div className="custom-scrollbar -mx-1 overflow-x-auto px-1 pb-1">
             <SectionBreadcrumb
               lessonId={lesson.id}
               concepts={concepts}

@@ -82,14 +82,14 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
 
   return (
     <Card className={cn("w-full", className)}>
-      <CardHeader>
-        <div className="flex items-center justify-between">
+      <CardHeader className="p-component-sm sm:p-component-md">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <CardTitle className="flex items-center gap-2">
-              <Clock className="size-5" />
+            <CardTitle className="flex items-center gap-2 text-heading-md sm:text-heading-lg">
+              <Clock className="size-4 sm:size-5" />
               Upload Logs
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Real-time logs of upload attempts and results ({logs.length}{" "}
               entries)
             </CardDescription>
@@ -100,7 +100,7 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                 variant="outline"
                 size="sm"
                 onClick={downloadLogs}
-                className="text-xs"
+                className="text-[10px] sm:text-xs"
               >
                 <Download className="mr-1 size-3" />
                 Export
@@ -111,7 +111,7 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
               size="sm"
               onClick={onClearLogs}
               disabled={logs.length === 0}
-              className="text-xs"
+              className="text-[10px] sm:text-xs"
             >
               <Trash2 className="mr-1 size-3" />
               Clear
@@ -120,43 +120,43 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
         </div>
       </CardHeader>
 
-      <CardContent>
+      <CardContent className="p-component-sm sm:p-component-md">
         {logs.length === 0 ? (
-          <div className="py-8 text-center">
-            <Clock className="mx-auto mb-4 size-12 text-muted-foreground/50" />
-            <p className="text-muted-foreground">
+          <div className="py-6 text-center sm:py-8">
+            <Clock className="mx-auto mb-3 size-10 text-muted-foreground/50 sm:mb-4 sm:size-12" />
+            <p className="text-xs text-muted-foreground sm:text-sm">
               No logs yet. Upload activity will appear here.
             </p>
           </div>
         ) : (
-          <ScrollArea className="h-96">
-            <div className="space-y-3">
+          <ScrollArea className="h-80 sm:h-96">
+            <div className="space-y-2 sm:space-y-3">
               {logs.map((log, index) => (
                 <div
                   key={index}
                   className={cn(
-                    "rounded-lg border-l-4 p-3 transition-all duration-200",
+                    "rounded-lg border-l-4 p-2 transition-all duration-200 sm:p-3",
                     getLogStyles(log.type),
                   )}
                 >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="flex flex-1 items-start gap-3">
+                  <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+                    <div className="flex flex-1 items-start gap-2 sm:gap-3">
                       {getLogIcon(log.type)}
                       <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium leading-relaxed">
+                        <p className="text-xs font-medium leading-relaxed sm:text-sm">
                           {log.message}
                         </p>
                         {log.fileName && (
-                          <p className="mt-1 text-xs text-muted-foreground">
+                          <p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">
                             File: {log.fileName}
                           </p>
                         )}
-                        <p className="mt-1 text-xs text-muted-foreground">
+                        <p className="mt-1 text-[10px] text-muted-foreground sm:text-xs">
                           {log.timestamp.toLocaleString()}
                         </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1 sm:gap-2">
                       <Badge
                         variant={
                           log.type === "success"
@@ -165,12 +165,12 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                               ? "destructive"
                               : "secondary"
                         }
-                        className="shrink-0 text-xs capitalize"
+                        className="shrink-0 text-[10px] capitalize sm:text-xs"
                       >
                         {log.type}
                       </Badge>
                       {log.configKey && (
-                        <Badge variant="outline" className="shrink-0 text-xs">
+                        <Badge variant="outline" className="shrink-0 text-[10px] sm:text-xs">
                           {log.configKey}
                         </Badge>
                       )}

@@ -26,33 +26,33 @@ export function UploadErrorDisplay({
 
   return (
     <Alert className={`border-2 ${bgClass} transition-all duration-200`}>
-      <div className="flex items-start gap-3">
-        <div className={`rounded-lg ${bgClass} p-2`}>
-          <Icon className={`size-5 ${colorClass}`} />
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+        <div className={`rounded-lg ${bgClass} p-1.5 sm:p-2`}>
+          <Icon className={`size-4 ${colorClass} sm:size-5`} />
         </div>
-        <div className="flex-1 space-y-3">
+        <div className="flex-1 space-y-component-xs sm:space-y-component-sm">
           {/* File name and error category */}
-          <div className="space-y-2">
+          <div className="space-y-component-xs">
             {fileName && (
-              <div className="text-sm font-semibold text-gray-900 dark:text-gray-100">
+              <div className="text-xs font-semibold text-gray-900 dark:text-gray-100 sm:text-sm">
                 {fileName}
               </div>
             )}
-            <div className="flex flex-wrap items-center gap-2">
+            <div className="flex flex-wrap items-center gap-1 sm:gap-2">
               <span
-                className={`rounded-md border ${bgClass} px-2.5 py-1 text-xs font-bold ${colorClass}`}
+                className={`rounded-md border ${bgClass} px-2 py-0.5 text-[10px] font-bold sm:px-2.5 sm:py-1 sm:text-xs ${colorClass}`}
               >
                 {error.category.replace("_", " ").toUpperCase()}
               </span>
-              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+              <span className="text-[10px] font-medium text-gray-500 dark:text-gray-400 sm:text-xs">
                 HTTP {error.code}
               </span>
             </div>
           </div>
 
           {/* User-friendly error message */}
-          <div className="rounded-lg border bg-background/50 p-3">
-            <AlertDescription className="text-sm font-medium text-gray-900 dark:text-gray-100">
+          <div className="rounded-lg border bg-background/50 p-2 sm:p-3">
+            <AlertDescription className="text-xs font-medium text-gray-900 dark:text-gray-100 sm:text-sm">
               {error.userMessage}
             </AlertDescription>
           </div>

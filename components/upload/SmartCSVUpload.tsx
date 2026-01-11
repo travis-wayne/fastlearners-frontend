@@ -224,11 +224,11 @@ function FileUploadSection({
             "border-red-500 bg-red-50/50 dark:border-red-400 dark:bg-red-950/20",
         )}
       >
-        <CardHeader>
-          <CardTitle className="flex items-center gap-3">
+        <CardHeader className="p-component-sm sm:p-component-md">
+          <CardTitle className="flex items-center gap-2 text-heading-md sm:gap-3 sm:text-heading-lg">
             <div
               className={cn(
-                "rounded-lg p-2",
+                "rounded-lg p-1.5 sm:p-2",
                 disabled
                   ? "bg-muted"
                   : success
@@ -238,7 +238,7 @@ function FileUploadSection({
             >
               <FileText
                 className={cn(
-                  "size-5",
+                  "size-4 sm:size-5",
                   disabled
                     ? "text-muted-foreground"
                     : success
@@ -247,22 +247,22 @@ function FileUploadSection({
                 )}
               />
             </div>
-            Upload {config.title}
+            <span className="text-sm sm:text-base">Upload {config.title}</span>
             {success && (
-              <Check className="size-4 text-green-600 dark:text-green-400" />
+              <Check className="size-3.5 text-green-600 dark:text-green-400 sm:size-4" />
             )}
           </CardTitle>
-          <CardDescription className="text-sm text-muted-foreground">
+          <CardDescription className="text-xs text-muted-foreground sm:text-sm">
             {config.description}
           </CardDescription>
         </CardHeader>
 
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-component-sm p-component-sm sm:space-y-component-md sm:p-component-md">
           {/* File Drop Zone */}
           {!file && !success && (
             <div
               className={cn(
-                "rounded-lg border-2 border-dashed p-8 text-center transition-all duration-200",
+                "min-h-[160px] rounded-lg border-2 border-dashed p-4 text-center transition-all duration-200 sm:min-h-[200px] sm:p-8",
                 disabled
                   ? "cursor-not-allowed border-border bg-muted"
                   : isDragOver
@@ -276,22 +276,23 @@ function FileUploadSection({
             >
               <CloudUpload
                 className={cn(
-                  "mx-auto mb-4 size-12",
+                  "mx-auto mb-3 size-8 sm:mb-4 sm:size-12",
                   disabled ? "text-muted-foreground" : "text-muted-foreground",
                 )}
               />
-              <p className="mb-2 text-base font-medium">
+              <p className="mb-2 text-sm font-medium sm:text-base">
                 {disabled
                   ? "Upload disabled"
                   : "Drop your CSV file here, or click to browse"}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs text-muted-foreground sm:text-sm">
                 Supports: .csv files (max 10MB)
               </p>
               {!disabled && (
                 <Button
                   variant="outline"
-                  className="mt-4"
+                  className="mt-3 text-xs sm:mt-4 sm:text-sm"
+                  size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
                     fileInputRef.current?.click();
@@ -318,19 +319,19 @@ function FileUploadSection({
 
           {/* Selected File Display */}
           {file && !success && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between rounded-lg border bg-muted/50 p-4 dark:bg-muted/20">
+            <div className="space-y-component-xs sm:space-y-component-sm">
+              <div className="flex flex-col gap-3 rounded-lg border bg-muted/50 p-3 dark:bg-muted/20 sm:flex-row sm:items-center sm:justify-between sm:p-4">
                 <div className="flex items-center gap-3">
-                  <FileText className="size-8 text-primary" />
+                  <FileText className="size-6 text-primary sm:size-8" />
                   <div>
-                    <p className="font-medium">{file.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                    <p className="text-sm font-medium sm:text-base">{file.name}</p>
+                    <p className="text-xs text-muted-foreground sm:text-sm">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <Badge variant={error ? "destructive" : "secondary"}>
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Badge variant={error ? "destructive" : "secondary"} className="text-[10px] sm:text-xs">
                     {error ? "Error" : "Ready"}
                   </Badge>
                   {!isUploading && (
@@ -347,8 +348,8 @@ function FileUploadSection({
 
               {/* Upload Progress */}
               {isUploading && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
+                <div className="space-y-component-xs">
+                  <div className="flex justify-between text-xs sm:text-sm">
                     <span className="flex items-center gap-2">
                       <Loader2 className="size-4 animate-spin" />
                       Uploading...
@@ -369,12 +370,12 @@ function FileUploadSection({
                 {isUploading ? (
                   <>
                     <Loader2 className="mr-2 size-4 animate-spin" />
-                    Uploading...
+                    <span className="text-sm sm:text-base">Uploading...</span>
                   </>
                 ) : (
                   <>
                     <Upload className="mr-2 size-4" />
-                    Upload File
+                    <span className="text-sm sm:text-base">Upload File</span>
                   </>
                 )}
               </Button>
@@ -426,25 +427,25 @@ function FileUploadSection({
 
       {/* Required Format Section */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">
+        <CardHeader className="p-component-sm sm:p-component-md">
+          <CardTitle className="text-base sm:text-lg">
             Required Format - {config.title}
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="text-xs sm:text-sm">
             Your CSV file must include these columns in the correct order
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="space-y-3">
-            <p className="text-sm text-muted-foreground">
+        <CardContent className="p-component-sm sm:p-component-md">
+          <div className="space-y-component-xs sm:space-y-component-sm">
+            <p className="text-xs text-muted-foreground sm:text-sm">
               <strong>Required Columns:</strong>
             </p>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {requiredColumns.map((column) => (
                 <Badge
                   key={column}
                   variant="secondary"
-                  className="font-mono text-xs"
+                  className="font-mono text-[10px] sm:text-xs"
                 >
                   {column}
                 </Badge>

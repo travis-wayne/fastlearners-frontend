@@ -3,7 +3,7 @@
 import { useFont } from "@/context/font-provider";
 import { useTheme } from "@/context/theme-provider";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, Moon, Sun, Monitor, Type } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 
@@ -21,6 +21,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
 
 const appearanceFormSchema = z.object({
   theme: z.enum(["light", "dark", "system"]),
@@ -33,7 +35,6 @@ export function AppearanceForm() {
   const { font, setFont } = useFont();
   const { theme, setTheme } = useTheme();
 
-  // This can come from your database or API.
   const defaultValues: Partial<AppearanceFormValues> = {
     theme: theme as "light" | "dark" | "system",
     font,
@@ -45,149 +46,176 @@ export function AppearanceForm() {
   });
 
   function onSubmit(data: AppearanceFormValues) {
-    if (data.font != font) setFont(data.font);
-    if (data.theme != theme) setTheme(data.theme);
-
-    showSubmittedData(data);
+    let changed = false;
+    if (data.font != font) {
+        setFont(data.font);
+        changed = true;
+    }
+    if (data.theme != theme) {
+        setTheme(data.theme);
+        changed = true;
+    }
+    
+    if(changed) {
+        toast.success("Appearance settings updated.");
+    }
   }
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
-        <FormField
-          control={form.control}
-          name="font"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Font</FormLabel>
-              <div className="relative w-max">
-                <FormControl>
-                  <select
-                    className={cn(
-                      buttonVariants({ variant: "outline" }),
-                      "w-[200px] appearance-none font-normal capitalize",
-                      "dark:bg-background dark:hover:bg-background",
-                    )}
-                    {...field}
-                  >
-                    {fonts.map((font) => (
-                      <option key={font} value={font}>
-                        {font}
-                      </option>
-                    ))}
-                  </select>
-                </FormControl>
-                <ChevronDown className="absolute end-3 top-2.5 size-4 opacity-50" />
-              </div>
-              <FormDescription className="font-manrope">
-                Set the font you want to use in the dashboard.
-              </FormDescription>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="theme"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Theme</FormLabel>
-              <FormDescription>
-                Select the theme for the dashboard.
-              </FormDescription>
-              <FormMessage />
-              <RadioGroup
-                onValueChange={(value) => {
-                  field.onChange(value);
-                  setTheme(value as "light" | "dark" | "system");
-                }}
-                defaultValue={field.value}
-                className="grid max-w-md grid-cols-3 gap-4 pt-2"
-              >
-                <FormItem>
-                  <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
-                    <FormControl>
-                      <RadioGroupItem value="light" className="sr-only" />
-                    </FormControl>
-                    <div className="flex items-center rounded-md border-2 border-muted p-1 hover:border-accent">
-                      <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
-                        <div className="shadow-xs space-y-2 rounded-md bg-white p-2">
-                          <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
-                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                        </div>
-                        <div className="shadow-xs flex items-center space-x-2 rounded-md bg-white p-2">
-                          <div className="size-4 rounded-full bg-[#ecedef]" />
-                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                        </div>
-                        <div className="shadow-xs flex items-center space-x-2 rounded-md bg-white p-2">
-                          <div className="size-4 rounded-full bg-[#ecedef]" />
-                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                        </div>
-                      </div>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8 duration-500 animate-in fade-in-50">
+        
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Type className="size-5 text-primary" />
+                    Typography
+                </CardTitle>
+                <CardDescription>Choose the font family that matches your reading style.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FormField
+                control={form.control}
+                name="font"
+                render={({ field }) => (
+                    <FormItem>
+                    <FormLabel>Font Family</FormLabel>
+                    <div className="relative w-max">
+                        <FormControl>
+                        <select
+                            className={cn(
+                            buttonVariants({ variant: "outline" }),
+                            "h-11 w-[240px] appearance-none px-4 text-base font-normal capitalize",
+                            "bg-background hover:bg-muted/50 focus:ring-2 focus:ring-primary/20",
+                            )}
+                            {...field}
+                        >
+                            {fonts.map((font) => (
+                            <option key={font} value={font}>
+                                {font}
+                            </option>
+                            ))}
+                        </select>
+                        </FormControl>
+                        <ChevronDown className="absolute end-3 top-3.5 size-4 opacity-50" />
                     </div>
-                    <span className="block w-full p-2 text-center font-normal">
-                      Light
-                    </span>
-                  </FormLabel>
-                </FormItem>
-                <FormItem>
-                  <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
-                    <FormControl>
-                      <RadioGroupItem value="dark" className="sr-only" />
-                    </FormControl>
-                    <div className="flex items-center rounded-md border-2 border-muted bg-popover p-1 hover:bg-accent hover:text-accent-foreground">
-                      <div className="space-y-2 rounded-sm bg-slate-950 p-2">
-                        <div className="shadow-xs space-y-2 rounded-md bg-slate-800 p-2">
-                          <div className="h-2 w-[80px] rounded-lg bg-slate-400" />
-                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                        </div>
-                        <div className="shadow-xs flex items-center space-x-2 rounded-md bg-slate-800 p-2">
-                          <div className="size-4 rounded-full bg-slate-400" />
-                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                        </div>
-                        <div className="shadow-xs flex items-center space-x-2 rounded-md bg-slate-800 p-2">
-                          <div className="size-4 rounded-full bg-slate-400" />
-                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                        </div>
-                      </div>
-                    </div>
-                    <span className="block w-full p-2 text-center font-normal">
-                      Dark
-                    </span>
-                  </FormLabel>
-                </FormItem>
-                <FormItem>
-                  <FormLabel className="[&:has([data-state=checked])>div]:border-primary">
-                    <FormControl>
-                      <RadioGroupItem value="system" className="sr-only" />
-                    </FormControl>
-                    <div className="flex items-center rounded-md border-2 border-muted p-1 hover:border-accent">
-                      <div className="space-y-2 rounded-sm bg-gradient-to-br from-[#ecedef] to-slate-950 p-2">
-                        <div className="shadow-xs space-y-2 rounded-md bg-white p-2">
-                          <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
-                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                        </div>
-                        <div className="shadow-xs flex items-center space-x-2 rounded-md bg-slate-800 p-2">
-                          <div className="size-4 rounded-full bg-slate-400" />
-                          <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
-                        </div>
-                        <div className="shadow-xs flex items-center space-x-2 rounded-md bg-white p-2">
-                          <div className="size-4 rounded-full bg-[#ecedef]" />
-                          <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
-                        </div>
-                      </div>
-                    </div>
-                    <span className="block w-full p-2 text-center font-normal">
-                      System
-                    </span>
-                  </FormLabel>
-                </FormItem>
-              </RadioGroup>
-            </FormItem>
-          )}
-        />
+                    <FormDescription>
+                        This font will be applied globally across your dashboard.
+                    </FormDescription>
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </CardContent>
+        </Card>
 
-        <Button type="submit">Update preferences</Button>
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Monitor className="size-5 text-primary" />
+                    Interface Theme
+                </CardTitle>
+                <CardDescription>Customize the look and feel of the application.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FormField
+                control={form.control}
+                name="theme"
+                render={({ field }) => (
+                    <FormItem className="space-y-1">
+                    <FormMessage />
+                    <RadioGroup
+                        onValueChange={(value) => {
+                        field.onChange(value);
+                        setTheme(value as "light" | "dark" | "system");
+                        }}
+                        defaultValue={field.value}
+                        className="grid max-w-3xl grid-cols-1 gap-8 pt-4 md:grid-cols-3"
+                    >
+                        <FormItem>
+                        <FormLabel className="cursor-pointer [&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5">
+                            <FormControl>
+                            <RadioGroupItem value="light" className="sr-only" />
+                            </FormControl>
+                            <div className="items-center rounded-xl border-2 border-muted p-1 transition-all hover:bg-muted/20">
+                            <div className="space-y-2 rounded-lg bg-[#ecedef] p-2">
+                                <div className="space-y-2 rounded-md bg-white p-2 shadow-sm">
+                                <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
+                                <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
+                                <div className="size-4 rounded-full bg-[#ecedef]" />
+                                <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
+                                <div className="size-4 rounded-full bg-[#ecedef]" />
+                                <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                                </div>
+                            </div>
+                            </div>
+                            <span className="flex w-full items-center justify-center gap-2 p-2 pt-3 text-center text-sm font-medium">
+                                <Sun className="size-4" /> Light
+                            </span>
+                        </FormLabel>
+                        </FormItem>
+                        <FormItem>
+                        <FormLabel className="cursor-pointer [&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5">
+                            <FormControl>
+                            <RadioGroupItem value="dark" className="sr-only" />
+                            </FormControl>
+                            <div className="items-center rounded-xl border-2 border-muted bg-popover p-1 transition-all hover:bg-accent hover:text-accent-foreground">
+                            <div className="space-y-2 rounded-lg bg-slate-950 p-2">
+                                <div className="space-y-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                                <div className="h-2 w-[80px] rounded-lg bg-slate-400" />
+                                <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                                <div className="size-4 rounded-full bg-slate-400" />
+                                <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                                <div className="size-4 rounded-full bg-slate-400" />
+                                <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                                </div>
+                            </div>
+                            </div>
+                            <span className="flex w-full items-center justify-center gap-2 p-2 pt-3 text-center text-sm font-medium">
+                                <Moon className="size-4" /> Dark
+                            </span>
+                        </FormLabel>
+                        </FormItem>
+                        <FormItem>
+                        <FormLabel className="cursor-pointer [&:has([data-state=checked])>div]:border-primary [&:has([data-state=checked])>div]:bg-primary/5">
+                            <FormControl>
+                            <RadioGroupItem value="system" className="sr-only" />
+                            </FormControl>
+                            <div className="items-center rounded-xl border-2 border-muted p-1 transition-all hover:bg-muted/20">
+                            <div className="space-y-2 rounded-lg bg-gradient-to-br from-[#ecedef] to-slate-950 p-2">
+                                <div className="space-y-2 rounded-md bg-white p-2 shadow-sm">
+                                <div className="h-2 w-[80px] rounded-lg bg-[#ecedef]" />
+                                <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
+                                <div className="size-4 rounded-full bg-slate-400" />
+                                <div className="h-2 w-[100px] rounded-lg bg-slate-400" />
+                                </div>
+                                <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
+                                <div className="size-4 rounded-full bg-[#ecedef]" />
+                                <div className="h-2 w-[100px] rounded-lg bg-[#ecedef]" />
+                                </div>
+                            </div>
+                            </div>
+                            <span className="flex w-full items-center justify-center gap-2 p-2 pt-3 text-center text-sm font-medium">
+                                <Monitor className="size-4" /> System
+                            </span>
+                        </FormLabel>
+                        </FormItem>
+                    </RadioGroup>
+                    </FormItem>
+                )}
+                />
+            </CardContent>
+        </Card>
       </form>
     </Form>
   );

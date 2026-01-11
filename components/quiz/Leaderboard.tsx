@@ -74,14 +74,14 @@ export function Leaderboard({
 
   return (
     <Card className={cn("w-full", className)}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Trophy className="size-5 text-yellow-500" />
+      <CardHeader className="p-component-sm sm:p-component-md">
+        <CardTitle className="flex items-center gap-2 text-heading-md sm:text-heading-lg">
+          <Trophy className="size-4 text-yellow-500 sm:size-5" />
           Leaderboard
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-2">
+      <CardContent className="p-component-sm sm:p-component-md">
+        <div className="space-y-3 sm:space-y-2">
           {entries.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No entries yet. Be the first to complete this quiz!
@@ -97,20 +97,20 @@ export function Leaderboard({
                 <div
                   key={entry.userId}
                   className={cn(
-                    "flex items-center gap-4 rounded-lg border p-4 transition-colors",
+                    "flex flex-col items-start gap-3 rounded-lg border p-3 transition-colors sm:flex-row sm:items-center sm:gap-4 sm:p-4",
                     rankColor,
                     isCurrentUser && "ring-2 ring-primary",
                     !rankColor && "hover:bg-muted/50"
                   )}
                 >
                   {/* Rank */}
-                  <div className="flex w-12 items-center justify-center">
+                  <div className="flex w-8 items-center justify-center sm:w-12">
                     {rankIcon ? (
                       rankIcon
                     ) : (
                       <span
                         className={cn(
-                          "text-lg font-bold",
+                          "text-base font-bold sm:text-lg",
                           entry.rank <= 3 ? "text-primary" : "text-muted-foreground"
                         )}
                       >
@@ -120,7 +120,7 @@ export function Leaderboard({
                   </div>
 
                   {/* Avatar */}
-                  <Avatar className="size-10">
+                  <Avatar className="size-8 sm:size-10">
                     <AvatarImage src={entry.avatar} alt={entry.username} />
                     <AvatarFallback>{getInitials(entry.username)}</AvatarFallback>
                   </Avatar>
@@ -130,19 +130,19 @@ export function Leaderboard({
                     <div className="flex items-center gap-2">
                       <span
                         className={cn(
-                          "font-semibold",
+                          "text-sm font-semibold sm:text-base",
                           isCurrentUser && "text-primary"
                         )}
                       >
                         {entry.username}
                       </span>
                       {isCurrentUser && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-[10px] sm:text-xs">
                           You
                         </Badge>
                       )}
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                    <div className="flex flex-col gap-1 text-[10px] text-muted-foreground sm:flex-row sm:items-center sm:gap-4 sm:text-xs">
                       <span>Time: {formatTime(entry.timeTaken)}</span>
                       <span>
                         {new Date(entry.completedAt).toLocaleDateString()}
@@ -152,10 +152,10 @@ export function Leaderboard({
 
                   {/* Score */}
                   <div className="text-right">
-                    <div className="text-lg font-bold text-primary">
+                    <div className="text-base font-bold text-primary sm:text-lg">
                       {entry.score}/{entry.totalPoints}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div className="text-xs text-muted-foreground sm:text-sm">
                       {entry.percentage}%
                     </div>
                   </div>

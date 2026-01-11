@@ -55,14 +55,14 @@ export function CompetitorsList({
 
   return (
     <Card className={cn("w-full", className)}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Users className="size-5 text-primary" />
+      <CardHeader className="p-component-sm sm:p-component-md">
+        <CardTitle className="flex items-center gap-2 text-heading-md sm:text-heading-lg">
+          <Users className="size-4 text-primary sm:size-5" />
           Top Competitors
         </CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-3">
+      <CardContent className="p-component-sm sm:p-component-md">
+        <div className="space-y-3 sm:space-y-2">
           {competitors.length === 0 ? (
             <div className="py-8 text-center text-muted-foreground">
               No competitors yet.
@@ -76,16 +76,16 @@ export function CompetitorsList({
                 <div
                   key={competitor.userId}
                   className={cn(
-                    "flex items-center gap-4 rounded-lg border p-4 transition-colors",
+                    "flex flex-col items-start gap-3 rounded-lg border p-3 transition-colors sm:flex-row sm:items-center sm:gap-4 sm:p-4",
                     isCurrentUser && "ring-2 ring-primary",
                     "hover:bg-muted/50"
                   )}
                 >
                   {/* Rank */}
-                  <div className="flex w-10 items-center justify-center">
+                  <div className="flex w-8 items-center justify-center sm:w-10">
                     <span
                       className={cn(
-                        "text-lg font-bold",
+                        "text-base font-bold sm:text-lg",
                         competitor.rank <= 3
                           ? "text-primary"
                           : "text-muted-foreground"
@@ -97,7 +97,7 @@ export function CompetitorsList({
 
                   {/* Avatar with Online Status */}
                   <div className="relative">
-                    <Avatar className="size-12">
+                    <Avatar className="size-10 sm:size-12">
                       <AvatarImage src={competitor.avatar} alt={competitor.username} />
                       <AvatarFallback>
                         {getInitials(competitor.username)}
@@ -113,29 +113,29 @@ export function CompetitorsList({
                     <div className="flex items-center gap-2">
                       <span
                         className={cn(
-                          "font-semibold",
+                          "text-sm font-semibold sm:text-base",
                           isCurrentUser && "text-primary"
                         )}
                       >
                         {competitor.username}
                       </span>
                       {isCurrentUser && (
-                        <Badge variant="outline" className="text-xs">
+                        <Badge variant="outline" className="text-[10px] sm:text-xs">
                           You
                         </Badge>
                       )}
                     </div>
-                    <div className="mt-1 flex flex-wrap items-center gap-2">
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                    <div className="mt-1 flex flex-col flex-wrap gap-1 sm:flex-row sm:items-center sm:gap-2">
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground sm:text-xs">
                         <Award className="size-3" />
                         <span>{competitor.totalQuizzesCompleted} quizzes</span>
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                      <div className="flex items-center gap-1 text-[10px] text-muted-foreground sm:text-xs">
                         <TrendingUp className="size-3" />
                         <span>{competitor.averageScore}% avg</span>
                       </div>
                       {!competitor.isOnline && (
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[10px] text-muted-foreground sm:text-xs">
                           {formatLastActive(competitor.lastActive)}
                         </span>
                       )}
@@ -146,7 +146,7 @@ export function CompetitorsList({
                           <Badge
                             key={idx}
                             variant="secondary"
-                            className="text-xs"
+                            className="text-[10px] sm:text-xs"
                           >
                             {badge}
                           </Badge>
@@ -156,11 +156,11 @@ export function CompetitorsList({
                   </div>
 
                   {/* Stats */}
-                  <div className="text-right">
-                    <div className="text-lg font-bold text-primary">
+                  <div className="text-left sm:text-right">
+                    <div className="text-base font-bold text-primary sm:text-lg">
                       {competitor.totalPoints}
                     </div>
-                    <div className="text-xs text-muted-foreground">points</div>
+                    <div className="text-[10px] text-muted-foreground sm:text-xs">points</div>
                   </div>
                 </div>
               );

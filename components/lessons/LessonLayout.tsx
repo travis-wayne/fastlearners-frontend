@@ -37,7 +37,7 @@ export function LessonLayout({
             <SheetHeader className="border-b p-4">
               <SheetTitle>{leftSidebarTitle}</SheetTitle>
             </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-5rem)] responsive-padding">
+            <ScrollArea className="responsive-padding h-[calc(100vh-5rem)]">
               {leftSidebar}
             </ScrollArea>
           </SheetContent>
@@ -54,7 +54,7 @@ export function LessonLayout({
             <SheetHeader className="border-b p-4">
               <SheetTitle>{rightSidebarTitle}</SheetTitle>
             </SheetHeader>
-            <ScrollArea className="h-[calc(100vh-5rem)] responsive-padding">
+            <ScrollArea className="responsive-padding h-[calc(100vh-5rem)]">
               {rightSidebar}
             </ScrollArea>
           </SheetContent>

@@ -159,7 +159,7 @@ export function GuardianDashboard() {
     <div className="dashboard-spacing dashboard-container">
       {/* Header banner */}
       <div
-        className={`relative overflow-hidden rounded-2xl responsive-padding ${headerGradient} transition-all duration-700 ease-in-out`}
+        className={`responsive-padding relative overflow-hidden rounded-2xl ${headerGradient} transition-all duration-700 ease-in-out`}
       >
         <div className="responsive-gap grid md:grid-cols-[1fr_auto] md:items-center">
           <div>

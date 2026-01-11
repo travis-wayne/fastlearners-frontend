@@ -19,6 +19,9 @@ import {
 } from "@/components/ui/form";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Switch } from "@/components/ui/switch";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Bell, Mail, MessageSquare, Shield, Smartphone, Zap } from "lucide-react";
+import { toast } from "sonner";
 
 const notificationsFormSchema = z.object({
   type: z.enum(["all", "mentions", "none"], {
@@ -48,66 +51,104 @@ export function NotificationsForm() {
     defaultValues,
   });
 
+  function onSubmit(data: NotificationsFormValues) {
+    showSubmittedData(data);
+    toast.success("Notification preferences saved.")
+  }
+
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit((data) => showSubmittedData(data))}
-        className="space-y-8"
+        onSubmit={form.handleSubmit(onSubmit)}
+        className="space-y-8 duration-500 animate-in fade-in-50"
       >
-        <FormField
-          control={form.control}
-          name="type"
-          render={({ field }) => (
-            <FormItem className="relative space-y-3">
-              <FormLabel>Notify me about...</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col gap-2"
-                >
-                  <FormItem className="flex items-center">
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Zap className="size-5 text-primary" />
+                    Global Behavior
+                </CardTitle>
+                <CardDescription>How much do you want to be disturbed?</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <FormField
+                control={form.control}
+                name="type"
+                render={({ field }) => (
+                    <FormItem className="relative space-y-4">
                     <FormControl>
-                      <RadioGroupItem value="all" />
+                        <RadioGroup
+                        onValueChange={field.onChange}
+                        defaultValue={field.value}
+                        className="grid grid-cols-1 gap-4 md:grid-cols-3"
+                        >
+                        <FormItem>
+                            <FormControl>
+                                <RadioGroupItem value="all" className="peer sr-only" />
+                            </FormControl>
+                            <FormLabel className="flex cursor-pointer flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-4 transition-all hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                <Bell className="mb-3 size-6 text-primary" />
+                                <div className="text-center">
+                                    <span className="text-sm font-semibold">Everything</span>
+                                    <span className="mt-1 block text-xs text-muted-foreground">Get notified about all activity.</span>
+                                </div>
+                            </FormLabel>
+                        </FormItem>
+
+                        <FormItem>
+                            <FormControl>
+                                <RadioGroupItem value="mentions" className="peer sr-only" />
+                            </FormControl>
+                            <FormLabel className="flex cursor-pointer flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-4 transition-all hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                <MessageSquare className="mb-3 size-6 text-primary" />
+                                <div className="text-center">
+                                    <span className="text-sm font-semibold">Mentions Only</span>
+                                    <span className="mt-1 block text-xs text-muted-foreground">Only when someone tags you.</span>
+                                </div>
+                            </FormLabel>
+                        </FormItem>
+
+                        <FormItem>
+                            <FormControl>
+                                <RadioGroupItem value="none" className="peer sr-only" />
+                            </FormControl>
+                            <FormLabel className="flex cursor-pointer flex-col items-center justify-between rounded-xl border-2 border-muted bg-transparent p-4 transition-all hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary">
+                                <Bell className="mb-3 size-6 text-muted-foreground opacity-50" />
+                                <div className="text-center">
+                                    <span className="text-sm font-semibold">Nothing</span>
+                                    <span className="mt-1 block text-xs text-muted-foreground">Silence is golden.</span>
+                                </div>
+                            </FormLabel>
+                        </FormItem>
+                        </RadioGroup>
                     </FormControl>
-                    <FormLabel className="font-normal">
-                      All new messages
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center">
-                    <FormControl>
-                      <RadioGroupItem value="mentions" />
-                    </FormControl>
-                    <FormLabel className="font-normal">
-                      Direct messages and mentions
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center">
-                    <FormControl>
-                      <RadioGroupItem value="none" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Nothing</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <div className="relative">
-          <h3 className="mb-4 text-lg font-medium">Email Notifications</h3>
-          <div className="space-y-4">
+                    <FormMessage />
+                    </FormItem>
+                )}
+                />
+            </CardContent>
+        </Card>
+
+        <Card>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Mail className="size-5 text-primary" />
+                    Email Subscriptions
+                </CardTitle>
+                <CardDescription>Manage which emails you receive from us.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
             <FormField
               control={form.control}
               name="communication_emails"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">
+                    <FormLabel className="text-base font-semibold">
                       Communication emails
                     </FormLabel>
                     <FormDescription>
-                      Receive emails about your account activity.
+                      Receive emails about your account activity and essential updates.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -116,20 +157,20 @@ export function NotificationsForm() {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                </FormItem>
+                </div>
               )}
             />
             <FormField
               control={form.control}
               name="marketing_emails"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">
+                    <FormLabel className="text-base font-semibold">
                       Marketing emails
                     </FormLabel>
                     <FormDescription>
-                      Receive emails about new products, features, and more.
+                      Receive emails about new products, features, and special offers.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -138,18 +179,18 @@ export function NotificationsForm() {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                </FormItem>
+                </div>
               )}
             />
             <FormField
               control={form.control}
               name="social_emails"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="flex flex-row items-center justify-between rounded-lg border p-4 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Social emails</FormLabel>
+                    <FormLabel className="text-base font-semibold">Social emails</FormLabel>
                     <FormDescription>
-                      Receive emails for friend requests, follows, and more.
+                      Receive emails for friend requests, follows, and interactions.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -158,18 +199,22 @@ export function NotificationsForm() {
                       onCheckedChange={field.onChange}
                     />
                   </FormControl>
-                </FormItem>
+                </div>
               )}
             />
             <FormField
               control={form.control}
               name="security_emails"
               render={({ field }) => (
-                <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+                <div className="flex flex-row items-center justify-between rounded-lg border bg-muted/20 p-4 shadow-sm">
                   <div className="space-y-0.5">
-                    <FormLabel className="text-base">Security emails</FormLabel>
+                    <div className="flex items-center gap-2">
+                        <Shield className="size-4 text-green-600" />
+                        <FormLabel className="text-base font-semibold">Security emails</FormLabel>
+                    </div>
+                    
                     <FormDescription>
-                      Receive emails about your account activity and security.
+                      Critical alerts about your account security.
                     </FormDescription>
                   </div>
                   <FormControl>
@@ -180,41 +225,44 @@ export function NotificationsForm() {
                       aria-readonly
                     />
                   </FormControl>
-                </FormItem>
+                </div>
               )}
             />
-          </div>
-        </div>
-        <FormField
-          control={form.control}
-          name="mobile"
-          render={({ field }) => (
-            <FormItem className="relative flex flex-row items-start">
-              <FormControl>
-                <Checkbox
-                  checked={field.value}
-                  onCheckedChange={field.onChange}
+          </CardContent>
+        </Card>
+
+        <Card>
+            <CardContent className="pt-6">
+                <FormField
+                control={form.control}
+                name="mobile"
+                render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-3 space-y-0">
+                    <FormControl>
+                        <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        />
+                    </FormControl>
+                    <div className="space-y-1 leading-none">
+                        <FormLabel className="flex items-center gap-2">
+                            <Smartphone className="size-4" />
+                            Use different settings for mobile devices
+                        </FormLabel>
+                        <FormDescription>
+                        You can manage specific mobile notifications in the mobile app settings.
+                        </FormDescription>
+                    </div>
+                    </FormItem>
+                )}
                 />
-              </FormControl>
-              <div className="space-y-1 leading-none">
-                <FormLabel>
-                  Use different settings for my mobile devices
-                </FormLabel>
-                <FormDescription>
-                  You can manage your mobile notifications in the{" "}
-                  <Link
-                    href="/dashboard/settings"
-                    className="underline decoration-dashed underline-offset-4 hover:decoration-solid"
-                  >
-                    mobile settings
-                  </Link>{" "}
-                  page.
-                </FormDescription>
-              </div>
-            </FormItem>
-          )}
-        />
-        <Button type="submit">Update notifications</Button>
+            </CardContent>
+        </Card>
+        
+        <div className="flex justify-end">
+             <Button type="submit" size="lg">Update Preferences</Button>
+        </div>
+        
       </form>
     </Form>
   );

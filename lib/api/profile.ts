@@ -19,6 +19,7 @@ export interface UserProfile {
   // Guardian-specific fields
   child_email?: string;
   child_phone?: string;
+  avatar?: string | null;
   // Additional fields from API
   username: string | null;
   school: string | null;
