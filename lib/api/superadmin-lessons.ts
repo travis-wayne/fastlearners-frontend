@@ -271,3 +271,110 @@ export function getErrorMessage(error: any): string {
   return "An unexpected error occurred";
 }
 
+// Trash Management Functions
+
+import { TrashedLessonsResponse } from "@/lib/types/superadmin";
+
+
+
+// Get trashed lessons with filters
+export async function getTrashedLessons(filters?: {
+  class?: string;
+  subject?: string;
+  term?: string;
+  week?: string;
+  page?: number;
+  limit?: number;
+}): Promise<ApiResponse<TrashedLessonsResponse>> {
+  try {
+    const response = await fetch("/api/superadmin/lessons/view-trashed", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(filters || {}),
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to fetch trashed lessons",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+// Move lesson to trash
+export async function trashLesson(lessonId: number): Promise<ApiResponse<null>> {
+  try {
+    const response = await fetch(`/api/superadmin/lessons/${lessonId}/trash`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to trash lesson",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+// Restore lesson from trash
+export async function restoreLesson(lessonId: number): Promise<ApiResponse<null>> {
+  try {
+    const response = await fetch(`/api/superadmin/lessons/${lessonId}/restore`, {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to restore lesson",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+// Permanently delete lesson
+export async function permanentlyDeleteLesson(lessonId: number): Promise<ApiResponse<null>> {
+  try {
+    const response = await fetch(`/api/superadmin/lessons/${lessonId}/delete`, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    const data = await response.json();
+    return data;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error.message || "Failed to permanently delete lesson",
+      content: null,
+      code: 500,
+    };
+  }
+}
+

@@ -1,116 +1,152 @@
 import Link from "next/link";
-import { 
-  Upload, 
-  BookOpen, 
-  Layers, 
-  Shield, 
-  CheckCircle,
-  AlertCircle
+import {
+  Upload,
+  BookOpen,
+  Layers,
+  Trash2,
+  FolderCog,
+  ArrowRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
+  CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { StatsCards } from "@/components/superadmin/stats-cards";
 
 export default function SuperadminOverviewPage() {
   return (
     <div className="space-y-6 duration-500 animate-in fade-in-50">
+      {/* Statistics Section */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Content Statistics</h3>
+        <p className="text-sm text-muted-foreground">
+          Overview of your curriculum structure and content status
+        </p>
+      </div>
+      <StatsCards />
+
+      {/* Quick Actions Section */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Quick Actions</h3>
+        <p className="text-sm text-muted-foreground">
+          Common tasks for managing your content
+        </p>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Quick Upload</CardTitle>
-              <Upload className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Import Content</div>
-              <p className="text-xs text-muted-foreground">
-                Upload lesson data via CSV
-              </p>
-              <Link href="/dashboard/superadmin/uploads">
-                <Button className="mt-4 w-full" variant="secondary">
-                  Go to Uploads
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Lesson Browser</CardTitle>
-              <BookOpen className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Manage Lessons</div>
-              <p className="text-xs text-muted-foreground">
-                View and verify content
-              </p>
-              <Link href="/dashboard/superadmin/browse">
-                <Button className="mt-4 w-full" variant="secondary">
-                  Browse Lessons
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Upload Content</CardTitle>
+            <Upload className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Import lesson data via CSV files
+            </CardDescription>
+            <Link href="/dashboard/superadmin/uploads">
+              <Button className="w-full gap-2" variant="secondary">
+                Go to Uploads
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Bulk Actions</CardTitle>
-              <Layers className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">All-In-One</div>
-              <p className="text-xs text-muted-foreground">
-                Upload full curriculum at once
-              </p>
-              <Link href="/dashboard/superadmin/uploads">
-                <Button className="mt-4 w-full" variant="outline">
-                  Bulk Upload
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Browse Lessons</CardTitle>
+            <BookOpen className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              View and verify uploaded content
+            </CardDescription>
+            <Link href="/dashboard/superadmin/browse">
+              <Button className="w-full gap-2" variant="secondary">
+                Browse Content
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">System Status</CardTitle>
-              <Shield className="size-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">Superadmin</div>
-              <p className="text-xs text-muted-foreground">
-                Full system access granted
-              </p>
-              <div className="mt-4 flex items-center gap-2 text-sm text-emerald-600">
-                <CheckCircle className="size-4" />
-                <span>System Operational</span>
-              </div>
-            </CardContent>
-          </Card>
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Bulk Upload</CardTitle>
+            <Layers className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Upload full curriculum at once
+            </CardDescription>
+            <Link href="/dashboard/superadmin/uploads">
+              <Button className="w-full gap-2" variant="outline">
+                All-In-One Upload
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Trash</CardTitle>
+            <Trash2 className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Restore or delete trashed lessons
+            </CardDescription>
+            <Link href="/dashboard/superadmin/manage/trash">
+              <Button className="w-full gap-2" variant="outline">
+                View Trash
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-        <div className="col-span-4">
-           {/* Placeholder for future charts/stats */}
-           <Alert>
-            <AlertCircle className="size-4" />
-            <AlertTitle>Superadmin Capabilities</AlertTitle>
-            <AlertDescription>
-              As a superadmin, you have unique access to modify the core curriculum. 
-              Use the tabs above or the quick actions to navigate.
-              <ul className="mt-2 list-inside list-disc text-sm text-muted-foreground">
-                <li>Upload new lessons, concepts, and exercises via CSV</li>
-                <li>Browse and verify existing lesson content</li>
-                <li>View detailed system logs (coming soon)</li>
-              </ul>
-            </AlertDescription>
-          </Alert>
-        </div>
+      {/* Management Section */}
+      <div className="space-y-2">
+        <h3 className="text-lg font-semibold">Management</h3>
+        <p className="text-sm text-muted-foreground">
+          Advanced tools for content management
+        </p>
       </div>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <FolderCog className="size-5 text-primary" />
+            <CardTitle>File Management</CardTitle>
+          </div>
+          <CardDescription>
+            Monitor uploads, manage files, and handle content organization
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard/superadmin/manage">
+              <Button variant="outline" className="gap-2">
+                <FolderCog className="size-4" />
+                Manage Files
+              </Button>
+            </Link>
+            <Link href="/dashboard/superadmin/manage/trash">
+              <Button variant="outline" className="gap-2">
+                <Trash2 className="size-4" />
+                Trash Management
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

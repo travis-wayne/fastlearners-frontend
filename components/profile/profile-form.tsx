@@ -15,7 +15,8 @@ import {
   Calendar,
   Save,
   Loader2,
-  GraduationCap
+  GraduationCap,
+  Camera
 } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -29,7 +30,9 @@ import {
   updateProfile,
   UserProfile,
   validateProfileData,
+  checkUsernameAvailability,
 } from "@/lib/api/profile";
+import { useDebounce } from "@/hooks/use-debounce";
 import { ProfilePageData } from "@/lib/types/profile";
 import { Button } from "@/components/ui/button";
 import {
@@ -52,6 +55,7 @@ import { DatePicker } from "@/components/date-picker";
 import { useAcademicContext } from "@/components/providers/academic-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Separator } from "@/components/ui/separator";
+import { ProfilePictureModal } from "./profile-picture-modal";
 
 // Form validation schema
 const profileSchema = z
@@ -104,6 +108,11 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [pendingClassChange, setPendingClassChange] = useState<string | null>(null);
+  const [usernameAvailability, setUsernameAvailability] = useState<{
+    status: "idle" | "checking" | "available" | "unavailable";
+    message?: string;
+  }>({ status: "idle" });
+  const [showAvatarModal, setShowAvatarModal] = useState(false);
 
   const {
     register,
@@ -121,6 +130,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
 
   const selectedRole = watch("role");
   const selectedClass = watch("class");
+  const watchedUsername = watch("username");
+  const debouncedUsername = useDebounce(watchedUsername, 500);
 
   // Clear discipline when JSS class is selected
   useEffect(() => {
@@ -128,6 +139,53 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
       setValue("discipline", "");
     }
   }, [selectedClass, setValue]);
+
+  // Check username availability when debounced value changes
+  useEffect(() => {
+    const checkUsername = async () => {
+      // Clear status if empty
+      if (!debouncedUsername || debouncedUsername.trim().length === 0) {
+        setUsernameAvailability({ status: "idle" });
+        return;
+      }
+
+      // Skip if same as current profile username
+      if (profile?.username && debouncedUsername === profile.username) {
+        setUsernameAvailability({ status: "idle" });
+        return;
+      }
+
+      // If user already has a username set, they can't change it (per business logic elsewhere) 
+      // but if the UI allows typing, we should validate.
+      // Assuming the input is disabled if profile?.username exists, this effect won't run much.
+      // But if it's editable, we check.
+
+      setUsernameAvailability({ status: "checking" });
+
+      try {
+        const result = await checkUsernameAvailability(debouncedUsername);
+        
+        if (result.available) {
+          setUsernameAvailability({
+            status: "available",
+            message: result.message || "Username is available",
+          });
+        } else {
+          setUsernameAvailability({
+            status: "unavailable",
+            message: result.message || "Username is not available",
+          });
+        }
+      } catch (error) {
+        setUsernameAvailability({
+          status: "unavailable",
+          message: "Error checking availability"
+        });
+      }
+    };
+
+    checkUsername();
+  }, [debouncedUsername, profile?.username]);
 
   // Derive primary role from profile for conditional rendering
   const primaryRole = profile
@@ -327,11 +385,20 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         <div className="flex flex-col gap-6 lg:w-1/3">
           <Card className="overflow-hidden border-border/60 shadow-sm transition-all hover:shadow-md">
             <CardHeader className="bg-muted/30 pb-8 pt-6 text-center">
-              <div className="mx-auto mb-4 flex size-24 items-center justify-center rounded-full bg-background p-1 shadow-sm ring-4 ring-background">
+              <div className="relative mx-auto mb-4 flex size-24 items-center justify-center rounded-full bg-background p-1 shadow-sm ring-4 ring-background">
                  <Avatar className="size-full">
                     <AvatarImage src={profile?.avatar || undefined} />
                     <AvatarFallback className="bg-primary/10 text-2xl font-bold text-primary">{initials}</AvatarFallback>
                  </Avatar>
+                 {/* Camera Button Overlay */}
+                 <button
+                   type="button"
+                   onClick={() => setShowAvatarModal(true)}
+                   className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity hover:opacity-100"
+                   disabled={primaryRole === "guest"}
+                 >
+                   <Camera className="size-6 text-white" />
+                 </button>
               </div>
               <CardTitle>{profile?.name}</CardTitle>
               <CardDescription className="flex items-center justify-center gap-1">
@@ -361,15 +428,37 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                     <Label htmlFor="username">Username</Label>
                     <div className="relative">
                         <span className="absolute left-3 top-2.5 font-mono text-muted-foreground">@</span>
-                        <Input 
-                            id="username" 
-                            {...register("username")} 
-                            className="pl-8" 
-                            placeholder="username"
+                        <Input
+                            id="username"
+                            {...register("username")}
+                            className="pl-8 pr-10"
                             disabled={primaryRole === "guest" || !!profile?.username}
+                            placeholder="Choose a unique username"
                         />
+                        {/* Status Icon */}
+                        {usernameAvailability.status === "checking" && (
+                          <Loader2 className="absolute right-3 top-2.5 size-4 animate-spin text-muted-foreground" />
+                        )}
+                        {usernameAvailability.status === "available" && (
+                          <CheckCircle2 className="absolute right-3 top-2.5 size-4 text-green-600" />
+                        )}
+                        {usernameAvailability.status === "unavailable" && (
+                          <AlertCircle className="absolute right-3 top-2.5 size-4 text-destructive" />
+                        )}
                     </div>
-                     {!!profile?.username && <p className="text-xs text-muted-foreground">Username cannot be changed.</p>}
+                    {/* Status Messages */}
+                    {!!profile?.username && (
+                      <p className="text-xs text-muted-foreground">Username cannot be changed.</p>
+                    )}
+                    {!profile?.username && usernameAvailability.status === "available" && (
+                      <p className="text-xs text-green-600">{usernameAvailability.message}</p>
+                    )}
+                    {!profile?.username && usernameAvailability.status === "unavailable" && (
+                      <p className="text-xs text-destructive">{usernameAvailability.message}</p>
+                    )}
+                    {errors.username && (
+                      <p className="text-xs text-destructive">{errors.username.message}</p>
+                    )}
                  </div>
             </CardContent>
           </Card>
@@ -545,6 +634,18 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
             </div>
         </div>
       </div>
+
+      {/* Profile Picture Upload Modal */}
+      <ProfilePictureModal
+        showModal={showAvatarModal}
+        setShowModal={setShowAvatarModal}
+        currentAvatar={profile?.avatar}
+        onUploadSuccess={(avatarUrl) => {
+          if (profile) {
+            setProfile({ ...profile, avatar: avatarUrl });
+          }
+        }}
+      />
     </form>
   );
 }

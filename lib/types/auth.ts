@@ -25,6 +25,7 @@ export interface User {
   address: string | null;
   gender: string | null;
   image: string | null;
+  avatar?: string | null;
   status: "active" | "inactive" | "suspended";
   created_at: string;
   role: UserRole[];

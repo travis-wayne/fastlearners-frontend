@@ -346,21 +346,36 @@ export const useLessonsStore = create<LessonsStore>()(
         },
 
         fetchLessons: async (page = 1) => {
+           const filters = get().filters;
+
+           // Check if all required filters are set before making API call
+           if (!filters.class || !filters.subject || !filters.term || !filters.week) {
+             // Don't show error, just clear lessons and return - user needs to select filters first
+             set({
+               lessons: [],
+               isLoadingLessons: false,
+               totalLessons: 0,
+               totalPages: 1,
+               currentPage: 1
+             });
+             return;
+           }
+
            set({ isLoadingLessons: true, error: null });
            try {
              if (get().isSuperadminMode) {
-                const filters = get().filters;
-                const response = await getSuperadminLessons({
+                const requestPayload = {
                     ...filters,
                     page,
                     limit: 12
-                });
-                
+                };
+                const response = await getSuperadminLessons(requestPayload);
+
                 if (response.success && response.content) {
                     // response.content is LessonsListResponse from superadmin-lessons.ts
                     // which has 'lessons', 'links', 'meta'.
                     const content = response.content as any; // Cast if type mismatch exists between definition files
-                    
+
                     set({
                         lessons: content.lessons || [],
                         currentPage: content.meta?.current_page || 1,
@@ -373,7 +388,7 @@ export const useLessonsStore = create<LessonsStore>()(
                 }
              } else {
                // Student fetch logic placeholder
-               set({ isLoadingLessons: false }); 
+               set({ isLoadingLessons: false });
              }
            } catch (error) {
                set({ isLoadingLessons: false, error: getErrorMessage(error) });

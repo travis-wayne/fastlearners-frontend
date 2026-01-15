@@ -30,6 +30,7 @@ interface LessonFiltersProps {
   compact?: boolean;
   showTitle?: boolean;
   sidebar?: boolean;
+  variant?: "default" | "compact" | "horizontal-bar";
 }
 
 export function LessonFilters({
@@ -37,6 +38,7 @@ export function LessonFilters({
   compact = false,
   showTitle = true,
   sidebar = false,
+  variant = "default",
 }: LessonFiltersProps) {
   // ... (existing hooks)
 
@@ -189,6 +191,117 @@ export function LessonFilters({
               Find
             </Button>
           </>
+        )}
+      </div>
+    );
+  }
+
+  if (variant === "horizontal-bar") {
+    return (
+      <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 shadow-sm md:flex-row md:items-center md:gap-2">
+        {showTitle && (
+            <div className="flex items-center gap-2 pr-2 md:mr-2 md:border-r">
+                <Filter className="size-4 text-primary" />
+                <span className="whitespace-nowrap font-semibold">Filter Lessons</span>
+            </div>
+        )}
+
+        {isLoadingMetadata ? (
+          <div className="grid grid-cols-2 gap-2 md:flex md:flex-1">
+             <Skeleton className="h-10 w-full md:w-32" />
+             <Skeleton className="h-10 w-full md:w-32" />
+             <Skeleton className="h-10 w-full md:w-32" />
+             <Skeleton className="h-10 w-full md:w-24" />
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-2 md:flex md:flex-1 md:items-center">
+             <Select
+              value={filters.class}
+              onValueChange={(value) => handleFilterChange("class", value)}
+            >
+              <SelectTrigger className="h-10 w-full md:w-[140px]">
+                <SelectValue placeholder="Class" />
+              </SelectTrigger>
+              <SelectContent>
+                {classes.map((cls) => (
+                  <SelectItem key={cls.id} value={cls.id.toString()}>
+                    {cls.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.subject}
+              onValueChange={(value) => handleFilterChange("subject", value)}
+            >
+              <SelectTrigger className="h-10 w-full md:w-[140px]">
+                <SelectValue placeholder="Subject" />
+              </SelectTrigger>
+              <SelectContent>
+                {subjects.map((subject) => (
+                  <SelectItem key={subject.id} value={subject.id.toString()}>
+                    {subject.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.term}
+              onValueChange={(value) => handleFilterChange("term", value)}
+            >
+              <SelectTrigger className="h-10 w-full md:w-[140px]">
+                <SelectValue placeholder="Term" />
+              </SelectTrigger>
+              <SelectContent>
+                {terms.map((term) => (
+                  <SelectItem key={term.id} value={term.id.toString()}>
+                    {term.name} Term
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <Select
+              value={filters.week}
+              onValueChange={(value) => handleFilterChange("week", value)}
+            >
+              <SelectTrigger className="h-10 w-full md:w-[120px]">
+                <SelectValue placeholder="Week" />
+              </SelectTrigger>
+              <SelectContent>
+                {weeks.map((week) => (
+                  <SelectItem key={week.id} value={week.id.toString()}>
+                    Week {week.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+
+            <div className="col-span-2 flex items-center gap-2 md:col-span-1 md:ml-auto">
+                {hasAnyFilter && (
+                <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleClearFilters}
+                    className="h-10 px-3 text-muted-foreground hover:text-foreground"
+                >
+                    Clear
+                </Button>
+                )}
+
+                <Button
+                onClick={handleFetchLessons}
+                disabled={!canFetchLessons}
+                size="sm"
+                className="h-10 flex-1 bg-primary font-medium hover:bg-primary/90 md:flex-none md:px-6"
+                >
+                <Search className="mr-2 size-4" />
+                Find
+                </Button>
+            </div>
+          </div>
         )}
       </div>
     );

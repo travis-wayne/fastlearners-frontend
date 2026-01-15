@@ -16,6 +16,7 @@ interface AuthState {
   isLoading: boolean;
   error: string | null;
   isHydrated: boolean; // Track if store has been rehydrated from localStorage
+  isHydrating: boolean; // Track if hydration is in progress
   academicFieldsChanged: boolean; // Flag to indicate if academic fields have changed
 
   // Actions
@@ -56,6 +57,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   isLoading: false, // Start with loading false to prevent premature loading state
   error: null,
   isHydrated: false, // Set to false initially
+  isHydrating: false,
   academicFieldsChanged: false, // Initial flag
 
   // Actions
@@ -68,69 +70,79 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   setError: (error: string | null) => set({ error }),
 
   hydrate: () => {
-    if (typeof window !== "undefined") {
-      const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH !== "false"; // default to true
-      if (useHttpOnly) {
-        // Fetch session from server (HttpOnly cookies) with timeout and retry
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout
+    // Prevent duplicate hydration if already hydrated or currently hydrating
+    const state = get();
+    if (state.isHydrated || state.isHydrating || typeof window === "undefined") {
+      return;
+    }
 
-        const attemptFetch = async (attempt: number = 0): Promise<void> => {
-          const maxAttempts = 2;
-          const backoffDelays = [300, 900]; // ms
+    set({ isHydrating: true });
 
-          try {
-            const response = await fetch("/api/auth/session", {
-              signal: controller.signal,
-            });
-            clearTimeout(timeoutId);
+    const useHttpOnly = process.env.NEXT_PUBLIC_USE_HTTPONLY_AUTH !== "false"; // default to true
+    if (useHttpOnly) {
+      // Fetch session from server (HttpOnly cookies) with timeout and retry
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 7000); // 7s timeout
 
-            if (!response.ok) {
-              const data = await response.json().catch(() => ({}));
-              // Handle specific error codes
-              if (data.code === "NO_AUTH_COOKIES" || data.code === "TOKEN_EXPIRED") {
-                set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
-                return;
-              }
-              throw new Error(data.message || "No session");
-            }
+      const attemptFetch = async (attempt: number = 0): Promise<void> => {
+        const maxAttempts = 2;
+        const backoffDelays = [300, 900]; // ms
 
-            const data = await response.json();
-            set({
-              user: data.user || null,
-              isAuthenticated: Boolean(data.user),
-              isLoading: false,
-              isHydrated: true,
-            });
-          } catch (error: any) {
-            clearTimeout(timeoutId);
+        try {
+          const response = await fetch("/api/auth/session", {
+            signal: controller.signal,
+          });
+          clearTimeout(timeoutId);
 
-            // Retry with exponential backoff
-            if (attempt < maxAttempts && !controller.signal.aborted) {
-              const delay = backoffDelays[attempt] || 900;
-              if (process.env.NODE_ENV !== "production") {
-                console.warn(`Auth hydration attempt ${attempt + 1} failed, retrying in ${delay}ms:`, error);
-              }
-              setTimeout(() => attemptFetch(attempt + 1), delay);
+          if (!response.ok) {
+            const data = await response.json().catch(() => ({}));
+            // Handle specific error codes
+            if (data.code === "NO_AUTH_COOKIES" || data.code === "TOKEN_EXPIRED") {
+              set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true, isHydrating: false });
               return;
             }
+            throw new Error(data.message || "No session");
+          }
 
-            // Final failure - set hydrated state to prevent blocking
+          const data = await response.json();
+          set({
+            user: data.user || null,
+            isAuthenticated: Boolean(data.user),
+            isLoading: false,
+            isHydrated: true,
+            isHydrating: false,
+          });
+        } catch (error: any) {
+          clearTimeout(timeoutId);
+
+          // Retry with exponential backoff
+          if (attempt < maxAttempts && !controller.signal.aborted) {
+            const delay = backoffDelays[attempt] || 900;
             if (process.env.NODE_ENV !== "production") {
+              console.warn(`Auth hydration attempt ${attempt + 1} failed, retrying in ${delay}ms:`, error);
+            }
+            setTimeout(() => attemptFetch(attempt + 1), delay);
+            return;
+          }
+
+          // Final failure - set hydrated state to prevent blocking
+          if (process.env.NODE_ENV !== "production") {
+            // Ignore AbortError if it was caused by us or React strict mode unmounting
+            if (error.name !== 'AbortError') {
               console.warn("Auth hydration failed after retries:", error);
             }
-            set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
           }
-        };
-
-        attemptFetch();
-      } else {
-        // Dev-only fallback: no-op path that sets unauthenticated state
-        if (process.env.NODE_ENV !== "production") {
-          console.warn("HttpOnly auth is disabled. This is a dev-only fallback.");
+          set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true, isHydrating: false });
         }
-        set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true });
+      };
+
+      attemptFetch();
+    } else {
+      // Dev-only fallback: no-op path that sets unauthenticated state
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("HttpOnly auth is disabled. This is a dev-only fallback.");
       }
+      set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true, isHydrating: false });
     }
   },
 

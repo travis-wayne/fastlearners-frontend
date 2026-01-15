@@ -90,7 +90,6 @@ export function Modal({
       }}
     >
       <DialogContent
-        onOpenAutoFocus={(e) => e.preventDefault()}
         onCloseAutoFocus={(e) => e.preventDefault()}
         className={cn(
           "overflow-hidden p-0 md:max-w-md md:rounded-2xl md:border",

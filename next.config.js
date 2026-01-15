@@ -24,6 +24,10 @@ const nextConfig = {
         protocol: "https",
         hostname: "avatar.iran.liara.run",
       },
+      {
+        protocol: "https",
+        hostname: "api.fastlearnersapp.com",
+      },
     ],
   },
   // Fix Contentlayer file-watching on Windows

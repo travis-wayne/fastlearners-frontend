@@ -205,6 +205,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                           name: user.name,
                           email: user.email,
                           image: user.image,
+                          avatar: user.avatar,
                           role: user.role,
                         }}
                       />
@@ -373,6 +374,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                           name: user.name,
                           email: user.email,
                           image: user.image,
+                          avatar: user.avatar,
                           role: user.role,
                         }}
                       />

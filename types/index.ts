@@ -19,6 +19,7 @@ export type User = {
   email: string;
   name: string | null;
   image: string | null;
+  avatar?: string | null;
   role: UserRole[];
   stripeCustomerId?: string | null;
   stripeSubscriptionId?: string | null;

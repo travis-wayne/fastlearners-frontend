@@ -33,6 +33,14 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // Backend expects field names with _id suffix
+    const backendPayload = {
+      class_id: classId,
+      subject_id: subject,
+      term_id: term,
+      week_id: week,
+    };
+
     const response = await fetch(
       `${BASE_API_URL}/superadmin/lessons/lessons`,
       {
@@ -42,12 +50,7 @@ export async function POST(req: NextRequest) {
           "Content-Type": "application/json",
           Authorization: `Bearer ${auth.token}`,
         },
-        body: JSON.stringify({
-          class: classId,
-          subject,
-          term,
-          week,
-        }),
+        body: JSON.stringify(backendPayload),
         cache: "no-store",
       }
     );

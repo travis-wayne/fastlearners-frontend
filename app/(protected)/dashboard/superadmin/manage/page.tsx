@@ -1,14 +1,19 @@
 "use client";
 
-import { useEffect } from "react";
-import { 
-  FileText, 
-  Upload, 
-  AlertCircle, 
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import {
+  FileText,
+  Upload,
+  AlertCircle,
   Clock,
   CheckCircle,
   XCircle,
-  Info
+  Info,
+  Trash2,
+  RotateCcw,
+  ArrowRight,
+  Loader2,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -30,9 +35,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSuperadminState } from "@/components/superadmin/use-superadmin-state";
+import { getTrashedLessons } from "@/lib/api/superadmin-lessons";
 
 export default function SuperadminManagePage() {
-  // Use centralized Zustand store instead of local state
   const {
     uploadStats,
     uploadRecords,
@@ -41,14 +46,33 @@ export default function SuperadminManagePage() {
     fetchUploadHistory,
   } = useSuperadminState();
 
-  // Fetch upload history on mount
+  const [trashedCount, setTrashedCount] = useState<number>(0);
+  const [trashedLoading, setTrashedLoading] = useState(true);
+
+  // Fetch upload history and trash count on mount
   useEffect(() => {
     fetchUploadHistory();
+
+    // Fetch trash count
+    async function fetchTrashCount() {
+      try {
+        const response = await getTrashedLessons({ page: 1 });
+        if (response.success && response.content) {
+          setTrashedCount(response.content.meta?.total || 0);
+        }
+      } catch (error) {
+        console.error("Failed to fetch trash count:", error);
+      } finally {
+        setTrashedLoading(false);
+      }
+    }
+    fetchTrashCount();
   }, [fetchUploadHistory]);
 
   // Determine if backend is not yet available (501 error)
-  const isBackendPending = uploadHistoryError?.includes("not yet implemented") || 
-                          uploadHistoryError?.includes("501");
+  const isBackendPending =
+    uploadHistoryError?.includes("not yet implemented") ||
+    uploadHistoryError?.includes("501");
 
   return (
     <div className="space-y-6 duration-500 animate-in fade-in-50">
@@ -56,22 +80,78 @@ export default function SuperadminManagePage() {
       <div className="flex flex-col gap-2">
         <h2 className="text-2xl font-bold tracking-tight">File Management</h2>
         <p className="text-muted-foreground">
-          Monitor upload history, view metrics, and manage file conflicts
+          Monitor upload history, manage trash, and handle file organization
         </p>
       </div>
+
+      {/* Trash Management Section - Prominently displayed */}
+      <Card className="border-2 border-primary/20 bg-gradient-to-br from-card to-primary/5">
+        <CardHeader>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10">
+                <Trash2 className="size-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle>Trash Management</CardTitle>
+                <CardDescription>
+                  Restore or permanently delete trashed lessons
+                </CardDescription>
+              </div>
+            </div>
+            {trashedLoading ? (
+              <Loader2 className="size-5 animate-spin text-muted-foreground" />
+            ) : trashedCount > 0 ? (
+              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                {trashedCount} item{trashedCount !== 1 ? "s" : ""} in trash
+              </Badge>
+            ) : (
+              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+                Trash empty
+              </Badge>
+            )}
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="space-y-1">
+              {trashedCount > 0 ? (
+                <p className="text-sm text-muted-foreground">
+                  You have <span className="font-medium text-foreground">{trashedCount}</span>{" "}
+                  lesson{trashedCount !== 1 ? "s" : ""} in the trash. Restore them or delete
+                  permanently.
+                </p>
+              ) : (
+                <p className="text-sm text-muted-foreground">
+                  No lessons in trash. Deleted lessons will appear here for recovery.
+                </p>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Link href="/dashboard/superadmin/manage/trash">
+                <Button className="gap-2">
+                  <Trash2 className="size-4" />
+                  View Trash
+                  <ArrowRight className="size-4" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Feature Status Alert */}
       {isBackendPending && (
         <Alert>
           <Info className="size-4" />
-          <AlertTitle>Feature Status</AlertTitle>
+          <AlertTitle>Upload History Feature Status</AlertTitle>
           <AlertDescription>
-            This page is currently in development. Some features require backend API endpoints that are not yet available.
+            Upload history tracking requires backend API endpoints that are not yet
+            available.
             <ul className="mt-2 list-inside list-disc text-sm">
-              <li className="text-emerald-600">✓ UI and routing configured</li>
+              <li className="text-emerald-600">✓ Trash management (available)</li>
               <li className="text-amber-600">⚠ Upload statistics API (pending backend)</li>
               <li className="text-amber-600">⚠ Upload history listing (pending backend)</li>
-              <li className="text-amber-600">⚠ Conflict detection and visualization (pending backend)</li>
             </ul>
           </AlertDescription>
         </Alert>
@@ -112,9 +192,7 @@ export default function SuperadminManagePage() {
             <div className="text-2xl font-bold">
               {uploadStats?.successfulUploads ?? "—"}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Completed uploads
-            </p>
+            <p className="text-xs text-muted-foreground">Completed uploads</p>
           </CardContent>
         </Card>
 
@@ -127,24 +205,24 @@ export default function SuperadminManagePage() {
             <div className="text-2xl font-bold">
               {uploadStats?.failedUploads ?? "—"}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Upload errors
-            </p>
+            <p className="text-xs text-muted-foreground">Upload errors</p>
           </CardContent>
         </Card>
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Conflicts</CardTitle>
-            <AlertCircle className="size-4 text-amber-600" />
+            <CardTitle className="text-sm font-medium">In Trash</CardTitle>
+            <Trash2 className="size-4 text-amber-600" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">
-              {uploadStats?.conflictCount ?? "—"}
+              {trashedLoading ? (
+                <Loader2 className="size-6 animate-spin" />
+              ) : (
+                trashedCount
+              )}
             </div>
-            <p className="text-xs text-muted-foreground">
-              Duplicate/conflict records
-            </p>
+            <p className="text-xs text-muted-foreground">Lessons in trash</p>
           </CardContent>
         </Card>
       </div>
@@ -172,12 +250,12 @@ export default function SuperadminManagePage() {
               <FileText className="size-12 text-muted-foreground/50" />
               <p className="mt-4 text-sm font-medium">No upload history available</p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {isBackendPending 
+                {isBackendPending
                   ? "Upload history will appear here once the backend API is integrated"
                   : "Upload some files to see them here"}
               </p>
               <Button variant="outline" className="mt-4" asChild>
-                <a href="/dashboard/superadmin/uploads">Go to Uploads</a>
+                <Link href="/dashboard/superadmin/uploads">Go to Uploads</Link>
               </Button>
             </div>
           ) : (
@@ -216,7 +294,10 @@ export default function SuperadminManagePage() {
                     <TableCell>{record.recordCount || 0}</TableCell>
                     <TableCell>
                       {record.conflictCount > 0 ? (
-                        <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+                        <Badge
+                          variant="secondary"
+                          className="bg-amber-100 text-amber-800"
+                        >
                           {record.conflictCount}
                         </Badge>
                       ) : (
@@ -227,42 +308,6 @@ export default function SuperadminManagePage() {
                 ))}
               </TableBody>
             </Table>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* Conflicts Section */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Conflict Details</CardTitle>
-          <CardDescription>
-            View and resolve duplicate or conflicting records
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {uploadStats && uploadStats.conflictCount > 0 ? (
-            <div className="text-sm">
-              <p className="mb-4 font-medium">
-                {uploadStats.conflictCount} conflict{uploadStats.conflictCount !== 1 ? 's' : ''} detected across uploads
-              </p>
-              {/* TODO: Add detailed conflicts table when backend provides per-conflict data */}
-              <Alert>
-                <Info className="size-4" />
-                <AlertDescription>
-                  Detailed conflict visualization will be available once the backend provides row-level conflict data.
-                </AlertDescription>
-              </Alert>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <AlertCircle className="size-12 text-muted-foreground/50" />
-              <p className="mt-4 text-sm font-medium">No conflicts detected</p>
-              <p className="mt-1 text-xs text-muted-foreground">
-                {isBackendPending
-                  ? "Conflict detection will be available once the backend API supports it"
-                  : "All uploads completed without conflicts"}
-              </p>
-            </div>
           )}
         </CardContent>
       </Card>

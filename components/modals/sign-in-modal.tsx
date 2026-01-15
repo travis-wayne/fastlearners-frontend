@@ -13,6 +13,7 @@ import { useRouter, usePathname } from "next/navigation";
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
+import { DialogTitle } from "@/components/ui/dialog";
 import { Icons } from "@/components/shared/icons";
 
 export function SignInModal({
@@ -33,6 +34,7 @@ export function SignInModal({
 
   return (
     <Modal showModal={showSignInModal} setShowModal={setShowSignInModal}>
+      <DialogTitle className="sr-only">Sign In</DialogTitle>
       <div className="w-full">
         <div className="flex flex-col items-center justify-center space-y-3 border-b bg-background px-component-md py-component-lg pt-component-xl text-center sm:px-component-lg md:px-component-xl">
           <a href={siteConfig.url}>

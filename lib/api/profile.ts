@@ -80,6 +80,35 @@ export interface ApiError {
 }
 
 /**
+ * Helper function to normalize avatar URL
+ * Converts relative paths from backend to full URLs
+ */
+const normalizeAvatarUrl = (avatarPath: string | null | undefined): string | null => {
+  if (!avatarPath) return null;
+
+  // If it's already a full URL, return as-is
+  if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
+    return avatarPath;
+  }
+
+  // Get the API base URL from environment variable (required)
+  const apiBase = process.env.NEXT_PUBLIC_API_URL;
+
+  if (!apiBase) {
+    console.error('NEXT_PUBLIC_API_URL is not defined in environment variables');
+    return avatarPath; // Return as-is if no base URL configured
+  }
+
+  // Remove /api/v1 from the base URL to get the domain root
+  const baseUrl = apiBase.replace('/api/v1', '');
+
+  // Remove leading slash from avatar path if present
+  const cleanPath = avatarPath.startsWith('/') ? avatarPath.slice(1) : avatarPath;
+
+  return `${baseUrl}/${cleanPath}`;
+};
+
+/**
  * Get current user's profile information
  */
 export const getProfile = async (): Promise<UserProfile> => {
@@ -91,19 +120,25 @@ export const getProfile = async (): Promise<UserProfile> => {
       },
       credentials: "include",
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || "Failed to fetch profile");
     }
-    
+
     const data = await response.json() as ProfileResponse;
 
     if (!data.success) {
       throw new Error(data.message || "Failed to fetch profile");
     }
 
-    return data.content.user;
+    // Normalize avatar URL if present
+    const user = data.content.user;
+    if (user.avatar) {
+      user.avatar = normalizeAvatarUrl(user.avatar);
+    }
+
+    return user;
   } catch (error: any) {
     if (error.message) {
       throw error;
@@ -161,12 +196,18 @@ export const updateProfile = async (
     }
 
     const data = await response.json();
-    
+
     if (!data.success || !data.content?.user) {
       throw new Error(data.message || "Failed to update profile");
     }
 
-    return data.content.user as UserProfile;
+    // Normalize avatar URL if present
+    const user = data.content.user as UserProfile;
+    if (user.avatar) {
+      user.avatar = normalizeAvatarUrl(user.avatar);
+    }
+
+    return user;
   } catch (error: any) {
     if (error.message) {
       throw error;
@@ -336,4 +377,140 @@ export const validatePasswordData = (data: ChangePasswordData): string[] => {
   }
 
   return errors;
+};
+
+/**
+ * Check if a username is available
+ */
+export const checkUsernameAvailability = async (
+  username: string
+): Promise<{ available: boolean; message?: string }> => {
+  try {
+    if (!username || username.trim().length === 0) {
+      return { available: false, message: "Username cannot be empty" };
+    }
+
+    const response = await fetch(
+      `/api/profile/check-username/${encodeURIComponent(username)}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      return {
+        available: false,
+        message: errorData.message || "Failed to check username availability",
+      };
+    }
+
+    const data = await response.json();
+
+    // The API proxy now returns 200 OK for both available and unavailable outcomes
+    // with success: true for available, success: false for unavailable.
+    // Content will have { is_available: boolean, username: string }
+    
+    if (data.success) {
+        return {
+            available: true,
+            message: data.content?.username || "Username is available"
+        };
+    } else {
+        return {
+            available: false,
+            message: data.message || data.content?.username || "Username is not available"
+        };
+    }
+  } catch (error: any) {
+    return {
+      available: false,
+      message: error.message || "Failed to check username availability",
+    };
+  }
+};
+
+/**
+ * Upload profile picture
+ */
+export const uploadProfilePicture = async (file: File): Promise<string> => {
+  try {
+    // Client-side validation
+    const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error("Invalid file type. Only PNG, JPG, JPEG, and WEBP are allowed.");
+    }
+
+    if (file.size > 1048576) {
+      // 1MB
+      throw new Error("File size must be less than 1MB.");
+    }
+
+    const formData = new FormData();
+    formData.append("profile_picture", file);
+
+    const response = await fetch("/api/profile/edit/profile-picture", {
+      method: "POST",
+      credentials: "include",
+      body: formData,
+      // Don't set Content-Type header - browser will set it with boundary
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+
+      if (errorData.errors) {
+        const errors = errorData.errors;
+        const firstError = Object.values(errors)[0] as string[];
+        throw new Error(firstError[0] || "Upload failed");
+      }
+
+      throw new Error(errorData.message || "Failed to upload profile picture");
+    }
+
+    const data = await response.json();
+
+    if (!data.success) {
+      throw new Error(data.message || "Failed to upload profile picture");
+    }
+
+    // According to API docs, content can be null.
+    // If we have an avatar in the response, use it.
+    // Otherwise, fetch the updated profile to get the new avatar URL.
+    let avatarUrl: string | null = null;
+
+    if (data.content?.avatar) {
+      avatarUrl = normalizeAvatarUrl(data.content.avatar);
+    } 
+    
+    // Fallback: if no avatar in response or normalization failed (shouldn't happen for valid string), fetch profile
+    if (!avatarUrl) {
+       try {
+         const userProfile = await getProfile();
+         avatarUrl = userProfile.avatar || null;
+       } catch (fetchError) {
+         console.error("Failed to fetch updated profile after upload:", fetchError);
+         // If we can't fetch the profile, we can't return the new URL. 
+         // But the upload WAS successful. 
+         // We might return null or throw. 
+         // Since the function signature allows returning string, let's assume getProfile works or throw.
+         throw new Error("Profile picture uploaded, but failed to retrieve new image URL.");
+       }
+    }
+
+    if (!avatarUrl) {
+      throw new Error("Failed to get avatar URL from server");
+    }
+
+    return avatarUrl;
+  } catch (error: any) {
+    if (error.message) {
+      throw error;
+    }
+    throw new Error("Failed to upload profile picture");
+  }
 };

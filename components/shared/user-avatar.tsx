@@ -5,17 +5,18 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Icons } from "@/components/shared/icons";
 
 interface UserAvatarProps extends AvatarProps {
-  user: Pick<User, "image" | "name">;
+  user: Pick<User, "image" | "name" | "avatar">;
 }
 
 export function UserAvatar({ user, ...props }: UserAvatarProps) {
   return (
     <Avatar {...props}>
-      {user.image ? (
+      {user.avatar || user.image ? (
         <AvatarImage
           alt="Picture"
-          src={user.image}
+          src={user.avatar || user.image || ""}
           referrerPolicy="no-referrer"
+          className="object-cover"
         />
       ) : (
         <AvatarFallback>

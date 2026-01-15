@@ -8,3 +8,22 @@ export interface ProfilePageData {
   discipline: Array<{ name: string }>;
 }
 
+export interface UsernameAvailabilityResponse {
+  success: boolean;
+  message: string;
+  content: {
+    is_available: boolean;
+    username: string;
+  } | null;
+  code: number;
+}
+
+export interface ProfilePictureUploadResponse {
+  success: boolean;
+  message: string;
+  content: {
+    avatar: string;
+  } | null;
+  code: number;
+}
+
