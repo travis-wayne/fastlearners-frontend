@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -10,14 +10,9 @@ import {
   CheckCircle2,
   ChevronRight,
   Circle,
-  Clock,
   Loader2,
-  Moon,
   Play,
   Star,
-  Sun,
-  Sunrise,
-  Sunset,
   Target,
   TrendingUp,
   Trophy,
@@ -46,6 +41,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { AchievementsSection } from "@/components/dashboard/AchievementsSection";
+import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
 import { LeaderBoard } from "@/components/dashboard/LeaderBoard";
 import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
@@ -75,15 +71,7 @@ const itemVariants = {
   },
 };
 
-interface TimeData {
-  time: string;
-  date: string;
-  greeting: string;
-  period: "morning" | "afternoon" | "evening" | "night";
-}
-
 export function StudentDashboard() {
-  const [timeData, setTimeData] = useState<TimeData | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>("Physics");
   const [dashboardData, setDashboardData] = useState<DashboardContent | null>(
     null,
@@ -118,83 +106,6 @@ export function StudentDashboard() {
 
     fetchDashboard();
   }, []);
-
-  // Update time every second
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const hours = now.getHours();
-
-      // Determine greeting and period based on time
-      let greeting = "Good evening";
-      let period: TimeData["period"] = "evening";
-
-      if (hours >= 5 && hours < 12) {
-        greeting = "Good morning";
-        period = "morning";
-      } else if (hours >= 12 && hours < 17) {
-        greeting = "Good afternoon";
-        period = "afternoon";
-      } else if (hours >= 17 && hours < 21) {
-        greeting = "Good evening";
-        period = "evening";
-      } else {
-        greeting = "Good night";
-        period = "night";
-      }
-
-      setTimeData({
-        time: now.toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit",
-          hour12: true,
-        }),
-        date: now.toLocaleDateString([], {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        }),
-        greeting,
-        period,
-      });
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Time period icons
-  const getPeriodIcon = () => {
-    if (!timeData) return <Sun className="size-4 text-white/80" />;
-
-    switch (timeData.period) {
-      case "morning":
-        return <Sunrise className="size-4 text-white/80" />;
-      case "afternoon":
-        return <Sun className="size-4 text-white/80" />;
-      case "evening":
-        return <Sunset className="size-4 text-white/80" />;
-      case "night":
-        return <Moon className="size-4 text-white/80" />;
-      default:
-        return <Sun className="size-4 text-white/80" />;
-    }
-  };
-
-  const headerGradientClass = useMemo(() => {
-    switch (timeData?.period) {
-      case "morning":
-        return "bg-gradient-to-br from-blue-200 via-cyan-200 to-yellow-100 dark:from-blue-400 dark:via-cyan-300 dark:to-yellow-200";
-      case "afternoon":
-        return "bg-gradient-to-br from-blue-300 via-purple-200 to-orange-200 dark:from-blue-500 dark:via-purple-400 dark:to-orange-300";
-      case "evening":
-        return "bg-gradient-to-br from-purple-300 via-pink-300 to-orange-200 dark:from-purple-500 dark:via-pink-500 dark:to-orange-400";
-      case "night":
-      default:
-        return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
-    }
-  }, [timeData?.period]);
 
   const weeklyProgress = [
     { subject: "Mathematics", progress: 68, target: 80 },
@@ -287,134 +198,15 @@ export function StudentDashboard() {
       animate="visible"
       className="dashboard-spacing"
     >
-      {/* Enhanced Welcome Header with time-based gradient */}
+      {/* iOS 26 Glassmorphism Welcome Header with Apple Hello Animation */}
       <motion.div variants={itemVariants}>
-        <div
-          className={`responsive-padding relative overflow-hidden rounded-2xl ${headerGradientClass} transition-all duration-700 ease-in-out`}
-        >
-          <div className="relative z-10 max-w-lg">
-            {/* Header with date and time */}
-            {timeData && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="xs:flex-row xs:items-center xs:justify-between mb-4 flex flex-col gap-2 text-gray-900 dark:text-white/90"
-              >
-                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-2 py-1.5 backdrop-blur-sm dark:bg-white/20 sm:px-3 sm:py-2">
-                  <Calendar className="size-3 text-gray-900 dark:text-white sm:size-4" />
-                  <span className="text-sm font-medium">{timeData.date}</span>
-                </div>
-                <div className="flex items-center gap-2 rounded-lg bg-black/10 px-2 py-1.5 backdrop-blur-sm dark:bg-white/20 sm:px-3 sm:py-2">
-                  <Clock className="size-3 text-gray-900 dark:text-white sm:size-4" />
-                  <span className="font-mono text-sm font-medium">
-                    {timeData.time}
-                  </span>
-                </div>
-              </motion.div>
-            )}
-
-            {/* Greeting */}
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mb-6"
-            >
-              <div className="mb-2 flex items-center gap-2">
-                {getPeriodIcon()}
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
-                  {timeData?.greeting || "Good day"},{" "}
-                  {dashboardData?.name || "Student"}! 🎓
-                </h2>
-              </div>
-              <p className="text-sm leading-relaxed text-gray-800 dark:text-white/90 sm:text-base">
-                Ready to learn something amazing today?
-              </p>
-            </motion.div>
-
-            {/* Badges */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4 }}
-              className="mb-4 flex items-center gap-3"
-            >
-              <Badge
-                variant="secondary"
-                className="border-white/30 bg-white/20 text-white transition-colors hover:bg-white/30"
-              >
-                <span className="mr-1">🎓</span>
-                Student
-              </Badge>
-
-              <Badge
-                variant="secondary"
-                className="border-white/20 bg-white/15 text-white/90"
-              >
-                <Star className="mr-1 size-3" />
-                Level 5
-              </Badge>
-            </motion.div>
-
-            {/* Quick stats */}
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="flex items-center gap-4"
-            >
-              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-2 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2">
-                <span className="text-sm text-white">🔥</span>
-                <span className="text-sm font-medium text-white">
-                  7 day streak
-                </span>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg bg-white/20 px-2 py-1.5 backdrop-blur-sm sm:px-3 sm:py-2">
-                <span className="text-sm text-white">📚</span>
-                <span className="text-sm font-medium text-white">
-                  3 lessons today
-                </span>
-              </div>
-            </motion.div>
-
-            {/* Decorative icon */}
-            <div className="absolute -right-4 -top-4 opacity-20">
-              <motion.div
-                animate={{ rotate: 360, scale: [1, 1.1, 1] }}
-                transition={{
-                  rotate: { duration: 20, repeat: Infinity, ease: "linear" },
-                  scale: { duration: 3, repeat: Infinity },
-                }}
-                className="flex size-16 items-center justify-center rounded-full bg-white/10"
-              >
-                <span className="text-2xl">🎓</span>
-              </motion.div>
-            </div>
-          </div>
-
-          {/* Soft moving highlights */}
-          <div className="pointer-events-none absolute inset-0 overflow-hidden">
-            <motion.div
-              animate={{
-                x: [0, 100, 0],
-                y: [0, -50, 0],
-                opacity: [0.1, 0.2, 0.1],
-              }}
-              transition={{ duration: 8, repeat: Infinity }}
-              className="absolute -right-10 -top-10 size-32 rounded-full bg-white/5 blur-xl"
-            />
-            <motion.div
-              animate={{
-                x: [0, -80, 0],
-                y: [0, 60, 0],
-                opacity: [0.05, 0.15, 0.05],
-              }}
-              transition={{ duration: 12, repeat: Infinity, delay: 2 }}
-              className="absolute -bottom-10 -left-10 size-40 rounded-full bg-white/5 blur-2xl"
-            />
-          </div>
-        </div>
+        <GlassGreetingCard
+          userName={dashboardData?.name || "Student"}
+          role="Student"
+          level={5}
+          streak={7}
+          lessonsToday={3}
+        />
       </motion.div>
 
       {/* Top Stats Grid */}

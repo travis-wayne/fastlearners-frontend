@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 
-import { cn } from "@repo/shadcn-ui/lib/utils";
+import { cn } from "@/lib/utils";
 
 const initialProps = {
   pathLength: 0,
