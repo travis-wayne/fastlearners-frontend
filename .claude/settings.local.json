@@ -7,7 +7,13 @@
       "Bash(Select-Object FullName)",
       "Bash(Select-Object -ExpandProperty FullName)",
       "Bash(find:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(cd:*)",
+      "Bash(cat:*)",
+      "Bash(pnpm add:*)",
+      "Bash(npx tsc:*)",
+      "Bash(pnpm build:*)",
+      "Bash(grep:*)"
     ]
   }
 }
