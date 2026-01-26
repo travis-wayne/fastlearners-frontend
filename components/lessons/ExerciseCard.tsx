@@ -38,6 +38,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   const [retryCount, setRetryCount] = useState(0);
   const [startTime] = useState<Date>(new Date());
   const [elapsedTime, setElapsedTime] = useState(0);
+  const [lastResult, setLastResult] = useState<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const radioGroupRef = useRef<HTMLDivElement>(null);
   const sectionTimerStartedRef = useRef(false);
@@ -161,6 +162,23 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       setIsRevealed(true);
       setIsCorrect(true);
       setFeedbackMessage("Already answered correctly!");
+      
+      // Initialize lastResult with score data if available in exerciseData
+      // Derive a result object from cached/stored data to display scores
+      if (exerciseData.cachedResponse) {
+        // If there's a cached response, use it
+        setLastResult(exerciseData.cachedResponse);
+      } else {
+        // Otherwise, create a minimal result object from available data
+        const derivedResult = {
+          success: true,
+          message: "Already answered correctly!",
+          isCorrect: true,
+          content: exerciseData.scoreData || null, // Use scoreData if available
+          code: 200,
+        };
+        setLastResult(derivedResult);
+      }
     }
   }, [isAlreadyCompleted, exerciseData, exercise.answers]);
 
@@ -215,6 +233,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       }
 
       const result = await onAnswer(exercise.id, selectedOptionKey);
+      setLastResult(result); // Store result
       setIsRevealed(true);
 
       if (result && typeof result === 'object') {
@@ -416,6 +435,26 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
               <p className="text-sm text-slate-700 dark:text-slate-300">
                 {feedbackMessage || (isCorrect ? "Great job!" : "Try again!")}
               </p>
+              {/* Display score information if available */}
+              {isCorrect && lastResult?.content && (
+                <div className="mt-3 space-y-1 text-sm">
+                  {lastResult.content.score && (
+                    <p className="font-medium">
+                      Score: {lastResult.content.score}% on {lastResult.content.attempt} attempt
+                    </p>
+                  )}
+                  {lastResult.content.concept_total_score && lastResult.content.concept_weight && (
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Concept Total: {lastResult.content.concept_total_score}/{lastResult.content.concept_weight}
+                    </p>
+                  )}
+                  {lastResult.content.general_exercise_total_score && lastResult.content.general_exercise_weight && (
+                    <p className="text-xs text-slate-600 dark:text-slate-400">
+                      Exercise Total: {lastResult.content.general_exercise_total_score}/{lastResult.content.general_exercise_weight}
+                    </p>
+                  )}
+                </div>
+              )}
               {!isOnline && <p className="text-sm text-orange-600"><AlertTriangle className="mr-1 inline size-4" />Offline mode</p>}
               {retryCount > 0 && (
                 <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2">

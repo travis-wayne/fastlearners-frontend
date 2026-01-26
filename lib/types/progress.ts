@@ -17,6 +17,8 @@ export interface ExerciseProgress {
   attempts: number;
   firstAttemptAt: string | null;
   lastAttemptAt: string | null;
+  cachedResponse?: any; // Store the full API response for score display
+  scoreData?: any; // Store specific score details
 }
 
 /**

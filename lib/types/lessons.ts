@@ -231,10 +231,19 @@ export interface LessonCheckResponse {
   code: number;
 }
 
+export interface ExerciseAnswerContent {
+  score: string;
+  attempt: string;
+  concept_total_score?: string;
+  concept_weight?: string;
+  general_exercise_total_score?: string;
+  general_exercise_weight?: string;
+}
+
 export interface ExerciseCheckResponse {
   success: boolean;
   message: string;
-  content: any | null;
+  content: ExerciseAnswerContent | null;
   code: number;
   isCorrect?: boolean;
   errors?: any;
@@ -245,4 +254,43 @@ export interface LessonFilters {
   subject: string;
   term: string;
   week: string;
+}
+
+export interface ConceptScoreResponse {
+  success: boolean;
+  message: string;
+  content: {
+    concept_id: number;
+    total_score: string;
+    weight: string;
+  } | null;
+  code: number;
+}
+
+export interface GeneralExerciseScoreResponse {
+  success: boolean;
+  message: string;
+  content: {
+    total_score: string;
+    weight: string;
+  } | null;
+  code: number;
+}
+
+export interface LessonScoreResponse {
+  success: boolean;
+  message: string;
+  content: {
+    lesson_total_score: string;
+  } | null;
+  code: number;
+}
+
+export interface SubjectScoreResponse {
+  success: boolean;
+  message: string;
+  content: {
+    subject_total_score: string;
+  } | null;
+  code: number;
 }

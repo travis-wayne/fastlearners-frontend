@@ -500,3 +500,133 @@ export async function checkExerciseAnswer(
     };
   }
 }
+
+// Score Fetching Endpoints
+
+export async function getConceptScore(conceptId: number): Promise<import("@/lib/types/lessons").ConceptScoreResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/concepts/${conceptId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to fetch concept score",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as import("@/lib/types/lessons").ConceptScoreResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+export async function getGeneralExerciseScore(generalExerciseId: number): Promise<import("@/lib/types/lessons").GeneralExerciseScoreResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/general-exercises/${generalExerciseId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to fetch general exercise score",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as import("@/lib/types/lessons").GeneralExerciseScoreResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+export async function getLessonScore(lessonId: number): Promise<import("@/lib/types/lessons").LessonScoreResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/lessons/${lessonId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to fetch lesson score",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as import("@/lib/types/lessons").LessonScoreResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+export async function getSubjectScore(subjectId: number, classId: number): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/subjects/${subjectId}/${classId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to fetch subject score",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as import("@/lib/types/lessons").SubjectScoreResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}

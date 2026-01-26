@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Lightbulb, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
 import { Concept } from "@/lib/types/lessons";
+import { getConceptScore } from "@/lib/api/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { cn } from "@/lib/utils";
 
@@ -72,6 +73,24 @@ export function LessonConcept({
   onAnswerExercise,
 }: LessonConceptProps) {
   const [isExpanded, setIsExpanded] = useState(true);
+  const [conceptScore, setConceptScore] = useState<{ total_score: string; weight: string } | null>(null);
+  const [isLoadingScore, setIsLoadingScore] = useState(false);
+
+  useEffect(() => {
+    const fetchConceptScore = async () => {
+      setIsLoadingScore(true);
+      const response = await getConceptScore(concept.id);
+      if (response.success && response.content) {
+        setConceptScore({
+          total_score: response.content.total_score,
+          weight: response.content.weight,
+        });
+      }
+      setIsLoadingScore(false);
+    };
+
+    fetchConceptScore();
+  }, [concept.id]);
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">
@@ -98,6 +117,14 @@ export function LessonConcept({
                   {concept.examples.length > 0 && `${concept.examples.length} example${concept.examples.length > 1 ? 's' : ''}`}
                   {concept.examples.length > 0 && concept.exercises.length > 0 && " • "}
                   {concept.exercises.length > 0 && `${concept.exercises.length} exercise${concept.exercises.length > 1 ? 's' : ''}`}
+                  {conceptScore && (
+                    <>
+                      {" • "}
+                      <span className="font-medium text-primary">
+                        Score: {conceptScore.total_score}/{conceptScore.weight}
+                      </span>
+                    </>
+                  )}
                 </p>
               </div>
             </div>

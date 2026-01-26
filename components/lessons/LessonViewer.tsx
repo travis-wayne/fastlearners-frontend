@@ -40,6 +40,7 @@ import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
+import { getLessonScore } from "@/lib/api/lessons";
 
 interface LessonViewerProps {
   lessonId?: number;
@@ -202,6 +203,7 @@ export function LessonViewer({
   const [celebrationShown, setCelebrationShown] = useState(false);
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
+  const [lessonScore, setLessonScore] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   // Parse error into enhanced format
@@ -265,6 +267,19 @@ export function LessonViewer({
   }, [selectedLesson, progress]);
 
   const estimatedTimeRemaining = calculateEstimatedTimeRemaining();
+
+  // Fetch lesson score
+  useEffect(() => {
+    const fetchLessonScore = async () => {
+      if (!selectedLesson?.id) return;
+      const response = await getLessonScore(selectedLesson.id);
+      if (response.success && response.content) {
+        setLessonScore(response.content.lesson_total_score);
+      }
+    };
+
+    fetchLessonScore();
+  }, [selectedLesson?.id]);
 
   // Reset auto-advance flag when lesson changes
   useEffect(() => {
@@ -638,6 +653,11 @@ export function LessonViewer({
                     <p className="text-xl font-bold text-foreground sm:text-2xl">
                       {progress}%
                     </p>
+                    {lessonScore && (
+                      <p className="text-xs text-muted-foreground">
+                        Total Score: {lessonScore}
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="flex items-center gap-2">

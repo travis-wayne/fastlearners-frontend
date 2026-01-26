@@ -181,7 +181,7 @@ interface LessonsStore {
 
   // Adaptive learning actions
   markSectionCompleted: (sectionId: string, sectionType: SectionType, score?: number) => void;
-  markExerciseCompleted: (exerciseId: number, isCorrect: boolean, userAnswer: string) => void;
+  markExerciseCompleted: (exerciseId: number, isCorrect: boolean, userAnswer: string, scoreData?: any) => void;
   getNextIncompleteSection: () => string | null;
   autoAdvanceToNextSection: () => Promise<boolean>;
   resetLessonProgress: (lessonId: number) => void;
@@ -845,7 +845,7 @@ export const useLessonsStore = create<LessonsStore>()(
 
               // Mark exercise as completed in adaptive progress
               if (response.isCorrect !== undefined || isAnswerCorrect) {
-                get().markExerciseCompleted(exerciseId, isAnswerCorrect, answer);
+                get().markExerciseCompleted(exerciseId, isAnswerCorrect, answer, response.content);
               }
 
               if (response.success && isAnswerCorrect) {
@@ -1016,7 +1016,7 @@ export const useLessonsStore = create<LessonsStore>()(
           get().updateAnalytics(selectedLesson.id);
         },
 
-        markExerciseCompleted: (exerciseId, isCorrect, userAnswer) => {
+        markExerciseCompleted: (exerciseId, isCorrect, userAnswer, scoreData) => {
           const { exerciseProgress } = get();
           const now = new Date().toISOString();
           const existing = exerciseProgress[exerciseId];
@@ -1032,6 +1032,8 @@ export const useLessonsStore = create<LessonsStore>()(
                 attempts: (existing?.attempts || 0) + 1,
                 firstAttemptAt: existing?.firstAttemptAt || now,
                 lastAttemptAt: now,
+                scoreData: scoreData || existing?.scoreData, // Persist scoreData
+                cachedResponse: scoreData ? { success: true, content: scoreData } : existing?.cachedResponse // Update cachedResponse too if provided
               },
             },
           });

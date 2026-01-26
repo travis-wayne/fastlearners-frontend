@@ -12,7 +12,9 @@ import {
 } from "lucide-react";
 
 import { getSubjectsWithSlugs } from "@/lib/api/lessons";
+import { getSubjectScore } from "@/lib/api/lessons";
 import type { TopicItem, TopicsByTerm } from "@/lib/types/lessons";
+import { useAuthStore } from "@/store/authStore";
 import {
   Accordion,
   AccordionContent,
@@ -38,6 +40,81 @@ export default function SubjectDetailPage() {
   const [topics, setTopics] = useState<TopicsByTerm | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [subjectScore, setSubjectScore] = useState<string | null>(null);
+  const [subjectId, setSubjectId] = useState<number | null>(null);
+  const [classId, setClassId] = useState<number | null>(null);
+  const user = useAuthStore((state) => state.user);
+
+  // Fetch subject score when subject_id and class_id are available
+  // Note: Currently, subject_id and class_id are not readily available in this component
+  // They would need to be fetched from user session/profile or passed from parent component
+  useEffect(() => {
+    const fetchSubjectScore = async () => {
+      if (!subjectId || !classId) return;
+      const response = await getSubjectScore(subjectId, classId);
+      if (response.success && response.content) {
+        setSubjectScore(response.content.subject_total_score);
+      }
+    };
+
+    fetchSubjectScore();
+  }, [subjectId, classId]);
+
+  // Fetch subject_id from subjects API on mount
+  useEffect(() => {
+    const fetchSubjectId = async () => {
+      if (!subjectSlug) return;
+      
+      try {
+        const subjectsResponse = await getSubjectsWithSlugs();
+        if (subjectsResponse.success && subjectsResponse.content?.subjects) {
+          const subject = subjectsResponse.content.subjects.find(
+            (s) => s.slug === subjectSlug
+          );
+          if (subject) {
+            setSubjectId(subject.id);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch subject ID:', error);
+      }
+    };
+
+    fetchSubjectId();
+  }, [subjectSlug]);
+
+  // Get class_id from user.class and lesson meta
+  useEffect(() => {
+    const fetchClassId = async () => {
+      if (!user?.class) return;
+      
+      try {
+        // Fetch lesson meta to map class name to class ID
+        const metaResponse = await fetch('/api/lessons/meta', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          credentials: 'include',
+          cache: 'no-store',
+        });
+        
+        if (metaResponse.ok) {
+          const meta = await metaResponse.json();
+          if (meta.success && meta.content?.classes) {
+            const userClassObj = meta.content.classes.find(
+              (c: { name: string; id: number }) => c.name === user.class
+            );
+            if (userClassObj) {
+              setClassId(userClassObj.id);
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch class ID:', error);
+      }
+    };
+
+    fetchClassId();
+  }, [user?.class]);
 
   // Check if the parameter is a numeric ID and convert to slug if needed
   useEffect(() => {
@@ -222,6 +299,11 @@ export default function SubjectDetailPage() {
           <h1 className="text-3xl font-bold">{subjectName}</h1>
           <p className="text-muted-foreground">
             Select a topic to view lessons
+            {subjectScore && (
+              <span className="ml-2 font-medium text-primary">
+                • Total Score: {subjectScore}
+              </span>
+            )}
           </p>
         </div>
       </div>

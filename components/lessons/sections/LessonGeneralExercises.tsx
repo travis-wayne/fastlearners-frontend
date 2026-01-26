@@ -8,6 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Trophy, Target, CheckCircle2, AlertCircle, Filter, SortAsc, Eye, Clock, Shuffle, RotateCcw, Share2, Zap, Award, Flame, Star, TrendingUp, BarChart3, Pause, Play } from "lucide-react";
 import { LessonContent, GeneralExercise } from "@/lib/types/lessons";
+import { getGeneralExerciseScore } from "@/lib/api/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { useLessonsStore } from "@/lib/store/lessons";
 import { cn } from "@/lib/utils";
@@ -58,6 +59,8 @@ export function LessonGeneralExercises({
   const [points, setPoints] = useState(0);
   const [showStats, setShowStats] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
+  const [generalExerciseScore, setGeneralExerciseScore] = useState<{ total_score: string; weight: string } | null>(null);
+  const [isLoadingScore, setIsLoadingScore] = useState(false);
 
   // Timer for timed mode
   useEffect(() => {
@@ -107,6 +110,32 @@ export function LessonGeneralExercises({
       endSectionTimer('general_exercises');
     };
   }, [startSectionTimer, endSectionTimer]);
+
+  // Fetch general exercise total score
+  useEffect(() => {
+    const fetchGeneralExerciseScore = async () => {
+      // Fetch score for the first general exercise as a representative
+      if (general_exercises.length === 0) return;
+      
+      setIsLoadingScore(true);
+      try {
+        const firstExerciseId = general_exercises[0].id;
+        const response = await getGeneralExerciseScore(firstExerciseId);
+        if (response.success && response.content) {
+          setGeneralExerciseScore({
+            total_score: response.content.total_score,
+            weight: response.content.weight,
+          });
+        }
+      } catch (error) {
+        console.error('Failed to fetch general exercise score:', error);
+      } finally {
+        setIsLoadingScore(false);
+      }
+    };
+
+    fetchGeneralExerciseScore();
+  }, [general_exercises]);
 
   // Stats calculations
   const stats = useMemo(() => {
@@ -399,6 +428,11 @@ export function LessonGeneralExercises({
               </div>
               <div className="text-sm text-muted-foreground">
                 Average attempts: {stats.avgAttempts} | Average time: {stats.avgTime}
+                {generalExerciseScore && (
+                  <> | Total Score: {generalExerciseScore.total_score}/{generalExerciseScore.weight}</>
+                )}
+                {/* Note: General exercise total score can be fetched via getGeneralExerciseScore(generalExerciseId) 
+                    if needed for individual exercise tracking */}
               </div>
               {stats.completed === stats.total && (
                 <div

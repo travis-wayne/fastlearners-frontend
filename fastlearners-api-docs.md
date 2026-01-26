@@ -3899,6 +3899,240 @@ This endpoint returns detailed lesson content similar to the student endpoint bu
 
 ---
 
+## Total Scores API
+
+### 1. Concept Total Score
+
+**Endpoint:** `GET /api/v1/lessons/scores/concepts/{concept_id}`
+
+**Description:** Get a lesson's concept total score using the concept_id. Returns the cumulative score and weight for all exercises within a specific concept.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "concept_id": 1,
+    "total_score": "10.00",
+    "weight": "10.00"
+  },
+  "code": 200
+}
+```
+
+**Concept Total Score Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "Concept total score not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Response (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting the concept total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
+```
+
+---
+
+### 2. General Exercise Total Score
+
+**Endpoint:** `GET /api/v1/lessons/scores/general-exercises/{general_exercise_id}`
+
+**Description:** Get a lesson's general exercise total score using the general_exercise_id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "total_score": "4.50",
+    "weight": "30.00"
+  },
+  "code": 200
+}
+```
+
+**General Exercise Total Score Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "General Exercise total score not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Response (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting the general exercise total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
+```
+
+---
+
+### 3. Lesson Total Score
+
+**Endpoint:** `GET /api/v1/lessons/scores/lessons/{lesson_id}`
+
+**Description:** Get a lesson's total score using the lesson_id. Returns the cumulative score across all concepts and general exercises in the lesson.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "lesson_total_score": "32.50"
+  },
+  "code": 200
+}
+```
+
+**Lesson Total Score Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "Lesson total score not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Response (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting the lesson total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
+```
+
+---
+
+### 4. Subject Total Score
+
+**Endpoint:** `GET /api/v1/lessons/scores/subjects/{subject_id}/{class_id}`
+
+**Description:** Get a subject's total score using the subject_id and class_id. Returns the cumulative score across all lessons in the subject for a specific class.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "subject_total_score": "3.25"
+  },
+  "code": 200
+}
+```
+
+**Subject Total Score Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "Subject total score not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Response (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting the subject total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
+```
+
+**Notes:**
+- All score endpoints return 400 with "not found" message when the user hasn't answered any exercises yet
+- Scores are cumulative and persist across sessions
+- Frontend should handle 400 errors gracefully by not displaying scores when none exist
+
+---
+
 ## Authentication & Authorization
 
 ### Access Token
