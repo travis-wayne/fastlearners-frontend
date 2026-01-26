@@ -244,6 +244,67 @@ export function LessonConcept({
                 </div>
               </div>
             )}
+
+            {/* Concept Score Summary */}
+            {conceptScore && concept.exercises.length > 0 && (
+              <Card className="via-primary/3 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background shadow-lg">
+                <CardContent className="space-y-4 p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
+                        <CheckCircle2 className="size-6 text-primary" />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-bold text-foreground">
+                          Concept Score
+                        </h4>
+                        <p className="text-sm text-muted-foreground">
+                          Total score for this concept
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-3xl font-bold text-primary">
+                        {conceptScore.total_score}
+                        <span className="text-xl text-muted-foreground">
+                          /{conceptScore.weight}
+                        </span>
+                      </div>
+                      <p className="text-sm font-medium text-muted-foreground">
+                        {((parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100).toFixed(1)}% Complete
+                      </p>
+                    </div>
+                  </div>
+                  
+                  {/* Progress Bar */}
+                  <div className="space-y-2">
+                    <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
+                      <div
+                        className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
+                        style={{
+                          width: `${(parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100}%`,
+                        }}
+                      />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Loading State for Score */}
+            {isLoadingScore && concept.exercises.length > 0 && (
+              <Card className="border-2 border-muted bg-muted/20">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="size-12 animate-pulse rounded-xl bg-muted" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-5 w-32 animate-pulse rounded bg-muted" />
+                      <div className="h-4 w-48 animate-pulse rounded bg-muted" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </CardContent>
         )}
       </Card>
