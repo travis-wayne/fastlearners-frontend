@@ -155,6 +155,7 @@ export function ImageCropper({
           circularCrop={circularCrop}
           className="max-h-[300px]"
         >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             ref={imgRef}
             src={imageSrc}

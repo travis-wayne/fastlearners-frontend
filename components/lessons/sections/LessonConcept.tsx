@@ -271,7 +271,9 @@ export function LessonConcept({
                         </span>
                       </div>
                       <p className="text-sm font-medium text-muted-foreground">
-                        {((parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100).toFixed(1)}% Complete
+                        {parseFloat(conceptScore.weight) > 0
+                          ? ((parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100).toFixed(1)
+                          : "0.0"}% Complete
                       </p>
                     </div>
                   </div>

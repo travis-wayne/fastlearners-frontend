@@ -379,16 +379,21 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                 key={i}
                 className={cn(
                   "flex min-h-12 items-center space-x-3 rounded-md border p-3.5 transition-all duration-300 sm:p-3",
-                  isSelected
+                  !isRevealed && isSelected
                     ? "scale-[1.02] border-blue-500 bg-blue-50 shadow-sm dark:border-blue-400 dark:bg-blue-900/20"
-                    : "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900",
-                  isRevealed &&
-                  isCorrectAnswer &&
-                  "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20",
-                  isRevealed &&
-                  isSelected &&
-                  !isCorrectAnswer &&
-                  "border-red-500 bg-red-50 dark:border-red-400 dark:bg-red-900/20",
+                    : !isRevealed
+                    ? "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900"
+                    : "",
+                  // For selected answer: use API response (isCorrect state)
+                  isRevealed && isSelected && isCorrect
+                    ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20"
+                    : isRevealed && isSelected && !isCorrect
+                    ? "border-red-500 bg-red-50 dark:border-red-400 dark:bg-red-900/20"
+                    : isRevealed && !isSelected && isCorrectAnswer
+                    ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20"
+                    : isRevealed && !isSelected
+                    ? "border-transparent bg-white dark:bg-slate-950"
+                    : "",
                   shake && isSelected && "animate-shake"
                 )}
                 title={isRevealed ? (isCorrectAnswer ? "Correct answer" : "Incorrect answer") : ""}
@@ -400,8 +405,9 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                 >
                   {answer}
                 </Label>
-                {isRevealed && isCorrectAnswer && <CheckCircle2 className="size-4 text-green-600" />}
-                {isRevealed && isSelected && !isCorrectAnswer && <X className="size-4 text-red-600" />}
+                {isRevealed && isSelected && isCorrect && <CheckCircle2 className="size-4 text-green-600" />}
+                {isRevealed && isSelected && !isCorrect && <X className="size-4 text-red-600" />}
+                {isRevealed && !isSelected && isCorrectAnswer && <CheckCircle2 className="size-4 text-green-600" />}
               </div>
             );
           })}
