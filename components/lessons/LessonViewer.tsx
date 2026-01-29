@@ -211,7 +211,8 @@ export function LessonViewer({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
   const [lessonScore, setLessonScore] = useState<string | null>(null);
-  const containerRef = useRef<HTMLDivElement>(null);
+  const [containerRef] = useState<React.RefObject<HTMLDivElement>>({ current: null }); // Fix ref issue if any, or keeps as is
+  const [isRedirecting, setIsRedirecting] = useState(false); // Local loading state for completion redirect
 
   // Memoize concepts to avoid re-defining in multiple places
   const concepts = useMemo(() => selectedLesson?.concepts || [], [selectedLesson?.concepts]);
@@ -481,14 +482,14 @@ export function LessonViewer({
       if (!moved && isLastStep && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
         console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
         try {
+          // Set local loading state to show spinner on button
+          setIsRedirecting(true);
           await fetchCompletionData(selectedLesson.id);
           // Redirect to the dedicated completion page
           console.log('[handleNext] ✅ Completion confirmed! Redirecting to completion page...');
           router.push(`/dashboard/lessons/completed/${selectedLesson.id}`);
-          // Old dialog logic removed:
-          // setCelebrationShown(true);
-          // setShowCompletionSummary(true);
         } catch (error) {
+          setIsRedirecting(false); // Reset on error
           console.error('[handleNext] ❌ Error fetching completion data:', error);
           // Reset celebration flag on failure so user can retry
           setCelebrationShown(false);
@@ -870,10 +871,10 @@ export function LessonViewer({
                 progress >= 100 && "bg-green-600 hover:bg-green-700"
               )}
               onClick={handleNext}
-              disabled={isLoadingCompletionData}
+              disabled={isRedirecting}
               aria-label={currentStepIndex === concepts.length + 2 ? "Finish lesson" : "Go to next section"}
             >
-              {isLoadingCompletionData ? (
+              {isRedirecting ? (
                 <>
                   <RefreshCw className="size-4 animate-spin sm:mr-2" />
                   <span className="hidden sm:inline">Loading...</span>
