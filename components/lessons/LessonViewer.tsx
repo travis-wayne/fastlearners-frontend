@@ -443,7 +443,20 @@ export function LessonViewer({
       
       // Verify we're at the last step, lesson is complete, and all sections are done
       const isLastStep = currentStepIndex === concepts.length + 2;
-      const isComplete = progress >= 100;
+      
+      // Build list of valid section IDs for the current lesson
+      const validSectionIds = [
+        'overview',
+        ...concepts.map(c => `concept_${c.id}`),
+        'summary_application',
+        'general_exercises'
+      ];
+      
+      // Check only sections that belong to the current lesson
+      // This is the TRUE indicator of lesson completion
+      const allSectionsComplete = validSectionIds.every(
+        sectionId => sectionProgress[sectionId]?.isCompleted
+      );
       
       // Auto-reset stuck celebrationShown flag EARLY
       // If we're at the last step but celebrationShown is true and summary isn't showing,
@@ -457,23 +470,9 @@ export function LessonViewer({
         return;
       }
       
-      // Build list of valid section IDs for the current lesson
-      const validSectionIds = [
-        'overview',
-        ...concepts.map(c => `concept_${c.id}`),
-        'summary_application',
-        'general_exercises'
-      ];
-      
-      // Check only sections that belong to the current lesson
-      const allSectionsComplete = validSectionIds.every(
-        sectionId => sectionProgress[sectionId]?.isCompleted
-      );
-      
       console.log('[handleNext] Conditions:', {
         moved,
         isLastStep,
-        isComplete,
         allSectionsComplete,
         celebrationShown,
         hasLessonId: !!selectedLesson?.id,
@@ -483,7 +482,9 @@ export function LessonViewer({
         showCompletionSummary
       });
       
-      if (!moved && isLastStep && isComplete && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
+      // Use allSectionsComplete as the completion indicator (not progress >= 100)
+      // because progress state updates asynchronously
+      if (!moved && isLastStep && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
         console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
         try {
           await fetchCompletionData(selectedLesson.id);
