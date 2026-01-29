@@ -98,19 +98,19 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
   return (
     <div className="container max-w-4xl py-8 space-y-8">
       {/* Header Section */}
-      <div className="text-center space-y-4">
-        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-yellow-100 ring-8 ring-yellow-50 dark:bg-yellow-900/30 dark:ring-yellow-900/10 animate-in zoom-in duration-500">
+      <div className="space-y-4 text-center">
+        <div className="flex mx-auto size-20 items-center justify-center rounded-full bg-yellow-100 ring-8 ring-yellow-50 animate-in zoom-in duration-500 dark:bg-yellow-900/30 dark:ring-yellow-900/10">
           <Trophy className="size-10 text-yellow-600 dark:text-yellow-400" />
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Lesson Complete!</h1>
         <p className="text-xl text-muted-foreground">{data.lessonTitle}</p>
         
-        <div className="mt-6 flex justify-center">
-           <div className="relative size-40 flex items-center justify-center rounded-full border-8 border-primary/20">
+        <div className="flex justify-center mt-6">
+           <div className="relative flex size-40 items-center justify-center rounded-full border-8 border-primary/20">
              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <span className="block text-4xl font-bold text-primary">{Math.round(data.lessonScore)}%</span>
-                  <span className="text-xs text-muted-foreground uppercase tracking-wider">Grand Total</span>
+                  <span className="text-xs uppercase tracking-wider text-muted-foreground">Grand Total</span>
                 </div>
              </div>
              <svg className="absolute inset-0 size-full -rotate-90 text-primary" viewBox="0 0 100 100">
@@ -141,8 +141,8 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
            <CardContent className="space-y-6">
              {data.conceptScores.map((concept) => (
                <div key={concept.conceptId} className="space-y-2">
-                 <div className="flex justify-between items-center text-sm">
-                   <span className="font-medium truncate max-w-[70%]">{concept.title}</span>
+                 <div className="flex items-center justify-between text-sm">
+                   <span className="max-w-[70%] truncate font-medium">{concept.title}</span>
                    <Badge variant={concept.score >= 80 ? "default" : "secondary"}>
                      {Math.round(concept.score)}%
                    </Badge>
@@ -168,7 +168,7 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="flex justify-between items-end">
+                <div className="flex items-end justify-between">
                   <div>
                     <p className="text-3xl font-bold text-primary">{Math.round(data.generalExercisesScore)}%</p>
                     <p className="text-sm text-muted-foreground">Section Score</p>
@@ -182,7 +182,7 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
 
           <Card>
              <CardContent className="pt-6">
-                <Button className="w-full size-lg text-lg" onClick={handleBackToDashboard}>
+                <Button className="size-lg w-full text-lg" onClick={handleBackToDashboard}>
                    <ArrowLeft className="mr-2 size-5" />
                    Back to Dashboard
                 </Button>
