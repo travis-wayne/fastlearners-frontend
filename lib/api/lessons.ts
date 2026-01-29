@@ -7,6 +7,9 @@ import type {
   TopicOverviewResponse,
   LessonCheckResponse,
   ExerciseCheckResponse,
+  LessonCompletionData,
+  ConceptScoreBreakdown,
+  LessonContent,
 } from "@/lib/types/lessons";
 
 
@@ -627,6 +630,208 @@ export async function getSubjectScore(subjectId: number, classId: number): Promi
       message: err?.message || "Network error",
       content: null,
       code: 500,
+    };
+  }
+}
+
+// Helper function for safe number parsing
+function parseScoreString(scoreStr: string | undefined | null): number {
+  if (!scoreStr) return 0;
+  const parsed = parseFloat(scoreStr);
+  return isNaN(parsed) ? 0 : Math.min(100, Math.max(0, parsed));
+}
+
+/**
+ * Aggregates lesson completion data from multiple API endpoints and local store data
+ * @param lessonId - The lesson ID
+ * @param lessonContent - The lesson content object
+ * @param sectionTimeTracking - Record of time tracking per section
+ * @param exerciseProgress - Record of exercise progress
+ * @returns Promise with success status, data, and message
+ */
+export async function getLessonCompletionData(
+  lessonId: number,
+  lessonContent: LessonContent,
+  sectionTimeTracking: Record<string, any>,
+  exerciseProgress: Record<number, any>
+): Promise<{ success: boolean; data: LessonCompletionData | null; message: string }> {
+  try {
+    // Validate inputs
+    if (!lessonId || !lessonContent) {
+      return {
+        success: false,
+        data: null,
+        message: "Invalid lesson ID or content",
+      };
+    }
+
+    // 1. Fetch lesson total score
+    let lessonScore = 0;
+    try {
+      const lessonScoreResponse = await getLessonScore(lessonId);
+      if (lessonScoreResponse.success && lessonScoreResponse.content) {
+        lessonScore = parseScoreString(lessonScoreResponse.content.lesson_total_score);
+      }
+    } catch (err) {
+      // Handle 400 error (no score yet) by defaulting to 0
+      if (process.env.NODE_ENV === 'development') {
+        console.warn('Lesson score not available yet, defaulting to 0');
+      }
+    }
+
+    // 2. Fetch all concept scores in parallel
+    const concepts = lessonContent.concepts || [];
+    const conceptScorePromises = concepts.map(async (concept) => {
+      try {
+        const conceptScoreResponse = await getConceptScore(concept.id);
+        const score = conceptScoreResponse.success && conceptScoreResponse.content
+          ? parseScoreString(conceptScoreResponse.content.total_score)
+          : 0;
+        const weight = conceptScoreResponse.success && conceptScoreResponse.content
+          ? parseScoreString(conceptScoreResponse.content.weight)
+          : 0;
+
+        // Count completed exercises for this concept
+        const conceptExerciseIds = concept.exercises?.map((ex: any) => ex.id) || [];
+        const completedExercises = conceptExerciseIds.filter(
+          (exId: number) => exerciseProgress[exId]?.isCompleted === true
+        ).length;
+
+        return {
+          conceptId: concept.id,
+          title: concept.title || `Concept ${concept.id}`,
+          score,
+          weight,
+          totalExercises: concept.exercises?.length || 0,
+          completedExercises,
+        } as ConceptScoreBreakdown;
+      } catch (err) {
+        // Handle error for individual concept by returning 0 score
+        if (process.env.NODE_ENV === 'development') {
+          console.warn(`Concept score not available for concept ${concept.id}, defaulting to 0`);
+        }
+        return {
+          conceptId: concept.id,
+          title: concept.title || `Concept ${concept.id}`,
+          score: 0,
+          weight: 0,
+          totalExercises: concept.exercises?.length || 0,
+          completedExercises: 0,
+        } as ConceptScoreBreakdown;
+      }
+    });
+
+    const conceptScores = await Promise.all(conceptScorePromises);
+
+    // 3. Aggregate general exercises score
+    let generalExercisesScore = 0;
+    let generalExercisesWeight = 0;
+    const generalExercises = lessonContent.general_exercises || [];
+    
+    if (generalExercises.length > 0) {
+      // Fetch all general exercise scores in parallel
+      const generalExercisePromises = generalExercises.map(async (exercise) => {
+        try {
+          const response = await getGeneralExerciseScore(exercise.id);
+          if (response.success && response.content) {
+            return {
+              score: parseScoreString(response.content.total_score),
+              weight: parseScoreString(response.content.weight),
+            };
+          }
+          return { score: 0, weight: 0 };
+        } catch (err) {
+          if (process.env.NODE_ENV === 'development') {
+            console.warn(`General exercise score not available for exercise ${exercise.id}, defaulting to 0`);
+          }
+          return { score: 0, weight: 0 };
+        }
+      });
+
+      const generalExerciseScores = await Promise.all(generalExercisePromises);
+      
+      // Aggregate scores using weighted average
+      const totalWeight = generalExerciseScores.reduce((sum, item) => sum + item.weight, 0);
+      generalExercisesWeight = totalWeight;
+      
+      if (totalWeight > 0) {
+        const weightedSum = generalExerciseScores.reduce(
+          (sum, item) => sum + (item.score * item.weight),
+          0
+        );
+        generalExercisesScore = weightedSum / totalWeight;
+      } else {
+        // If no weights, use simple average
+        const totalScore = generalExerciseScores.reduce((sum, item) => sum + item.score, 0);
+        generalExercisesScore = generalExercises.length > 0 ? totalScore / generalExercises.length : 0;
+      }
+    }
+
+    // 4. Calculate total time spent
+    let timeSpent = 0;
+    if (sectionTimeTracking && typeof sectionTimeTracking === 'object') {
+      Object.values(sectionTimeTracking).forEach((section: any) => {
+        if (section && typeof section.timeSpent === 'number') {
+          timeSpent += section.timeSpent;
+        }
+      });
+    }
+
+    // 5. Calculate accuracy rate
+    let accuracyRate = 0;
+    if (exerciseProgress && typeof exerciseProgress === 'object') {
+      const completedExercises = Object.values(exerciseProgress).filter(
+        (ex: any) => ex?.isCompleted === true
+      );
+      const correctExercises = completedExercises.filter(
+        (ex: any) => ex?.isCorrect === true
+      );
+      
+      if (completedExercises.length > 0) {
+        accuracyRate = (correctExercises.length / completedExercises.length) * 100;
+      }
+    }
+
+    // 6. Calculate exercise counts
+    const totalConceptExercises = concepts.reduce(
+      (sum, concept) => sum + (concept.exercises?.length || 0),
+      0
+    );
+    const totalExercises = totalConceptExercises + generalExercises.length;
+    
+    const completedExercises = Object.values(exerciseProgress).filter(
+      (ex: any) => ex?.isCompleted === true
+    ).length;
+
+    // 7. Assemble LessonCompletionData object
+    const data: LessonCompletionData = {
+      lessonId,
+      lessonTitle: lessonContent.title || `Lesson ${lessonId}`,
+      lessonScore,
+      conceptScores,
+      generalExercisesScore,
+      generalExercisesWeight,
+      totalExercises,
+      completedExercises,
+      timeSpent,
+      accuracyRate,
+    };
+
+    // 8. Return success response
+    return {
+      success: true,
+      data,
+      message: "Lesson completion data retrieved successfully",
+    };
+  } catch (err: any) {
+    // Global error handling
+    if (process.env.NODE_ENV === 'development') {
+      console.error('getLessonCompletionData error:', err);
+    }
+    return {
+      success: false,
+      data: null,
+      message: err?.message || "Failed to retrieve lesson completion data",
     };
   }
 }

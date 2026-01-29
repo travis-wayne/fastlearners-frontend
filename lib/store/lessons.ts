@@ -72,10 +72,18 @@ interface AnalyticsData {
   lessonId: number;
   completionRate: number;
   averageTimePerSection: number;
+  totalTime: number; // Total lesson time in seconds
   exerciseAccuracy: number;
   totalAttempts: number;
   insights: string[];
   recommendations: string[];
+  // Enhanced analytics fields
+  timeEfficiency?: number;
+  firstAttemptAccuracy?: number;
+  retryRate?: number;
+  detailedInsights?: import("@/lib/utils/lesson-analytics").PerformanceInsights;
+  personalizedRecommendations?: import("@/lib/utils/lesson-analytics").PersonalizedRecommendations;
+  comparisonWithAverage?: { score: number; time: number; accuracy: number };
 }
 
 interface QueuedAction {
@@ -153,6 +161,11 @@ interface LessonsStore {
   userNotes: Record<string, UserNotes>;
   cacheTimestamps: Record<string, string>;
 
+  // Lesson completion summary
+  showCompletionSummary: boolean;
+  completionData: import('@/lib/types/lessons').LessonCompletionData | null;
+  isLoadingCompletionData: boolean;
+
   // Actions
   setFilters: (filters: Partial<LessonFilters>) => void;
   clearFilters: () => void;
@@ -206,6 +219,9 @@ interface LessonsStore {
   invalidateCache: (key: string) => void;
   debouncedUpdate: (fn: () => void, delay?: number) => void;
   skipToExercises: () => void;
+  setShowCompletionSummary: (show: boolean) => void;
+  fetchCompletionData: (lessonId: number) => Promise<void>;
+  clearCompletionData: () => void;
 }
 
 const initialFilters: LessonFilters = {
@@ -289,6 +305,11 @@ export const useLessonsStore = create<LessonsStore>()(
         cacheTimestamps: {},
         lastSyncedAt: null,
         adaptiveRecommendations: [],
+        
+        // Lesson completion summary initial state
+        showCompletionSummary: false,
+        completionData: null,
+        isLoadingCompletionData: false,
 
         // Filter actions
         setFilters: (newFilters) => {
@@ -1361,7 +1382,7 @@ export const useLessonsStore = create<LessonsStore>()(
         },
 
         updateAnalytics: (lessonId) => {
-          const { sectionProgress, exerciseProgress, lessonMetadata, sectionTimeTracking, selectedLesson } = get();
+          const { sectionProgress, exerciseProgress, lessonMetadata, sectionTimeTracking, selectedLesson, analyticsData: currentAnalyticsData } = get();
           
           const lessonMeta = lessonMetadata[lessonId];
           if (!lessonMeta) return;
@@ -1399,7 +1420,7 @@ export const useLessonsStore = create<LessonsStore>()(
           const exerciseAccuracy = exercises.length > 0 ? (correctExercises / exercises.length) * 100 : 0;
           const totalAttempts = exercises.reduce((sum, e) => sum + e.attempts, 0);
           
-          // Generate insights
+          // Generate basic insights
           const insights: string[] = [];
           if (exerciseAccuracy < 70) {
             insights.push('Consider reviewing fundamental concepts before proceeding.');
@@ -1408,13 +1429,76 @@ export const useLessonsStore = create<LessonsStore>()(
             insights.push('You might benefit from breaking study sessions into shorter intervals.');
           }
           
-          // Generate recommendations
+          // Generate basic recommendations
           const recommendations: string[] = [];
           if (completionRate < 50) {
             recommendations.push('Focus on completing the overview and basic concepts first.');
           }
           if (totalAttempts > exercises.length * 2) {
             recommendations.push('Try reviewing solutions after incorrect attempts to understand mistakes.');
+          }
+
+          // Calculate comprehensive analytics using lesson-analytics utility
+          let comprehensiveAnalytics = null;
+          try {
+            // Import analytics utility dynamically
+            import('@/lib/utils/lesson-analytics').then(({ calculatePerformanceInsights }) => {
+              // Calculate historical averages for comparison
+              const allLessonAnalytics = Object.values(currentAnalyticsData);
+              const historicalAverages = allLessonAnalytics.length > 0 ? {
+                score: allLessonAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allLessonAnalytics.length,
+                time: allLessonAnalytics.reduce((sum, a) => sum + a.totalTime, 0) / allLessonAnalytics.length, // Use totalTime for consistent comparison
+                accuracy: allLessonAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allLessonAnalytics.length,
+              } : undefined;
+
+              // Create exercise progress map
+              const exerciseProgressMap: Record<number, any> = {};
+              exercises.forEach(ex => {
+                exerciseProgressMap[ex.exerciseId] = ex;
+              });
+
+              // Calculate comprehensive insights
+              const analytics = calculatePerformanceInsights(
+                {
+                  lessonId,
+                  lessonTitle: selectedLesson?.title || '',
+                  lessonScore: exerciseAccuracy,
+                  conceptScores: [],
+                  generalExercisesScore: exerciseAccuracy,
+                  generalExercisesWeight: 100,
+                  totalExercises: exercises.length,
+                  completedExercises: exercises.filter(e => e.isCompleted).length,
+                  timeSpent: totalTime,
+                  accuracyRate: exerciseAccuracy,
+                },
+                exerciseProgressMap,
+                historicalAverages
+              );
+
+              // Update state with comprehensive analytics
+              set((state) => ({
+                analyticsData: {
+                  ...state.analyticsData,
+                  [lessonId]: {
+                    ...state.analyticsData[lessonId],
+                    timeEfficiency: analytics.metrics.timeEfficiency,
+                    firstAttemptAccuracy: analytics.metrics.firstAttemptAccuracy,
+                    retryRate: analytics.metrics.retryRate,
+                    detailedInsights: analytics.insights,
+                    personalizedRecommendations: analytics.recommendations,
+                    comparisonWithAverage: historicalAverages ? {
+                      score: exerciseAccuracy - historicalAverages.score,
+                      time: totalTime - historicalAverages.time,
+                      accuracy: exerciseAccuracy - historicalAverages.accuracy,
+                    } : undefined,
+                  },
+                },
+              }));
+            }).catch(error => {
+              console.error('Failed to calculate comprehensive analytics:', error);
+            });
+          } catch (error) {
+            console.error('Error importing analytics utility:', error);
           }
 
           set((state) => ({
@@ -1424,6 +1508,7 @@ export const useLessonsStore = create<LessonsStore>()(
                 lessonId,
                 completionRate,
                 averageTimePerSection,
+                totalTime, // Store total lesson time for consistent comparisons
                 exerciseAccuracy,
                 totalAttempts,
                 insights,
@@ -1467,6 +1552,51 @@ export const useLessonsStore = create<LessonsStore>()(
           
           toast.info('Skipped to exercises', {
             description: 'Jumped directly to the practice exercises.',
+          });
+        },
+
+        // Lesson completion summary actions
+        setShowCompletionSummary: (show) => {
+          set({ showCompletionSummary: show });
+        },
+
+        fetchCompletionData: async (lessonId) => {
+          const state = get();
+          if (!state.selectedLesson) return;
+          
+          set({ isLoadingCompletionData: true, error: null });
+          
+          try {
+            const { getLessonCompletionData } = await import('@/lib/api/lessons');
+            const result = await getLessonCompletionData(
+              lessonId,
+              state.selectedLesson,
+              state.sectionTimeTracking,
+              state.exerciseProgress
+            );
+            
+            if (result.success && result.data) {
+              set({ 
+                completionData: result.data,
+                isLoadingCompletionData: false 
+              });
+            } else {
+              throw new Error(result.message);
+            }
+          } catch (err) {
+            const errorMsg = getErrorMessage(err);
+            set({ 
+              error: errorMsg,
+              isLoadingCompletionData: false 
+            });
+            get().addErrorToHistory('fetchCompletionData', errorMsg);
+          }
+        },
+
+        clearCompletionData: () => {
+          set({ 
+            completionData: null,
+            showCompletionSummary: false 
           });
         },
       }),

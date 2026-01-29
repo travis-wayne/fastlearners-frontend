@@ -294,3 +294,58 @@ export interface SubjectScoreResponse {
   } | null;
   code: number;
 }
+
+export interface ConceptScoreBreakdown {
+  conceptId: number;
+  title: string;
+  score: number;
+  weight: number;
+  totalExercises: number;
+  completedExercises: number;
+}
+
+export interface LessonCompletionData {
+  lessonId: number;
+  lessonTitle: string;
+  lessonScore: number; // 0-100
+  conceptScores: ConceptScoreBreakdown[];
+  generalExercisesScore: number; // 0-100
+  generalExercisesWeight: number;
+  totalExercises: number;
+  completedExercises: number;
+  timeSpent: number; // in seconds
+  accuracyRate: number; // 0-100
+}
+
+export interface LessonCompletionDataResponse {
+  success: boolean;
+  data: LessonCompletionData | null;
+  message: string;
+  loading?: boolean;
+  code?: number;
+}
+
+export interface LessonCompletionSummaryProps {
+  lessonId: number;
+  lessonTitle: string;
+  overallScore: number; // 0-100
+  conceptScores: ConceptScoreBreakdown[];
+  generalExercisesScore: number;
+  generalExercisesWeight: number;
+  timeSpent: number; // in seconds
+  accuracyRate: number; // 0-100
+  exerciseProgress: Record<number, any>;
+  historicalAverages?: { score: number; time: number; accuracy: number };
+  onReviewMistakes: () => void;
+  onContinueNext: () => void;
+  onBackToDashboard: () => void;
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+// Re-export analytics types from lesson-analytics utility
+export type {
+  PerformanceInsights,
+  PersonalizedRecommendations,
+  AnalyticsResult,
+} from "@/lib/utils/lesson-analytics";

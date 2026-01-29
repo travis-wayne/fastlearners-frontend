@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
@@ -28,6 +28,7 @@ import { LessonOverview } from "./sections/LessonOverview";
 import { LessonConcept } from "./sections/LessonConcept";
 import { LessonSummaryApplication } from "./sections/LessonSummaryApplication";
 import { LessonGeneralExercises } from "./sections/LessonGeneralExercises";
+import { LessonCompletionSummary } from "./LessonCompletionSummary";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
 import { useLessonsStore } from "@/lib/store/lessons";
 import { LessonContent } from "@/lib/types/lessons";
@@ -195,6 +196,15 @@ export function LessonViewer({
     userPreferences,
     sectionTimeTracking,
     updateAnalytics,
+    // Completion summary
+    showCompletionSummary,
+    completionData,
+    isLoadingCompletionData,
+    setShowCompletionSummary,
+    fetchCompletionData,
+    clearCompletionData,
+    exerciseProgress,
+    analyticsData,
   } = useLessonsStore();
 
   // Enhanced state for new features
@@ -205,6 +215,9 @@ export function LessonViewer({
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
   const [lessonScore, setLessonScore] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // Memoize concepts to avoid re-defining in multiple places
+  const concepts = useMemo(() => selectedLesson?.concepts || [], [selectedLesson?.concepts]);
 
   // Parse error into enhanced format
   const parseError = useCallback((error: string | null): EnhancedError | null => {
@@ -423,15 +436,51 @@ export function LessonViewer({
     const canProceed = await checkCurrentStepCompletion();
     if (canProceed) {
       const moved = await nextStep();
-      if (!moved && progress >= 100 && !celebrationShown) {
-        setCelebrationShown(true);
-        toast.success('🎉 Lesson Completed!', {
-          description: 'Congratulations on finishing this lesson!',
-          duration: 5000,
-        });
+      
+      // Verify we're at the last step, lesson is complete, and all sections are done
+      const isLastStep = currentStepIndex === concepts.length + 2;
+      const isComplete = progress >= 100;
+      
+      // Build list of valid section IDs for the current lesson
+      const validSectionIds = [
+        'overview',
+        ...concepts.map(c => `concept_${c.id}`),
+        'summary_application',
+        'general_exercises'
+      ];
+      
+      // Check only sections that belong to the current lesson
+      const allSectionsComplete = validSectionIds.every(
+        sectionId => sectionProgress[sectionId]?.isCompleted
+      );
+      
+      if (!moved && isLastStep && isComplete && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
+        try {
+          await fetchCompletionData(selectedLesson.id);
+          // Only set celebration flag after successful fetch
+          setCelebrationShown(true);
+          setShowCompletionSummary(true);
+        } catch (error) {
+          // Reset celebration flag on failure so user can retry
+          setCelebrationShown(false);
+          toast.error('Failed to load completion summary', {
+            description: 'Please try finishing the lesson again.',
+          });
+        }
       }
     }
-  }, [checkCurrentStepCompletion, nextStep, progress, celebrationShown]);
+  }, [
+    checkCurrentStepCompletion, 
+    nextStep, 
+    progress, 
+    currentStepIndex,
+    concepts,
+    sectionProgress,
+    celebrationShown, 
+    selectedLesson, 
+    fetchCompletionData, 
+    setShowCompletionSummary
+  ]);
 
   const handlePrev = useCallback(() => {
     prevStep();
@@ -527,6 +576,56 @@ export function LessonViewer({
     }
   };
 
+  // Completion summary action handlers
+  const handleReviewMistakes = useCallback(() => {
+    setShowCompletionSummary(false);
+    
+    // Find first incorrect exercise
+    const incorrectExerciseSection = Object.entries(exerciseProgress).find(
+      ([_, progress]) => progress.isCompleted && !progress.isCorrect
+    );
+    
+    if (incorrectExerciseSection) {
+      // Navigate to the section containing the incorrect exercise
+      const concepts = selectedLesson?.concepts || [];
+      const conceptIndex = concepts.findIndex(concept => 
+        concept.exercises?.some(ex => ex.id === parseInt(incorrectExerciseSection[0]))
+      );
+      
+      if (conceptIndex !== -1) {
+        useLessonsStore.setState({ currentStepIndex: conceptIndex + 1 });
+      }
+    }
+    
+    toast.info('Review mode', {
+      description: 'Navigate through sections to review your answers',
+    });
+  }, [exerciseProgress, selectedLesson, setShowCompletionSummary]);
+
+  const handleContinueNext = useCallback(() => {
+    setShowCompletionSummary(false);
+    clearCompletionData();
+    
+    // Navigate to next lesson (if available)
+    toast.info('Next lesson', {
+      description: 'Feature coming soon - navigate to the next lesson',
+    });
+    
+    // Future: Implement navigation to next lesson in sequence
+    router.push('/dashboard/lessons');
+  }, [setShowCompletionSummary, clearCompletionData, router]);
+
+  const handleBackToDashboard = useCallback(() => {
+    setShowCompletionSummary(false);
+    clearCompletionData();
+    clearSelectedLesson();
+    router.push('/dashboard/lessons');
+  }, [setShowCompletionSummary, clearCompletionData, clearSelectedLesson, router]);
+
+  const handleCloseCompletionSummary = useCallback(() => {
+    setShowCompletionSummary(false);
+  }, [setShowCompletionSummary]);
+
   if (isLoadingLessonContent) {
     return <LoadingSkeleton />;
   }
@@ -616,7 +715,7 @@ export function LessonViewer({
 
   // Default optional fields to prevent runtime errors
   const objectives = lesson.objectives || [];
-  const concepts = lesson.concepts || [];
+  // concepts is already defined via useMemo above
   const general_exercises = lesson.general_exercises || [];
   const key_concepts = lesson.key_concepts || {};
 
@@ -781,9 +880,15 @@ export function LessonViewer({
                 progress >= 100 && "bg-green-600 hover:bg-green-700"
               )}
               onClick={handleNext}
+              disabled={isLoadingCompletionData}
               aria-label={currentStepIndex === concepts.length + 2 ? "Finish lesson" : "Go to next section"}
             >
-              {currentStepIndex === concepts.length + 2 ? (
+              {isLoadingCompletionData ? (
+                <>
+                  <RefreshCw className="size-4 animate-spin sm:mr-2" />
+                  <span className="hidden sm:inline">Loading...</span>
+                </>
+              ) : currentStepIndex === concepts.length + 2 ? (
                 <>
                   <Trophy className="size-4 sm:mr-2" />
                   <span className="hidden sm:inline">Finish Lesson</span>
@@ -800,6 +905,66 @@ export function LessonViewer({
           </div>
         </CardContent>
       </Card>
+
+
+      {/* Lesson Completion Summary Dialog */}
+      {completionData && selectedLesson && (
+        <LessonCompletionSummary
+          lessonId={completionData.lessonId}
+          lessonTitle={completionData.lessonTitle}
+          overallScore={completionData.lessonScore}
+          conceptScores={completionData.conceptScores}
+          generalExercisesScore={completionData.generalExercisesScore}
+          generalExercisesWeight={completionData.generalExercisesWeight}
+          timeSpent={completionData.timeSpent}
+          accuracyRate={completionData.accuracyRate}
+          exerciseProgress={(() => {
+            // Filter exerciseProgress to only include exercises from the current lesson
+            const filteredProgress: Record<number, any> = {};
+            
+            // Get all exercise IDs from the current lesson (concepts + general exercises)
+            const lessonExerciseIds = new Set<number>();
+            
+            // Add concept exercise IDs
+            selectedLesson.concepts?.forEach(concept => {
+              concept.exercises?.forEach(ex => {
+                lessonExerciseIds.add(ex.id);
+              });
+            });
+            
+            // Add general exercise IDs
+            selectedLesson.general_exercises?.forEach(ge => {
+              lessonExerciseIds.add(ge.id);
+            });
+            
+            // Filter exerciseProgress to only include current lesson's exercises
+            Object.entries(exerciseProgress).forEach(([exerciseId, progress]) => {
+              const id = parseInt(exerciseId);
+              if (lessonExerciseIds.has(id)) {
+                filteredProgress[id] = progress;
+              }
+            });
+            
+            return filteredProgress;
+          })()}
+          historicalAverages={(() => {
+            // Calculate historicalAverages from analyticsData using totalTime
+            const allAnalytics = Object.values(analyticsData);
+            if (allAnalytics.length === 0) return undefined;
+            
+            return {
+              score: allAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allAnalytics.length,
+              time: allAnalytics.reduce((sum, a) => sum + a.totalTime, 0) / allAnalytics.length, // Use totalTime for consistent comparison
+              accuracy: allAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allAnalytics.length,
+            };
+          })()}
+          onReviewMistakes={handleReviewMistakes}
+          onContinueNext={handleContinueNext}
+          onBackToDashboard={handleBackToDashboard}
+          isOpen={showCompletionSummary}
+          onClose={handleCloseCompletionSummary}
+        />
+      )}
     </div>
   );
 }
