@@ -433,10 +433,13 @@ export function LessonViewer({
   }, [progress]);
 
   const handleNext = useCallback(async () => {
+    console.log('[handleNext] Starting...');
     const canProceed = await checkCurrentStepCompletion();
+    console.log('[handleNext] canProceed:', canProceed);
     
     if (canProceed) {
       const moved = await nextStep();
+      console.log('[handleNext] moved:', moved, 'currentStepIndex:', currentStepIndex);
       
       // Verify we're at the last step, lesson is complete, and all sections are done
       const isLastStep = currentStepIndex === concepts.length + 2;
@@ -455,20 +458,44 @@ export function LessonViewer({
         sectionId => sectionProgress[sectionId]?.isCompleted
       );
       
+      console.log('[handleNext] Conditions:', {
+        moved,
+        isLastStep,
+        isComplete,
+        allSectionsComplete,
+        celebrationShown,
+        hasLessonId: !!selectedLesson?.id,
+        progress,
+        currentStepIndex,
+        conceptsLength: concepts.length
+      });
+      
       if (!moved && isLastStep && isComplete && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
+        console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
         try {
           await fetchCompletionData(selectedLesson.id);
           // Only set celebration flag after successful fetch
           setCelebrationShown(true);
           setShowCompletionSummary(true);
+          console.log('[handleNext] ✅ Completion summary shown!');
         } catch (error) {
+          console.error('[handleNext] ❌ Error fetching completion data:', error);
           // Reset celebration flag on failure so user can retry
           setCelebrationShown(false);
           toast.error('Failed to load completion summary', {
             description: 'Please try finishing the lesson again.',
           });
         }
+      } else {
+        console.log('[handleNext] ❌ Conditions not met');
       }
+    } else {
+      console.error('[handleNext] ❌ canProceed is FALSE - current step not completed');
+      console.log('[handleNext] Current step index:', currentStepIndex);
+      console.log('[handleNext] Section progress:', sectionProgress);
+      toast.error('Cannot proceed', {
+        description: 'Please complete the current section first.',
+      });
     }
   }, [
     checkCurrentStepCompletion, 
