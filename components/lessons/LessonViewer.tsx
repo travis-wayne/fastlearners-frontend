@@ -434,11 +434,9 @@ export function LessonViewer({
 
   const handleNext = useCallback(async () => {
     const canProceed = await checkCurrentStepCompletion();
-    console.log('[handleNext] canProceed:', canProceed);
     
     if (canProceed) {
       const moved = await nextStep();
-      console.log('[handleNext] moved:', moved);
       
       // Verify we're at the last step, lesson is complete, and all sections are done
       const isLastStep = currentStepIndex === concepts.length + 2;
@@ -457,40 +455,20 @@ export function LessonViewer({
         sectionId => sectionProgress[sectionId]?.isCompleted
       );
       
-      console.log('[handleNext] Completion check:', {
-        moved,
-        isLastStep,
-        currentStepIndex,
-        conceptsLength: concepts.length,
-        isComplete,
-        progress,
-        allSectionsComplete,
-        celebrationShown,
-        hasLessonId: !!selectedLesson?.id,
-        sectionProgress,
-        validSectionIds
-      });
-      
       if (!moved && isLastStep && isComplete && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
-        console.log('[handleNext] Showing completion summary');
         try {
           await fetchCompletionData(selectedLesson.id);
           // Only set celebration flag after successful fetch
           setCelebrationShown(true);
           setShowCompletionSummary(true);
         } catch (error) {
-          console.error('[handleNext] Error fetching completion data:', error);
           // Reset celebration flag on failure so user can retry
           setCelebrationShown(false);
           toast.error('Failed to load completion summary', {
             description: 'Please try finishing the lesson again.',
           });
         }
-      } else {
-        console.log('[handleNext] Completion conditions not met');
       }
-    } else {
-      console.log('[handleNext] Cannot proceed - current step not completed');
     }
   }, [
     checkCurrentStepCompletion, 
@@ -602,6 +580,7 @@ export function LessonViewer({
   // Completion summary action handlers
   const handleReviewMistakes = useCallback(() => {
     setShowCompletionSummary(false);
+    setCelebrationShown(false);
     
     // Find first incorrect exercise
     const incorrectExerciseSection = Object.entries(exerciseProgress).find(
@@ -628,6 +607,7 @@ export function LessonViewer({
   const handleContinueNext = useCallback(() => {
     setShowCompletionSummary(false);
     clearCompletionData();
+    setCelebrationShown(false);
     
     // Navigate to next lesson (if available)
     toast.info('Next lesson', {
@@ -642,11 +622,13 @@ export function LessonViewer({
     setShowCompletionSummary(false);
     clearCompletionData();
     clearSelectedLesson();
+    setCelebrationShown(false);
     router.push('/dashboard/lessons');
   }, [setShowCompletionSummary, clearCompletionData, clearSelectedLesson, router]);
 
   const handleCloseCompletionSummary = useCallback(() => {
     setShowCompletionSummary(false);
+    setCelebrationShown(false);
   }, [setShowCompletionSummary]);
 
   if (isLoadingLessonContent) {
