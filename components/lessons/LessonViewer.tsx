@@ -445,6 +445,18 @@ export function LessonViewer({
       const isLastStep = currentStepIndex === concepts.length + 2;
       const isComplete = progress >= 100;
       
+      // Auto-reset stuck celebrationShown flag EARLY
+      // If we're at the last step but celebrationShown is true and summary isn't showing,
+      // the flag is stuck - reset it immediately
+      if (!moved && isLastStep && celebrationShown && !showCompletionSummary) {
+        console.log('[handleNext] ⚠️ Detected stuck celebrationShown flag - resetting...');
+        setCelebrationShown(false);
+        toast.info('Ready to finish', {
+          description: 'Click "Finish Lesson" again to see your completion summary.',
+        });
+        return;
+      }
+      
       // Build list of valid section IDs for the current lesson
       const validSectionIds = [
         'overview',
@@ -470,18 +482,6 @@ export function LessonViewer({
         conceptsLength: concepts.length,
         showCompletionSummary
       });
-      
-      // Auto-reset stuck celebrationShown flag
-      // If we're at the last step, progress is complete, but celebrationShown is true
-      // and the summary isn't showing, the flag is stuck - reset it
-      if (!moved && isLastStep && isComplete && celebrationShown && !showCompletionSummary) {
-        console.log('[handleNext] ⚠️ Detected stuck celebrationShown flag - resetting...');
-        setCelebrationShown(false);
-        toast.info('Ready to finish', {
-          description: 'Click "Finish Lesson" again to see your completion summary.',
-        });
-        return;
-      }
       
       if (!moved && isLastStep && isComplete && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
         console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
