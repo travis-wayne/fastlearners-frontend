@@ -688,11 +688,37 @@ export const useLessonsStore = create<LessonsStore>()(
               // This helps when the API check fails but exercises are actually done
               const { exerciseProgress: localProgress } = get();
               const generalExercises = selectedLesson.general_exercises || [];
+              
+              console.log('[checkCurrentStepCompletion] General Exercises Check:', {
+                generalExercisesCount: generalExercises.length,
+                generalExerciseIds: generalExercises.map(ex => ex.id),
+                localProgress: Object.keys(localProgress).map(id => ({
+                  id,
+                  isCompleted: localProgress[id]?.isCompleted,
+                  isCorrect: localProgress[id]?.isCorrect
+                })),
+                apiResponse: {
+                  success: response?.success,
+                  code: response?.code,
+                  message: response?.message
+                }
+              });
+              
               const allExercisesCompleted = generalExercises.length > 0 && 
-                generalExercises.every(ex => localProgress[ex.id]?.isCompleted);
+                generalExercises.every(ex => {
+                  const prog = localProgress[ex.id];
+                  console.log(`  Exercise ${ex.id}:`, {
+                    isCompleted: prog?.isCompleted,
+                    isCorrect: prog?.isCorrect
+                  });
+                  return prog?.isCompleted;
+                });
+              
+              console.log('[checkCurrentStepCompletion] All exercises completed locally?', allExercisesCompleted);
               
               // If all exercises are completed locally, mark as complete even if API check fails
               if (allExercisesCompleted && (!response || !response.success)) {
+                console.log('[checkCurrentStepCompletion] ✅ Using local check - marking as complete');
                 if (sectionId && !completedSections.includes(sectionId)) {
                   const newCompletedSections = [...completedSections, sectionId];
                   set({ completedSections: newCompletedSections, error: null });

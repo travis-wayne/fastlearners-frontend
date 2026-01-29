@@ -467,8 +467,21 @@ export function LessonViewer({
         hasLessonId: !!selectedLesson?.id,
         progress,
         currentStepIndex,
-        conceptsLength: concepts.length
+        conceptsLength: concepts.length,
+        showCompletionSummary
       });
+      
+      // Auto-reset stuck celebrationShown flag
+      // If we're at the last step, progress is complete, but celebrationShown is true
+      // and the summary isn't showing, the flag is stuck - reset it
+      if (!moved && isLastStep && isComplete && celebrationShown && !showCompletionSummary) {
+        console.log('[handleNext] ⚠️ Detected stuck celebrationShown flag - resetting...');
+        setCelebrationShown(false);
+        toast.info('Ready to finish', {
+          description: 'Click "Finish Lesson" again to see your completion summary.',
+        });
+        return;
+      }
       
       if (!moved && isLastStep && isComplete && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
         console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
@@ -507,7 +520,8 @@ export function LessonViewer({
     celebrationShown, 
     selectedLesson, 
     fetchCompletionData, 
-    setShowCompletionSummary
+    setShowCompletionSummary,
+    showCompletionSummary
   ]);
 
   const handlePrev = useCallback(() => {
