@@ -3899,6 +3899,322 @@ This endpoint returns detailed lesson content similar to the student endpoint bu
 
 ---
 
+## Answering System
+
+### 1. Handle Concept Exercise Answers
+
+**Endpoint:** `POST /api/v1/lessons/check-exercise-answer`
+
+**Description:** Use this endpoint to verify student's answers to concept exercises.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+```json
+{
+  "exercise_id": 5,
+  "answer": "B"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Great job! You scored 50% on your 1st attempt.",
+  "content": {
+    "score": "50",
+    "attempt": "1st",
+    "concept_total_score": "5.00",
+    "concept_weight": "10.00"
+  },
+  "code": 200
+}
+```
+
+**Validation Error (422):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "answer": ["The answer field is required."],
+    "exercise_id": ["The exercise id field is required."]
+  },
+  "code": 422
+}
+```
+
+**Exercise Already Answered Error (400):**
+```json
+{
+  "success": false,
+  "message": "Exercise already answered, continue learning!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Wrong Answer Response (400):**
+```json
+{
+  "success": false,
+  "message": "Wrong answer. Try again!",
+  "errors": null,
+  "code": 400
+}
+```
+
+---
+
+### 2. Handle General Exercise Answers
+
+**Endpoint:** `POST /api/v1/lessons/check-general-exercise-answer`
+
+**Description:** Use this endpoint to verify student's general exercises answers.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+```json
+{
+  "general_exercise_id": 3,
+  "answer": "C"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Great job! You scored 5% on your 1st attempt.",
+  "content": {
+    "score": "5",
+    "attempt": "1st",
+    "general_exercise_total_score": "1.50",
+    "general_exercise_weight": "30.00"
+  },
+  "code": 200
+}
+```
+
+**Validation Error (422):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "answer": ["The answer field is required."],
+    "general_exercise_id": ["The general exercise id field is required."]
+  },
+  "code": 422
+}
+```
+
+**Exercise Already Answered Error (400):**
+```json
+{
+  "success": false,
+  "message": "General exercise already answered, continue learning!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Wrong Answer Response (400):**
+```json
+{
+  "success": false,
+  "message": "Wrong answer. Try again!",
+  "errors": null,
+  "code": 400
+}
+```
+
+---
+
+## Lesson Completion Check System
+
+### 1. Lesson Overview Completion Check
+
+**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`
+
+**Endpoint:** `GET /api/v1/lessons/check/overview/{lesson_id}`
+
+**Description:** Use this endpoint to check if a student has completed the lesson overview section before continuing to the next section (Concepts).
+
+**Note:** The `{type}` is the section type (overview, concept, summary-and-application & general-exercises).
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Overview completed successfully.",
+  "content": {
+    "check": {
+      "is_completed": true,
+      "score": "100%"
+    }
+  },
+  "code": 200
+}
+```
+
+**Lesson Check Marker Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
+```
+
+---
+
+### 2. Lesson Concept Completion Check
+
+**Endpoint Format:** `GET /api/v1/lessons/check/concept/{lesson_id}/{concept_id}`
+
+**Endpoint:** `GET /api/v1/lessons/check/concept/{lesson_id}/{concept_id}`
+
+**Description:** Use this endpoint to check if a student has completed the lesson concepts section before continuing to the next section.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Concept completed successfully.",
+  "content": {
+    "check": {
+      "is_completed": true,
+      "score": "20%"
+    }
+  },
+  "code": 200
+}
+```
+
+**Lesson Check Marker Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
+```
+
+---
+
+### 3. Lesson Summary & Application Completion Check
+
+**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/{lesson_id}`
+
+**Description:** Use this endpoint to check if a student has completed the lesson summary and application section before continuing to the next section (General Exercises).
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Summary and Application completed successfully.",
+  "content": {
+    "check": {
+      "is_completed": true,
+      "score": "100%"
+    }
+  },
+  "code": 200
+}
+```
+
+**Lesson Check Marker Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
+```
+
+---
+
+### 4. Lesson General Exercises Completion Check
+
+**Endpoint:** `GET /api/v1/lessons/check/general-exercises/{lesson_id}`
+
+**Description:** Use this endpoint to check if a student has completed the lesson general exercise section before continuing to the next lesson topic.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "General exercises completed successfully.",
+  "content": {
+    "check": {
+      "is_completed": true,
+      "score": "65%"
+    }
+  },
+  "code": 200
+}
+```
+
+**Lesson Check Marker Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Not Completed Error Response (400):**
+```json
+{
+  "success": false,
+  "message": "Complete your lesson general exercises to continue learning!",
+  "errors": null,
+  "code": 400
+}
+```
+
+---
+
 ## Total Scores API
 
 ### 1. Concept Total Score
@@ -4018,7 +4334,7 @@ This endpoint returns detailed lesson content similar to the student endpoint bu
 
 ### 3. Lesson Total Score
 
-**Endpoint:** `GET /api/v1/lessons/scores/lessons/{lesson_id}`
+**Endpoint:** `GET /api/v1/lessons/scores/lesson/{lesson_id}`
 
 **Description:** Get a lesson's total score using the lesson_id. Returns the cumulative score across all concepts and general exercises in the lesson.
 

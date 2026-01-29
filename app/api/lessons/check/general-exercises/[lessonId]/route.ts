@@ -25,9 +25,9 @@ export async function GET(
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
     try {
-      // Note: Upstream endpoint uses snake_case 'general_exercises'
+      // Match API docs: uses hyphens 'general-exercises'
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/check/general_exercises/${lessonId}`,
+        `${UPSTREAM_BASE}/lessons/check/general-exercises/${lessonId}`,
         {
           method: "GET",
           headers: {
@@ -54,7 +54,7 @@ export async function GET(
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/check/general_exercises/${lessonId}`,
+            `${UPSTREAM_BASE}/lessons/check/general-exercises/${lessonId}`,
             {
               method: "GET",
               headers: {

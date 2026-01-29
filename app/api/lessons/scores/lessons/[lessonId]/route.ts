@@ -25,8 +25,9 @@ export async function GET(
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
     try {
+      // Match API docs: uses singular 'lesson'
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/scores/lessons/${lessonId}`,
+        `${UPSTREAM_BASE}/lessons/scores/lesson/${lessonId}`,
         {
           method: "GET",
           headers: {
@@ -53,7 +54,7 @@ export async function GET(
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/scores/lessons/${lessonId}`,
+            `${UPSTREAM_BASE}/lessons/scores/lesson/${lessonId}`,
             {
               method: "GET",
               headers: {
