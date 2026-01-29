@@ -792,18 +792,12 @@ export async function getLessonCompletionData(
       
       // Aggregate scores using weighted average
       const totalWeight = generalExerciseScores.reduce((sum, item) => sum + item.weight, 0);
-      generalExercisesWeight = totalWeight;
-      
-      if (totalWeight > 0) {
-        const weightedSum = generalExerciseScores.reduce(
-          (sum, item) => sum + (item.score * item.weight),
-          0
-        );
-        generalExercisesScore = weightedSum / totalWeight;
-      } else {
-        // If no weights, use simple average
-        const totalScore = generalExerciseScores.reduce((sum, item) => sum + item.score, 0);
-        generalExercisesScore = generalExercises.length > 0 ? totalScore / generalExercises.length : 0;
+      // Aggregate scores using simple average for general exercises as per requirement
+      if (generalExercises.length > 0) {
+          const totalScore = generalExerciseScores.reduce((sum, item) => sum + item.score, 0);
+          generalExercisesScore = totalScore / generalExercises.length;
+          // Calculate average weight
+          generalExercisesWeight = generalExerciseScores.reduce((sum, item) => sum + item.weight, 0) / generalExercises.length || 0;
       }
     }
 

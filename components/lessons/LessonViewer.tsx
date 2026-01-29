@@ -28,7 +28,7 @@ import { LessonOverview } from "./sections/LessonOverview";
 import { LessonConcept } from "./sections/LessonConcept";
 import { LessonSummaryApplication } from "./sections/LessonSummaryApplication";
 import { LessonGeneralExercises } from "./sections/LessonGeneralExercises";
-import { LessonCompletionSummary } from "./LessonCompletionSummary";
+
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
 import { useLessonsStore } from "@/lib/store/lessons";
 import { LessonContent } from "@/lib/types/lessons";
@@ -197,9 +197,6 @@ export function LessonViewer({
     sectionTimeTracking,
     updateAnalytics,
     // Completion summary
-    showCompletionSummary,
-    completionData,
-    isLoadingCompletionData,
     setShowCompletionSummary,
     fetchCompletionData,
     clearCompletionData,
@@ -496,10 +493,12 @@ export function LessonViewer({
         console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
         try {
           await fetchCompletionData(selectedLesson.id);
-          // Only set celebration flag after successful fetch
-          setCelebrationShown(true);
-          setShowCompletionSummary(true);
-          console.log('[handleNext] ✅ Completion summary shown!');
+          // Redirect to the dedicated completion page
+          console.log('[handleNext] ✅ Completion confirmed! Redirecting to completion page...');
+          router.push(`/dashboard/lessons/completed/${selectedLesson.id}`);
+          // Old dialog logic removed:
+          // setCelebrationShown(true);
+          // setShowCompletionSummary(true);
         } catch (error) {
           console.error('[handleNext] ❌ Error fetching completion data:', error);
           // Reset celebration flag on failure so user can retry
@@ -627,59 +626,7 @@ export function LessonViewer({
     }
   };
 
-  // Completion summary action handlers
-  const handleReviewMistakes = useCallback(() => {
-    setShowCompletionSummary(false);
-    setCelebrationShown(false);
-    
-    // Find first incorrect exercise
-    const incorrectExerciseSection = Object.entries(exerciseProgress).find(
-      ([_, progress]) => progress.isCompleted && !progress.isCorrect
-    );
-    
-    if (incorrectExerciseSection) {
-      // Navigate to the section containing the incorrect exercise
-      const concepts = selectedLesson?.concepts || [];
-      const conceptIndex = concepts.findIndex(concept => 
-        concept.exercises?.some(ex => ex.id === parseInt(incorrectExerciseSection[0]))
-      );
-      
-      if (conceptIndex !== -1) {
-        useLessonsStore.setState({ currentStepIndex: conceptIndex + 1 });
-      }
-    }
-    
-    toast.info('Review mode', {
-      description: 'Navigate through sections to review your answers',
-    });
-  }, [exerciseProgress, selectedLesson, setShowCompletionSummary]);
 
-  const handleContinueNext = useCallback(() => {
-    setShowCompletionSummary(false);
-    clearCompletionData();
-    setCelebrationShown(false);
-    
-    // Navigate to next lesson (if available)
-    toast.info('Next lesson', {
-      description: 'Feature coming soon - navigate to the next lesson',
-    });
-    
-    // Future: Implement navigation to next lesson in sequence
-    router.push('/dashboard/lessons');
-  }, [setShowCompletionSummary, clearCompletionData, router]);
-
-  const handleBackToDashboard = useCallback(() => {
-    setShowCompletionSummary(false);
-    clearCompletionData();
-    clearSelectedLesson();
-    setCelebrationShown(false);
-    router.push('/dashboard/lessons');
-  }, [setShowCompletionSummary, clearCompletionData, clearSelectedLesson, router]);
-
-  const handleCloseCompletionSummary = useCallback(() => {
-    setShowCompletionSummary(false);
-    setCelebrationShown(false);
-  }, [setShowCompletionSummary]);
 
   if (isLoadingLessonContent) {
     return <LoadingSkeleton />;
@@ -963,65 +910,7 @@ export function LessonViewer({
 
 
       {/* Lesson Completion Summary Dialog */}
-      {completionData && selectedLesson && (
-        <LessonCompletionSummary
-          lessonId={completionData.lessonId}
-          lessonTitle={completionData.lessonTitle}
-          overallScore={completionData.lessonScore}
-          conceptScores={completionData.conceptScores}
-          generalExercisesScore={completionData.generalExercisesScore}
-          generalExercisesWeight={completionData.generalExercisesWeight}
-          timeSpent={completionData.timeSpent}
-          accuracyRate={completionData.accuracyRate}
-          exerciseProgress={(() => {
-            // Filter exerciseProgress to only include exercises from the current lesson
-            const filteredProgress: Record<number, any> = {};
-            
-            // Get all exercise IDs from the current lesson (concepts + general exercises)
-            const lessonExerciseIds = new Set<number>();
-            
-            // Add concept exercise IDs
-            selectedLesson.concepts?.forEach(concept => {
-              concept.exercises?.forEach(ex => {
-                lessonExerciseIds.add(ex.id);
-              });
-            });
-            
-            // Add general exercise IDs
-            selectedLesson.general_exercises?.forEach(ge => {
-              lessonExerciseIds.add(ge.id);
-            });
-            
-            // Filter exerciseProgress to only include current lesson's exercises
-            Object.entries(exerciseProgress).forEach(([exerciseId, progress]) => {
-              const id = parseInt(exerciseId);
-              if (lessonExerciseIds.has(id)) {
-                filteredProgress[id] = progress;
-              }
-            });
-            
-            return filteredProgress;
-          })()}
-          historicalAverages={(() => {
-            // Calculate historicalAverages from analyticsData using totalTime
-            const allAnalytics = Object.values(analyticsData);
-            // Filter out null/undefined analytics entries before calculating
-            const validAnalytics = allAnalytics.filter((a): a is NonNullable<typeof a> => a != null);
-            if (validAnalytics.length === 0) return undefined;
-            
-            return {
-              score: validAnalytics.reduce((sum, a) => sum + (a.exerciseAccuracy ?? 0), 0) / validAnalytics.length,
-              time: validAnalytics.reduce((sum, a) => sum + (a.totalTime ?? 0), 0) / validAnalytics.length, // Use totalTime for consistent comparison
-              accuracy: validAnalytics.reduce((sum, a) => sum + (a.exerciseAccuracy ?? 0), 0) / validAnalytics.length,
-            };
-          })()}
-          onReviewMistakes={handleReviewMistakes}
-          onContinueNext={handleContinueNext}
-          onBackToDashboard={handleBackToDashboard}
-          isOpen={showCompletionSummary}
-          onClose={handleCloseCompletionSummary}
-        />
-      )}
+
     </div>
   );
 }
