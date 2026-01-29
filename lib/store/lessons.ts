@@ -1471,10 +1471,12 @@ export const useLessonsStore = create<LessonsStore>()(
             import('@/lib/utils/lesson-analytics').then(({ calculatePerformanceInsights }) => {
               // Calculate historical averages for comparison
               const allLessonAnalytics = Object.values(currentAnalyticsData);
-              const historicalAverages = allLessonAnalytics.length > 0 ? {
-                score: allLessonAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allLessonAnalytics.length,
-                time: allLessonAnalytics.reduce((sum, a) => sum + a.totalTime, 0) / allLessonAnalytics.length, // Use totalTime for consistent comparison
-                accuracy: allLessonAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allLessonAnalytics.length,
+              // Filter out null/undefined analytics entries before calculating
+              const validAnalytics = allLessonAnalytics.filter((a): a is NonNullable<typeof a> => a != null);
+              const historicalAverages = validAnalytics.length > 0 ? {
+                score: validAnalytics.reduce((sum, a) => sum + (a.exerciseAccuracy ?? 0), 0) / validAnalytics.length,
+                time: validAnalytics.reduce((sum, a) => sum + (a.totalTime ?? 0), 0) / validAnalytics.length, // Use totalTime for consistent comparison
+                accuracy: validAnalytics.reduce((sum, a) => sum + (a.exerciseAccuracy ?? 0), 0) / validAnalytics.length,
               } : undefined;
 
               // Create exercise progress map

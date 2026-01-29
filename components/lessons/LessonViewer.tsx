@@ -1005,12 +1005,14 @@ export function LessonViewer({
           historicalAverages={(() => {
             // Calculate historicalAverages from analyticsData using totalTime
             const allAnalytics = Object.values(analyticsData);
-            if (allAnalytics.length === 0) return undefined;
+            // Filter out null/undefined analytics entries before calculating
+            const validAnalytics = allAnalytics.filter((a): a is NonNullable<typeof a> => a != null);
+            if (validAnalytics.length === 0) return undefined;
             
             return {
-              score: allAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allAnalytics.length,
-              time: allAnalytics.reduce((sum, a) => sum + a.totalTime, 0) / allAnalytics.length, // Use totalTime for consistent comparison
-              accuracy: allAnalytics.reduce((sum, a) => sum + a.exerciseAccuracy, 0) / allAnalytics.length,
+              score: validAnalytics.reduce((sum, a) => sum + (a.exerciseAccuracy ?? 0), 0) / validAnalytics.length,
+              time: validAnalytics.reduce((sum, a) => sum + (a.totalTime ?? 0), 0) / validAnalytics.length, // Use totalTime for consistent comparison
+              accuracy: validAnalytics.reduce((sum, a) => sum + (a.exerciseAccuracy ?? 0), 0) / validAnalytics.length,
             };
           })()}
           onReviewMistakes={handleReviewMistakes}
