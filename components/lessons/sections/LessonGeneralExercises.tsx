@@ -138,7 +138,7 @@ export function LessonGeneralExercises({
     };
 
     fetchGeneralExerciseScore();
-  }, [general_exercises]);
+  }, [general_exercises, exerciseProgress]);
 
   // Stats calculations
   const stats = useMemo(() => {

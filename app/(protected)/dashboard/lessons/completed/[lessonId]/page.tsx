@@ -96,16 +96,16 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
   }
 
   return (
-    <div className="container max-w-4xl py-8 space-y-8">
+    <div className="container max-w-4xl space-y-8 py-8">
       {/* Header Section */}
       <div className="space-y-4 text-center">
-        <div className="flex mx-auto size-20 items-center justify-center rounded-full bg-yellow-100 ring-8 ring-yellow-50 animate-in zoom-in duration-500 dark:bg-yellow-900/30 dark:ring-yellow-900/10">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-yellow-100 ring-8 ring-yellow-50 duration-500 animate-in zoom-in dark:bg-yellow-900/30 dark:ring-yellow-900/10">
           <Trophy className="size-10 text-yellow-600 dark:text-yellow-400" />
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Lesson Complete!</h1>
         <p className="text-xl text-muted-foreground">{data.lessonTitle}</p>
         
-        <div className="flex justify-center mt-6">
+        <div className="mt-6 flex justify-center">
            <div className="relative flex size-40 items-center justify-center rounded-full border-8 border-primary/20">
              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">

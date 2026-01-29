@@ -517,8 +517,8 @@ export function LessonViewer({
     sectionProgress,
     celebrationShown, 
     selectedLesson, 
-    fetchCompletionData, 
-    fetchCompletionData
+    fetchCompletionData,
+    router
   ]);
 
   const handlePrev = useCallback(() => {
