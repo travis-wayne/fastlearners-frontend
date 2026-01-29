@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useInView } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -41,6 +42,8 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   const [lastResult, setLastResult] = useState<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const radioGroupRef = useRef<HTMLDivElement>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isInView = useInView(cardRef, { once: false, amount: 0.1 });
   const sectionTimerStartedRef = useRef(false);
 
   // Check if exercise is already completed
@@ -51,13 +54,15 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
   // Timer effect
   useEffect(() => {
+    if (!isInView) return;
+
     timerRef.current = setInterval(() => {
       setElapsedTime(Math.floor((new Date().getTime() - startTime.getTime()) / 1000));
     }, 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [startTime]);
+  }, [startTime, isInView]);
 
   // Online status
   useEffect(() => {
@@ -338,7 +343,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   };
 
   return (
-    <Card className={cn("border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10", success && "animate-pulse")}>
+    <Card ref={cardRef} className={cn("border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10", success && "animate-pulse")}>
       <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-blue-900 dark:text-blue-100 sm:text-base">

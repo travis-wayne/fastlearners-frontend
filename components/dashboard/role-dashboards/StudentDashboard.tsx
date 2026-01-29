@@ -139,19 +139,19 @@ export function StudentDashboard() {
 
   // Leaderboard data
   const leaderboard = [
-    { rank: 1, name: "Alex Johnson", score: 2840, avatar: "/avatars/alex.jpg" },
+    { rank: 1, name: "Alex Johnson", score: 2840, avatar: "/avatars/avatar-1.svg" },
     {
       rank: 2,
       name: "Sarah Wilson",
       score: 2750,
-      avatar: "/avatars/sarah.jpg",
+      avatar: "/avatars/avatar-2.svg",
     },
-    { rank: 3, name: "Mike Chen", score: 2680, avatar: "/avatars/mike.jpg" },
+    { rank: 3, name: "Mike Chen", score: 2680, avatar: "/avatars/avatar-3.svg" },
     {
       rank: 4,
       name: "You",
       score: 2620,
-      avatar: "/avatars/you.jpg",
+      avatar: "/avatars/avatar-4.svg",
       isCurrentUser: true,
     },
   ];

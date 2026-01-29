@@ -60,7 +60,6 @@ export function constructMetadata({
     },
     icons,
     metadataBase: new URL(siteConfig.url),
-    manifest: "/site.webmanifest",
     ...(noIndex && {
       robots: {
         index: false,

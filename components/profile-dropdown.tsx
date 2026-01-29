@@ -24,7 +24,7 @@ export function ProfileDropdown() {
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="relative size-8 rounded-full">
             <Avatar className="size-8">
-              <AvatarImage src="/avatars/01.png" alt="@shadcn" />
+              <AvatarImage src="/avatars/avatar-5.svg" alt="@shadcn" />
               <AvatarFallback>SN</AvatarFallback>
             </Avatar>
           </Button>

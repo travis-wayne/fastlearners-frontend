@@ -117,9 +117,12 @@ export function LessonGeneralExercises({
       // Fetch score for the first general exercise as a representative
       if (general_exercises.length === 0) return;
       
+      const firstExerciseId = general_exercises[0].id;
+      // Only fetch if the exercise is completed to avoid 400 errors
+      if (!exerciseProgress[firstExerciseId]?.isCompleted) return;
+
       setIsLoadingScore(true);
       try {
-        const firstExerciseId = general_exercises[0].id;
         const response = await getGeneralExerciseScore(firstExerciseId);
         if (response.success && response.content) {
           setGeneralExerciseScore({
