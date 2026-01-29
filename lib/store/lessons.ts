@@ -714,7 +714,7 @@ export const useLessonsStore = create<LessonsStore>()(
                   return prog?.isCompleted;
                 });
               
-              console.log('[checkCurrentStepCompletion] All exercises completed locally?', allExercisesCompleted);
+              console.debug('[checkCurrentStepCompletion] All exercises completed locally?', allExercisesCompleted);
               
               // If all exercises are completed locally, mark as complete even if API check fails
               if (allExercisesCompleted) {

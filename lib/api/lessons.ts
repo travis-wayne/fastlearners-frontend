@@ -611,8 +611,8 @@ export async function getLessonScore(lessonId: number): Promise<import("@/lib/ty
     const data = await res.json();
 
     if (!res.ok) {
-      // Handle 400 errors (score not found) as default zero scores
-      if (res.status === 400) {
+      // Handle 400/404 errors (score not found/unavailable) as default zero scores
+      if (res.status === 400 || res.status === 404) {
         return {
           success: true,
           message: "No score available yet",
