@@ -470,6 +470,14 @@ export function LessonViewer({
         return;
       }
       
+      console.log('[handleNext] Section Status Check:', {
+        validSectionIds,
+        sectionProgressStatus: validSectionIds.map(id => ({
+          id,
+          isCompleted: sectionProgress[id]?.isCompleted ?? false
+        }))
+      });
+      
       console.log('[handleNext] Conditions:', {
         moved,
         isLastStep,
