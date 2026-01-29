@@ -473,7 +473,6 @@ export function LessonViewer({
         hasLessonId: !!selectedLesson?.id,
         progress,
         currentStepIndex,
-        conceptsLength: concepts.length,
         conceptsLength: concepts.length
       });
       
