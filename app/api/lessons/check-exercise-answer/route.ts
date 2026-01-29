@@ -16,11 +16,25 @@ export async function POST(req: NextRequest) {
     
     // Debug logging (only in development)
     if (process.env.NODE_ENV === 'development') {
-      console.log('[check-exercise-answer] Received request:', {
+      console.log('[check-exercise-answer] Request:', {
         body,
+        bodyTypes: {
+          exercise_id: typeof body.exercise_id,
+          answer: typeof body.answer
+        },
         requestId,
+        upstreamUrl: `${UPSTREAM_BASE}/lessons/check-exercise-answer`,
         hasAuth: !!auth,
       });
+    }
+
+    // Validation
+    if (!body.exercise_id || typeof body.exercise_id !== 'number' || body.exercise_id <= 0) {
+      return createErrorResponse("Invalid exercise ID", 422, undefined, requestId);
+    }
+
+    if (!body.answer || typeof body.answer !== 'string' || !/^[A-Z]$/.test(body.answer)) {
+      return createErrorResponse("Answer must be a single uppercase letter", 422, undefined, requestId);
     }
     
     const controller = new AbortController();
@@ -45,17 +59,22 @@ export async function POST(req: NextRequest) {
       clearTimeout(timeoutId);
       const data = await upstream.json();
 
-      // Debug logging for errors
-      if (!upstream.ok && process.env.NODE_ENV === 'development') {
-        console.error('[check-exercise-answer] Upstream error:', {
+      // Debug logging for upstream response
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[check-exercise-answer] Upstream Response:', {
           status: upstream.status,
           statusText: upstream.statusText,
           data,
-          requestBody: body,
         });
       }
 
       if (!upstream.ok) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[check-exercise-answer] Returning error to client:', {
+            status: upstream.status,
+            data
+          });
+        }
         return handleUpstreamError(upstream, data, requestId);
       }
 

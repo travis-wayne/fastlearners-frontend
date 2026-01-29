@@ -14,6 +14,29 @@ export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
     
+    // Debug logging (only in development)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[check-general-exercise-answer] Request:', {
+        body,
+        bodyTypes: {
+          general_exercise_id: typeof body.general_exercise_id,
+          answer: typeof body.answer
+        },
+        requestId,
+        upstreamUrl: `${UPSTREAM_BASE}/lessons/check-general-exercise-answer`,
+        hasAuth: !!auth,
+      });
+    }
+
+    // Validation
+    if (!body.general_exercise_id || typeof body.general_exercise_id !== 'number' || body.general_exercise_id <= 0) {
+      return createErrorResponse("Invalid general exercise ID", 422, undefined, requestId);
+    }
+
+    if (!body.answer || typeof body.answer !== 'string' || !/^[A-Z]$/.test(body.answer)) {
+      return createErrorResponse("Answer must be a single uppercase letter", 422, undefined, requestId);
+    }
+    
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
@@ -36,7 +59,22 @@ export async function POST(req: NextRequest) {
       clearTimeout(timeoutId);
       const data = await upstream.json();
 
+      // Debug logging for upstream response
+      if (process.env.NODE_ENV === 'development') {
+        console.log('[check-general-exercise-answer] Upstream Response:', {
+          status: upstream.status,
+          statusText: upstream.statusText,
+          data,
+        });
+      }
+
       if (!upstream.ok) {
+        if (process.env.NODE_ENV === 'development') {
+          console.log('[check-general-exercise-answer] Returning error to client:', {
+            status: upstream.status,
+            data
+          });
+        }
         return handleUpstreamError(upstream, data, requestId);
       }
 

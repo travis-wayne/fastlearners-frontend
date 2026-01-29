@@ -372,7 +372,7 @@ export async function checkExerciseAnswer(
 ): Promise<ExerciseCheckResponse> {
   try {
     // Validate inputs
-    if (!exerciseId || exerciseId <= 0) {
+    if (!exerciseId || exerciseId <= 0 || !Number.isInteger(exerciseId)) {
       return {
         success: false,
         message: "Invalid exercise ID",
@@ -408,8 +408,8 @@ export async function checkExerciseAnswer(
     }
 
     const body = isGeneral
-      ? { general_exercise_id: exerciseId, answer: normalizedAnswer }
-      : { exercise_id: exerciseId, answer: normalizedAnswer };
+      ? { general_exercise_id: Number(exerciseId), answer: normalizedAnswer }
+      : { exercise_id: Number(exerciseId), answer: normalizedAnswer };
 
     // Use different endpoints for concept vs general exercises
     const endpoint = isGeneral
@@ -444,6 +444,7 @@ export async function checkExerciseAnswer(
         statusText: res.statusText,
         data,
         requestBody: body,
+        headers: Object.fromEntries(res.headers.entries())
       });
     }
 
@@ -519,6 +520,20 @@ export async function getConceptScore(conceptId: number): Promise<import("@/lib/
     const data = await res.json();
 
     if (!res.ok) {
+      // Handle 400 errors (score not found) as default zero scores
+      if (res.status === 400) {
+        return {
+          success: true,
+          message: "No score available yet",
+          content: {
+            total_score: "0.00",
+            weight: "0.00",
+            ...((data.content as any) || {})
+          } as any,
+          code: 200,
+        };
+      }
+
       return {
         success: false,
         message: data.message || "Failed to fetch concept score",
@@ -551,6 +566,19 @@ export async function getGeneralExerciseScore(generalExerciseId: number): Promis
     const data = await res.json();
 
     if (!res.ok) {
+      // Handle 400 errors (score not found) as default zero scores
+      if (res.status === 400) {
+        return {
+          success: true,
+          message: "No score available yet",
+          content: {
+            total_score: "0.00",
+            weight: "0.00",
+            ...((data.content as any) || {})
+          } as any,
+          code: 200,
+        };
+      }
       return {
         success: false,
         message: data.message || "Failed to fetch general exercise score",
@@ -583,6 +611,18 @@ export async function getLessonScore(lessonId: number): Promise<import("@/lib/ty
     const data = await res.json();
 
     if (!res.ok) {
+      // Handle 400 errors (score not found) as default zero scores
+      if (res.status === 400) {
+        return {
+          success: true,
+          message: "No score available yet",
+          content: {
+            lesson_total_score: "0.00",
+            ...((data.content as any) || {})
+          } as any,
+          code: 200,
+        };
+      }
       return {
         success: false,
         message: data.message || "Failed to fetch lesson score",

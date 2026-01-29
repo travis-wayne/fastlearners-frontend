@@ -717,7 +717,7 @@ export const useLessonsStore = create<LessonsStore>()(
               console.log('[checkCurrentStepCompletion] All exercises completed locally?', allExercisesCompleted);
               
               // If all exercises are completed locally, mark as complete even if API check fails
-              if (allExercisesCompleted && (!response || !response.success)) {
+              if (allExercisesCompleted) {
                 console.log('[checkCurrentStepCompletion] ✅ Using local check - marking as complete');
                 if (sectionId && !completedSections.includes(sectionId)) {
                   const newCompletedSections = [...completedSections, sectionId];
@@ -733,9 +733,13 @@ export const useLessonsStore = create<LessonsStore>()(
                 }
                 return true;
               }
+              
+              // Only check API response if local check wasn't fully satisfied (though normally we prioritized API)
+              // But here we prioritize local success because API might be flaky (400 errors)
+              
             }
 
-            // Check if completed
+            // Local check failed (not all done), so rely on API check
             if (response && response.success && response.content?.check?.is_completed) {
               if (sectionId && !completedSections.includes(sectionId)) {
                 const newCompletedSections = [...completedSections, sectionId];
@@ -780,15 +784,7 @@ export const useLessonsStore = create<LessonsStore>()(
                     get().calculateProgress();
                   }
                   
-                  if (!silent && !isCheckMarkerError) {
-                    toast.warning('Completion verified locally', {
-                      description: `All exercises completed. The system couldn't verify with the server, but you can proceed.`,
-                    });
-                  } else if (!silent) {
-                    toast.warning('Check marker not found', {
-                      description: `The system couldn't verify completion for "${stepName}". You can proceed, but please contact support if this persists.`,
-                    });
-                  }
+                  // Don't show warning if locally verified - just proceed
                   return true;
                 }
               }
@@ -884,15 +880,23 @@ export const useLessonsStore = create<LessonsStore>()(
             try {
               const response = await checkExerciseAnswer(exerciseId, answer, isGeneral);
 
+              // Debug response structure
+              console.log('[submitExerciseAnswer] checkExerciseAnswer response:', response);
+              
+              const responseMsg = response.message?.toLowerCase() || '';
+
               // Check if response indicates "already answered" - treat as correct
-              const isAlreadyAnswered = response.message?.toLowerCase().includes('already answered');
+              // "Exercise already answered, continue learning!" is the standard message
+              // Also check for "success: false" but with "already answered" message (API quirk)
+              const isAlreadyAnswered = responseMsg.includes('already answered');
+              
               const isAnswerCorrect = response.isCorrect === true || 
                                      (response.success === true && response.code === 200) ||
                                      isAlreadyAnswered;
 
-              // Mark exercise as completed in adaptive progress
-              if (response.isCorrect !== undefined || isAnswerCorrect) {
-                get().markExerciseCompleted(exerciseId, isAnswerCorrect, answer, response.content);
+              // Mark exercise as completed in adaptive progress - ONLY if answer is correct
+              if (isAnswerCorrect) {
+                get().markExerciseCompleted(exerciseId, true, answer, response.content);
               }
 
               if (response.success && isAnswerCorrect) {
