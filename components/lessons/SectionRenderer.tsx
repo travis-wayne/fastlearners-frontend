@@ -48,7 +48,7 @@ export function SectionRenderer({
   onStartLesson,
   onResumeLesson
 }: SectionRendererProps) {
-  const conceptsLength = lesson.concepts.length;
+  const conceptsLength = lesson.concepts?.length || 0;
   const sectionType = getSectionType(currentStepIndex, conceptsLength);
   
   // Get the component from the registry
