@@ -149,6 +149,7 @@ export interface LessonContent {
   id: number;
   title?: string;
   topic?: string;
+  slug?: string; // Added for frontend validation functionality
   class?: string;
   subject?: string;
   term?: string;
