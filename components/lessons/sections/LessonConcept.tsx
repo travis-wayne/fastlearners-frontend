@@ -74,9 +74,10 @@ export const LessonConcept = React.memo(function LessonConcept({
 }: LessonConceptProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   
-  // Use store selector for minimal re-renders
+  // Use granular selectors to avoid object identity issues triggering re-renders
   const fetchConceptScore = useLessonsStore(state => state.fetchConceptScore);
-  const { score: conceptScore, isLoading: isLoadingScore } = useLessonsStore(selectConceptScore(concept.id));
+  const conceptScore = useLessonsStore(state => state.conceptScores[concept.id]);
+  const isLoadingScore = useLessonsStore(state => state.isLoadingConceptScore[concept.id]);
 
   // Fetch score on mount if not available or stale (handled by store action)
   useEffect(() => {

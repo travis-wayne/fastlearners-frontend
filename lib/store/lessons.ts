@@ -1364,6 +1364,10 @@ export const useLessonsStore = create<LessonsStore>()(
         },
 
         startSectionTimer: (sectionId) => {
+          const { sectionTimeTracking } = get();
+          // Don't restart timer if already running for this section
+          if (sectionTimeTracking[sectionId]) return;
+
           const now = new Date().toISOString();
           
           set((state) => ({
