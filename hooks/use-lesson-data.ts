@@ -132,7 +132,9 @@ export function useLessonData({
     const loadLesson = async () => {
       // Guard: Check if lesson is already loaded to prevent infinite loops
       if (selectedLesson) {
-        if (subjectSlug && topicSlug && selectedLesson.slug === topicSlug && selectedLesson.subject?.slug === subjectSlug) {
+        if (subjectSlug && topicSlug && selectedLesson.slug === topicSlug) {
+          // Additional check for subject if possible, but subject is just a string name in LessonContent
+          // strict subject slug check is not possible without subject slug in LessonContent
           return;
         }
         if (lessonId && selectedLesson.id === lessonId) {
