@@ -75,7 +75,7 @@ export const LessonConcept = React.memo(function LessonConcept({
   const [isExpanded, setIsExpanded] = useState(true);
   
   // Use store selector for minimal re-renders
-  const { fetchConceptScore } = useLessonsStore();
+  const fetchConceptScore = useLessonsStore(state => state.fetchConceptScore);
   const { score: conceptScore, isLoading: isLoadingScore } = useLessonsStore(selectConceptScore(concept.id));
 
   // Fetch score on mount if not available or stale (handled by store action)
