@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { LessonContent } from "@/lib/types/lessons";
 import { SectionProgress } from "@/lib/types/progress";
@@ -30,33 +30,22 @@ export function useLessonAutoAdvance({
   setCelebrationShown,
 }: UseLessonAutoAdvanceParams): UseLessonAutoAdvanceReturn {
   const [hasAutoAdvanced, setHasAutoAdvanced] = useState(false);
-  const advancingRef = useRef(false);
-  const previousLessonIdRef = useRef<number | undefined>(undefined);
 
   // Reset auto-advance flag when lesson changes
   useEffect(() => {
-    if (selectedLesson?.id !== previousLessonIdRef.current) {
-        if (previousLessonIdRef.current !== undefined) {
-             setHasAutoAdvanced(false);
-             setCelebrationShown(false);
-             advancingRef.current = false;
-        }
-        previousLessonIdRef.current = selectedLesson?.id;
-    }
+    setHasAutoAdvanced(false);
+    setCelebrationShown(false);
   }, [selectedLesson?.id, setCelebrationShown]);
 
   // Auto-advance logic with enhanced features
   useEffect(() => {
-    // Basic guards
-    if (!selectedLesson || isLoadingLessonContent || hasAutoAdvanced || advancingRef.current) return;
+    if (!selectedLesson || isLoadingLessonContent || hasAutoAdvanced) return;
 
-    // Only auto-advance from Overview (step 0)
     if (currentStepIndex !== 0) return;
 
     const currentSectionId = 'overview';
     const currentProgress = sectionProgress[currentSectionId];
 
-    // Only if Overview is completed
     if (!currentProgress?.isCompleted) return;
 
     const nextSectionId = getNextIncompleteSection();
@@ -65,29 +54,22 @@ export function useLessonAutoAdvance({
       toast.info('Resuming where you left off...', {
         description: 'Skipping completed sections',
       });
-      
-      advancingRef.current = true; // Mark as advancing immediately
 
       const timer = setTimeout(() => {
         autoAdvanceToNextSection();
         setHasAutoAdvanced(true);
-        // Do NOT reset advancingRef.current here; we want it to stay true until lesson change
-        // or until we leave step 0 (which happens via autoAdvanceToNextSection)
       }, 1000);
 
       return () => clearTimeout(timer);
     } else if (!nextSectionId) {
-      // All done
       toast.success('Lesson completed!', {
         description: 'You\'ve finished all sections. Great work!',
       });
       setHasAutoAdvanced(true);
       setCelebrationShown(true);
-      advancingRef.current = true;
     }
   }, [
-    selectedLesson, // Need this for freshness check
-    selectedLesson?.id, // Explicit id dependency
+    selectedLesson,
     isLoadingLessonContent,
     sectionProgress,
     getNextIncompleteSection,

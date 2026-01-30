@@ -130,18 +130,6 @@ export function useLessonData({
   // Load lesson content
   useEffect(() => {
     const loadLesson = async () => {
-      // Guard: Check if lesson is already loaded to prevent infinite loops
-      if (selectedLesson) {
-        if (subjectSlug && topicSlug && selectedLesson.slug === topicSlug) {
-          // Additional check for subject if possible, but subject is just a string name in LessonContent
-          // strict subject slug check is not possible without subject slug in LessonContent
-          return;
-        }
-        if (lessonId && selectedLesson.id === lessonId) {
-          return;
-        }
-      }
-
       if (subjectSlug && topicSlug && autoLoad) {
         try {
           await fetchLessonContentBySlug(subjectSlug, topicSlug);
@@ -178,7 +166,6 @@ export function useLessonData({
     fetchLessonContentById,
     setError,
     setIsLoadingLessonContent,
-    selectedLesson, // Added dependency to allow the guard to work
   ]);
 
   const handleRetry = async () => {
