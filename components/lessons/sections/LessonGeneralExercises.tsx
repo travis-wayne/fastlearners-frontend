@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Trophy, Target, CheckCircle2, AlertCircle, Filter, SortAsc, Eye, Clock,
 import { LessonContent, GeneralExercise } from "@/lib/types/lessons";
 import { getGeneralExerciseScore } from "@/lib/api/lessons";
 import { ExerciseCard } from "../ExerciseCard";
-import { useLessonsStore } from "@/lib/store/lessons";
+import { useLessonsStore, selectGeneralExerciseScore } from "@/lib/store/lessons";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -31,7 +31,7 @@ interface BadgeData {
   earned: boolean;
 }
 
-export function LessonGeneralExercises({
+export const LessonGeneralExercises = React.memo(function LessonGeneralExercises({
   lesson,
   onAnswerExercise,
 }: LessonGeneralExercisesProps) {
@@ -59,8 +59,12 @@ export function LessonGeneralExercises({
   const [points, setPoints] = useState(0);
   const [showStats, setShowStats] = useState(false);
   const [showResetDialog, setShowResetDialog] = useState(false);
-  const [generalExerciseScore, setGeneralExerciseScore] = useState<{ total_score: string; weight: string } | null>(null);
-  const [isLoadingScore, setIsLoadingScore] = useState(false);
+
+  // Store integration for score
+  const { fetchGeneralExerciseScore } = useLessonsStore();
+  // Get score for the first exercise as representative for the section
+  const firstExerciseId = general_exercises[0]?.id || 0;
+  const { score: generalExerciseScore, isLoading: isLoadingScore } = useLessonsStore(selectGeneralExerciseScore(firstExerciseId));
 
   // Timer for timed mode
   useEffect(() => {
@@ -113,32 +117,12 @@ export function LessonGeneralExercises({
 
   // Fetch general exercise total score
   useEffect(() => {
-    const fetchGeneralExerciseScore = async () => {
-      // Fetch score for the first general exercise as a representative
-      if (general_exercises.length === 0) return;
-      
-      const firstExerciseId = general_exercises[0].id;
-      // Only fetch if the exercise is completed to avoid 400 errors
-      if (!exerciseProgress[firstExerciseId]?.isCompleted) return;
-
-      setIsLoadingScore(true);
-      try {
-        const response = await getGeneralExerciseScore(firstExerciseId);
-        if (response.success && response.content) {
-          setGeneralExerciseScore({
-            total_score: response.content.total_score,
-            weight: response.content.weight,
-          });
-        }
-      } catch (error) {
-        console.error('Failed to fetch general exercise score:', error);
-      } finally {
-        setIsLoadingScore(false);
-      }
-    };
-
-    fetchGeneralExerciseScore();
-  }, [general_exercises, exerciseProgress]);
+    // Only fetch if exercises exist and progress indicates some completion
+    // The store action handles cache checking
+    if (general_exercises.length > 0 && exerciseProgress[general_exercises[0].id]?.isCompleted) {
+      fetchGeneralExerciseScore(general_exercises[0].id);
+    }
+  }, [general_exercises, exerciseProgress, fetchGeneralExerciseScore]);
 
   // Stats calculations
   const stats = useMemo(() => {
@@ -577,4 +561,4 @@ export function LessonGeneralExercises({
       </Dialog>
     </div>
   );
-}
+});

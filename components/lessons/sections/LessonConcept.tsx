@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ChevronDown, ChevronUp, Lightbulb, BookOpen, Sparkles, CheckCircle2 } from "lucide-react";
 import { Concept } from "@/lib/types/lessons";
-import { getConceptScore } from "@/lib/api/lessons";
+import { useLessonsStore, selectConceptScore } from "@/lib/store/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { cn } from "@/lib/utils";
 
@@ -68,29 +68,20 @@ function ExampleCard({ example, index }: ExampleCardProps) {
   );
 }
 
-export function LessonConcept({
+export const LessonConcept = React.memo(function LessonConcept({
   concept,
   onAnswerExercise,
 }: LessonConceptProps) {
   const [isExpanded, setIsExpanded] = useState(true);
-  const [conceptScore, setConceptScore] = useState<{ total_score: string; weight: string } | null>(null);
-  const [isLoadingScore, setIsLoadingScore] = useState(false);
+  
+  // Use store selector for minimal re-renders
+  const { fetchConceptScore } = useLessonsStore();
+  const { score: conceptScore, isLoading: isLoadingScore } = useLessonsStore(selectConceptScore(concept.id));
 
+  // Fetch score on mount if not available or stale (handled by store action)
   useEffect(() => {
-    const fetchConceptScore = async () => {
-      setIsLoadingScore(true);
-      const response = await getConceptScore(concept.id);
-      if (response.success && response.content) {
-        setConceptScore({
-          total_score: response.content.total_score,
-          weight: response.content.weight,
-        });
-      }
-      setIsLoadingScore(false);
-    };
-
-    fetchConceptScore();
-  }, [concept.id]);
+    fetchConceptScore(concept.id);
+  }, [concept.id, fetchConceptScore]);
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">
@@ -247,50 +238,7 @@ export function LessonConcept({
 
             {/* Concept Score Summary */}
             {conceptScore && concept.exercises.length > 0 && (
-              <Card className="via-primary/3 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background shadow-lg">
-                <CardContent className="space-y-4 p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
-                        <CheckCircle2 className="size-6 text-primary" />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-foreground">
-                          Concept Score
-                        </h4>
-                        <p className="text-sm text-muted-foreground">
-                          Total score for this concept
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-3xl font-bold text-primary">
-                        {conceptScore.total_score}
-                        <span className="text-xl text-muted-foreground">
-                          /{conceptScore.weight}
-                        </span>
-                      </div>
-                      <p className="text-sm font-medium text-muted-foreground">
-                        {parseFloat(conceptScore.weight) > 0
-                          ? ((parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100).toFixed(1)
-                          : "0.0"}% Complete
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* Progress Bar */}
-                  <div className="space-y-2">
-                    <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
-                        style={{
-                          width: `${(parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100}%`,
-                        }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <ScoreSummary conceptScore={conceptScore} />
             )}
 
             {/* Loading State for Score */}
@@ -312,4 +260,58 @@ export function LessonConcept({
       </Card>
     </div>
   );
-}
+});
+
+// Memoized Helper Components
+const ScoreSummary = React.memo(function ScoreSummary({ conceptScore }: { conceptScore: { total_score: string; weight: string } }) {
+  const percentage = useMemo(() => {
+    return parseFloat(conceptScore.weight) > 0
+      ? ((parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100).toFixed(1)
+      : "0.0";
+  }, [conceptScore]);
+
+  return (
+    <Card className="via-primary/3 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background shadow-lg">
+      <CardContent className="space-y-4 p-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
+              <CheckCircle2 className="size-6 text-primary" />
+            </div>
+            <div>
+              <h4 className="text-lg font-bold text-foreground">
+                Concept Score
+              </h4>
+              <p className="text-sm text-muted-foreground">
+                Total score for this concept
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <div className="text-3xl font-bold text-primary">
+              {conceptScore.total_score}
+              <span className="text-xl text-muted-foreground">
+                /{conceptScore.weight}
+              </span>
+            </div>
+            <p className="text-sm font-medium text-muted-foreground">
+              {percentage}% Complete
+            </p>
+          </div>
+        </div>
+        
+        {/* Progress Bar */}
+        <div className="space-y-2">
+          <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
+              style={{
+                width: `${percentage}%`,
+              }}
+            />
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});

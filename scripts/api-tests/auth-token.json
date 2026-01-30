@@ -1,0 +1,26 @@
+{
+  "token": "637|qvcstGH7DYk1GrZ0ydYnr2fnEcdxXcpGJLWsMdzt526db748",
+  "user": {
+    "id": 2,
+    "name": "Student User",
+    "username": "student",
+    "email": "student@fastlearnersapp.com",
+    "phone": "012345678902",
+    "school": "Uyo High School",
+    "class": "SSS1",
+    "discipline": "Science",
+    "date_of_birth": "10/11/1992",
+    "country": "Nigeria",
+    "state": "Akwa Ibom",
+    "city": "Uyo",
+    "address": "Uyo",
+    "gender": "male",
+    "avatar": "https://api.fastlearnersapp.com/storage/uploads/profile-pictures/697b9464cc2af_1769706596.jpg",
+    "status": "active",
+    "email_verified_at": "29-11-2025",
+    "created_at": "29-11-2025",
+    "role": [
+      "student"
+    ]
+  }
+}

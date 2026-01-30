@@ -32,6 +32,8 @@ import {
   checkLessonSummaryAndApplication,
   checkLessonGeneralExercises,
   checkExerciseAnswer,
+  getConceptScore,
+  getGeneralExerciseScore,
 } from '@/lib/api/lessons';
 import { toast } from 'sonner';
 
@@ -166,6 +168,12 @@ interface LessonsStore {
   completionData: import('@/lib/types/lessons').LessonCompletionData | null;
   isLoadingCompletionData: boolean;
 
+  // Score Caching
+  conceptScores: Record<number, { total_score: string; weight: string; timestamp: string }>;
+  generalExerciseScores: Record<number, { total_score: string; weight: string; timestamp: string }>;
+  isLoadingConceptScore: Record<number, boolean>;
+  isLoadingGeneralExerciseScore: Record<number, boolean>;
+
   // Actions
   setFilters: (filters: Partial<LessonFilters>) => void;
   clearFilters: () => void;
@@ -222,6 +230,12 @@ interface LessonsStore {
   setShowCompletionSummary: (show: boolean) => void;
   fetchCompletionData: (lessonId: number) => Promise<void>;
   clearCompletionData: () => void;
+  
+  // Score actions
+  fetchConceptScore: (conceptId: number) => Promise<void>;
+  fetchGeneralExerciseScore: (exerciseId: number) => Promise<void>;
+  getConceptScoreFromCache: (conceptId: number) => { total_score: string; weight: string } | null;
+  getGeneralExerciseScoreFromCache: (exerciseId: number) => { total_score: string; weight: string } | null;
 }
 
 const initialFilters: LessonFilters = {
@@ -304,12 +318,20 @@ export const useLessonsStore = create<LessonsStore>()(
         userNotes: {},
         cacheTimestamps: {},
         lastSyncedAt: null,
-        adaptiveRecommendations: [],
-        
-        // Lesson completion summary initial state
+
+        // Lesson completion summary
         showCompletionSummary: false,
         completionData: null,
         isLoadingCompletionData: false,
+
+        // Score Caching
+        conceptScores: {},
+        generalExerciseScores: {},
+        isLoadingConceptScore: {},
+        isLoadingGeneralExerciseScore: {},
+        adaptiveRecommendations: [],
+        
+
 
         // Filter actions
         setFilters: (newFilters) => {
@@ -920,6 +942,42 @@ export const useLessonsStore = create<LessonsStore>()(
                 }
               }
 
+              // Invalidate score cache if answer is correct to update UI immediately
+              if (response.success && isAnswerCorrect) {
+                const { selectedLesson, currentStepIndex } = get();
+                if (selectedLesson) {
+                   const conceptsCount = selectedLesson.concepts?.length || 0;
+                   if (currentStepIndex <= conceptsCount && currentStepIndex > 0) {
+                      // Concept exercise
+                      const conceptIndex = currentStepIndex - 1;
+                      const concept = selectedLesson.concepts?.[conceptIndex];
+                      if (concept) {
+                        const conceptId = concept.id;
+                        // Clear cache entry
+                        set((state) => {
+                          const newScores = { ...state.conceptScores };
+                          delete newScores[conceptId];
+                          return { conceptScores: newScores };
+                        });
+                        // Refetch immediately
+                        get().fetchConceptScore(conceptId);
+                      }
+                   } else if (currentStepIndex === conceptsCount + 2) {
+                      // General exercise - exerciseId is the general exercise ID
+                      // Clear cache entry
+                      set((state) => {
+                        const newScores = { ...state.generalExerciseScores };
+                         // We track general exercise SCORES by exercise ID in the cache
+                         // But note: we might have been caching by the specific exercise ID
+                        delete newScores[exerciseId];
+                        return { generalExerciseScores: newScores };
+                      });
+                       // Refetch immediately
+                      get().fetchGeneralExerciseScore(exerciseId);
+                   }
+                }
+              }
+
               return {
                 success: response.success || isAnswerCorrect,
                 message: response.message,
@@ -1172,6 +1230,11 @@ export const useLessonsStore = create<LessonsStore>()(
             completedSections: [],
             currentStepIndex: 0,
             progress: 0,
+            // Clear score caches
+            conceptScores: {},
+            generalExerciseScores: {},
+            isLoadingConceptScore: {},
+            isLoadingGeneralExerciseScore: {},
           });
 
           toast.info('Progress reset', {
@@ -1631,6 +1694,107 @@ export const useLessonsStore = create<LessonsStore>()(
             showCompletionSummary: false 
           });
         },
+
+        // Score Caching Actions
+        fetchConceptScore: async (conceptId: number) => {
+          const { conceptScores, isLoadingConceptScore } = get();
+          
+          // Check if score exists and is fresh (less than 5 minutes old)
+          const cachedScore = conceptScores[conceptId];
+          const now = new Date();
+          if (cachedScore) {
+            const timestamp = new Date(cachedScore.timestamp);
+            const diffMinutes = (now.getTime() - timestamp.getTime()) / (1000 * 60);
+            if (diffMinutes < 5) return; // Return if cache is fresh
+          }
+
+          if (isLoadingConceptScore[conceptId]) return;
+
+          set({ isLoadingConceptScore: { ...isLoadingConceptScore, [conceptId]: true } });
+
+          try {
+            const response = await getConceptScore(conceptId);
+            if (response.success && response.content) {
+              const { total_score, weight } = response.content;
+              const { conceptScores: currentScores, isLoadingConceptScore: currentLoading } = get();
+              set({
+                conceptScores: {
+                  ...currentScores,
+                  [conceptId]: {
+                    total_score: total_score?.toString() || "0",
+                    weight: weight?.toString() || "0",
+                    timestamp: now.toISOString(),
+                  }
+                },
+                isLoadingConceptScore: { ...currentLoading, [conceptId]: false }
+              });
+            } else {
+              // Handle error: stop loading but don't cache bad data
+               const { isLoadingConceptScore: currentLoading } = get();
+               set({ isLoadingConceptScore: { ...currentLoading, [conceptId]: false } });
+            }
+          } catch (error) {
+             const { isLoadingConceptScore: currentLoading } = get();
+             set({ isLoadingConceptScore: { ...currentLoading, [conceptId]: false } });
+             console.error("Failed to fetch concept score", error);
+          }
+        },
+
+        fetchGeneralExerciseScore: async (exerciseId: number) => {
+          const { generalExerciseScores, isLoadingGeneralExerciseScore } = get();
+          
+          // Check if score exists and is fresh (less than 5 minutes old)
+          const cachedScore = generalExerciseScores[exerciseId];
+          const now = new Date();
+          if (cachedScore) {
+            const timestamp = new Date(cachedScore.timestamp);
+            const diffMinutes = (now.getTime() - timestamp.getTime()) / (1000 * 60);
+            if (diffMinutes < 5) return; // Return if cache is fresh
+          }
+          
+          if (isLoadingGeneralExerciseScore[exerciseId]) return;
+
+          set({ isLoadingGeneralExerciseScore: { ...isLoadingGeneralExerciseScore, [exerciseId]: true } });
+
+          try {
+            const response = await getGeneralExerciseScore(exerciseId);
+            if (response.success && response.content) {
+              const { total_score, weight } = response.content;
+              const { generalExerciseScores: currentScores, isLoadingGeneralExerciseScore: currentLoading } = get();
+              
+              set({
+                generalExerciseScores: {
+                  ...currentScores,
+                  [exerciseId]: {
+                    total_score: total_score?.toString() || "0",
+                    weight: weight?.toString() || "0",
+                    timestamp: now.toISOString(),
+                  }
+                },
+                isLoadingGeneralExerciseScore: { ...currentLoading, [exerciseId]: false }
+              });
+            } else {
+               const { isLoadingGeneralExerciseScore: currentLoading } = get();
+               set({ isLoadingGeneralExerciseScore: { ...currentLoading, [exerciseId]: false } });
+            }
+          } catch (error) {
+             const { isLoadingGeneralExerciseScore: currentLoading } = get();
+             set({ isLoadingGeneralExerciseScore: { ...currentLoading, [exerciseId]: false } });
+             console.error("Failed to fetch general exercise score", error);
+          }
+        },
+
+        getConceptScoreFromCache: (conceptId: number) => {
+          const { conceptScores } = get();
+          const score = conceptScores[conceptId];
+          return score ? { total_score: score.total_score, weight: score.weight } : null;
+        },
+
+        getGeneralExerciseScoreFromCache: (exerciseId: number) => {
+           const { generalExerciseScores } = get();
+           const score = generalExerciseScores[exerciseId];
+           return score ? { total_score: score.total_score, weight: score.weight } : null;
+        },
       }),
       {
         name: 'lessons-storage',
@@ -1650,6 +1814,8 @@ export const useLessonsStore = create<LessonsStore>()(
           analyticsData: state.analyticsData,
           userNotes: state.userNotes,
           cacheTimestamps: state.cacheTimestamps,
+          conceptScores: state.conceptScores,
+          generalExerciseScores: state.generalExerciseScores,
         }),
       }
     ),
@@ -1670,3 +1836,14 @@ export const selectIsAnyLoading = (state: LessonsStore) => {
     state.isLoadingLessons ||
     state.isLoadingLessonContent;
 };
+
+// Score Selectors
+export const selectConceptScore = (conceptId: number) => (state: LessonsStore) => ({
+  score: state.conceptScores[conceptId] || null,
+  isLoading: state.isLoadingConceptScore[conceptId] || false,
+});
+
+export const selectGeneralExerciseScore = (exerciseId: number) => (state: LessonsStore) => ({
+  score: state.generalExerciseScores[exerciseId] || null,
+  isLoading: state.isLoadingGeneralExerciseScore[exerciseId] || false,
+});

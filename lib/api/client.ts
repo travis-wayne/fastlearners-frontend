@@ -37,7 +37,7 @@ function validateApiEnv() {
 
 // Get API URL from environment or default
 const env = validateApiEnv();
-export const BASE_API_URL = env?.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+export const BASE_API_URL = env?.NEXT_PUBLIC_API_URL || "https://api.fastlearnersapp.com/api/v1";
 
 // Helper to build request headers for internal API routes (uses cookies)
 export function buildInternalApiHeaders(token?: string): HeadersInit {

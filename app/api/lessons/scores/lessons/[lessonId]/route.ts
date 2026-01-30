@@ -27,7 +27,7 @@ export async function GET(
     try {
       // Match API docs: uses singular 'lesson'
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/scores/lesson/${lessonId}`,
+        `${UPSTREAM_BASE}/lessons/scores/lessons/${lessonId}`,
         {
           method: "GET",
           headers: {
@@ -54,7 +54,7 @@ export async function GET(
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/scores/lesson/${lessonId}`,
+            `${UPSTREAM_BASE}/lessons/scores/lessons/${lessonId}`,
             {
               method: "GET",
               headers: {
