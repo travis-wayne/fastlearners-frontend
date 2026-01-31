@@ -71,7 +71,7 @@ const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleC
 }, (prev, next) => prev.example.id === next.example.id && prev.index === next.index);
 ExampleCard.displayName = 'ExampleCard';
 
-const VirtualRow = React.memo(({ index, style, data }: any) => {
+const VirtualRow = React.memo(({ index, style, data }: any): JSX.Element => {
     const { examples, setRowHeight } = data;
     const example = examples[index];
     const rowRef = useRef<HTMLDivElement>(null);
@@ -128,7 +128,7 @@ export const LessonConcept = React.memo(function LessonConcept({
   const [visibleExamplesCount, setVisibleExamplesCount] = useState(2);
   const listRef = useRef<any>(null);
   
-  const { setRowHeight, ...dynamicRowHeight } = useDynamicRowHeight({ defaultRowHeight: 200 });
+  const dynamicRowHeightApi = useDynamicRowHeight({ defaultRowHeight: 200 });
 
   // Optimization: specific selector
   const fetchConceptScore = useLessonsStore(state => state.fetchConceptScore);
@@ -235,15 +235,14 @@ export const LessonConcept = React.memo(function LessonConcept({
                 </div>
                 
                 {USE_VIRTUALIZATION ? (
-                   <div className="h-[600px] w-full border rounded-lg p-2">
+                   <div className="h-[600px] w-full rounded-lg border p-2">
                       <List
                         listRef={listRef}
-                        height={600}
+                        style={{ height: '100%', width: '100%' }}
                         rowCount={memoizedExamples.length}
-                        rowHeight={dynamicRowHeight}
-                        width="100%"
-                        rowProps={{ examples: memoizedExamples, setRowHeight }}
-                        rowComponent={VirtualRow}
+                        rowHeight={dynamicRowHeightApi}
+                        rowProps={{ examples: memoizedExamples, setRowHeight: dynamicRowHeightApi.setRowHeight }}
+                        rowComponent={VirtualRow as any}
                       />
                    </div>
                 ) : (

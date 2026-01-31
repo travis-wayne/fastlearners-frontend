@@ -95,7 +95,7 @@ export const LessonProgressCard = React.memo(function LessonProgressCard({
             />
             {progress >= 100 && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-sm font-bold text-green-600 animate-in zoom-in duration-300">
+                <div className="text-sm font-bold text-green-600 duration-300 animate-in zoom-in">
                   🎉 Complete!
                 </div>
               </div>
