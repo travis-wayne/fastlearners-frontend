@@ -105,11 +105,12 @@ export const LessonConcept = React.memo(function LessonConcept({
   const [isExpanded, setIsExpanded] = useState(true);
   const [visibleExamplesCount, setVisibleExamplesCount] = useState(2);
 
-  // Optimization: specific selector
+  // Optimization: specific selector to avoid object identity issues and infinite loops
   const fetchConceptScore = useLessonsStore(state => state.fetchConceptScore);
-  const { score: conceptScore, isLoading: isLoadingScore } = useLessonsStore(selectConceptScore(concept.id));
+  const conceptScore = useLessonsStore(state => state.conceptScores[concept.id]);
+  const isLoadingScore = useLessonsStore(state => state.isLoadingConceptScore[concept.id]);
 
-  const memoizedExamples = useMemo(() => concept.examples, [concept.examples]);
+  const memoizedExamples = useMemo(() => concept?.examples || [], [concept?.examples]);
 
   // Windowed rendering (legacy lazy load) for lists
   const visibleExamples = useMemo(() => 
@@ -168,7 +169,7 @@ export const LessonConcept = React.memo(function LessonConcept({
           <CardContent className="space-y-8 p-6">
             {/* Description */}
             <div className="space-y-6">
-              {concept.description.map((desc, i) => (
+              {(concept.description || []).map((desc, i) => ( 
                 <div key={i} className="space-y-3">
                   {desc.heading && (
                     <div className="flex items-center gap-2">

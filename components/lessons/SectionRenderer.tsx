@@ -67,11 +67,11 @@ export function SectionRenderer({
     return null;
   }
   
-  const handleAnswerExercise = (exerciseId: number, answer: string) => {
+  const handleAnswerExercise = React.useCallback((exerciseId: number, answer: string) => {
     // Determine if this is a general exercise based on the section type
     const isGeneral = sectionType === 'general_exercises';
     return onAnswerExercise(exerciseId, answer, isGeneral);
-  };
+  }, [sectionType, onAnswerExercise]);
   
   // Combine all props
   // We explicitly pass callbacks that might be needed by specific sections

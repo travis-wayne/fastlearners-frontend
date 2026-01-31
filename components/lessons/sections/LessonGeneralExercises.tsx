@@ -35,14 +35,12 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
   lesson,
   onAnswerExercise,
 }: LessonGeneralExercisesProps) {
-  const { 
-    exerciseProgress, 
-    resetLessonProgress,
-    analyticsData,
-    startSectionTimer,
-    endSectionTimer,
-    updateAnalytics,
-  } = useLessonsStore();
+  const exerciseProgress = useLessonsStore(state => state.exerciseProgress);
+  const resetLessonProgress = useLessonsStore(state => state.resetLessonProgress);
+  const analyticsData = useLessonsStore(state => state.analyticsData);
+  const startSectionTimer = useLessonsStore(state => state.startSectionTimer);
+  const endSectionTimer = useLessonsStore(state => state.endSectionTimer);
+  const updateAnalytics = useLessonsStore(state => state.updateAnalytics);
   
   // Memoize general_exercises to prevent unnecessary re-renders
   const general_exercises = useMemo(() => lesson.general_exercises || [], [lesson.general_exercises]);
@@ -61,10 +59,11 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
   const [showResetDialog, setShowResetDialog] = useState(false);
 
   // Store integration for score
-  const { fetchGeneralExerciseScore } = useLessonsStore();
+  const fetchGeneralExerciseScore = useLessonsStore(state => state.fetchGeneralExerciseScore);
   // Get score for the first exercise as representative for the section
   const firstExerciseId = general_exercises[0]?.id || 0;
-  const { score: generalExerciseScore, isLoading: isLoadingScore } = useLessonsStore(selectGeneralExerciseScore(firstExerciseId));
+  const generalExerciseScore = useLessonsStore(state => state.generalExerciseScores[firstExerciseId]);
+  const isLoadingScore = useLessonsStore(state => state.isLoadingGeneralExerciseScore[firstExerciseId]);
 
   // Timer for timed mode
   useEffect(() => {

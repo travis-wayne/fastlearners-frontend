@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { useInView } from "framer-motion";
+// import { useInView } from "framer-motion"; // Removed to fix infinite loop
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -17,14 +17,12 @@ interface ExerciseCardProps {
 }
 
 export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
-  const {
-    exerciseProgress,
-    selectedLesson,
-    currentStepIndex,
-    startSectionTimer,
-    endSectionTimer,
-    updateAnalytics,
-  } = useLessonsStore();
+  const exerciseProgress = useLessonsStore(state => state.exerciseProgress);
+  const selectedLesson = useLessonsStore(state => state.selectedLesson);
+  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
+  const startSectionTimer = useLessonsStore(state => state.startSectionTimer);
+  const endSectionTimer = useLessonsStore(state => state.endSectionTimer);
+  const updateAnalytics = useLessonsStore(state => state.updateAnalytics);
   const [selectedOptionKey, setSelectedOptionKey] = useState<string>("");
   const [isRevealed, setIsRevealed] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
@@ -41,9 +39,6 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   const [elapsedTime, setElapsedTime] = useState(0);
   const [lastResult, setLastResult] = useState<any>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
-  const radioGroupRef = useRef<HTMLDivElement>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(cardRef, { once: false, amount: 0.1 });
   const sectionTimerStartedRef = useRef(false);
 
   // Check if exercise is already completed
@@ -54,15 +49,13 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
   // Timer effect
   useEffect(() => {
-    if (!isInView) return;
-
     timerRef.current = setInterval(() => {
       setElapsedTime(Math.floor((new Date().getTime() - startTime.getTime()) / 1000));
     }, 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
     };
-  }, [startTime, isInView]);
+  }, [startTime]);
 
   // Online status
   useEffect(() => {
@@ -343,7 +336,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   };
 
   return (
-    <Card ref={cardRef} className={cn("border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10", success && "animate-pulse")}>
+    <Card className={cn("border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10", success && "animate-pulse")}>
       <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-blue-900 dark:text-blue-100 sm:text-base">
@@ -368,7 +361,6 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         </div>
 
         <RadioGroup
-          ref={radioGroupRef}
           value={selectedOptionKey}
           onValueChange={setSelectedOptionKey}
           disabled={isRevealed || isSubmitting || isAlreadyCompleted}

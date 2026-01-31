@@ -41,6 +41,8 @@ export function getSectionData(
       // Adjust index to be 0-based for the concepts array
       const conceptIndex = currentStepIndex - 1;
       const concept = lesson.concepts?.[conceptIndex];
+      // Safety check: if concept doesn't exist (e.g. during rapid navigation or resume race conditions), return null
+      if (!concept) return null;
       return { concept, index: conceptIndex };
     case 'summary_application':
       return { lesson };
