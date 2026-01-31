@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -22,15 +22,25 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
   const { lessonMetadata, currentStepIndex, progress, nextStep } = useLessonsStore();
   const lessonMeta = lessonMetadata[lesson.id];
 
-  const objectives = lesson.objectives || [];
-  const key_concepts = lesson.key_concepts || {};
+  const objectives = useMemo(() => lesson.objectives || [], [lesson.objectives]);
+  const key_concepts = useMemo(() => lesson.key_concepts || {}, [lesson.key_concepts]);
 
-  // Calculate estimated duration based on content
-  const estimatedDuration = Math.max(15, (lesson.concepts?.length || 0) * 10 + 20); // 10 min per concept + 20 min for overview/summary
+  // Memoize computed values to prevent recalculation on every render
+  const estimatedDuration = useMemo(() => 
+    Math.max(15, (lesson.concepts?.length || 0) * 10 + 20), // 10 min per concept + 20 min for overview/summary
+    [lesson.concepts?.length]
+  );
 
-  // Check if lesson has been started
-  const hasStarted = lessonMeta && lessonMeta.lastAccessedAt;
-  const completionPercentage = lessonMeta?.overallProgress || 0;
+  // Memoize lesson start status
+  const hasStarted = useMemo(() => 
+    !!(lessonMeta && lessonMeta.lastAccessedAt),
+    [lessonMeta]
+  );
+  
+  const completionPercentage = useMemo(() => 
+    lessonMeta?.overallProgress || 0,
+    [lessonMeta?.overallProgress]
+  );
 
   const toggleObjectiveExpansion = (index: number) => {
     const newExpanded = new Set(expandedObjectives);
@@ -66,14 +76,16 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
     }
   };
 
-  const handlePrintObjectives = () => {
+  // Memoized print handler with proper dependencies
+  const handlePrintObjectives = useCallback(() => {
     if (typeof window === 'undefined') return;
     const printWindow = window.open('', '_blank');
     if (printWindow) {
+      const title = lesson.topic || lesson.title;
       printWindow.document.write(`
         <html>
           <head>
-            <title>${lesson.topic || lesson.title} - Learning Objectives</title>
+            <title>${title} - Learning Objectives</title>
             <style>
               body { font-family: Arial, sans-serif; margin: 20px; }
               h1 { color: #333; }
@@ -82,7 +94,7 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
             </style>
           </head>
           <body>
-            <h1>${lesson.topic || lesson.title} - Learning Objectives</h1>
+            <h1>${title} - Learning Objectives</h1>
             ${objectives.map((obj, index) => `
               <div class="objective">
                 <h3>Objective ${index + 1}: ${obj.description}</h3>
@@ -99,7 +111,7 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
       printWindow.document.close();
       printWindow.print();
     }
-  };
+  }, [lesson.topic, lesson.title, objectives]);
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">

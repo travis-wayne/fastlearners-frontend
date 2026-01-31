@@ -22,7 +22,7 @@ interface LessonProgressCardProps {
   onToggleCollapse: () => void;
 }
 
-export function LessonProgressCard({
+export const LessonProgressCard = React.memo(function LessonProgressCard({
   progress,
   lessonScore,
   currentStepIndex,
@@ -89,13 +89,13 @@ export function LessonProgressCard({
             <Progress
               value={progress}
               className={cn(
-                "h-3 transition-all duration-500",
+                "h-3 transition-all duration-500 will-change-transform",
                 progress >= 100 && "bg-green-100"
               )}
             />
             {progress >= 100 && (
               <div className="absolute inset-0 flex items-center justify-center">
-                <div className="animate-bounce text-sm font-bold text-green-600">
+                <div className="text-sm font-bold text-green-600 animate-in zoom-in duration-300">
                   🎉 Complete!
                 </div>
               </div>
@@ -105,4 +105,13 @@ export function LessonProgressCard({
       </CardContent>
     </Card>
   );
-}
+}, (prev, next) => {
+  return (
+    prev.progress === next.progress &&
+    prev.lessonScore === next.lessonScore &&
+    prev.currentStepIndex === next.currentStepIndex &&
+    prev.totalSteps === next.totalSteps &&
+    prev.estimatedTimeRemaining === next.estimatedTimeRemaining &&
+    prev.progressCardCollapsed === next.progressCardCollapsed
+  );
+});

@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useState, useMemo, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { LessonContent, Concept } from "@/lib/types/lessons";
@@ -31,101 +31,82 @@ export function useLessonNavigation({
   const router = useRouter();
   const [celebrationShown, setCelebrationShown] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
+  const isProcessing = useRef(false);
+
+  // Memoize validation logic
+  const validSectionIds = useMemo(() => [
+    'overview',
+    ...concepts.map(c => `concept_${c.id}`),
+    'summary_application',
+    'general_exercises'
+  ], [concepts]);
+
+  const allSectionsComplete = useMemo(() => 
+    validSectionIds.every(id => sectionProgress[id]?.isCompleted),
+    [validSectionIds, sectionProgress]
+  );
 
   const handleNext = useCallback(async () => {
-    if (isRedirecting) return;
+    if (isRedirecting || isProcessing.current) return;
+    isProcessing.current = true;
 
-    console.log('[handleNext] Starting...');
-    const canProceed = await checkCurrentStepCompletion();
-    console.log('[handleNext] canProceed:', canProceed);
-    
-    if (canProceed) {
-      const moved = await nextStep();
-      console.log('[handleNext] moved:', moved, 'currentStepIndex:', currentStepIndex);
+    if (process.env.NODE_ENV === 'development') {
+      performance.mark('navigation-start');
+    }
+
+    try {
+      const canProceed = await checkCurrentStepCompletion();
       
-      // Verify we're at the last step, lesson is complete, and all sections are done
-      const isLastStep = currentStepIndex === concepts.length + 2;
-      
-      // Build list of valid section IDs for the current lesson
-      const validSectionIds = [
-        'overview',
-        ...concepts.map(c => `concept_${c.id}`),
-        'summary_application',
-        'general_exercises'
-      ];
-      
-      // Check only sections that belong to the current lesson
-      // This is the TRUE indicator of lesson completion
-      const allSectionsComplete = validSectionIds.every(
-        sectionId => sectionProgress[sectionId]?.isCompleted
-      );
-      
-      console.log('[handleNext] Section Status Check:', {
-        validSectionIds,
-        sectionProgressStatus: validSectionIds.map(id => ({
-          id,
-          isCompleted: sectionProgress[id]?.isCompleted ?? false
-        }))
-      });
-      
-      console.log('[handleNext] Conditions:', {
-        moved,
-        isLastStep,
-        allSectionsComplete,
-        celebrationShown,
-        hasLessonId: !!selectedLesson?.id,
-        progress: 0, // Not available in params, but used for logging in original? 
-                     // Original used 'progress' from scope. 
-                     // Plan didn't include 'progress' in params. 
-                     // I will omit it or use 0/undefined to avoid error if not critical. 
-                     // The logic checks 'allSectionsComplete' instead of progress.
-        currentStepIndex,
-        conceptsLength: concepts.length
-      });
-      
-      // Use allSectionsComplete as the completion indicator (not progress >= 100)
-      // because progress state updates asynchronously
-      if (!moved && isLastStep && allSectionsComplete && !celebrationShown && selectedLesson?.id) {
-        console.log('[handleNext] ✅ All conditions met! Fetching completion data...');
-        try {
-          // Set local loading state to show spinner on button
-          setIsRedirecting(true);
-          await fetchCompletionData(selectedLesson.id);
-          setCelebrationShown(true);
-          // Redirect to the dedicated completion page
-          console.log('[handleNext] ✅ Completion confirmed! Redirecting to completion page...');
-          router.push(`/dashboard/lessons/completed/${selectedLesson.id}`);
-        } catch (error) {
-          setIsRedirecting(false); // Reset on error
-          console.error('[handleNext] ❌ Error fetching completion data:', error);
-          // Reset celebration flag on failure so user can retry
-          setCelebrationShown(false);
-          toast.error('Failed to load completion summary', {
-            description: 'Please try finishing the lesson again.',
-          });
+      if (canProceed) {
+        const moved = await nextStep();
+        const isLastStep = currentStepIndex === concepts.length + 2;
+
+        // Use fresh state for final completion check to avoid stale closure issues
+        const { sectionProgress: currentSectionProgress } = useLessonsStore.getState();
+        
+        // Re-validate completion with fresh state
+        const isActuallyComplete = validSectionIds.every(id => 
+          currentSectionProgress[id]?.isCompleted
+        );
+
+        if (!moved && isLastStep && isActuallyComplete && !celebrationShown && selectedLesson?.id) {
+          try {
+            setIsRedirecting(true);
+            await fetchCompletionData(selectedLesson.id);
+            setCelebrationShown(true);
+            router.push(`/dashboard/lessons/completed/${selectedLesson.id}`);
+          } catch (error) {
+            setIsRedirecting(false);
+            console.error('Error fetching completion data:', error);
+            setCelebrationShown(false);
+            toast.error('Failed to load completion summary');
+          }
         }
       } else {
-        console.log('[handleNext] ❌ Conditions not met');
+        toast.error('Cannot proceed', {
+          description: 'Please complete the current section first.',
+        });
       }
-    } else {
-      console.error('[handleNext] ❌ canProceed is FALSE - current step not completed');
-      console.log('[handleNext] Current step index:', currentStepIndex);
-      console.log('[handleNext] Section progress:', sectionProgress);
-      toast.error('Cannot proceed', {
-        description: 'Please complete the current section first.',
-      });
+    } catch (error) {
+       console.error("Navigation error:", error);
+    } finally {
+      isProcessing.current = false;
+      if (process.env.NODE_ENV === 'development') {
+        performance.mark('navigation-end');
+        performance.measure('navigation', 'navigation-start', 'navigation-end');
+      }
     }
   }, [
     checkCurrentStepCompletion, 
     nextStep, 
-    // progress, // REMOVED as per plan params
     currentStepIndex,
-    concepts,
-    sectionProgress,
+    concepts.length,
+    validSectionIds, // Dependency for validation logic
     celebrationShown, 
     selectedLesson, 
     fetchCompletionData,
-    router
+    router,
+    isRedirecting
   ]);
 
   const handlePrev = useCallback(() => {

@@ -13,7 +13,7 @@ import {
 
 import { SectionRenderer } from "./SectionRenderer";
 import { SectionBreadcrumb } from "./SectionBreadcrumb";
-import { useLessonsStore } from "@/lib/store/lessons";
+import { useLessonsStore, selectNavigationState, selectProgressData } from "@/lib/store/lessons";
 import { cn } from "@/lib/utils";
 import { AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
@@ -44,24 +44,51 @@ export function LessonViewer({
   autoLoad = true,
 }: LessonViewerProps) {
   const router = useRouter();
-  const {
-    selectedLesson,
-    isLoadingLessonContent,
-    currentStepIndex,
-    progress,
-    nextStep,
-    prevStep,
-    checkCurrentStepCompletion,
-    submitExerciseAnswer,
-    clearSelectedLesson,
-    clearError,
-    // Adaptive learning actions
-    sectionProgress,
-    getNextIncompleteSection,
-    autoAdvanceToNextSection,
-    isOffline,
-    fetchCompletionData,
-  } = useLessonsStore();
+  
+  // Granular State Selectors to prevent unnecessary re-renders
+  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
+  const sectionProgress = useLessonsStore(state => state.sectionProgress);
+  const isLoadingLessonContent = useLessonsStore(state => state.isLoadingLessonContent);
+  const progress = useLessonsStore(state => state.progress);
+  // actions are stable
+  const selectedLesson = useLessonsStore(state => state.selectedLesson);
+  const isOffline = useLessonsStore(state => state.isOffline);
+
+  // Actions (stable references)
+  const nextStep = useLessonsStore(state => state.nextStep);
+  const prevStep = useLessonsStore(state => state.prevStep);
+  const checkCurrentStepCompletion = useLessonsStore(state => state.checkCurrentStepCompletion);
+  const submitExerciseAnswer = useLessonsStore(state => state.submitExerciseAnswer);
+  const clearSelectedLesson = useLessonsStore(state => state.clearSelectedLesson);
+  const clearError = useLessonsStore(state => state.clearError);
+  const getNextIncompleteSection = useLessonsStore(state => state.getNextIncompleteSection);
+  const autoAdvanceToNextSection = useLessonsStore(state => state.autoAdvanceToNextSection);
+  const fetchCompletionData = useLessonsStore(state => state.fetchCompletionData);
+
+  // Performance Monitoring
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      performance.mark('lesson-viewer-mount-start');
+    }
+    return () => {
+       // Cleanup if needed
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      performance.mark('lesson-viewer-render-end');
+      try {
+        performance.measure(
+          'lesson-viewer-initial-render',
+          'lesson-viewer-mount-start',
+          'lesson-viewer-render-end'
+        );
+      } catch (e) {
+        // Ignore errors if marks are missing
+      }
+    }
+  });
 
   const containerRef = useRef<HTMLDivElement>(null);
   const [progressCardCollapsed, setProgressCardCollapsed] = useState(false);

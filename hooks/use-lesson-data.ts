@@ -48,7 +48,6 @@ export function useLessonData({
     clearError,
     error,
     isOffline,
-    cacheTimestamps,
   } = useLessonsStore();
 
   const [lessonScore, setLessonScore] = useState<string | null>(null);
@@ -132,15 +131,6 @@ export function useLessonData({
   useEffect(() => {
     const loadLesson = async () => {
       if (subjectSlug && topicSlug && autoLoad) {
-        // Prevent redundant fetch if this exact lesson is already loaded/cached
-        const cacheKey = `lesson_${subjectSlug}_${topicSlug}`;
-        
-        // If we have the lesson data and it matches the requested slug (via cache check or selectedLesson verification)
-        // Note: We check cacheTimestamps to ensure we don't re-trigger immediately after a successful fetch
-        if (selectedLesson && cacheTimestamps[cacheKey]) {
-          return;
-        }
-
         try {
           await fetchLessonContentBySlug(subjectSlug, topicSlug);
         } catch (err) {
@@ -150,11 +140,6 @@ export function useLessonData({
           setIsLoadingLessonContent(false);
         }
       } else if (lessonId && autoLoad) {
-        const cacheKey = `lesson_${lessonId}`;
-        if (selectedLesson?.id === lessonId && cacheTimestamps[cacheKey]) {
-          return;
-        }
-
         try {
           await fetchLessonContentById(lessonId);
         } catch (err) {
@@ -181,8 +166,6 @@ export function useLessonData({
     fetchLessonContentById,
     setError,
     setIsLoadingLessonContent,
-    cacheTimestamps,
-    selectedLesson
   ]);
 
   const handleRetry = async () => {
