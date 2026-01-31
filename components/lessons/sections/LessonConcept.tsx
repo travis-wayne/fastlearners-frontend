@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { List, useDynamicRowHeight } from 'react-window';
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -71,27 +70,6 @@ const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleC
 }, (prev, next) => prev.example.id === next.example.id && prev.index === next.index);
 ExampleCard.displayName = 'ExampleCard';
 
-const VirtualRow = React.memo(({ index, style, data }: any): JSX.Element => {
-    const { examples, setRowHeight } = data;
-    const example = examples[index];
-    const rowRef = useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        if (rowRef.current) {
-            setRowHeight(index, rowRef.current.getBoundingClientRect().height + 16);
-        }
-    }, [setRowHeight, index]);
-
-    return (
-        <div style={style}>
-            <div ref={rowRef} className="pb-4 pr-2">
-                <ExampleCard example={example} index={index} />
-            </div>
-        </div>
-    );
-});
-VirtualRow.displayName = 'VirtualRow';
-
 const ScoreSummary = React.memo(function ScoreSummary({ conceptScore }: { conceptScore: { total_score: string; weight: string } }) {
   const score = parseFloat(conceptScore.total_score);
   const maxScore = parseFloat(conceptScore.weight);
@@ -126,9 +104,6 @@ export const LessonConcept = React.memo(function LessonConcept({
 }: LessonConceptProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [visibleExamplesCount, setVisibleExamplesCount] = useState(2);
-  const listRef = useRef<any>(null);
-  
-  const dynamicRowHeightApi = useDynamicRowHeight({ defaultRowHeight: 200 });
 
   // Optimization: specific selector
   const fetchConceptScore = useLessonsStore(state => state.fetchConceptScore);
@@ -136,13 +111,10 @@ export const LessonConcept = React.memo(function LessonConcept({
 
   const memoizedExamples = useMemo(() => concept.examples, [concept.examples]);
 
-  // Virtualization Threshold
-  const USE_VIRTUALIZATION = memoizedExamples.length > 10;
-
-  // Windowed rendering (legacy lazy load) for small lists
+  // Windowed rendering (legacy lazy load) for lists
   const visibleExamples = useMemo(() => 
-    !USE_VIRTUALIZATION ? memoizedExamples.slice(0, visibleExamplesCount) : [],
-    [memoizedExamples, visibleExamplesCount, USE_VIRTUALIZATION]
+    memoizedExamples.slice(0, visibleExamplesCount),
+    [memoizedExamples, visibleExamplesCount]
   );
 
   const handleShowMore = useCallback(() => {
@@ -225,7 +197,7 @@ export const LessonConcept = React.memo(function LessonConcept({
               ))}
             </div>
 
-            {/* Examples (Virtualized or Windowed) */}
+            {/* Examples (Windowed) */}
             {concept.examples.length > 0 && (
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
@@ -234,30 +206,17 @@ export const LessonConcept = React.memo(function LessonConcept({
                   <Badge variant="secondary" className="ml-2">{concept.examples.length}</Badge>
                 </div>
                 
-                {USE_VIRTUALIZATION ? (
-                   <div className="h-[600px] w-full rounded-lg border p-2">
-                      <List
-                        listRef={listRef}
-                        style={{ height: '100%', width: '100%' }}
-                        rowCount={memoizedExamples.length}
-                        rowHeight={dynamicRowHeightApi}
-                        rowProps={{ examples: memoizedExamples, setRowHeight: dynamicRowHeightApi.setRowHeight }}
-                        rowComponent={VirtualRow as any}
+                 <div className="space-y-4">
+                    {visibleExamples.map((example, index) => (
+                      <ExampleCard
+                        key={example.id || index}
+                        example={example}
+                        index={index}
                       />
-                   </div>
-                ) : (
-                   <div className="space-y-4">
-                      {visibleExamples.map((example, index) => (
-                        <ExampleCard
-                          key={example.id || index}
-                          example={example}
-                          index={index}
-                        />
-                      ))}
-                   </div>
-                )}
+                    ))}
+                 </div>
 
-                {!USE_VIRTUALIZATION && visibleExamplesCount < memoizedExamples.length && (
+                {visibleExamplesCount < memoizedExamples.length && (
                   <div className="flex justify-center pt-2">
                     <Button variant="outline" onClick={handleShowMore} className="w-full sm:w-auto">
                       Show More Examples ({memoizedExamples.length - visibleExamplesCount} remaining)

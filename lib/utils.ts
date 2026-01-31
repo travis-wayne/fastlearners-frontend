@@ -58,7 +58,12 @@ export function constructMetadata({
       images: [image],
       creator: "@miickasmt",
     },
-    icons,
+    icons: {
+      icon: "/_static/favicons/favicon-32x32.png",
+      shortcut: "/_static/favicons/favicon-16x16.png",
+      apple: "/_static/favicons/apple-touch-icon.png",
+    },
+    manifest: "/manifest.webmanifest",
     metadataBase: new URL(siteConfig.url),
     ...(noIndex && {
       robots: {

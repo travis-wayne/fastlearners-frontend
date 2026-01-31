@@ -34,6 +34,8 @@ export function useAuthInit() {
     const timeoutId = setTimeout(() => {
       if (!isHydrated) {
         console.warn("useAuthInit - Hydration timeout, proceeding with unauthenticated state");
+        // Force hydration state in store to prevent UI blocking
+        useAuthStore.setState({ isHydrated: true, isLoading: false });
         setIsInitialized(true);
       }
     }, MAX_HYDRATION_TIMEOUT);
