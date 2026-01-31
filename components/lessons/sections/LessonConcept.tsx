@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import * as ReactWindow from 'react-window';
+import { List, useDynamicRowHeight } from 'react-window';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,8 +8,6 @@ import { Concept } from "@/lib/types/lessons";
 import { useLessonsStore, selectConceptScore } from "@/lib/store/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { cn } from "@/lib/utils";
-
-const List = ReactWindow.VariableSizeList;
 
 interface LessonConceptProps {
   concept: Concept;
@@ -41,7 +39,7 @@ const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleC
             {example.problem}
           </p>
         </div>
-            <div className="space-y-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-50/50 py-3 pl-4 pr-2 dark:bg-emerald-900/10">
+        <div className="space-y-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-50/50 py-3 pl-4 pr-2 dark:bg-emerald-900/10">
           <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
             Solution:
           </p>
@@ -73,14 +71,64 @@ const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleC
 }, (prev, next) => prev.example.id === next.example.id && prev.index === next.index);
 ExampleCard.displayName = 'ExampleCard';
 
+const VirtualRow = React.memo(({ index, style, data }: any) => {
+    const { examples, setRowHeight } = data;
+    const example = examples[index];
+    const rowRef = useRef<HTMLDivElement>(null);
+
+    React.useEffect(() => {
+        if (rowRef.current) {
+            setRowHeight(index, rowRef.current.getBoundingClientRect().height + 16);
+        }
+    }, [setRowHeight, index]);
+
+    return (
+        <div style={style}>
+            <div ref={rowRef} className="pb-4 pr-2">
+                <ExampleCard example={example} index={index} />
+            </div>
+        </div>
+    );
+});
+VirtualRow.displayName = 'VirtualRow';
+
+const ScoreSummary = React.memo(function ScoreSummary({ conceptScore }: { conceptScore: { total_score: string; weight: string } }) {
+  const score = parseFloat(conceptScore.total_score);
+  const maxScore = parseFloat(conceptScore.weight);
+  const percentage = (score / maxScore) * 100;
+  
+  return (
+    <Card className="border-primary/20 bg-primary/5">
+      <CardContent className="flex items-center justify-between p-4">
+        <div className="flex items-center gap-3">
+          <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+            <CheckCircle2 className="size-5 text-primary" />
+          </div>
+          <div>
+            <p className="font-medium text-foreground">Section Progress</p>
+            <p className="text-sm text-muted-foreground">
+              You scored {score.toFixed(1)} / {maxScore} points
+            </p>
+          </div>
+        </div>
+        <Badge variant={percentage >= 70 ? "default" : "secondary"} className="text-lg font-bold">
+          {Math.round(percentage)}%
+        </Badge>
+      </CardContent>
+    </Card>
+  );
+});
+ScoreSummary.displayName = 'ScoreSummary';
+
 export const LessonConcept = React.memo(function LessonConcept({
   concept,
   onAnswerExercise,
 }: LessonConceptProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [visibleExamplesCount, setVisibleExamplesCount] = useState(2);
-  const listRef = useRef<ReactWindow.VariableSizeList>(null);
-  const sizeMap = useRef<Record<number, number>>({});
+  const listRef = useRef<any>(null);
+  
+  const { setRowHeight, ...dynamicRowHeight } = useDynamicRowHeight({ defaultRowHeight: 200 });
 
   // Optimization: specific selector
   const fetchConceptScore = useLessonsStore(state => state.fetchConceptScore);
@@ -105,17 +153,6 @@ export const LessonConcept = React.memo(function LessonConcept({
     setIsExpanded(prev => !prev);
   }, []);
   
-  const setSize = useCallback((index: number, size: number) => {
-    // Add spacing to height
-    const totalSize = size + 16; // 16px (mb-4 equivalent)
-    if (sizeMap.current[index] !== totalSize) {
-        sizeMap.current[index] = totalSize;
-        listRef.current?.resetAfterIndex(index);
-    }
-  }, []);
-
-  const getItemSize = useCallback((index: number) => sizeMap.current[index] || 200, []);
-
   // Fetch score on mount
   useEffect(() => {
     fetchConceptScore(concept.id);
@@ -200,15 +237,14 @@ export const LessonConcept = React.memo(function LessonConcept({
                 {USE_VIRTUALIZATION ? (
                    <div className="h-[600px] w-full border rounded-lg p-2">
                       <List
-                        ref={listRef}
+                        listRef={listRef}
                         height={600}
-                        itemCount={memoizedExamples.length}
-                        itemSize={getItemSize}
+                        rowCount={memoizedExamples.length}
+                        rowHeight={dynamicRowHeight}
                         width="100%"
-                        itemData={{ examples: memoizedExamples, setSize }}
-                      >
-                        {VirtualRow}
-                      </List>
+                        rowProps={{ examples: memoizedExamples, setRowHeight }}
+                        rowComponent={VirtualRow}
+                      />
                    </div>
                 ) : (
                    <div className="space-y-4">
@@ -254,7 +290,6 @@ export const LessonConcept = React.memo(function LessonConcept({
                 </div>
             ) : null}
             
-            {/* Score etc... (Existing logic omitted for brevity in thought but required in replacement? Yes, I must include it) */}
             
             {conceptScore && concept.exercises.length > 0 && (
               <ScoreSummary conceptScore={conceptScore} />
@@ -278,82 +313,5 @@ export const LessonConcept = React.memo(function LessonConcept({
         )}
       </Card>
     </div>
-  );
-});
-LessonConcept.displayName = 'LessonConcept';
-
-// Helper for Virtualization
-const VirtualRow = React.memo(({ index, style, data }: any) => {
-    const { examples, setSize } = data;
-    const example = examples[index];
-    const rowRef = useRef<HTMLDivElement>(null);
-
-    React.useEffect(() => {
-        if (rowRef.current) {
-            setSize(index, rowRef.current.getBoundingClientRect().height);
-        }
-    }, [setSize, index]); // ResizeObserver would be better but this is 'good enough' for initial mount
-
-    return (
-        <div style={style}>
-            <div ref={rowRef} className="pb-4 pr-2">
-                <ExampleCard example={example} index={index} />
-            </div>
-        </div>
-    );
-});
-VirtualRow.displayName = 'VirtualRow';
-
-// Memoized Helper Components
-const ScoreSummary = React.memo(function ScoreSummary({ conceptScore }: { conceptScore: { total_score: string; weight: string } }) {
-  const percentage = useMemo(() => {
-    return parseFloat(conceptScore.weight) > 0
-      ? ((parseFloat(conceptScore.total_score) / parseFloat(conceptScore.weight)) * 100).toFixed(1)
-      : "0.0";
-  }, [conceptScore]);
-
-  return (
-    <Card className="via-primary/3 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-background shadow-lg">
-      <CardContent className="space-y-4 p-6">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex size-12 items-center justify-center rounded-xl bg-primary/10">
-              <CheckCircle2 className="size-6 text-primary" />
-            </div>
-            <div>
-              <h4 className="text-lg font-bold text-foreground">
-                Concept Score
-              </h4>
-              <p className="text-sm text-muted-foreground">
-                Total score for this concept
-              </p>
-            </div>
-          </div>
-          <div className="text-right">
-            <div className="text-3xl font-bold text-primary">
-              {conceptScore.total_score}
-              <span className="text-xl text-muted-foreground">
-                /{conceptScore.weight}
-              </span>
-            </div>
-            <p className="text-sm font-medium text-muted-foreground">
-              {percentage}% Complete
-            </p>
-          </div>
-        </div>
-        
-        {/* Progress Bar */}
-        <div className="space-y-2">
-          <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-primary to-primary/80 transition-all duration-500"
-              style={{
-                width: `${percentage}%`,
-              }}
-            />
-          </div>
-        </div>
-      </CardContent>
-    </Card>
   );
 });
