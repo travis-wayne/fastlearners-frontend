@@ -17,16 +17,14 @@ interface LessonSummaryApplicationProps {
 export function LessonSummaryApplication({
   lesson,
 }: LessonSummaryApplicationProps) {
-  const { 
-    progress, 
-    nextStep, 
-    currentStepIndex, 
-    selectedLesson,
-    startSectionTimer,
-    endSectionTimer,
-    addUserNote,
-    updateAnalytics,
-  } = useLessonsStore();
+  const progress = useLessonsStore(state => state.progress);
+  const nextStep = useLessonsStore(state => state.nextStep);
+  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
+  const selectedLesson = useLessonsStore(state => state.selectedLesson);
+  const startSectionTimer = useLessonsStore(state => state.startSectionTimer);
+  const endSectionTimer = useLessonsStore(state => state.endSectionTimer);
+  const addUserNote = useLessonsStore(state => state.addUserNote);
+  const updateAnalytics = useLessonsStore(state => state.updateAnalytics);
   const [reflectionNotes, setReflectionNotes] = useState("");
   const [quizAnswers, setQuizAnswers] = useState<Record<number, string>>({});
   const [confidenceLevel, setConfidenceLevel] = useState<number>(3);

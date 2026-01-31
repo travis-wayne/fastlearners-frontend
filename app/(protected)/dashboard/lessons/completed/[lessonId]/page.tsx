@@ -10,7 +10,7 @@ import { Trophy, Star, ArrowLeft, Loader2, Target, CheckCircle2 } from "lucide-r
 import { useLessonsStore } from "@/lib/store/lessons";
 import { getLessonContentById, getLessonCompletionData } from "@/lib/api/lessons";
 import { cn } from "@/lib/utils";
-import { LessonCompletionData } from "@/lib/types/lessons";
+import { LessonCompletionData, LessonContent } from "@/lib/types/lessons";
 
 interface LessonCompletedPageProps {
   params: {
@@ -26,7 +26,7 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
   const [error, setError] = useState<string | null>(null);
 
   // Get store data to supplement API data
-  const { exerciseProgress, sectionTimeTracking } = useLessonsStore();
+  const { exerciseProgress, sectionTimeTracking, selectedLesson } = useLessonsStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -37,18 +37,30 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
       }
 
       try {
-        // 1. Fetch lesson content first to get structure
-        const contentRes = await getLessonContentById(lessonId);
-        
-        if (!contentRes.success || !contentRes.content) {
-          throw new Error(contentRes.message || "Failed to load lesson content");
+        let content: LessonContent | null = null;
+
+        // 1. Try to get content from store first (fastest/most reliable method)
+        if (selectedLesson && selectedLesson.id === lessonId) {
+          content = selectedLesson;
+        } else {
+          // Fallback: Fetch from API if store is empty or mismatch (e.g. direct nav/refresh)
+          const contentRes = await getLessonContentById(lessonId);
+          if (!contentRes.success || !contentRes.content) {
+             // If API fails, we can't do much on refresh. 
+             // But valid flow should use Store.
+             throw new Error(contentRes.message || "Failed to load lesson content");
+          }
+          content = contentRes.content;
         }
 
-        // 2. Fetch completion data using the helper
-        // We pass local store data (time tracking, exercise progress) to help calculation
+        if (!content) {
+          throw new Error("Failed to load lesson content");
+        }
+
+        // 2. Fetch completion data
         const completionRes = await getLessonCompletionData(
           lessonId,
-          contentRes.content,
+          content,
           sectionTimeTracking,
           exerciseProgress
         );
@@ -67,7 +79,7 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
     };
 
     fetchData();
-  }, [lessonId, exerciseProgress, sectionTimeTracking]);
+  }, [lessonId, exerciseProgress, sectionTimeTracking, selectedLesson]);
 
   const handleBackToDashboard = () => {
     router.push("/dashboard/lessons");

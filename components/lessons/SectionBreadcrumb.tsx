@@ -25,7 +25,7 @@ export function SectionBreadcrumb({
   onNavigate,
   className,
 }: SectionBreadcrumbProps) {
-  const { sectionProgress } = useLessonsStore();
+  const sectionProgress = useLessonsStore(state => state.sectionProgress);
 
   // Define all sections
   const sections = [

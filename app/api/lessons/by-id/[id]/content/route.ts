@@ -25,7 +25,7 @@ export async function GET(
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     try {
-      const upstream = await fetch(`${UPSTREAM_BASE}/lessons/${lessonId}/content`, {
+      const upstream = await fetch(`${UPSTREAM_BASE}/lessons/${lessonId}`, {
         method: "GET",
         headers: {
           Accept: "application/json",
@@ -54,7 +54,7 @@ export async function GET(
       
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
-          const retryUpstream = await fetch(`${UPSTREAM_BASE}/lessons/${lessonId}/content`, {
+          const retryUpstream = await fetch(`${UPSTREAM_BASE}/lessons/${lessonId}`, {
             method: "GET",
             headers: {
               Accept: "application/json",

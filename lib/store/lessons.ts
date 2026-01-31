@@ -1798,6 +1798,7 @@ export const useLessonsStore = create<LessonsStore>()(
           filters: state.filters,
           currentStepIndex: state.currentStepIndex,
           progress: state.progress,
+          selectedLesson: state.selectedLesson,
           // New persistable data
           userPreferences: state.userPreferences,
           sessionTracking: state.sessionTracking.slice(-10), // Keep last 10 sessions

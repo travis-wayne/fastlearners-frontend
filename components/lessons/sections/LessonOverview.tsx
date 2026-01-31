@@ -19,7 +19,10 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
   const [expandedObjectives, setExpandedObjectives] = useState<Set<number>>(new Set());
   const [checkedObjectives, setCheckedObjectives] = useState<Set<number>>(new Set());
 
-  const { lessonMetadata, currentStepIndex, progress, nextStep } = useLessonsStore();
+  const lessonMetadata = useLessonsStore(state => state.lessonMetadata);
+  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
+  const progress = useLessonsStore(state => state.progress);
+  const nextStep = useLessonsStore(state => state.nextStep);
   const lessonMeta = lessonMetadata[lesson.id];
 
   const objectives = useMemo(() => lesson.objectives || [], [lesson.objectives]);

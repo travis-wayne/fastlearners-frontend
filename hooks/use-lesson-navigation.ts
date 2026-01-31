@@ -69,17 +69,61 @@ export function useLessonNavigation({
           currentSectionProgress[id]?.isCompleted
         );
 
-        if (!moved && isLastStep && isActuallyComplete && !celebrationShown && selectedLesson?.id) {
-          try {
-            setIsRedirecting(true);
-            await fetchCompletionData(selectedLesson.id);
-            setCelebrationShown(true);
-            router.push(`/dashboard/lessons/completed/${selectedLesson.id}`);
-          } catch (error) {
-            setIsRedirecting(false);
-            console.error('Error fetching completion data:', error);
-            setCelebrationShown(false);
-            toast.error('Failed to load completion summary');
+        if (!moved && isLastStep && selectedLesson?.id && !celebrationShown) {
+          // Self-healing: Check if we can verify missing sections on the fly
+          const missing = validSectionIds.filter(id => !currentSectionProgress[id]?.isCompleted);
+          let healedCount = 0;
+
+          if (missing.length > 0) {
+            const { markSectionCompleted } = useLessonsStore.getState();
+            
+            // Try to heal missing "passive" sections (Overview, Summary) that might have been skipped or failed to sync
+            for (const sectionId of missing) {
+               try {
+                 let verified = false;
+                 if (sectionId === 'summary_application') {
+                    const { checkLessonSummaryAndApplication } = await import("@/lib/api/lessons");
+                    const res = await checkLessonSummaryAndApplication(selectedLesson.id);
+                    if (res?.success && res?.content?.check?.is_completed) verified = true;
+                 } else if (sectionId === 'overview') {
+                    const { checkLessonOverview } = await import("@/lib/api/lessons");
+                    const res = await checkLessonOverview(selectedLesson.id);
+                    if (res?.success && res?.content?.check?.is_completed) verified = true;
+                 }
+
+                 if (verified) {
+                   const sectionType = sectionId === 'overview' ? 'overview' : 'summary_application';
+                   markSectionCompleted(sectionId, sectionType);
+                   healedCount++;
+                 }
+               } catch (err) {
+                 console.error(`Failed to self-heal section ${sectionId}`, err);
+               }
+            }
+          }
+
+          // Re-evaluate completion after attempted healing
+          const { sectionProgress: updatedProgress } = useLessonsStore.getState();
+          const isNowComplete = validSectionIds.every(id => updatedProgress[id]?.isCompleted);
+
+          if (isNowComplete) {
+            try {
+              setIsRedirecting(true);
+              await fetchCompletionData(selectedLesson.id);
+              setCelebrationShown(true);
+              router.push(`/dashboard/lessons/completed/${selectedLesson.id}`);
+            } catch (error) {
+              setIsRedirecting(false);
+              console.error('Error fetching completion data:', error);
+              setCelebrationShown(false);
+              toast.error('Failed to load completion summary');
+            }
+          } else {
+             const remainingMissing = validSectionIds.filter(id => !updatedProgress[id]?.isCompleted);
+             console.warn('Cannot finish lesson. Missing sections:', remainingMissing);
+             toast.warning('Lesson Incomplete', {
+               description: `Please complete all sections first. Missing: ${remainingMissing.length}. Try going back.`,
+             });
           }
         }
       } else {
