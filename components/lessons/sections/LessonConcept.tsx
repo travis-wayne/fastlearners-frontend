@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback, useRef } from "react";
-import { VariableSizeList as List } from 'react-window';
+import * as ReactWindow from 'react-window';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,8 @@ import { Concept } from "@/lib/types/lessons";
 import { useLessonsStore, selectConceptScore } from "@/lib/store/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { cn } from "@/lib/utils";
+
+const List = ReactWindow.VariableSizeList;
 
 interface LessonConceptProps {
   concept: Concept;
@@ -69,6 +71,7 @@ const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleC
     </Card>
   );
 }, (prev, next) => prev.example.id === next.example.id && prev.index === next.index);
+ExampleCard.displayName = 'ExampleCard';
 
 export const LessonConcept = React.memo(function LessonConcept({
   concept,
@@ -76,7 +79,7 @@ export const LessonConcept = React.memo(function LessonConcept({
 }: LessonConceptProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [visibleExamplesCount, setVisibleExamplesCount] = useState(2);
-  const listRef = useRef<List>(null);
+  const listRef = useRef<ReactWindow.VariableSizeList>(null);
   const sizeMap = useRef<Record<number, number>>({});
 
   // Optimization: specific selector
@@ -277,6 +280,7 @@ export const LessonConcept = React.memo(function LessonConcept({
     </div>
   );
 });
+LessonConcept.displayName = 'LessonConcept';
 
 // Helper for Virtualization
 const VirtualRow = React.memo(({ index, style, data }: any) => {
@@ -298,6 +302,7 @@ const VirtualRow = React.memo(({ index, style, data }: any) => {
         </div>
     );
 });
+VirtualRow.displayName = 'VirtualRow';
 
 // Memoized Helper Components
 const ScoreSummary = React.memo(function ScoreSummary({ conceptScore }: { conceptScore: { total_score: string; weight: string } }) {
