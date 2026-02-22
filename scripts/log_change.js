@@ -8,8 +8,8 @@ if (!fs.existsSync(logFile)) {
 }
 
 const date = new Date().toISOString().split('T')[0];
-const technicalChange = "Fixed React compilation error by escaping > character in Teacher Performance page.";
-const socialMediaContent = "🔧 Quick fix: Resolved a React compilation error in the Teacher Performance page to keep our analytics dashboards running smoothly! ✨ #BuildInPublic #NextJS #BugFix";
+const technicalChange = "Resolved platform-wide build errors including unescaped React entities, Tailwind CSS class order/shorthands, and TypeScript type mismatches.";
+const socialMediaContent = "🚀 Clean build unlocked! We just polished FastLearners by resolving platform-wide Tailwind CSS order issues, fixing React entity bugs, and tightening our TypeScript types. The dashboard is now building faster and smoother than ever! 📈 #BuildInPublic #NextJS #TypeScript #CleanCode";
 
 const newRow = `${date},"${technicalChange}","${socialMediaContent}"\n`;
 
