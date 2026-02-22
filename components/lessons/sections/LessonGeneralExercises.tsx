@@ -6,11 +6,13 @@ import { Progress } from "@/components/ui/progress";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { Trophy, Target, CheckCircle2, AlertCircle, Filter, SortAsc, Eye, Clock, Shuffle, RotateCcw, Share2, Zap, Award, Flame, Star, TrendingUp, BarChart3, Pause, Play } from "lucide-react";
+import { Trophy, Target, CheckCircle2, AlertCircle, Filter, SortAsc, Eye, Clock, Shuffle, RotateCcw, Share2, Zap, Award, Flame, Star, TrendingUp, BarChart3, Pause, Play, BookOpen } from "lucide-react";
 import { LessonContent, GeneralExercise } from "@/lib/types/lessons";
 import { getGeneralExerciseScore } from "@/lib/api/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { useLessonsStore, selectGeneralExerciseScore } from "@/lib/store/lessons";
+import { getGrade } from "@/lib/utils/grading";
+import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
@@ -146,6 +148,23 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
     return { total, completed, correct, incorrect, unattempted, scorePercentage, avgAttempts, avgTime };
   }, [general_exercises, exerciseProgress, analyticsData, lesson.id]);
 
+  // Concept Stats Calculation
+  const conceptStats = useMemo(() => {
+    if (!lesson.concepts) return [];
+    return lesson.concepts.map(concept => {
+      const total = concept.exercises?.length || 0;
+      const correct = concept.exercises?.filter(ex => exerciseProgress[ex.id]?.isCorrect).length || 0;
+      const percentage = total > 0 ? Math.round((correct / total) * 100) : 0;
+      return {
+        id: concept.id,
+        title: concept.title,
+        total,
+        correct,
+        percentage
+      };
+    });
+  }, [lesson.concepts, exerciseProgress]);
+
   // Badges
   const badges: BadgeData[] = [
     { id: 'first_correct', title: 'First Steps', description: 'Answered your first exercise correctly', icon: <Star className="size-4" />, earned: stats.correct > 0 },
@@ -271,6 +290,19 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">
+      <DismissibleCard
+        id="general_exercises_intro"
+        title="Finishing the lesson"
+        icon={<CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
+        content={
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Answer all general exercises to test your overall understanding of the lesson.</li>
+            <li>Ensure you achieve a good score to pass the lesson.</li>
+            <li>Once done, a performance summary will be generated for your review.</li>
+          </ul>
+        }
+        className="border-purple-200 bg-purple-50/50 dark:border-purple-900/50 dark:bg-purple-900/20"
+      />
       <Card className="border-2 shadow-lg">
         <CardHeader className="pb-4">
           <div className="flex items-center justify-between">
@@ -452,6 +484,59 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
                 </div>
               )}
             </div>
+          )}
+
+          {/* End of Lesson Summary */}
+          {stats.total > 0 && stats.completed === stats.total && (
+            <Card className="border-2 shadow-lg mb-6 bg-slate-50 dark:bg-slate-900/50">
+              <CardHeader className="pb-3 border-b">
+                <CardTitle className="text-xl flex items-center gap-2">
+                  <Award className="size-5 text-purple-600 dark:text-purple-400" />
+                  End of Lesson Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6 space-y-6">
+                {/* General Exercises Grade */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border bg-background gap-4">
+                  <div>
+                    <h4 className="font-semibold text-lg">General Exercises</h4>
+                    <span className="text-sm text-muted-foreground">{stats.correct} / {stats.total} correct</span>
+                  </div>
+                  <div className={cn("px-4 py-2 rounded-lg font-bold text-lg border", getGrade(stats.scorePercentage).colorClass)}>
+                    {stats.scorePercentage}% - Grade {getGrade(stats.scorePercentage).letter}
+                    <div className="text-xs font-normal mt-1 opacity-90">{getGrade(stats.scorePercentage).message}</div>
+                  </div>
+                </div>
+
+                {/* Concept breakdown */}
+                {conceptStats.length > 0 && (
+                  <div className="space-y-3">
+                    <h4 className="font-semibold text-lg flex items-center gap-2">
+                      <BookOpen className="size-5 text-blue-500" /> Performance by Concept
+                    </h4>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {conceptStats.map(concept => {
+                        const grade = getGrade(concept.percentage);
+                        return (
+                          <div key={concept.id} className="p-4 rounded-lg border bg-background flex flex-col justify-between gap-3">
+                            <div>
+                              <div className="font-medium text-sm line-clamp-2" title={concept.title}>{concept.title}</div>
+                              <div className="text-xs text-muted-foreground mt-1">{concept.correct} / {concept.total} correct</div>
+                            </div>
+                            <div className="flex items-center justify-between mt-auto">
+                              <Progress value={concept.percentage} className="h-2 w-1/2" />
+                              <Badge className={cn("ml-2 font-bold", grade.colorClass)} variant="outline">
+                                {concept.percentage}% - {grade.letter}
+                              </Badge>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
           )}
 
           {/* Badges */}

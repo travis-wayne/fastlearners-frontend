@@ -165,6 +165,8 @@ export function LoginForm({
                 className={errors.email_phone ? "border-destructive" : ""}
                 disabled={isLoading && isHydrated}
                 required
+                autoComplete="off"
+                data-lpignore="true"
               />
               {errors.email_phone && (
                 <p className="text-sm text-destructive">
@@ -193,6 +195,8 @@ export function LoginForm({
                   }
                   disabled={isLoading && isHydrated}
                   required
+                  autoComplete="new-password"
+                  data-lpignore="true"
                 />
                 <Button
                   type="button"

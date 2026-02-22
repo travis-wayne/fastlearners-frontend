@@ -143,6 +143,7 @@ export function CreatePasswordForm() {
               disabled={isLoading}
               required
               autoComplete="new-password"
+              data-lpignore="true"
             />
             <Button
               type="button"
@@ -197,6 +198,7 @@ export function CreatePasswordForm() {
               disabled={isLoading}
               required
               autoComplete="new-password"
+              data-lpignore="true"
             />
             <Button
               type="button"

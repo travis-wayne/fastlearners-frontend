@@ -28,7 +28,11 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   const [isCorrect, setIsCorrect] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSolution, setShowSolution] = useState(false);
+  
+  const attemptCount = exerciseProgress[exercise.id]?.attempts || 0;
+  const canShowSolution = attemptCount >= 4;
+  const attemptsRemaining = Math.max(0, 4 - attemptCount);
+  
   const [showSolutionDetails, setShowSolutionDetails] = useState(false);
   const [shake, setShake] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -230,7 +234,22 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         });
       }
 
-      const result = await onAnswer(exercise.id, selectedOptionKey);
+      let result;
+      if (isAlreadyCompleted) {
+        // Local evaluation without recording score
+        const selectedAnswerText = getAnswerText(selectedOptionKey);
+        const correct = selectedAnswerText === exercise.correct_answer;
+        result = {
+          success: true,
+          message: correct ? "Correct! (Practice Attempt)" : "Incorrect. Try again (Practice Attempt).",
+          isCorrect: correct,
+          code: correct ? 200 : 400,
+          content: null
+        };
+        await new Promise(resolve => setTimeout(resolve, 300)); // simulate delay
+      } else {
+        result = await onAnswer(exercise.id, selectedOptionKey);
+      }
       setLastResult(result); // Store result
       setIsRevealed(true);
 
@@ -322,7 +341,6 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
   const confirmTryAgain = () => {
     setIsRevealed(false);
-    setShowSolution(false);
     setShowSolutionDetails(false);
     setSelectedOptionKey("");
     setFeedbackMessage("");
@@ -363,7 +381,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         <RadioGroup
           value={selectedOptionKey}
           onValueChange={setSelectedOptionKey}
-          disabled={isRevealed || isSubmitting || isAlreadyCompleted}
+          disabled={isRevealed || isSubmitting}
           className="space-y-2"
           aria-label={`Options for exercise ${index + 1}`}
         >
@@ -464,28 +482,46 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                   <RotateCcw className="mr-1 size-4" /> Retry ({retryCount})
                 </Button>
               )}
+              {isCorrect && (
+                <div className="mt-4">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleTryAgain}
+                    className="h-9 text-xs font-medium sm:h-8 border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-900/50"
+                  >
+                    <RotateCcw className="mr-2 size-3" />
+                    Reattempt Question
+                  </Button>
+                </div>
+              )}
               {!isCorrect && (
                 <div className="mt-3 space-y-2">
-                  {!showSolution ? (
-                    <div className="flex flex-col gap-2 sm:flex-row">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setShowSolution(true)}
-                        className="h-10 text-xs font-medium sm:h-8"
-                        aria-label="Show solution"
-                      >
-                        Show Solution
-                      </Button>
-                      <Button
-                        variant="default"
-                        size="sm"
-                        onClick={handleTryAgain}
-                        className="h-10 bg-blue-600 text-xs font-medium hover:bg-blue-700 sm:h-8"
-                        aria-label="Try again"
-                      >
-                        Try Again
-                      </Button>
+                  {!canShowSolution ? (
+                    <div className="flex flex-col gap-2">
+                      <p className={cn(
+                        "text-sm font-medium",
+                        attemptsRemaining === 1 
+                          ? "text-amber-600 dark:text-amber-500 flex items-center" 
+                          : "text-slate-600 dark:text-slate-400"
+                      )}>
+                        {attemptsRemaining === 1 && <AlertTriangle className="mr-1.5 size-4" />}
+                        {attemptsRemaining === 1 
+                          ? "Complete 4 attempts before viewing solution"
+                          : `${attemptsRemaining} more attempt${attemptsRemaining !== 1 ? 's' : ''} before the solution is revealed`
+                        }
+                      </p>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={handleTryAgain}
+                          className="h-10 bg-blue-600 text-xs font-medium hover:bg-blue-700 sm:h-8"
+                          aria-label="Try again"
+                        >
+                          Try Again
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <>
@@ -530,7 +566,11 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         {showConfirmDialog && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="mx-4 max-w-sm rounded-md bg-white p-4 dark:bg-slate-800">
-              <p className="mb-4 text-sm">Are you sure you want to try again? This will reset your progress.</p>
+              <p className="mb-4 text-sm">
+                {isAlreadyCompleted 
+                  ? "Are you sure you want to try again? This will just be for practice and won't affect your previously recorded score."
+                  : "Are you sure you want to try again? This will clear your current selection."}
+              </p>
               <div className="flex gap-2">
                 <Button size="sm" onClick={confirmTryAgain}>Yes</Button>
                 <Button size="sm" variant="outline" onClick={() => setShowConfirmDialog(false)}>Cancel</Button>

@@ -164,7 +164,8 @@ export function ForgotPasswordForm({
                   className={errors.email ? "border-destructive" : ""}
                   disabled={isLoading}
                   required
-                  autoComplete="email"
+                  autoComplete="off"
+                  data-lpignore="true"
                 />
                 {errors.email && (
                   <p className="text-sm text-destructive">

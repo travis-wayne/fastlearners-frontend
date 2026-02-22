@@ -1,13 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { BookOpen, Calendar, Clock, Target, Trophy } from "lucide-react";
+import { BookOpen, Calendar, Clock, Target, Trophy, TrendingUp } from "lucide-react";
 import * as Icons from "lucide-react";
 
 import { Subject } from "@/config/education";
 import { cn } from "@/lib/utils";
+import { getGrade } from "@/lib/utils/grading";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SubjectProgress {
   totalTopics: number;
@@ -27,23 +29,12 @@ interface SubjectCardProps {
   className?: string;
   variant?: "default" | "compact" | "detailed";
   slug?: string; // Optional slug for navigation
+  isLoading?: boolean;
 }
 
 const getSubjectIcon = (iconName: string) => {
   const IconComponent = (Icons as any)[iconName] || BookOpen;
   return IconComponent;
-};
-
-const gradeColors: Record<string, string> = {
-  A1: "bg-green-100 text-green-800",
-  B2: "bg-green-100 text-green-700",
-  B3: "bg-yellow-100 text-yellow-800",
-  C4: "bg-orange-100 text-orange-800",
-  C5: "bg-orange-100 text-orange-800",
-  C6: "bg-orange-100 text-orange-800",
-  D7: "bg-red-100 text-red-700",
-  E8: "bg-red-100 text-red-700",
-  F9: "bg-red-100 text-red-800",
 };
 
 export function SubjectCard({
@@ -52,6 +43,7 @@ export function SubjectCard({
   className = "",
   variant = "default",
   slug,
+  isLoading,
 }: SubjectCardProps) {
   const IconComponent = getSubjectIcon(subject.icon);
 
@@ -85,31 +77,44 @@ export function SubjectCard({
                   Core
                 </Badge>
               )}
-              {progress.grade && (
+              {isLoading ? (
+                <Skeleton className="h-5 w-8" />
+              ) : progress.grade ? (
                 <Badge
                   className={cn(
                     "text-xs",
-                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800",
+                    progress.termProgress > 0 
+                      ? getGrade(progress.termProgress).colorClass 
+                      : "bg-secondary text-secondary-foreground"
                   )}
                 >
-                  {progress.grade}
+                  {progress.termProgress > 0 ? progress.grade : "N/A"}
                 </Badge>
-              )}
+              ) : null}
             </div>
-            <p className="line-clamp-1 text-sm text-muted-foreground">
+            <p className="line-clamp-1 text-sm text-muted-foreground flex items-center gap-1">
               Week {progress.currentWeek}/{progress.totalWeeks} •{" "}
-              {progress.termProgress}% complete
+              {isLoading ? <Skeleton className="h-4 w-8 inline-block" /> : progress.termProgress}% complete
             </p>
           </div>
         </div>
         {slug && (
           <Link
             href={`/dashboard/subjects/${slug}`}
-            className="absolute inset-0"
+            className="absolute inset-0 z-0"
           >
             <span className="sr-only">View {subject.name}</span>
           </Link>
         )}
+        <div className="relative z-10 mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4">
+          <Link 
+            href={slug ? `/dashboard/subjects/${slug}/performance` : "/dashboard/performance"}
+            className="flex items-center justify-center w-full gap-2 rounded-md py-2 px-3 text-sm font-medium transition-colors hover:bg-muted"
+          >
+            <TrendingUp className="size-4" />
+            Lessons Performance
+          </Link>
+        </div>
       </article>
     );
   }
@@ -148,16 +153,20 @@ export function SubjectCard({
                   Elective
                 </Badge>
               )}
-              {progress.grade && (
+              {isLoading ? (
+                <Skeleton className="h-5 w-12" />
+              ) : progress.grade ? (
                 <Badge
                   className={cn(
                     "text-xs",
-                    gradeColors[progress.grade] || "bg-gray-100 text-gray-800",
+                    progress.termProgress > 0 
+                      ? getGrade(progress.termProgress).colorClass 
+                      : "bg-secondary text-secondary-foreground"
                   )}
                 >
-                  Grade: {progress.grade}
+                  Grade: {progress.termProgress > 0 ? progress.grade : "N/A"}
                 </Badge>
-              )}
+              ) : null}
             </div>
             {subject.description && (
               <p className="line-clamp-2 text-muted-foreground">
@@ -169,7 +178,9 @@ export function SubjectCard({
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Term Progress</span>
-                <span className="font-medium">{progress.termProgress}%</span>
+                <span className="font-medium">
+                  {isLoading ? <Skeleton className="h-4 w-8" /> : `${progress.termProgress}%`}
+                </span>
               </div>
               <Progress value={progress.termProgress} className="h-2" />
               <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -198,7 +209,7 @@ export function SubjectCard({
                   <span className="text-muted-foreground">CA Score</span>
                 </div>
                 <div className="text-base font-semibold sm:text-lg">
-                  {progress.caScore ? `${progress.caScore}%` : "N/A"}
+                  {isLoading ? <Skeleton className="h-5 w-12" /> : (progress.caScore ? `${progress.caScore}%` : "N/A")}
                 </div>
               </div>
               <div className="space-y-1">
@@ -233,11 +244,21 @@ export function SubjectCard({
         {slug && (
           <Link
             href={`/dashboard/subjects/${slug}`}
-            className="absolute inset-0"
+            className="absolute inset-0 z-0"
           >
             <span className="sr-only">View {subject.name}</span>
           </Link>
         )}
+
+        <div className="relative z-10 mt-4 border-t border-border pt-4">
+          <Link 
+            href={slug ? `/dashboard/subjects/${slug}/performance` : "/dashboard/performance"}
+            className="flex items-center justify-center w-full gap-2 rounded-md border border-border bg-card py-2.5 px-4 text-sm font-medium transition-colors hover:bg-muted"
+          >
+            <TrendingUp className="size-4" />
+            Lessons Performance
+          </Link>
+        </div>
       </article>
     );
   }
@@ -276,16 +297,20 @@ export function SubjectCard({
                 Elective
               </Badge>
             )}
-            {progress.grade && (
+            {isLoading ? (
+              <Skeleton className="h-5 w-8" />
+            ) : progress.grade ? (
               <Badge
                 className={cn(
                   "text-xs",
-                  gradeColors[progress.grade] || "bg-gray-100 text-gray-800",
+                  progress.termProgress > 0 
+                    ? getGrade(progress.termProgress).colorClass 
+                    : "bg-secondary text-secondary-foreground"
                 )}
               >
-                {progress.grade}
+                {progress.termProgress > 0 ? progress.grade : "N/A"}
               </Badge>
-            )}
+            ) : null}
           </div>
           {subject.description && (
             <p className="line-clamp-2 text-muted-foreground">
@@ -297,7 +322,9 @@ export function SubjectCard({
           <div className="mt-3 space-y-2 sm:mt-4">
             <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-muted-foreground">Term Progress</span>
-              <span className="font-medium">{progress.termProgress}%</span>
+              <span className="font-medium">
+                {isLoading ? <Skeleton className="h-4 w-8" /> : `${progress.termProgress}%`}
+              </span>
             </div>
             <Progress value={progress.termProgress} className="h-2" />
             <div className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
@@ -314,7 +341,7 @@ export function SubjectCard({
         <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:space-x-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
             <Target className="size-3 sm:size-4" />
-            <span>CA: {progress.caScore ? `${progress.caScore}%` : "N/A"}</span>
+            <span>CA: {isLoading ? <Skeleton className="h-3 w-8 inline-block align-middle" /> : (progress.caScore ? `${progress.caScore}%` : "N/A")}</span>
           </div>
           {progress.upcomingAssessments > 0 && (
             <Badge variant="outline" className="text-xs">
@@ -327,11 +354,21 @@ export function SubjectCard({
       {slug && (
         <Link
           href={`/dashboard/subjects/${slug}`}
-          className="absolute inset-0"
+          className="absolute inset-0 z-0"
         >
           <span className="sr-only">View {subject.name}</span>
         </Link>
       )}
+
+      <div className="relative z-10 mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4">
+        <Link 
+          href={slug ? `/dashboard/subjects/${slug}/performance` : "/dashboard/performance"}
+          className="flex items-center justify-center w-full gap-2 rounded-md border border-border bg-card py-2 px-3 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
+        >
+          <TrendingUp className="size-4" />
+          Lessons Performance
+        </Link>
+      </div>
     </article>
   );
 }

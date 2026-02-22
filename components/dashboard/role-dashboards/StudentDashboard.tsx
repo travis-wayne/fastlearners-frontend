@@ -16,6 +16,7 @@ import {
   Target,
   TrendingUp,
   Trophy,
+  Info,
 } from "lucide-react";
 
 import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
@@ -40,6 +41,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { AchievementsSection } from "@/components/dashboard/AchievementsSection";
 import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
 import { LeaderBoard } from "@/components/dashboard/LeaderBoard";
@@ -107,11 +109,11 @@ export function StudentDashboard() {
     fetchDashboard();
   }, []);
 
-  const weeklyProgress = [
+  const termPerformance = [
     { subject: "Mathematics", progress: 68, target: 80 },
-    { subject: "Science", progress: 85, target: 80 },
-    { subject: "English", progress: 92, target: 85 },
-    { subject: "History", progress: 45, target: 70 },
+    { subject: "Physics", progress: 85, target: 80 },
+    { subject: "Chemistry", progress: 92, target: 85 },
+    { subject: "Biology", progress: 45, target: 70 },
   ];
 
   const achievements = [
@@ -198,6 +200,25 @@ export function StudentDashboard() {
       animate="visible"
       className="dashboard-spacing"
     >
+      <motion.div variants={itemVariants}>
+        <DismissibleCard
+          id="student_dashboard_intro"
+          title="Welcome to your Dashboard!"
+          icon={<Info className="h-5 w-5 text-blue-500" />}
+          content={
+            <div className="space-y-2">
+              <p>Here are a few tips to get you started:</p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li><strong>Sidebar:</strong> Access it using the menu icon to navigate through the app.</li>
+                <li><strong>Profile Editing:</strong> Click your avatar in the top right to update your details.</li>
+                <li><strong>Subject Selection:</strong> Use the sidebar or quick links to navigate to your registered subjects.</li>
+              </ul>
+            </div>
+          }
+          className="mb-6 border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-900/20"
+        />
+      </motion.div>
+
       {/* iOS 26 Glassmorphism Welcome Header with Apple Hello Animation */}
       <motion.div variants={itemVariants}>
         <GlassGreetingCard
@@ -502,17 +523,17 @@ export function StudentDashboard() {
 
       {/* Performance (bars) + Achievements - Original */}
       <div className="responsive-gap grid grid-cols-1 lg:grid-cols-3">
-        {/* Weekly Progress - extracted (takes 2 columns) */}
+        {/* Term Performance - extracted (takes 2 columns) */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
           <PerformanceSection
-            items={weeklyProgress.map((s) => ({
+            items={termPerformance.map((s) => ({
               subject: s.subject,
               percentage: s.progress,
               target: s.target,
               colorClass: "bg-primary",
             }))}
-            title="Performance"
-            description="Subject progress vs target for this week"
+            title="Term Performance"
+            description="Overall performance across all subjects this term"
           />
         </motion.div>
 

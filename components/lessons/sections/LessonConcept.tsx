@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -6,6 +7,7 @@ import { ChevronDown, ChevronUp, Lightbulb, BookOpen, Sparkles, CheckCircle2 } f
 import { Concept } from "@/lib/types/lessons";
 import { useLessonsStore, selectConceptScore } from "@/lib/store/lessons";
 import { ExerciseCard } from "../ExerciseCard";
+import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { cn } from "@/lib/utils";
 
 interface LessonConceptProps {
@@ -20,52 +22,85 @@ interface ExampleCardProps {
 
 // Memoized ExampleCard
 const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleCardProps) {
+  const [isFlipped, setIsFlipped] = useState(false);
+
   return (
-    <Card className="border-2 border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-emerald-50/30 to-background shadow-md dark:border-emerald-800/30 dark:from-emerald-900/20 dark:via-emerald-900/10 dark:to-background">
-      <CardHeader className="pb-3">
-        <div className="flex items-center gap-2">
-          <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40">
-            <Sparkles className="size-4 text-emerald-700 dark:text-emerald-400" />
+    <motion.div layout>
+      <Card 
+        className="cursor-pointer border-2 border-emerald-200 bg-gradient-to-br from-emerald-50/50 via-emerald-50/30 to-background shadow-md transition-shadow hover:shadow-lg dark:border-emerald-800/30 dark:from-emerald-900/20 dark:via-emerald-900/10 dark:to-background"
+        onClick={() => setIsFlipped(!isFlipped)}
+      >
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex size-8 items-center justify-center rounded-lg bg-emerald-100 dark:bg-emerald-900/40">
+                <Sparkles className="size-4 text-emerald-700 dark:text-emerald-400" />
+              </div>
+              <CardTitle className="text-lg text-emerald-900 dark:text-emerald-100">
+                Example {index + 1}
+              </CardTitle>
+            </div>
+            <div className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+              {isFlipped ? "Tap for Problem" : "Tap for Solution"}
+            </div>
           </div>
-          <CardTitle className="text-lg text-emerald-900 dark:text-emerald-100">
-            Example {index + 1}
-          </CardTitle>
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="rounded-lg border-2 bg-background p-4 shadow-sm">
-          <p className="font-semibold text-foreground">
-            {example.problem}
-          </p>
-        </div>
-        <div className="space-y-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-50/50 py-3 pl-4 pr-2 dark:bg-emerald-900/10">
-          <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
-            Solution:
-          </p>
-          {example.solution_steps && example.solution_steps.length > 0 ? (
-            <ol className="ml-2 space-y-2">
-              {example.solution_steps.map((step: string, i: number) => (
-                <li key={i} className="flex items-start gap-2 text-sm text-foreground">
-                  <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-200 text-xs font-bold text-emerald-900 dark:bg-emerald-800 dark:text-emerald-100">
-                    {i + 1}
-                  </span>
-                  <span>{step}</span>
-                </li>
-              ))}
-            </ol>
-          ) : (
-            <p className="text-sm italic text-muted-foreground">
-              No solution steps provided
-            </p>
-          )}
-          <div className="mt-3 rounded-lg bg-emerald-200 px-4 py-3 dark:bg-emerald-800/50">
-            <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
-              <span className="mr-2">✓</span>Answer: {example.answer}
-            </p>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
+        </CardHeader>
+        <CardContent>
+          <AnimatePresence mode="wait">
+            {!isFlipped ? (
+              <motion.div
+                key="front"
+                initial={{ rotateY: -90, opacity: 0 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                exit={{ rotateY: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-4"
+              >
+                <div className="rounded-lg border-2 bg-background p-4 shadow-sm">
+                  <p className="font-semibold text-foreground">
+                    {example.problem}
+                  </p>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div
+                key="back"
+                initial={{ rotateY: -90, opacity: 0 }}
+                animate={{ rotateY: 0, opacity: 1 }}
+                exit={{ rotateY: 90, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="space-y-3 rounded-lg border-l-4 border-emerald-500 bg-emerald-50/50 py-3 pl-4 pr-2 dark:bg-emerald-900/10"
+              >
+                <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                  Solution:
+                </p>
+                {example.solution_steps && example.solution_steps.length > 0 ? (
+                  <ol className="ml-2 space-y-2">
+                    {example.solution_steps.map((step: string, i: number) => (
+                      <li key={i} className="flex items-start gap-2 text-sm text-foreground">
+                        <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-emerald-200 text-xs font-bold text-emerald-900 dark:bg-emerald-800 dark:text-emerald-100">
+                          {i + 1}
+                        </span>
+                        <span>{step}</span>
+                      </li>
+                    ))}
+                  </ol>
+                ) : (
+                  <p className="text-sm italic text-muted-foreground">
+                    No solution steps provided
+                  </p>
+                )}
+                <div className="mt-3 rounded-lg bg-emerald-200 px-4 py-3 dark:bg-emerald-800/50">
+                  <p className="text-sm font-bold text-emerald-900 dark:text-emerald-100">
+                    <span className="mr-2">✓</span>Answer: {example.answer}
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </CardContent>
+      </Card>
+    </motion.div>
   );
 }, (prev, next) => prev.example.id === next.example.id && prev.index === next.index);
 ExampleCard.displayName = 'ExampleCard';
@@ -133,6 +168,19 @@ export const LessonConcept = React.memo(function LessonConcept({
 
   return (
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">
+      <DismissibleCard
+        id="lesson_concept_intro"
+        title="How to complete this concept"
+        icon={<Lightbulb className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />}
+        content={
+          <ul className="list-disc pl-5 space-y-1">
+            <li>Read through the explanation and study the examples.</li>
+            <li>Complete all concept exercises below.</li>
+            <li>Your score will be recorded to test your understanding.</li>
+          </ul>
+        }
+        className="border-yellow-200 bg-yellow-50/50 dark:border-yellow-900/50 dark:bg-yellow-900/20"
+      />
       <Card className="border-2 shadow-lg">
         <CardHeader
           className={cn(

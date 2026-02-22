@@ -907,10 +907,8 @@ export const useLessonsStore = create<LessonsStore>()(
                                      (response.success === true && response.code === 200) ||
                                      isAlreadyAnswered;
 
-              // Mark exercise as completed in adaptive progress - ONLY if answer is correct
-              if (isAnswerCorrect) {
-                get().markExerciseCompleted(exerciseId, true, answer, response.content);
-              }
+              // Mark exercise progress - on EVERY answer
+              get().markExerciseCompleted(exerciseId, isAnswerCorrect, answer, isAnswerCorrect ? response.content : undefined);
 
               if (response.success && isAnswerCorrect) {
                 const { selectedLesson, currentStepIndex, completedSections } = get();
@@ -1126,8 +1124,8 @@ export const useLessonsStore = create<LessonsStore>()(
               ...exerciseProgress,
               [exerciseId]: {
                 exerciseId,
-                isCompleted: true,
-                isCorrect,
+                isCompleted: isCorrect || !!existing?.isCompleted,
+                isCorrect: isCorrect || !!existing?.isCorrect,
                 userAnswer,
                 attempts: (existing?.attempts || 0) + 1,
                 firstAttemptAt: existing?.firstAttemptAt || now,

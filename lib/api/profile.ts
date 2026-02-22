@@ -73,6 +73,13 @@ export interface ChangePasswordResponse {
   message: string;
 }
 
+export interface DeleteAccountRequestResponse {
+  success: boolean;
+  message: string;
+  content: null;
+  code: number;
+}
+
 export interface ApiError {
   success: false;
   message: string;
@@ -260,6 +267,39 @@ export const changePassword = async (
       throw error;
     }
     throw new Error("Failed to change password");
+  }
+};
+
+/**
+ * Request to delete user account, or cancel an existing request
+ */
+export const deleteAccountRequest = async (): Promise<DeleteAccountRequestResponse> => {
+  try {
+    const response = await fetch("/api/profile/delete", {
+      method: "DELETE",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || "Failed to process delete account request");
+    }
+
+    const data = await response.json() as DeleteAccountRequestResponse;
+
+    if (!data.success) {
+      throw new Error(data.message || "Failed to process delete account request");
+    }
+
+    return data;
+  } catch (error: any) {
+    if (error.message) {
+      throw error;
+    }
+    throw new Error("Failed to process delete account request");
   }
 };
 

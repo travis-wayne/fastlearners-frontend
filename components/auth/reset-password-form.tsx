@@ -191,6 +191,7 @@ export function ResetPasswordForm({
                     disabled={isLoading}
                     required
                     autoComplete="new-password"
+                    data-lpignore="true"
                   />
                   <Button
                     type="button"
@@ -254,6 +255,7 @@ export function ResetPasswordForm({
                     disabled={isLoading}
                     required
                     autoComplete="new-password"
+                    data-lpignore="true"
                   />
                   <Button
                     type="button"

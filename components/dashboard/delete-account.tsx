@@ -10,6 +10,7 @@ import { Icons } from "@/components/shared/icons";
 
 export function DeleteAccountSection() {
   const [showDeleteAccountModal, setShowDeleteAccountModal] = useState(false);
+  const [isPendingDeletion, setIsPendingDeletion] = useState(false);
 
   const userPaidPlan = true;
 
@@ -18,6 +19,8 @@ export function DeleteAccountSection() {
       <DeleteAccountModal
         showDeleteAccountModal={showDeleteAccountModal}
         setShowDeleteAccountModal={setShowDeleteAccountModal}
+        isPendingDeletion={isPendingDeletion}
+        onSuccess={() => setIsPendingDeletion((prev) => !prev)}
       />
       <SectionColumns
         title="Delete Account"
@@ -38,20 +41,32 @@ export function DeleteAccountSection() {
               ) : null}
             </div>
             <div className="text-balance text-sm text-muted-foreground">
-              Permanently delete your {siteConfig.name} account
-              {userPaidPlan ? " and your subscription" : ""}. This action cannot
-              be undone - please proceed with caution.
+              {isPendingDeletion 
+                ? "A deletion request is pending. Your account will be removed in 7 days."
+                : `Permanently delete your ${siteConfig.name} account${userPaidPlan ? " and your subscription" : ""}. This action cannot be undone - please proceed with caution.`
+              }
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button
-              type="submit"
-              variant="destructive"
-              onClick={() => setShowDeleteAccountModal(true)}
-            >
-              <Icons.trash className="mr-2 size-4" />
-              <span>Delete Account</span>
-            </Button>
+            {!isPendingDeletion ? (
+              <Button
+                type="submit"
+                variant="destructive"
+                onClick={() => setShowDeleteAccountModal(true)}
+              >
+                <Icons.trash className="mr-2 size-4" />
+                <span>Delete Account</span>
+              </Button>
+            ) : (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setShowDeleteAccountModal(true)}
+              >
+                <Icons.close className="mr-2 size-4" />
+                <span>Cancel Delete Request</span>
+              </Button>
+            )}
           </div>
         </div>
       </SectionColumns>

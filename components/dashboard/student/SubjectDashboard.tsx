@@ -14,15 +14,16 @@ import {
 } from "lucide-react";
 
 import {
-  getCompulsorySubjectsForClass,
   getConfigSubjectIdFromApiId,
   getElectiveSubjectsForClass,
   getSubjectById,
   getSubjects,
   type Subject as ConfigSubject,
 } from "@/config/education";
-import { getSubjectsWithSlugs } from "@/lib/api/lessons";
+import { getGrade } from "@/lib/utils/grading";
+import { getSubjectsWithSlugs, getSubjectScore } from "@/lib/api/lessons";
 import { getStudentSubjects } from "@/lib/api/subjects";
+import { useAuthStore } from "@/store/authStore";
 import type {
   Subject as ApiSubject,
   SubjectsContent,
@@ -45,92 +46,13 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface SubjectDashboardProps {
   initialData?: SubjectsContent;
 }
 
-// Mock data for subject progress - this would come from API
-const mockSubjectProgress: Record<
-  string,
-  {
-    totalTopics: number;
-    completedTopics: number;
-    currentWeek: number;
-    totalWeeks: number;
-    upcomingAssessments: number;
-    lastAccessed?: string;
-    termProgress: number;
-    grade?: string;
-    caScore?: number;
-  }
-> = {
-  english: {
-    totalTopics: 12,
-    completedTopics: 8,
-    currentWeek: 9,
-    totalWeeks: 13,
-    upcomingAssessments: 2,
-    lastAccessed: "2 hours ago",
-    termProgress: 67,
-    grade: "B3",
-    caScore: 78,
-  },
-  mathematics: {
-    totalTopics: 15,
-    completedTopics: 10,
-    currentWeek: 8,
-    totalWeeks: 13,
-    upcomingAssessments: 1,
-    lastAccessed: "Yesterday",
-    termProgress: 75,
-    grade: "B2",
-    caScore: 82,
-  },
-  "basic-science": {
-    totalTopics: 10,
-    completedTopics: 6,
-    currentWeek: 7,
-    totalWeeks: 12,
-    upcomingAssessments: 3,
-    lastAccessed: "3 days ago",
-    termProgress: 58,
-    grade: "C4",
-    caScore: 65,
-  },
-  "social-studies": {
-    totalTopics: 8,
-    completedTopics: 8,
-    currentWeek: 10,
-    totalWeeks: 11,
-    upcomingAssessments: 0,
-    lastAccessed: "Today",
-    termProgress: 90,
-    grade: "A1",
-    caScore: 92,
-  },
-  "basic-technology": {
-    totalTopics: 9,
-    completedTopics: 4,
-    currentWeek: 5,
-    totalWeeks: 11,
-    upcomingAssessments: 2,
-    lastAccessed: "1 week ago",
-    termProgress: 42,
-    grade: "C5",
-    caScore: 58,
-  },
-  "business-studies": {
-    totalTopics: 7,
-    completedTopics: 3,
-    currentWeek: 4,
-    totalWeeks: 10,
-    upcomingAssessments: 1,
-    lastAccessed: "5 days ago",
-    termProgress: 35,
-    caScore: 45,
-  },
-};
+// Mock data removed - using real API data instead
 
 // Helper function to generate deterministic hash from string
 function hashString(str: string): number {
@@ -251,8 +173,13 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState<string>("all");
 
+  const [numericClassId, setNumericClassId] = useState<number | null>(null);
+  const [subjectScores, setSubjectScores] = useState<Map<number, number>>(new Map());
+  const [scoresLoading, setScoresLoading] = useState(true);
+
   const { currentClass, availableSubjects } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
+  const user = useAuthStore((state) => state.user);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -393,6 +320,69 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
     });
   }, [subjectsData]);
 
+  // Fetch numeric class ID and then subject scores
+  useEffect(() => {
+    let isMounted = true;
+    const fetchScores = async () => {
+      if (!currentClass?.name || allApiSubjects.length === 0) {
+        setScoresLoading(false);
+        return;
+      }
+
+      setScoresLoading(true);
+      try {
+        const metaResponse = await fetch('/api/lessons/meta', {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' },
+          credentials: 'include',
+        });
+        
+        let classId: number | null = null;
+        if (metaResponse.ok) {
+          const meta = await metaResponse.json();
+          if (meta.success && meta.content?.classes) {
+            const userClassObj = meta.content.classes.find(
+              (c: { name: string; id: number }) => c.name === currentClass.name || c.id === currentClass.id
+            );
+            if (userClassObj) {
+              classId = userClassObj.id;
+              if (isMounted) setNumericClassId(classId);
+            }
+          }
+        }
+
+        if (classId) {
+          const scorePromises = allApiSubjects.map(async (subject) => {
+            const res = await getSubjectScore(subject.id, classId!);
+            let score = 0;
+            if (res.success && res.content) {
+              score = parseFloat(res.content.subject_total_score) || 0;
+            }
+            return { id: subject.id, score };
+          });
+
+          const results = await Promise.all(scorePromises);
+          
+          if (isMounted) {
+            const newScores = new Map<number, number>();
+            results.forEach((r) => newScores.set(r.id, r.score));
+            setSubjectScores(newScores);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch subject scores:", error);
+      } finally {
+        if (isMounted) setScoresLoading(false);
+      }
+    };
+
+    fetchScores();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [allApiSubjects, currentClass]);
+
   // Filter subjects based on search and track
   const filteredSubjects = useMemo(() => {
     return allApiSubjects.filter((subject) => {
@@ -428,35 +418,21 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   // Calculate overall stats
   const totalSubjects = allApiSubjects.length;
   const completedSubjects = allApiSubjects.filter((subject) => {
-    const configSubject = mapApiSubjectToConfig(subject, currentClass?.id);
-    if (!configSubject) return false;
-    const progress = mockSubjectProgress[configSubject.id];
-    return progress && progress.termProgress >= 90;
+    const score = subjectScores.get(subject.id) || 0;
+    return score >= 90;
   }).length;
 
   const averageProgress =
     allApiSubjects.length > 0
       ? Math.round(
-        allApiSubjects.reduce((acc, subject) => {
-          const configSubject = mapApiSubjectToConfig(
-            subject,
-            currentClass?.id,
-          );
-          const progress = configSubject
-            ? mockSubjectProgress[configSubject.id]
-            : undefined;
-          return acc + (progress?.termProgress || 0);
-        }, 0) / allApiSubjects.length,
-      )
+          allApiSubjects.reduce((acc, subject) => {
+            const score = subjectScores.get(subject.id) || 0;
+            return acc + score;
+          }, 0) / allApiSubjects.length,
+        )
       : 0;
 
-  const upcomingAssessments = allApiSubjects.reduce((acc, subject) => {
-    const configSubject = mapApiSubjectToConfig(subject, currentClass?.id);
-    const progress = configSubject
-      ? mockSubjectProgress[configSubject.id]
-      : undefined;
-    return acc + (progress?.upcomingAssessments || 0);
-  }, 0);
+  const upcomingAssessments = 0;
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -555,7 +531,9 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                   Total
                 </span>
               </div>
-              <p className="mt-1 text-xl font-black text-blue-900 dark:text-blue-100 sm:mt-2 sm:text-2xl">{totalSubjects}</p>
+              <p className="mt-1 text-xl font-black text-blue-900 dark:text-blue-100 sm:mt-2 sm:text-2xl">
+                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : totalSubjects}
+              </p>
             </CardContent>
           </Card>
 
@@ -569,7 +547,9 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                   Done
                 </span>
               </div>
-              <p className="mt-1 text-xl font-black text-emerald-900 dark:text-emerald-100 sm:mt-2 sm:text-2xl">{completedSubjects}</p>
+              <p className="mt-1 text-xl font-black text-emerald-900 dark:text-emerald-100 sm:mt-2 sm:text-2xl">
+                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : completedSubjects}
+              </p>
             </CardContent>
           </Card>
 
@@ -583,7 +563,9 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                   Avg
                 </span>
               </div>
-              <p className="mt-1 text-xl font-black text-purple-900 dark:text-purple-100 sm:mt-2 sm:text-2xl">{averageProgress}%</p>
+              <p className="mt-1 text-xl font-black text-purple-900 dark:text-purple-100 sm:mt-2 sm:text-2xl">
+                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : `${averageProgress}%`}
+              </p>
             </CardContent>
           </Card>
 
@@ -597,7 +579,9 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                   Tests
                 </span>
               </div>
-              <p className="mt-1 text-xl font-black text-orange-900 dark:text-orange-100 sm:mt-2 sm:text-2xl">{upcomingAssessments}</p>
+              <p className="mt-1 text-xl font-black text-orange-900 dark:text-orange-100 sm:mt-2 sm:text-2xl">
+                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : upcomingAssessments}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -666,23 +650,17 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                       apiSubject,
                       currentClass?.id,
                     );
-                    const progress = configSubject
-                      ? mockSubjectProgress[configSubject.id] || {
-                        totalTopics: 10,
-                        completedTopics: 0,
-                        currentWeek: 1,
-                        totalWeeks: 12,
-                        upcomingAssessments: 0,
-                        termProgress: 0,
-                      }
-                      : {
-                        totalTopics: 10,
-                        completedTopics: 0,
-                        currentWeek: 1,
-                        totalWeeks: 12,
-                        upcomingAssessments: 0,
-                        termProgress: 0,
-                      };
+                    const score = subjectScores.get(apiSubject.id) ?? 0;
+                    const progress = {
+                      termProgress: score,
+                      caScore: score,
+                      grade: score > 0 ? getGrade(score).letter : "N/A",
+                      totalTopics: 10,
+                      completedTopics: Math.round(score / 10),
+                      currentWeek: Math.max(1, Math.round(score / 8)),
+                      totalWeeks: 13,
+                      upcomingAssessments: 0,
+                    };
 
                     const fallback = !configSubject
                       ? getFallbackSubjectDisplay(apiSubject)
@@ -699,12 +677,14 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                     };
 
                     return (
-                      <SubjectCard
-                        key={apiSubject.id}
-                        subject={displaySubject}
-                        progress={progress}
-                        slug={subjectsWithSlugs.get(apiSubject.id)}
-                      />
+                      <div key={apiSubject.id} className="flex flex-col gap-2">
+                        <SubjectCard
+                          subject={displaySubject}
+                          progress={progress}
+                          slug={subjectsWithSlugs.get(apiSubject.id)}
+                          isLoading={scoresLoading}
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -725,23 +705,17 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                       apiSubject,
                       currentClass?.id,
                     );
-                    const progress = configSubject
-                      ? mockSubjectProgress[configSubject.id] || {
-                        totalTopics: 8,
-                        completedTopics: 0,
-                        currentWeek: 1,
-                        totalWeeks: 10,
-                        upcomingAssessments: 0,
-                        termProgress: 0,
-                      }
-                      : {
-                        totalTopics: 8,
-                        completedTopics: 0,
-                        currentWeek: 1,
-                        totalWeeks: 10,
-                        upcomingAssessments: 0,
-                        termProgress: 0,
-                      };
+                    const score = subjectScores.get(apiSubject.id) ?? 0;
+                    const progress = {
+                      termProgress: score,
+                      caScore: score,
+                      grade: score > 0 ? getGrade(score).letter : "N/A",
+                      totalTopics: 10,
+                      completedTopics: Math.round(score / 10),
+                      currentWeek: Math.max(1, Math.round(score / 8)),
+                      totalWeeks: 13,
+                      upcomingAssessments: 0,
+                    };
 
                     const fallback = !configSubject
                       ? getFallbackSubjectDisplay(apiSubject)
@@ -758,12 +732,14 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                     };
 
                     return (
-                      <SubjectCard
-                        key={apiSubject.id}
-                        subject={displaySubject}
-                        progress={progress}
-                        slug={subjectsWithSlugs.get(apiSubject.id)}
-                      />
+                      <div key={apiSubject.id} className="flex flex-col gap-2">
+                        <SubjectCard
+                          subject={displaySubject}
+                          progress={progress}
+                          slug={subjectsWithSlugs.get(apiSubject.id)}
+                          isLoading={scoresLoading}
+                        />
+                      </div>
                     );
                   })}
                 </div>
@@ -803,23 +779,17 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                   apiSubject,
                   currentClass?.id,
                 );
-                const progress = configSubject
-                  ? mockSubjectProgress[configSubject.id] || {
-                    totalTopics: 10,
-                    completedTopics: 0,
-                    currentWeek: 1,
-                    totalWeeks: 12,
-                    upcomingAssessments: 0,
-                    termProgress: 0,
-                  }
-                  : {
-                    totalTopics: 10,
-                    completedTopics: 0,
-                    currentWeek: 1,
-                    totalWeeks: 12,
-                    upcomingAssessments: 0,
-                    termProgress: 0,
-                  };
+                const score = subjectScores.get(apiSubject.id) ?? 0;
+                const progress = {
+                  termProgress: score,
+                  caScore: score,
+                  grade: score > 0 ? getGrade(score).letter : "N/A",
+                  totalTopics: 10,
+                  completedTopics: Math.round(score / 10),
+                  currentWeek: Math.max(1, Math.round(score / 8)),
+                  totalWeeks: 13,
+                  upcomingAssessments: 0,
+                };
 
                 const fallback = !configSubject
                   ? getFallbackSubjectDisplay(apiSubject)
@@ -836,12 +806,14 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 };
 
                 return (
-                  <SubjectCard
-                    key={apiSubject.id}
-                    subject={displaySubject}
-                    progress={progress}
-                    slug={subjectsWithSlugs.get(apiSubject.id)}
-                  />
+                  <div key={apiSubject.id} className="flex flex-col gap-2">
+                    <SubjectCard
+                      subject={displaySubject}
+                      progress={progress}
+                      slug={subjectsWithSlugs.get(apiSubject.id)}
+                      isLoading={scoresLoading}
+                    />
+                  </div>
                 );
               })}
             </div>
@@ -854,23 +826,17 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                   apiSubject,
                   currentClass?.id,
                 );
-                const progress = configSubject
-                  ? mockSubjectProgress[configSubject.id] || {
-                    totalTopics: 8,
-                    completedTopics: 0,
-                    currentWeek: 1,
-                    totalWeeks: 10,
-                    upcomingAssessments: 0,
-                    termProgress: 0,
-                  }
-                  : {
-                    totalTopics: 8,
-                    completedTopics: 0,
-                    currentWeek: 1,
-                    totalWeeks: 10,
-                    upcomingAssessments: 0,
-                    termProgress: 0,
-                  };
+                const score = subjectScores.get(apiSubject.id) ?? 0;
+                const progress = {
+                  termProgress: score,
+                  caScore: score,
+                  grade: score > 0 ? getGrade(score).letter : "N/A",
+                  totalTopics: 10,
+                  completedTopics: Math.round(score / 10),
+                  currentWeek: Math.max(1, Math.round(score / 8)),
+                  totalWeeks: 13,
+                  upcomingAssessments: 0,
+                };
 
                 const fallback = !configSubject
                   ? getFallbackSubjectDisplay(apiSubject)
@@ -887,12 +853,14 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 };
 
                 return (
-                  <SubjectCard
-                    key={apiSubject.id}
-                    subject={displaySubject}
-                    progress={progress}
-                    slug={subjectsWithSlugs.get(apiSubject.id)}
-                  />
+                  <div key={apiSubject.id} className="flex flex-col gap-2">
+                    <SubjectCard
+                      subject={displaySubject}
+                      progress={progress}
+                      slug={subjectsWithSlugs.get(apiSubject.id)}
+                      isLoading={scoresLoading}
+                    />
+                  </div>
                 );
               })}
             </div>

@@ -19,13 +19,19 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.STUDENT,
       },
       {
+        href: "/dashboard/performance",
+        icon: "lineChart",
+        title: "Performance",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
         href: "/dashboard/lessons",
         icon: "graduationCap",
         title: "Lessons",
         authorizeOnly: UserRole.STUDENT,
       },
       {
-        href: "/dashboard/quizzes",
+        href: "/dashboard/quiz",
         icon: "helpCircle",
         title: "Quiz",
         authorizeOnly: UserRole.STUDENT,
