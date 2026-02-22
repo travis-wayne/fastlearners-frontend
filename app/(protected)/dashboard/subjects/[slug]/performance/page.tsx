@@ -142,7 +142,7 @@ export default function SubjectPerformancePage() {
                   <span className="font-medium">Week {topic.week} – {topic.topic}</span>
                   <div className="flex items-center gap-2 sm:gap-4">
                     {isNotStarted ? (
-                      <Badge variant="secondary" className="bg-muted text-muted-foreground whitespace-nowrap">
+                      <Badge variant="secondary" className="whitespace-nowrap bg-muted text-muted-foreground">
                         Not started
                       </Badge>
                     ) : (
@@ -169,10 +169,10 @@ export default function SubjectPerformancePage() {
   if (loading) {
     return (
       <div className="dashboard-spacing">
-        <Skeleton className="h-8 w-24 mb-6" />
-        <Skeleton className="h-24 w-full mb-8 rounded-xl" />
-        <Skeleton className="h-64 w-full mb-6 rounded-xl" />
-        <Skeleton className="h-64 w-full mb-6 rounded-xl" />
+        <Skeleton className="mb-6 h-8 w-24" />
+        <Skeleton className="mb-8 h-24 w-full rounded-xl" />
+        <Skeleton className="mb-6 h-64 w-full rounded-xl" />
+        <Skeleton className="mb-6 h-64 w-full rounded-xl" />
       </div>
     );
   }
@@ -181,7 +181,7 @@ export default function SubjectPerformancePage() {
     return (
       <div className="p-8 text-center">
         <AlertCircle className="mx-auto mb-4 size-12 text-destructive" />
-        <p className="text-destructive mb-4">{error}</p>
+        <p className="mb-4 text-destructive">{error}</p>
         <Button onClick={() => router.back()} variant="outline">
           <ArrowLeft className="mr-2 size-4" />
           Go Back
@@ -195,19 +195,19 @@ export default function SubjectPerformancePage() {
   return (
     <div className="dashboard-spacing">
       {/* Header section */}
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center justify-between mb-8 border-b pb-6">
+      <div className="mb-8 flex flex-col justify-between gap-4 border-b pb-6 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
           <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/performance")} className="shrink-0">
             <ArrowLeft className="size-4" />
           </Button>
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">{subjectName || "Subject Details"}</h1>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{subjectName || "Subject Details"}</h1>
           </div>
         </div>
         
         <div className="flex items-center gap-3 self-end sm:self-auto">
           <Badge 
-            className={`text-sm px-3 py-1 font-semibold ${overallGrade.colorClass}`}
+            className={`px-3 py-1 text-sm font-semibold ${overallGrade.colorClass}`}
           >
             Grade: {overallGrade.letter}
           </Badge>
@@ -232,7 +232,7 @@ export default function SubjectPerformancePage() {
           {renderTermSection("Third Term", topics.third_term)}
           
           {(!topics.first_term?.length && !topics.second_term?.length && !topics.third_term?.length) && (
-            <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
+            <div className="rounded-lg border border-dashed py-12 text-center text-muted-foreground">
               <BookOpen className="mx-auto mb-4 size-8 opacity-50" />
               <p>No lessons available for this subject.</p>
             </div>

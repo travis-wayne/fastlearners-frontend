@@ -92,9 +92,9 @@ export function SubjectCard({
                 </Badge>
               ) : null}
             </div>
-            <p className="line-clamp-1 text-sm text-muted-foreground flex items-center gap-1">
+            <p className="line-clamp-1 flex items-center gap-1 text-sm text-muted-foreground">
               Week {progress.currentWeek}/{progress.totalWeeks} •{" "}
-              {isLoading ? <Skeleton className="h-4 w-8 inline-block" /> : progress.termProgress}% complete
+              {isLoading ? <Skeleton className="inline-block h-4 w-8" /> : progress.termProgress}% complete
             </p>
           </div>
         </div>
@@ -109,7 +109,7 @@ export function SubjectCard({
         <div className="relative z-10 mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4">
           <Link 
             href={slug ? `/dashboard/subjects/${slug}/performance` : "/dashboard/performance"}
-            className="flex items-center justify-center w-full gap-2 rounded-md py-2 px-3 text-sm font-medium transition-colors hover:bg-muted"
+            className="flex w-full items-center justify-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted"
           >
             <TrendingUp className="size-4" />
             Lessons Performance
@@ -253,7 +253,7 @@ export function SubjectCard({
         <div className="relative z-10 mt-4 border-t border-border pt-4">
           <Link 
             href={slug ? `/dashboard/subjects/${slug}/performance` : "/dashboard/performance"}
-            className="flex items-center justify-center w-full gap-2 rounded-md border border-border bg-card py-2.5 px-4 text-sm font-medium transition-colors hover:bg-muted"
+            className="flex w-full items-center justify-center gap-2 rounded-md border border-border bg-card px-4 py-2.5 text-sm font-medium transition-colors hover:bg-muted"
           >
             <TrendingUp className="size-4" />
             Lessons Performance
@@ -341,7 +341,7 @@ export function SubjectCard({
         <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:space-x-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
             <Target className="size-3 sm:size-4" />
-            <span>CA: {isLoading ? <Skeleton className="h-3 w-8 inline-block align-middle" /> : (progress.caScore ? `${progress.caScore}%` : "N/A")}</span>
+            <span>CA: {isLoading ? <Skeleton className="inline-block h-3 w-8 align-middle" /> : (progress.caScore ? `${progress.caScore}%` : "N/A")}</span>
           </div>
           {progress.upcomingAssessments > 0 && (
             <Badge variant="outline" className="text-xs">
@@ -363,7 +363,7 @@ export function SubjectCard({
       <div className="relative z-10 mt-3 border-t border-border pt-3 sm:mt-4 sm:pt-4">
         <Link 
           href={slug ? `/dashboard/subjects/${slug}/performance` : "/dashboard/performance"}
-          className="flex items-center justify-center w-full gap-2 rounded-md border border-border bg-card py-2 px-3 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
+          className="flex w-full items-center justify-center gap-2 rounded-md border border-border bg-card px-3 py-2 text-sm font-medium shadow-sm transition-colors hover:bg-muted"
         >
           <TrendingUp className="size-4" />
           Lessons Performance

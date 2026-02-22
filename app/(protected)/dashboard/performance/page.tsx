@@ -120,9 +120,9 @@ function PerformanceContent() {
   if (loading) {
     return (
       <div className="dashboard-spacing">
-        <Skeleton className="h-10 w-1/3 mb-2" />
-        <Skeleton className="h-4 w-1/2 mb-8" />
-        <div className="responsive-gap grid grid-cols-1 md:grid-cols-3 mb-8">
+        <Skeleton className="mb-2 h-10 w-1/3" />
+        <Skeleton className="mb-8 h-4 w-1/2" />
+        <div className="responsive-gap mb-8 grid grid-cols-1 md:grid-cols-3">
           <Skeleton className="h-32 rounded-xl" />
           <Skeleton className="h-32 rounded-xl" />
           <Skeleton className="h-32 rounded-xl" />
@@ -135,7 +135,7 @@ function PerformanceContent() {
   if (error) {
     return (
       <div className="p-8 text-center">
-        <p className="text-destructive mb-4">{error}</p>
+        <p className="mb-4 text-destructive">{error}</p>
         <Button onClick={() => window.location.reload()}>Retry</Button>
       </div>
     );
@@ -166,7 +166,7 @@ function PerformanceContent() {
       </div>
 
       {!subjectSlug && (
-        <div className="responsive-gap grid grid-cols-1 md:grid-cols-3 mb-8">
+        <div className="responsive-gap mb-8 grid grid-cols-1 md:grid-cols-3">
           <Card>
             <CardHeader className="flex flex-row items-center gap-2 pb-2">
               <TrendingUp className="size-4 text-emerald-500" />
@@ -224,7 +224,7 @@ function PerformanceContent() {
                   return (
                     <div key={subject.id} className="space-y-2">
                       <div className="flex items-center justify-between text-sm">
-                        <span className="font-medium text-base">{subject.name}</span>
+                        <span className="text-base font-medium">{subject.name}</span>
                         <div className="flex items-center gap-3">
                           <span className="font-semibold">{score}%</span>
                           <Badge 
@@ -240,7 +240,7 @@ function PerformanceContent() {
                 })}
               </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
+              <div className="py-8 text-center text-muted-foreground">
                 <p>No subjects found to display mastery.</p>
               </div>
             )}

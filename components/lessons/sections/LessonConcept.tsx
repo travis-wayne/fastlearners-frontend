@@ -171,9 +171,9 @@ export const LessonConcept = React.memo(function LessonConcept({
       <DismissibleCard
         id="lesson_concept_intro"
         title="How to complete this concept"
-        icon={<Lightbulb className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />}
+        icon={<Lightbulb className="size-5 text-yellow-600 dark:text-yellow-400" />}
         content={
-          <ul className="list-disc pl-5 space-y-1">
+          <ul className="list-disc space-y-1 pl-5">
             <li>Read through the explanation and study the examples.</li>
             <li>Complete all concept exercises below.</li>
             <li>Your score will be recorded to test your understanding.</li>

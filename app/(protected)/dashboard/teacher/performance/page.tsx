@@ -148,7 +148,7 @@ export default function TeacherPerformancePage() {
               </div>
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="font-medium">Newton's Laws Test</p>
+                  <p className="font-medium">Newton&apos;s Laws Test</p>
                   <p className="text-xs text-muted-foreground">Grade 9 Physics</p>
                 </div>
                 <div className="font-semibold text-amber-600">68% Avg</div>

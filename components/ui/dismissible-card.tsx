@@ -40,21 +40,21 @@ export function DismissibleCard({ id, title, content, icon, className }: Dismiss
       <CardContent className="p-4 sm:p-5">
         <div className="flex items-start gap-4">
           {icon && (
-            <div className="mt-0.5 flex-shrink-0 text-primary">
+            <div className="mt-0.5 shrink-0 text-primary">
               {icon}
             </div>
           )}
           <div className="flex-1 space-y-1.5">
             {title && <h3 className="font-semibold leading-none tracking-tight text-foreground">{title}</h3>}
-            <div className="text-sm text-muted-foreground leading-relaxed">{content}</div>
+            <div className="text-sm leading-relaxed text-muted-foreground">{content}</div>
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="flex-shrink-0 -mr-2 -mt-2 h-8 w-8 text-muted-foreground hover:bg-primary/10 hover:text-foreground"
+            className="-mr-2 -mt-2 size-8 shrink-0 text-muted-foreground hover:bg-primary/10 hover:text-foreground"
             onClick={handleDismiss}
           >
-            <X className="h-4 w-4" />
+            <X className="size-4" />
             <span className="sr-only">Dismiss</span>
           </Button>
         </div>

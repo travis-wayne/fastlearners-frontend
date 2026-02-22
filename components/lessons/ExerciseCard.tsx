@@ -488,7 +488,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                     variant="outline"
                     size="sm"
                     onClick={handleTryAgain}
-                    className="h-9 text-xs font-medium sm:h-8 border-green-300 text-green-700 hover:bg-green-50 hover:text-green-800 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-900/50"
+                    className="h-9 border-green-300 text-xs font-medium text-green-700 hover:bg-green-50 hover:text-green-800 dark:border-green-800 dark:text-green-300 dark:hover:bg-green-900/50 sm:h-8"
                   >
                     <RotateCcw className="mr-2 size-3" />
                     Reattempt Question
@@ -502,7 +502,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                       <p className={cn(
                         "text-sm font-medium",
                         attemptsRemaining === 1 
-                          ? "text-amber-600 dark:text-amber-500 flex items-center" 
+                          ? "flex items-center text-amber-600 dark:text-amber-500" 
                           : "text-slate-600 dark:text-slate-400"
                       )}>
                         {attemptsRemaining === 1 && <AlertTriangle className="mr-1.5 size-4" />}

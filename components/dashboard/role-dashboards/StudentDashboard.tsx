@@ -204,11 +204,11 @@ export function StudentDashboard() {
         <DismissibleCard
           id="student_dashboard_intro"
           title="Welcome to your Dashboard!"
-          icon={<Info className="h-5 w-5 text-blue-500" />}
+          icon={<Info className="size-5 text-blue-500" />}
           content={
             <div className="space-y-2">
               <p>Here are a few tips to get you started:</p>
-              <ul className="list-disc pl-5 space-y-1">
+              <ul className="list-disc space-y-1 pl-5">
                 <li><strong>Sidebar:</strong> Access it using the menu icon to navigate through the app.</li>
                 <li><strong>Profile Editing:</strong> Click your avatar in the top right to update your details.</li>
                 <li><strong>Subject Selection:</strong> Use the sidebar or quick links to navigate to your registered subjects.</li>

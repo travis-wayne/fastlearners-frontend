@@ -39,7 +39,7 @@ export default function AdminPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">1,248</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-emerald-500 inline-flex items-center gap-1"><TrendingUp className="size-3"/> +12%</span> from last week
+              <span className="inline-flex items-center gap-1 text-emerald-500"><TrendingUp className="size-3"/> +12%</span> from last week
             </p>
           </CardContent>
         </Card>
@@ -53,7 +53,7 @@ export default function AdminPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">68.5%</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-emerald-500 inline-flex items-center gap-1"><TrendingUp className="size-3"/> +4.1%</span> from last month
+              <span className="inline-flex items-center gap-1 text-emerald-500"><TrendingUp className="size-3"/> +4.1%</span> from last month
             </p>
           </CardContent>
         </Card>
@@ -81,7 +81,7 @@ export default function AdminPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">0.12%</div>
             <p className="text-xs text-muted-foreground">
-               <span className="text-emerald-500 inline-flex items-center gap-1"><TrendingDown className="size-3"/> -0.05%</span> from last week
+               <span className="inline-flex items-center gap-1 text-emerald-500"><TrendingDown className="size-3"/> -0.05%</span> from last week
             </p>
           </CardContent>
         </Card>

@@ -293,9 +293,9 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
       <DismissibleCard
         id="general_exercises_intro"
         title="Finishing the lesson"
-        icon={<CheckCircle2 className="h-5 w-5 text-purple-600 dark:text-purple-400" />}
+        icon={<CheckCircle2 className="size-5 text-purple-600 dark:text-purple-400" />}
         content={
-          <ul className="list-disc pl-5 space-y-1">
+          <ul className="list-disc space-y-1 pl-5">
             <li>Answer all general exercises to test your overall understanding of the lesson.</li>
             <li>Ensure you achieve a good score to pass the lesson.</li>
             <li>Once done, a performance summary will be generated for your review.</li>
@@ -488,42 +488,42 @@ export const LessonGeneralExercises = React.memo(function LessonGeneralExercises
 
           {/* End of Lesson Summary */}
           {stats.total > 0 && stats.completed === stats.total && (
-            <Card className="border-2 shadow-lg mb-6 bg-slate-50 dark:bg-slate-900/50">
-              <CardHeader className="pb-3 border-b">
-                <CardTitle className="text-xl flex items-center gap-2">
+            <Card className="mb-6 border-2 bg-slate-50 shadow-lg dark:bg-slate-900/50">
+              <CardHeader className="border-b pb-3">
+                <CardTitle className="flex items-center gap-2 text-xl">
                   <Award className="size-5 text-purple-600 dark:text-purple-400" />
                   End of Lesson Summary
                 </CardTitle>
               </CardHeader>
-              <CardContent className="pt-6 space-y-6">
+              <CardContent className="space-y-6 pt-6">
                 {/* General Exercises Grade */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border bg-background gap-4">
+                <div className="flex flex-col justify-between gap-4 rounded-lg border bg-background p-4 sm:flex-row sm:items-center">
                   <div>
-                    <h4 className="font-semibold text-lg">General Exercises</h4>
+                    <h4 className="text-lg font-semibold">General Exercises</h4>
                     <span className="text-sm text-muted-foreground">{stats.correct} / {stats.total} correct</span>
                   </div>
-                  <div className={cn("px-4 py-2 rounded-lg font-bold text-lg border", getGrade(stats.scorePercentage).colorClass)}>
+                  <div className={cn("rounded-lg border px-4 py-2 text-lg font-bold", getGrade(stats.scorePercentage).colorClass)}>
                     {stats.scorePercentage}% - Grade {getGrade(stats.scorePercentage).letter}
-                    <div className="text-xs font-normal mt-1 opacity-90">{getGrade(stats.scorePercentage).message}</div>
+                    <div className="mt-1 text-xs font-normal opacity-90">{getGrade(stats.scorePercentage).message}</div>
                   </div>
                 </div>
 
                 {/* Concept breakdown */}
                 {conceptStats.length > 0 && (
                   <div className="space-y-3">
-                    <h4 className="font-semibold text-lg flex items-center gap-2">
+                    <h4 className="flex items-center gap-2 text-lg font-semibold">
                       <BookOpen className="size-5 text-blue-500" /> Performance by Concept
                     </h4>
                     <div className="grid gap-3 sm:grid-cols-2">
                       {conceptStats.map(concept => {
                         const grade = getGrade(concept.percentage);
                         return (
-                          <div key={concept.id} className="p-4 rounded-lg border bg-background flex flex-col justify-between gap-3">
+                          <div key={concept.id} className="flex flex-col justify-between gap-3 rounded-lg border bg-background p-4">
                             <div>
-                              <div className="font-medium text-sm line-clamp-2" title={concept.title}>{concept.title}</div>
-                              <div className="text-xs text-muted-foreground mt-1">{concept.correct} / {concept.total} correct</div>
+                              <div className="line-clamp-2 text-sm font-medium" title={concept.title}>{concept.title}</div>
+                              <div className="mt-1 text-xs text-muted-foreground">{concept.correct} / {concept.total} correct</div>
                             </div>
-                            <div className="flex items-center justify-between mt-auto">
+                            <div className="mt-auto flex items-center justify-between">
                               <Progress value={concept.percentage} className="h-2 w-1/2" />
                               <Badge className={cn("ml-2 font-bold", grade.colorClass)} variant="outline">
                                 {concept.percentage}% - {grade.letter}

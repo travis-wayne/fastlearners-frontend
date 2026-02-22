@@ -342,7 +342,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
           const meta = await metaResponse.json();
           if (meta.success && meta.content?.classes) {
             const userClassObj = meta.content.classes.find(
-              (c: { name: string; id: number }) => c.name === currentClass.name || c.id === currentClass.id
+              (c: { name: string; id: number }) => c.name === currentClass.name || String(c.id) === currentClass.id
             );
             if (userClassObj) {
               classId = userClassObj.id;
