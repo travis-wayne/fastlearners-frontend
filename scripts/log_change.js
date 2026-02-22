@@ -8,8 +8,8 @@ if (!fs.existsSync(logFile)) {
 }
 
 const date = new Date().toISOString().split('T')[0];
-const technicalChange = "Replaced legacy WAEC grading logic with dynamic A=90+ grading scale across SubjectDashboard and SubjectCard.";
-const socialMediaContent = "✨ Even more Polish: we've unified the FastLearners grading system site-wide! A uniform grading scale for your performance. Keep excelling! 🚀 #BuildInPublic #NextJS";
+const technicalChange = "Fixed React compilation error by escaping > character in Teacher Performance page.";
+const socialMediaContent = "🔧 Quick fix: Resolved a React compilation error in the Teacher Performance page to keep our analytics dashboards running smoothly! ✨ #BuildInPublic #NextJS #BugFix";
 
 const newRow = `${date},"${technicalChange}","${socialMediaContent}"\n`;
 

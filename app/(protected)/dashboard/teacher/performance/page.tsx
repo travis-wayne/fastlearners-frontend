@@ -82,7 +82,7 @@ export default function TeacherPerformancePage() {
           <CardContent>
             <div className="text-2xl font-bold">18</div>
             <p className="text-xs text-muted-foreground">
-              Students scoring >90%
+              Students scoring &gt;90%
             </p>
           </CardContent>
         </Card>
