@@ -46,7 +46,7 @@ import {
   ApiResponse,
   CSV_COLUMNS,
 } from "@/lib/api/lesson-service";
-import { previewCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
+import { previewCSVFile, validateCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
 import { parseUploadError, type ParsedUploadError } from "@/lib/api/upload-error-handler";
 import { UploadErrorDisplay } from "@/components/upload/UploadErrorDisplay";
 
