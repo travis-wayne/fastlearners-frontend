@@ -84,7 +84,7 @@ export function ChildrenForm() {
               required
             />
             <Button type="submit" disabled={isSubmitting || !email}>
-              <UserPlus className="mr-2 h-4 w-4" />
+              <UserPlus className="mr-2 size-4" />
               {isSubmitting ? "Sending..." : "Send Invite"}
             </Button>
           </div>
@@ -109,7 +109,7 @@ export function ChildrenForm() {
           </div>
         ) : children.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center">
-            <GraduationCap className="mb-4 h-12 w-12 text-muted-foreground/50" />
+            <GraduationCap className="mb-4 size-12 text-muted-foreground/50" />
             <h3 className="text-lg font-medium">No children linked yet</h3>
             <p className="text-sm text-muted-foreground">
               Send an invite to your child to start monitoring their progress.
@@ -146,7 +146,7 @@ export function ChildrenForm() {
                     onClick={() => handleCancel(item.id)}
                     disabled={cancelLoading[item.id]}
                   >
-                    <XCircle className="mr-2 h-4 w-4" />
+                    <XCircle className="mr-2 size-4" />
                     {cancelLoading[item.id] ? "Canceling..." : "Cancel"}
                   </Button>
                 )}

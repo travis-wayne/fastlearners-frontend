@@ -63,7 +63,7 @@ export function GuardiansForm() {
   if (error) {
     return (
       <Alert variant="destructive">
-        <AlertCircle className="h-4 w-4" />
+        <AlertCircle className="size-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error}</AlertDescription>
       </Alert>
@@ -73,7 +73,7 @@ export function GuardiansForm() {
   if (history.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center rounded-xl border border-dashed p-12 text-center">
-        <Clock className="mb-4 h-12 w-12 text-muted-foreground/50" />
+        <Clock className="mb-4 size-12 text-muted-foreground/50" />
         <h3 className="text-lg font-medium">No guardian requests yet</h3>
         <p className="text-sm text-muted-foreground">
           When a guardian invites you to monitor your progress, it will appear here.
@@ -123,7 +123,7 @@ export function GuardiansForm() {
               onClick={() => item.status === "pending" && handleAction(item.id, "accept")}
               disabled={item.status !== "pending" || actionLoading[item.id]}
             >
-              <CheckCircle2 className="mr-2 h-4 w-4" />
+              <CheckCircle2 className="mr-2 size-4" />
               {actionLoading[item.id] ? "Processing..." : "Accept"}
             </Button>
           </div>

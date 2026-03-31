@@ -31,7 +31,7 @@ export function LessonSummaryCard({ summary, isLoading }: LessonSummaryCardProps
 
   if (!summary.content) {
     return (
-      <div className="mt-3 p-4 text-center text-sm text-destructive bg-destructive/10 rounded-lg">
+      <div className="mt-3 rounded-lg bg-destructive/10 p-4 text-center text-sm text-destructive">
         {summary.message || "Failed to load summary."}
       </div>
     );
