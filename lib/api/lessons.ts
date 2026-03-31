@@ -10,6 +10,9 @@ import type {
   LessonCompletionData,
   ConceptScoreBreakdown,
   LessonContent,
+  LessonSummaryResponse,
+  AllLessonsTotalScoresResponse,
+  AllSubjectsTotalScoresResponse,
 } from "@/lib/types/lessons";
 
 
@@ -642,9 +645,9 @@ export async function getLessonScore(lessonId: number): Promise<import("@/lib/ty
   }
 }
 
-export async function getSubjectScore(subjectId: number, classId: number): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
+export async function getSubjectScore(subjectId: number, termId: number): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
   try {
-    const res = await fetch(`/api/lessons/scores/subjects/${subjectId}/${classId}`, {
+    const res = await fetch(`/api/lessons/scores/subjects/${subjectId}/${termId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
@@ -655,6 +658,15 @@ export async function getSubjectScore(subjectId: number, classId: number): Promi
     const data = await res.json();
 
     if (!res.ok) {
+      if (res.status === 400) {
+        return { 
+          success: true, 
+          message: "No score available yet", 
+          content: { subject_total_score: "0.00", weight: 0 }, 
+          code: 200 
+        } as any;
+      }
+
       return {
         success: false,
         message: data.message || "Failed to fetch subject score",
@@ -866,6 +878,144 @@ export async function getLessonCompletionData(
       success: false,
       data: null,
       message: err?.message || "Failed to retrieve lesson completion data",
+    };
+  }
+}
+
+/**
+ * Fetch lesson summary scores and overview
+ */
+export async function getLessonSummary(lessonId: number): Promise<LessonSummaryResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/lessons/summary/${lessonId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 400) {
+        return {
+          success: false,
+          message: data.message || "No summary data yet",
+          content: null,
+          code: 400,
+          noData: true,
+        };
+      }
+      return {
+        success: false,
+        message: data.message || "Failed to fetch lesson summary",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as LessonSummaryResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+/**
+ * Fetch all lessons total scores for a subject and term
+ */
+export async function getAllLessonsTotalScores(
+  subjectId: number,
+  termId: number
+): Promise<AllLessonsTotalScoresResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/lessons/total/${subjectId}/${termId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 400) {
+        return {
+          success: false,
+          message: data.message || "No lessons total scores found",
+          content: null,
+          code: 400,
+          noData: true,
+        };
+      }
+      return {
+        success: false,
+        message: data.message || "Failed to fetch all lessons total scores",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as AllLessonsTotalScoresResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
+    };
+  }
+}
+
+/**
+ * Fetch all subjects total scores for a term
+ */
+export async function getAllSubjectsTotalScores(termId: number): Promise<AllSubjectsTotalScoresResponse> {
+  try {
+    const res = await fetch(`/api/lessons/scores/subjects/total/${termId}`, {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (res.status === 400) {
+        return {
+          success: false,
+          message: data.message || "No subjects total scores found",
+          content: null,
+          code: 400,
+          noData: true,
+        };
+      }
+      return {
+        success: false,
+        message: data.message || "Failed to fetch all subjects total scores",
+        content: null,
+        code: res.status,
+      };
+    }
+
+    return data as AllSubjectsTotalScoresResponse;
+  } catch (err: any) {
+    return {
+      success: false,
+      message: err?.message || "Network error",
+      content: null,
+      code: 500,
     };
   }
 }

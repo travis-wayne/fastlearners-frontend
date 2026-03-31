@@ -5,7 +5,7 @@ import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { subjectId: string; classId: string } }
+  { params }: { params: { id: string } }
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -15,10 +15,10 @@ export async function GET(
   const requestId = crypto.randomUUID();
 
   try {
-    const { subjectId, classId } = params;
+    const { id } = params;
 
-    if (!subjectId || !classId) {
-      return createErrorResponse("Invalid request: subjectId and classId are required", 400, undefined, requestId);
+    if (!id) {
+      return createErrorResponse("Invalid request: id is required", 400, undefined, requestId);
     }
 
     const controller = new AbortController();
@@ -26,7 +26,7 @@ export async function GET(
 
     try {
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/scores/subjects/${subjectId}/${classId}`,
+        `${UPSTREAM_BASE}/guardian/children/request/cancel/${id}`,
         {
           method: "GET",
           headers: {
@@ -53,7 +53,7 @@ export async function GET(
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/scores/subjects/${subjectId}/${classId}`,
+            `${UPSTREAM_BASE}/guardian/children/request/cancel/${id}`,
             {
               method: "GET",
               headers: {
@@ -72,13 +72,13 @@ export async function GET(
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch subject score after retry", requestId);
+          return handleApiError(retryError, "Network error: Failed to cancel child request after retry", requestId);
         }
       }
       
       throw fetchError;
     }
   } catch (err: any) {
-    return handleApiError(err, "Failed to fetch subject score", requestId);
+    return handleApiError(err, "Failed to cancel child request", requestId);
   }
 }

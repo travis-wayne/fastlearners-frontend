@@ -6,7 +6,9 @@ import {
   CheckCircle,
   AlertCircle,
   Upload,
-  Eye
+  Eye,
+  BookOpen,
+  Download
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -230,23 +232,30 @@ export default function UploadsPage() {
       return;
     }
 
-    // Check for missing columns in previewed files
-    const filesWithMissingColumns: string[] = [];
-    BULK_FILE_CONFIGS.forEach((config) => {
-      const preview = bulkPreviews[config.id];
-      if (preview) {
-        const missingColumns = config.requiredColumns.filter(
-          col => !preview.headers.map(h => h.toLowerCase()).includes(col.toLowerCase())
-        );
-        if (missingColumns.length > 0) {
-          filesWithMissingColumns.push(`${config.label} (missing: ${missingColumns.join(', ')})`);
-        }
-      }
-    });
+    // Check for missing columns in ALL selected files (even if not previewed)
+    const filesWithErrors: string[] = [];
+    
+    for (const config of BULK_FILE_CONFIGS) {
+      const file = bulkFiles[config.id];
+      if (!file) continue;
 
-    if (filesWithMissingColumns.length > 0) {
-      toast.error("Column Validation Failed", {
-        description: `The following files have missing required columns:\n${filesWithMissingColumns.join('\n')}\n\nPlease fix these files before uploading.`,
+      try {
+        const validation = await validateCSVFile({
+          file,
+          requiredColumns: config.requiredColumns,
+        });
+
+        if (!validation.isValid) {
+          filesWithErrors.push(`${config.label}: ${validation.errors.join(', ')}`);
+        }
+      } catch (error) {
+        filesWithErrors.push(`${config.label}: Failed to read file`);
+      }
+    }
+    
+    if (filesWithErrors.length > 0) {
+      toast.error("File Validation Failed", {
+        description: `The following files have errors:\n${filesWithErrors.join('\n')}\n\nPlease fix these files before uploading.`,
         duration: 8000,
       });
       return;
@@ -319,7 +328,29 @@ export default function UploadsPage() {
             <p className="text-muted-foreground">Upload lesson content files to the platform</p>
           </div>
         </div>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" asChild>
+            <a href="/public/lesson-csv-files/lesson-structure.csv" download>
+              <Download className="mr-2 size-4" />
+              Download Templates
+            </a>
+          </Button>
+          <Button variant="outline" size="sm" asChild>
+            <a href="/docs/superadmin-uploads-csv-contracts" target="_blank">
+              <BookOpen className="mr-2 size-4" />
+              Upload Contract Doc
+            </a>
+          </Button>
+        </div>
       </div>
+
+      <Alert className="border-primary/20 bg-primary/5">
+        <BookOpen className="size-4" />
+        <AlertTitle>Upload Guidance</AlertTitle>
+        <AlertDescription>
+          For best results, use the <strong>pipe (|)</strong> delimiter. Always ensure your CSV follows the canonical format in the <a href="/docs/superadmin-uploads-csv-contracts" className="font-medium underline underline-offset-4">Upload Contracts Documentation</a> and matches the <a href="/public/lesson-csv-files/lesson-structure.csv" className="font-medium underline underline-offset-4">Template Files</a>.
+        </AlertDescription>
+      </Alert>
 
       <Separator />
 

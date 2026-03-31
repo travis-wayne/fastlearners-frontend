@@ -20,6 +20,7 @@ import { Button } from "@/components/ui/button";
 import { getStudentSubjects } from "@/lib/api/subjects";
 import { getSubjectScore, getSubjectsWithSlugs } from "@/lib/api/lessons";
 import { useAuthStore } from "@/store/authStore";
+import { useAcademicContext } from "@/components/providers/academic-context";
 import { getGrade } from "@/lib/utils/grading";
 import type { Subject as ApiSubject } from "@/lib/types/subjects";
 
@@ -28,6 +29,7 @@ function PerformanceContent() {
   const subjectSlug = searchParams.get("subject");
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const { currentTermApiId } = useAcademicContext();
 
   const [subjects, setSubjects] = useState<ApiSubject[]>([]);
   const [subjectScores, setSubjectScores] = useState<Map<number, number>>(new Map());
@@ -69,21 +71,10 @@ function PerformanceContent() {
           if (isMounted) setSlugMap(map);
         }
 
-        // 3. Get class ID from meta
-        const metaRes = await fetch('/api/lessons/meta');
-        let classId: number | null = null;
-        if (metaRes.ok) {
-          const meta = await metaRes.json();
-          const userClassObj = meta.content?.classes?.find(
-            (c: any) => c.name === user.class
-          );
-          if (userClassObj) classId = userClassObj.id;
-        }
-
-        // 4. Fetch scores
-        if (classId && enrolled.length > 0) {
+        // 3. Fetch scores using live term ID from context
+        if (currentTermApiId && enrolled.length > 0) {
           const scorePromises = enrolled.map(async (subj) => {
-            const res = await getSubjectScore(subj.id, classId!);
+            const res = await getSubjectScore(subj.id, currentTermApiId);
             let score = 0;
             if (res.success && res.content) {
               score = parseFloat(res.content.subject_total_score) || 0;
@@ -109,7 +100,7 @@ function PerformanceContent() {
     fetchData();
 
     return () => { isMounted = false; };
-  }, [user?.class]);
+  }, [user?.class, currentTermApiId]);
 
   const filteredSubjects = useMemo(() => {
     if (!subjectSlug) return subjects;
@@ -240,8 +231,13 @@ function PerformanceContent() {
                 })}
               </div>
             ) : (
-              <div className="py-8 text-center text-muted-foreground">
-                <p>No subjects found to display mastery.</p>
+              <div className="py-12 text-center text-muted-foreground">
+                <BookOpen className="mx-auto mb-4 size-8 opacity-20" />
+                {currentTermApiId ? (
+                  <p>No scores yet for this term. Start a lesson to see your progress!</p>
+                ) : (
+                  <p>No subjects found to display mastery.</p>
+                )}
               </div>
             )}
           </CardContent>

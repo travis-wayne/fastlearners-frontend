@@ -20,6 +20,7 @@ import {
   Term,
   terms,
 } from "@/config/education";
+import { WeekItem } from "@/lib/types/subjects";
 
 interface AcademicContextType {
   // Current selections
@@ -38,6 +39,11 @@ interface AcademicContextType {
   // Computed values
   isLoading: boolean;
   academicYear: string;
+
+  // Raw API IDs and metadata for backend service integration
+  currentClassApiId: number | null;
+  currentTermApiId: number | null;
+  availableWeeks: WeekItem[];
 }
 
 const AcademicContext = createContext<AcademicContextType | undefined>(
@@ -60,6 +66,17 @@ export function AcademicProvider({
   );
   const [currentTerm, setCurrentTermState] = useState<Term | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  // Raw API state
+  const [apiClasses, setApiClasses] = useState<any[]>([]);
+  const [apiTerms, setApiTerms] = useState<any[]>([]);
+  const [apiWeeks, setApiWeeks] = useState<WeekItem[]>([]);
+  const [currentClassApiId, setCurrentClassApiId] = useState<number | null>(null);
+  const [currentTermApiId, setCurrentTermApiId] = useState<number | null>(null);
+  
+  // Live metadata state
+  const [liveClasses, setLiveClasses] = useState<ClassLevel[]>([]);
+  const [liveTerms, setLiveTerms] = useState<Term[]>([]);
 
   // Hoist useAuthStore hook call to top level
   const userClass = useAuthStore((state) => state.user?.class);
@@ -108,6 +125,98 @@ export function AcademicProvider({
       }
 
       setIsLoading(false);
+
+      // EXTENSION: Fetch live API data for all metadata (Step 3 of migration)
+      const fetchLiveApiData = async () => {
+        try {
+          const { getStudentClass, getStudentClasses, getStudentTerms, getStudentWeeks } = await import("@/lib/api/student");
+          
+          const [classRes, classesRes, termsRes, weeksRes] = await Promise.all([
+            getStudentClass(),
+            getStudentClasses(),
+            getStudentTerms(),
+            getStudentWeeks()
+          ]);
+
+          if (classRes.success && classRes.content) {
+            setCurrentClassApiId(classRes.content.class_id);
+          }
+
+          let mappedClasses: ClassLevel[] = [];
+          if (classesRes.success && classesRes.content) {
+            const apiClassesList = classesRes.content.classes;
+            setApiClasses(apiClassesList);
+            
+            // Verbatim mapping logic: API ClassItem -> Context ClassLevel
+            mappedClasses = apiClassesList.map(c => ({
+              id: c.id.toString(),
+              name: c.name,
+              stage: c.name.toLowerCase().startsWith('j') ? 'jss' as const : c.name.toLowerCase().startsWith('s') ? 'sss' as const : 'primary' as const,
+              level: parseInt(c.name.match(/\d+/)?.at(0) || '1'),
+              description: '',
+              track: null
+            }));
+            setLiveClasses(mappedClasses);
+          }
+
+          let mappedTerms: Term[] = [];
+          if (termsRes.success && termsRes.content) {
+            const apiTermsList = termsRes.content.terms;
+            setApiTerms(apiTermsList);
+            
+            // Verbatim mapping logic: API TermItem -> Context Term
+            mappedTerms = apiTermsList.map(t => ({
+              id: `term${t.id}`,
+              name: `${t.name} Term`,
+              shortName: `${t.id}${t.id === 1 ? 'st' : t.id === 2 ? 'nd' : 'rd'} Term`,
+              order: t.id,
+              description: '',
+              typicalDuration: ''
+            }));
+            setLiveTerms(mappedTerms);
+            
+            // Map the already resolved currentTerm (from config) to API id
+            const resolvedTerm = useAuthStore.getState().user ? 
+              (getTermById(localStorage.getItem("fastlearner-current-term") || defaultTermId) || defaultTerm) : defaultTerm;
+
+            if (resolvedTerm) {
+              const apiName = resolvedTerm.name.split(" ")[0]; // "First Term" -> "First"
+              const apiTerm = apiTermsList.find(t => t.name === apiName);
+              if (apiTerm) {
+                setCurrentTermApiId(apiTerm.id);
+              }
+            }
+          }
+
+          if (weeksRes.success && weeksRes.content) {
+            setApiWeeks(weeksRes.content.weeks);
+          }
+
+          // RESOLUTION: Sync current items with newly loaded live metadata
+          if (mappedClasses.length > 0) {
+            const user = useAuthStore.getState().user;
+            if (user?.class) {
+              const normalizedClass = normalizeClassString(user.class);
+              const targetName = normalizedClass || user.class;
+              const liveClass = mappedClasses.find(c => c.name === targetName);
+              if (liveClass) setCurrentClassState(liveClass);
+            }
+          }
+          
+          if (mappedTerms.length > 0) {
+            const savedTermId = localStorage.getItem("fastlearner-current-term");
+            if (savedTermId) {
+              const liveTerm = mappedTerms.find(t => t.id === savedTermId);
+              if (liveTerm) setCurrentTermState(liveTerm);
+            }
+          }
+
+        } catch (err) {
+          console.error("Failed to fetch live academic metadata:", err);
+        }
+      };
+
+      fetchLiveApiData();
     };
 
     initializeDefaults();
@@ -150,18 +259,30 @@ export function AcademicProvider({
 
   const setCurrentTerm = (term: Term) => {
     setCurrentTermState(term);
+    
+    // Sync currentTermApiId
+    const apiName = term.name.split(" ")[0]; // "First Term" -> "First"
+    const apiTerm = apiTerms.find(t => t.name === apiName);
+    if (apiTerm) {
+      setCurrentTermApiId(apiTerm.id);
+    } else {
+      setCurrentTermApiId(null);
+    }
   };
 
   const value: AcademicContextType = {
     currentClass,
     currentTerm,
-    availableClasses: classLevels,
-    availableTerms: terms,
+    availableClasses: liveClasses.length > 0 ? liveClasses : classLevels,
+    availableTerms: liveTerms.length > 0 ? liveTerms : terms,
     availableSubjects,
     setCurrentClass,
     setCurrentTerm,
     isLoading,
     academicYear,
+    currentClassApiId,
+    currentTermApiId,
+    availableWeeks: apiWeeks,
   };
 
   return (

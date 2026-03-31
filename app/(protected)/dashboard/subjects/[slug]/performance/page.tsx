@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, BookOpen, AlertCircle } from "lucide-react";
 
-import { getSubjectsWithSlugs, getSubjectScore, getTopicsBySubjectSlug, getLessonScore } from "@/lib/api/lessons";
+import { getSubjectsWithSlugs, getSubjectScore, getTopicsBySubjectSlug, getLessonScore, getLessonSummary } from "@/lib/api/lessons";
 import { useAuthStore } from "@/store/authStore";
+import { useAcademicContext } from "@/components/providers/academic-context";
 import { getGrade } from "@/lib/utils/grading";
-import type { TopicItem, TopicsByTerm } from "@/lib/types/lessons";
+import type { TopicItem, TopicsByTerm, LessonSummaryResponse } from "@/lib/types/lessons";
+import { LessonSummaryCard } from "@/components/dashboard/student/LessonSummaryCard";
 
 import {
   Card,
@@ -25,6 +27,7 @@ export default function SubjectPerformancePage() {
   const router = useRouter();
   const subjectSlug = params?.slug as string;
   const user = useAuthStore((state) => state.user);
+  const { currentTermApiId } = useAcademicContext();
 
   const [subjectName, setSubjectName] = useState<string>("");
   const [subjectScore, setSubjectScore] = useState<number>(0);
@@ -33,6 +36,35 @@ export default function SubjectPerformancePage() {
   
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [expandedTopicId, setExpandedTopicId] = useState<number | null>(null);
+  const [summaryCache, setSummaryCache] = useState<Map<number, LessonSummaryResponse>>(new Map());
+  const [loadingSummaryId, setLoadingSummaryId] = useState<number | null>(null);
+
+  const handleTopicClick = async (topicId: number) => {
+    if (expandedTopicId === topicId) {
+      setExpandedTopicId(null);
+      return;
+    }
+
+    setExpandedTopicId(topicId);
+
+    if (!summaryCache.has(topicId)) {
+      setLoadingSummaryId(topicId);
+      try {
+        const res = await getLessonSummary(topicId);
+        setSummaryCache((prev) => {
+          const next = new Map(prev);
+          next.set(topicId, res);
+          return next;
+        });
+      } catch (err) {
+        console.error("Failed to fetch lesson summary:", err);
+      } finally {
+        setLoadingSummaryId(prev => prev === topicId ? null : prev);
+      }
+    }
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -58,20 +90,9 @@ export default function SubjectPerformancePage() {
         if (isMounted) setSubjectName(subject.name);
         const subjectId = subject.id;
 
-        // 2. Resolve class ID
-        const metaRes = await fetch('/api/lessons/meta');
-        let classId: number | null = null;
-        if (metaRes.ok) {
-          const meta = await metaRes.json();
-          const userClassObj = meta.content?.classes?.find(
-            (c: any) => c.name === user.class
-          );
-          if (userClassObj) classId = userClassObj.id;
-        }
-
-        // 3. Overall subject score
-        if (classId) {
-          const scoreRes = await getSubjectScore(subjectId, classId);
+        // 2. Overall subject score using live term ID
+        if (currentTermApiId) {
+          const scoreRes = await getSubjectScore(subjectId, currentTermApiId);
           if (scoreRes.success && scoreRes.content) {
             if (isMounted) setSubjectScore(parseFloat(scoreRes.content.subject_total_score) || 0);
           }
@@ -120,7 +141,7 @@ export default function SubjectPerformancePage() {
     fetchData();
 
     return () => { isMounted = false; };
-  }, [subjectSlug, user?.class]);
+  }, [subjectSlug, user?.class, currentTermApiId]);
 
   const renderTermSection = (title: string, termTopics?: TopicItem[]) => {
     if (!termTopics || termTopics.length === 0) return null;
@@ -137,7 +158,12 @@ export default function SubjectPerformancePage() {
             const gradeInfo = getGrade(score);
 
             return (
-              <div key={topic.id} className="flex flex-col gap-2 border-b pb-4 last:border-0 last:pb-0">
+              <div 
+                key={topic.id} 
+                className="flex cursor-pointer select-none flex-col gap-2 border-b pb-4 last:border-0 last:pb-0"
+                role="button"
+                onClick={() => handleTopicClick(topic.id)}
+              >
                 <div className="flex items-center justify-between text-sm sm:text-base">
                   <span className="font-medium">Week {topic.week} – {topic.topic}</span>
                   <div className="flex items-center gap-2 sm:gap-4">
@@ -158,6 +184,13 @@ export default function SubjectPerformancePage() {
                   </div>
                 </div>
                 {!isNotStarted && <Progress value={score} className="h-1.5 sm:h-2" />}
+                
+                {expandedTopicId === topic.id && (
+                  <LessonSummaryCard
+                    isLoading={loadingSummaryId === topic.id}
+                    summary={summaryCache.get(topic.id) ?? { success: false, message: '', content: null, code: 0 }}
+                  />
+                )}
               </div>
             );
           })}
@@ -221,7 +254,13 @@ export default function SubjectPerformancePage() {
           <span className="font-semibold text-muted-foreground">Overall Progress</span>
           <span className="font-bold">{subjectScore}%</span>
         </div>
-        <Progress value={subjectScore} className="h-3" />
+        {subjectScore > 0 ? (
+          <Progress value={subjectScore} className="h-3" />
+        ) : (
+          <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
+            {currentTermApiId ? "No scores yet for this term. Start a lesson to see your progress!" : "Start a lesson to see your progress!"}
+          </div>
+        )}
       </div>
 
       {/* Term Sections */}

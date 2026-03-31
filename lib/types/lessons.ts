@@ -343,6 +343,38 @@ export interface LessonCompletionSummaryProps {
   onClose: () => void;
 }
 
+
+export interface LessonSummaryContent {
+  overview: string;
+  video: string;
+  concepts: Record<string, string>;
+  general_exercise: string;
+}
+
+export interface LessonSummaryResponse {
+  success: boolean;
+  message: string;
+  content: { lesson_summary: LessonSummaryContent; lesson_total: string } | null;
+  code: number;
+  noData?: boolean;
+}
+
+export interface AllLessonsTotalScoresResponse {
+  success: boolean;
+  message: string;
+  content: { total_scores: Record<string, Array<{ total_score: string }>> } | null;
+  code: number;
+  noData?: boolean;
+}
+
+export interface AllSubjectsTotalScoresResponse {
+  success: boolean;
+  message: string;
+  content: { total_scores: Record<string, Array<{ total_score: string }>> } | null;
+  code: number;
+  noData?: boolean;
+}
+
 // Re-export analytics types from lesson-analytics utility
 export type {
   PerformanceInsights,

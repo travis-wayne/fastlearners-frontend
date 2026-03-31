@@ -1835,7 +1835,240 @@
 
 ---
 
-### 5. Get Student's Subjects (Lessons)
+### 5. Student's Class, Classes, Terms & Weeks
+
+**Base URL:** `https://api.fastlearnersapp.com`
+
+#### Get Student's Class
+**Endpoint:** `GET /api/v1/student/class`
+
+**Description:** Get a student's current class.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "class_id": 4,
+    "class_name": "SSS1"
+  },
+  "code": 200
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting student class",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+#### Get Classes
+**Endpoint:** `GET /api/v1/student/classes`
+
+**Description:** Get all classes.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "classes": [
+      { "id": 1, "name": "JSS1" },
+      { "id": 2, "name": "JSS2" },
+      { "id": 3, "name": "JSS3" },
+      { "id": 4, "name": "SSS1" },
+      { "id": 5, "name": "SSS2" },
+      { "id": 6, "name": "SSS3" }
+    ]
+  },
+  "code": 200
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "No class was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Server Error (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting classes",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+#### Get Terms
+**Endpoint:** `GET /api/v1/student/terms`
+
+**Description:** Get all Terms.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "terms": [
+      { "id": 1, "name": "First" },
+      { "id": 2, "name": "Second" },
+      { "id": 3, "name": "Third" }
+    ]
+  },
+  "code": 200
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "No term was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Server Error (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting terms",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+#### Get Weeks
+**Endpoint:** `GET /api/v1/student/weeks`
+
+**Description:** Get all weeks.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "weeks": [
+      { "id": 1, "name": 1 },
+      { "id": 2, "name": 2 },
+      { "id": 3, "name": 3 },
+      { "id": 4, "name": 4 },
+      { "id": 5, "name": 5 },
+      { "id": 6, "name": 6 },
+      { "id": 7, "name": 7 },
+      { "id": 8, "name": 8 },
+      { "id": 9, "name": 9 },
+      { "id": 10, "name": 10 },
+      { "id": 11, "name": 11 },
+      { "id": 12, "name": 12 }
+    ]
+  },
+  "code": 200
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "No week was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Server Error (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting weeks",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 6. Get Student's Subjects (Lessons)
 
 **Endpoint:** `GET /api/v1/lessons/`
 
@@ -2878,7 +3111,7 @@
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/lessons/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/lesson/1`
+**Endpoint:** `GET /api/v1/lessons/scores/lessons/1`
 
 **Description:** Use this endpoint to get a lesson's total score using the lesson_id.
 
@@ -2895,7 +3128,7 @@
   "message": "Success",
   "content": {
     "lesson_total_score": "32.50",
-    "weight": "100.00"
+    "weight": 100.00
   },
   "code": 200
 }
@@ -2933,13 +3166,159 @@
 
 ---
 
-### 4. All Lessons Total Scores API Request
+### 4. Lessons Total Scores Summary API Request
 
-**Endpoint Format:** `GET /api/v1/lessons/scores/lessons/total/{subject_id}`
+**Endpoint Format:** `GET /api/v1/lessons/scores/lessons/summary/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/lessons/total/4`
+**Endpoint:** `GET /api/v1/lessons/scores/lessons/summary/1`
 
-**Description:** Use this endpoint to get all the lesson's total scores of a specific subject using the subject_id.
+**Description:** Use this endpoint to get a lesson's total score summary using the lesson_id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "lesson_summary": {
+      "overview": "5.00/5.00",
+      "video": "5.00/5.00",
+      "concepts": {
+        "Definition of Science and Biology": "10.00/10.00",
+        "Process of Science": "8.00/10.00"
+      },
+      "general_exercise": "4.5/30.00"
+    },
+    "lesson_total": "32.50/100"
+  },
+  "code": 200
+}
+```
+
+**Lesson Check Marker Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "Lesson check marker not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Lesson Total Score Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "Lesson total score not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Concept Total Scores Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "No concepts total scores found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Server Error Response (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting lesson's total scores summary!",
+  "errors": ["error messages"],
+  "code": 500
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+---
+
+### 5. Subjects Total Scores API Request
+
+**Endpoint Format:** `GET /api/v1/lessons/scores/subjects/{subject_id}/{term_id}`
+
+**Endpoint:** `GET /api/v1/lessons/scores/subjects/4/1`
+
+**Description:** Use this endpoint to get a subject's total score using the subject_id and term_id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "subject_total_score": "3.25",
+    "weight": 100.00
+  },
+  "code": 200
+}
+```
+
+**Subject Total Score Not Found Error (400):**
+```json
+{
+  "success": false,
+  "message": "Subject total score not found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Server Error Response (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while getting the subject total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+---
+
+### 6. All Lessons Total Scores API Request
+
+**Endpoint Format:** `GET /api/v1/lessons/scores/lessons/total/{subject_id}/{term_id}`
+
+**Endpoint:** `GET /api/v1/lessons/scores/lessons/total/4/1`
+
+**Description:** Use this endpoint to get all the lesson's total scores of a specific subject using the subject_id and term_id.
 
 **Headers:**
 | Key | Value |
@@ -2997,70 +3376,11 @@
 
 ---
 
-### 5. Subjects Total Scores API Request
+### 7. All Subjects Total Scores API Request
 
-**Endpoint Format:** `GET /api/v1/lessons/scores/subjects/{subject_id}`
+**Endpoint Format:** `GET /api/v1/lessons/scores/subjects/total/{term_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/subjects/4`
-
-**Description:** Use this endpoint to get a subject's total score using the subject_id.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "subject_total_score": "3.25",
-    "weight": "100.00"
-  },
-  "code": 200
-}
-```
-
-**Subject Total Score Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "Subject total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the subject total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### 6. All Subjects Total Scores API Request
-
-**Endpoint Format:** `GET /api/v1/lessons/scores/subjects/total`
-
-**Endpoint:** `GET /api/v1/lessons/scores/subjects/total`
+**Endpoint:** `GET /api/v1/lessons/scores/subjects/total/1`
 
 **Description:** Use this endpoint to get all the subject's total score of the student current class.
 
@@ -3120,6 +3440,279 @@
 
 ---
 
+## Guardian Request Management
+
+**Base Url:** `https://api.fastlearnersapp.com`
+
+### Accept Request
+**Endpoint:** `GET /api/v1/student/guardian/request/accept/{id}`
+
+**Description:** Accept guardian request with this endpoint using the request id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Guardian request accepted successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Request Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "This request was not found, try again!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Guardian Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "This guardian was not found, try again!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Acceptance Error (400):**
+```json
+{
+  "success": false,
+  "message": "Request already accepted!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Request Already Rejected Error (400):**
+```json
+{
+  "success": false,
+  "message": "Request already rejected!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Mail Sending Error (400):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while sending rejection mail, but the request was rejected successfully!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+```json
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+**Redirection:** On success → `request-history`
+
+---
+
+### Reject Request
+**Endpoint:** `GET /api/v1/student/guardian/request/reject/{id}`
+
+**Description:** Reject guardian request with this endpoint using the request id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Guardian request rejected successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Request Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "This request was not found, try again",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Guardian Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "This guardian was not found, try again!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Acceptance Error (400):**
+```json
+{
+  "success": false,
+  "message": "Only pending requests can be accepted!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Request Already Accepted Error (400):**
+```json
+{
+  "success": false,
+  "message": "Request already accepted!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Mail Sending Error (400):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+```json
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+**Redirection:** On success → `request-history`
+
+---
+
+### Request History
+**Endpoint:** `GET /api/v1/student/guardian/request/history`
+
+**Description:** Get all guardian history request with this endpoint.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "history": {
+      "request_history": [
+        {
+          "id": 1,
+          "guardian_name": "Parent User",
+          "guardian_email": "parent@fastlearnersapp.com",
+          "status": "accepted",
+          "response_date": "10-03-2026 12:17:46"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/student/guardian/request/history?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/student/guardian/request/history?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 20,
+        "total": 1
+      }
+    }
+  },
+  "code": 200
+}
+```
+
+**Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "No history found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+```json
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+**Redirection:** On success → `request-history`
+
+---
+
 ## Guardian Management
 
 ### 1. Dashboard
@@ -3169,6 +3762,298 @@
 
 ---
 
+## Children Request Management
+
+**Base Url:** `https://api.fastlearnersapp.com`
+
+### Make New Request
+**Endpoint:** `POST /api/v1/guardian/children/request/new`
+
+**Description:** Guardian's can make new child request using this endpoint.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+```json
+{
+  "child_email": "johndoe@email.com"
+}
+```
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Child request sent successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Validation Error (422):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "child_email": [
+      "The child email field is required.",
+      "Child email does not exist on our record!"
+    ]
+  },
+  "code": 422
+}
+```
+
+**Email Does Not Exist Error (400):**
+```json
+{
+  "success": false,
+  "message": "Child email does not exist on our record!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**User Not A Guardian Error (400):**
+```json
+{
+  "success": false,
+  "message": "Only guardians can make this request!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**User Not A Student Error (400):**
+```json
+{
+  "success": false,
+  "message": "The email you entered does not belong to a student, try again!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Pending Request Error (400):**
+```json
+{
+  "success": false,
+  "message": "This child request is still pending!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Accepted Request Error (400):**
+```json
+{
+  "success": false,
+  "message": "This child request was accepted and assigned to you as child!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Mail Sending Error (400):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while sending request mail to your child, but your request has been sent successfully!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+```json
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+**Redirection:** On success → `request-history`
+
+---
+
+### Cancel Request
+**Endpoint:** `GET /api/v1/guardian/children/request/cancel/{id}`
+
+**Description:** Cancel child request with this endpoint using the request id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Child request cancelled successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Request Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "This child request was not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Cancel Error (400):**
+```json
+{
+  "success": false,
+  "message": "Sorry, you can only cancel a pending request!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+```json
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+**Redirection:** On success → `request-history`
+
+---
+
+### Request History
+**Endpoint:** `GET /api/v1/guardian/children/request/history`
+
+**Description:** Get all children history request with this endpoint.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Success",
+  "content": {
+    "history": {
+      "request_history": [
+        {
+          "id": 1,
+          "child_name": "Student User",
+          "child_email": "student@fastlearnersapp.com",
+          "class": "SSS1",
+          "status": "accepted",
+          "response_date": "10-03-2026 12:17:46"
+        },
+        {
+          "id": 2,
+          "child_name": "John Doe",
+          "child_email": "johndoe@email.com",
+          "class": "SSS1",
+          "status": "cancelled",
+          "response_date": "21-03-2026 07:22:00"
+        },
+        {
+          "id": 7,
+          "child_name": "John Doe",
+          "child_email": "johndoe@email.com",
+          "class": "SSS1",
+          "status": "pending",
+          "response_date": "21-03-2026 06:38:36"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/guardian/children/request/history?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/guardian/children/request/history?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 20,
+        "total": 3
+      }
+    }
+  },
+  "code": 200
+}
+```
+
+**Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "No history found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+```json
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+**Redirection:** On success → `request-history`
+
+---
+
 ## Admin & SuperAdmin Endpoints
 
 ### All Lessons Upload
@@ -3178,7 +4063,9 @@
 **Description:** All lesson files (lesson, concepts, examples, exercises, general-exercises, check-markers) upload.
 
 **Notes:**
-- Uploaded file type should only be CSV or TXT
+- Uploaded file type should only be CSV or TXT.
+- **Delimiter:** Use pipe (`|`) as the column delimiter. The parser also supports commas, but pipe is recommended for fields containing commas (like JSON array strings).
+- **Templates:** Use the canonical format defined in `public/lesson-csv-files/` templates.
 
 **Headers:**
 | Key | Value |
@@ -3895,7 +4782,7 @@
 **Request Body:**
 ```json
 {
-  "check_marker_file": "(binary-file)"
+  "check_markers_file": "(binary-file)"
 }
 ```
 

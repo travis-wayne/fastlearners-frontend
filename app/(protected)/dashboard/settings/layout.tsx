@@ -11,6 +11,7 @@ import {
   Wrench,
   Settings2,
   ShieldCheck,
+  Users,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -18,37 +19,54 @@ import { Main } from "@/components/settings/layout/main";
 
 import { SidebarNav } from "./components/sidebar-nav";
 
-const sidebarNavItems = [
-  {
-    title: "Profile",
-    href: "/dashboard/settings/profile",
-    icon: <UserCog size={18} />,
-  },
-  {
-    title: "Account",
-    href: "/dashboard/settings/account",
-    icon: <Wrench size={18} />,
-  },
-  {
-    title: "Appearance",
-    href: "/dashboard/settings/appearance",
-    icon: <Palette size={18} />,
-  },
-  {
-    title: "Notifications",
-    href: "/dashboard/settings/notifications",
-    icon: <Bell size={18} />,
-  },
-  {
-    title: "Billing",
-    href: "/dashboard/settings/billing",
-    icon: <Monitor size={18} />,
-  },
-];
-
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
+
+  const sidebarNavItems = [
+    {
+      title: "Profile",
+      href: "/dashboard/settings/profile",
+      icon: <UserCog size={18} />,
+    },
+    {
+      title: "Account",
+      href: "/dashboard/settings/account",
+      icon: <Wrench size={18} />,
+    },
+    {
+      title: "Appearance",
+      href: "/dashboard/settings/appearance",
+      icon: <Palette size={18} />,
+    },
+    {
+      title: "Notifications",
+      href: "/dashboard/settings/notifications",
+      icon: <Bell size={18} />,
+    },
+    {
+      title: "Billing",
+      href: "/dashboard/settings/billing",
+      icon: <Monitor size={18} />,
+    },
+  ];
+
+  // Add role-based items
+  if (user?.role?.includes("student")) {
+    sidebarNavItems.push({
+      title: "Guardians",
+      href: "/dashboard/settings/guardians",
+      icon: <Users size={18} />,
+    });
+  }
+
+  if (user?.role?.includes("guardian")) {
+    sidebarNavItems.push({
+      title: "Children",
+      href: "/dashboard/settings/children",
+      icon: <Users size={18} />,
+    });
+  }
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {

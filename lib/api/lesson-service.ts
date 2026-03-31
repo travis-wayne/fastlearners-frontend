@@ -408,61 +408,8 @@ export const validateCSVFormat = (
   });
 };
 
-// CSV column definitions for validation
-export const CSV_COLUMNS = {
-  lessons: [
-    "class",
-    "subject",
-    "term",
-    "week",
-    "topic",
-    "overview",
-    "objectives",
-    "key_concepts",
-    "summary",
-    "application",
-  ],
-  concepts: ["lesson", "title", "description", "order_index"],
-  examples: [
-    "concept",
-    "title",
-    "problem",
-    "solution_steps",
-    "answer",
-    "order_index",
-  ],
-  exercises: [
-    "concept",
-    "title",
-    "problem",
-    "solution_steps",
-    "answers",
-    "correct_answer",
-    "order_index",
-  ],
-  general_exercises: [
-    "lesson",
-    "problem",
-    "solution_steps",
-    "answers",
-    "correct_answer",
-    "order_index",
-  ],
-  check_markers: [
-    "lesson",
-    "overview",
-    "lesson_video",
-    "concept_one",
-    "concept_two",
-    "concept_three",
-    "concept_four",
-    "concept_five",
-    "concept_six",
-    "concept_seven",
-    "general_exercises",
-  ],
-  scheme_of_work: ["subject", "class", "term", "week", "topic", "breakdown"],
-};
+// CSV column definitions for validation - now imported from csv-upload-helper.ts
+export { CSV_COLUMNS } from "@/lib/utils/csv-upload-helper";
 
 // Enhanced upload results
 export interface UploadResult {

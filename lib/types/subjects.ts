@@ -104,3 +104,53 @@ export interface SubjectRegistrationState {
     selective: SubjectItem[];
   };
 }
+
+// Student API Response Types
+
+export interface StudentClass {
+  class_id: number;
+  class_name: string;
+}
+
+export interface ClassItem {
+  id: number;
+  name: string;
+}
+
+export interface TermItem {
+  id: number;
+  name: string;
+}
+
+export interface WeekItem {
+  id: number;
+  name: number;
+}
+
+export interface StudentClassResponse {
+  success: boolean;
+  message: string;
+  content: StudentClass | null;
+  code: number;
+}
+
+export interface ClassesResponse {
+  success: boolean;
+  message: string;
+  content: { classes: ClassItem[] } | null;
+  code: number;
+}
+
+export interface TermsResponse {
+  success: boolean;
+  message: string;
+  content: { terms: TermItem[] } | null;
+  code: number;
+}
+
+export interface WeeksResponse {
+  success: boolean;
+  message: string;
+  content: { weeks: WeekItem[] } | null;
+  code: number;
+}

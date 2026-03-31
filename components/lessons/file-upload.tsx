@@ -16,6 +16,7 @@ import { type ParsedUploadError } from "@/lib/api/upload-error-handler";
 import {
   previewCSVFile,
   type CSVPreviewResult,
+  CSV_COLUMNS,
 } from "@/lib/utils/csv-upload-helper";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -44,74 +45,7 @@ import {
 } from "@/components/ui/table";
 import { UploadErrorDisplay } from "@/components/upload/UploadErrorDisplay";
 
-// Import CSV_COLUMNS for validation
-const CSV_COLUMNS = {
-  lessons: [
-    "id",
-    "topic",
-    "overview",
-    "class",
-    "subject",
-    "term",
-    "week",
-    "objectives",
-    "key_concepts",
-  ],
-  concepts: [
-    "id",
-    "lesson_id",
-    "title",
-    "description",
-    "detailed_explanation",
-    "practical_applications",
-  ],
-  examples: [
-    "id",
-    "concept_id",
-    "title",
-    "description",
-    "solution_steps",
-    "solution_explanation",
-  ],
-  exercises: [
-    "id",
-    "concept_id",
-    "question",
-    "options",
-    "correct_answer",
-    "explanation",
-    "difficulty_level",
-  ],
-  general_exercises: [
-    "id",
-    "lesson_id",
-    "question",
-    "options",
-    "correct_answer",
-    "explanation",
-    "difficulty_level",
-  ],
-  check_markers: [
-    "id",
-    "lesson_id",
-    "marker_type",
-    "question",
-    "expected_answer",
-    "scoring_criteria",
-    "points",
-  ],
-  scheme_of_work: [
-    "id",
-    "class",
-    "subject",
-    "term",
-    "week",
-    "topic",
-    "subtopic",
-    "learning_objectives",
-    "activities",
-  ],
-};
+// CSV_COLUMNS are now imported from csv-upload-helper
 
 interface FileUploadProps {
   onFileSelect: (file: File) => void;
@@ -492,8 +426,7 @@ export default function FileUpload({
               ))}
             </div>
             <p className="border-t pt-2 text-xs text-muted-foreground">
-              💡 Use pipe (|) as column delimiter. Ensure all columns are
-              present in your CSV file.
+              💡 Use pipe (|) as column delimiter. The parser also supports comma-delimited files, but pipe is recommended for consistency. Ensure all required columns are present.
             </p>
           </div>
         </details>

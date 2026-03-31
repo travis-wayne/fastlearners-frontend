@@ -95,6 +95,16 @@ export const SCHEME_OF_WORK_REQUIRED_COLUMNS = [
   "breakdown",
 ];
 
+export const CSV_COLUMNS = {
+  lessons: LESSON_REQUIRED_COLUMNS,
+  concepts: CONCEPT_REQUIRED_COLUMNS,
+  examples: EXAMPLE_REQUIRED_COLUMNS,
+  exercises: EXERCISE_REQUIRED_COLUMNS,
+  general_exercises: GENERAL_EXERCISE_REQUIRED_COLUMNS,
+  check_markers: CHECK_MARKER_REQUIRED_COLUMNS,
+  scheme_of_work: SCHEME_OF_WORK_REQUIRED_COLUMNS,
+};
+
 /**
  * Parse CSV content and detect format
  */
