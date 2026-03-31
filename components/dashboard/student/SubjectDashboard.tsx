@@ -173,11 +173,10 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState<string>("all");
 
-  const [numericClassId, setNumericClassId] = useState<number | null>(null);
   const [subjectScores, setSubjectScores] = useState<Map<number, number>>(new Map());
   const [scoresLoading, setScoresLoading] = useState(true);
 
-  const { currentClass, availableSubjects } = useAcademicContext();
+  const { currentClass, currentTermApiId, availableSubjects } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
   const user = useAuthStore((state) => state.user);
 
@@ -320,54 +319,32 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
     });
   }, [subjectsData]);
 
-  // Fetch numeric class ID and then subject scores
+  // Fetch subject scores once term ID is available
   useEffect(() => {
     let isMounted = true;
     const fetchScores = async () => {
-      if (!currentClass?.name || allApiSubjects.length === 0) {
+      if (!currentClass?.name || !currentTermApiId || allApiSubjects.length === 0) {
         setScoresLoading(false);
         return;
       }
 
       setScoresLoading(true);
       try {
-        const metaResponse = await fetch('/api/lessons/meta', {
-          method: 'GET',
-          headers: { 'Accept': 'application/json' },
-          credentials: 'include',
+        const scorePromises = allApiSubjects.map(async (subject) => {
+          const res = await getSubjectScore(subject.id, currentTermApiId);
+          let score = 0;
+          if (res.success && res.content) {
+            score = parseFloat(res.content.subject_total_score) || 0;
+          }
+          return { id: subject.id, score };
         });
+
+        const results = await Promise.all(scorePromises);
         
-        let classId: number | null = null;
-        if (metaResponse.ok) {
-          const meta = await metaResponse.json();
-          if (meta.success && meta.content?.classes) {
-            const userClassObj = meta.content.classes.find(
-              (c: { name: string; id: number }) => c.name === currentClass.name || String(c.id) === currentClass.id
-            );
-            if (userClassObj) {
-              classId = userClassObj.id;
-              if (isMounted) setNumericClassId(classId);
-            }
-          }
-        }
-
-        if (classId) {
-          const scorePromises = allApiSubjects.map(async (subject) => {
-            const res = await getSubjectScore(subject.id, classId!);
-            let score = 0;
-            if (res.success && res.content) {
-              score = parseFloat(res.content.subject_total_score) || 0;
-            }
-            return { id: subject.id, score };
-          });
-
-          const results = await Promise.all(scorePromises);
-          
-          if (isMounted) {
-            const newScores = new Map<number, number>();
-            results.forEach((r) => newScores.set(r.id, r.score));
-            setSubjectScores(newScores);
-          }
+        if (isMounted) {
+          const newScores = new Map<number, number>();
+          results.forEach((r) => newScores.set(r.id, r.score));
+          setSubjectScores(newScores);
         }
       } catch (error) {
         console.error("Failed to fetch subject scores:", error);
@@ -381,7 +358,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
     return () => {
       isMounted = false;
     };
-  }, [allApiSubjects, currentClass]);
+  }, [allApiSubjects, currentClass, currentTermApiId]);
 
   // Filter subjects based on search and track
   const filteredSubjects = useMemo(() => {
