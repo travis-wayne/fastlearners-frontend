@@ -126,8 +126,14 @@ export const profileApi = {
     return postJson<ApiResponse>("/api/profile/edit/password", data);
   },
 
-  updateRole: async (role: string): Promise<ApiResponse<{ user: User }>> => {
-    return postJson<ApiResponse<{ user: User }>>("/api/auth/set-role", { user_role: role });
+  updateRole: async (
+    role: string,
+    extras?: { child_email?: string; child_phone?: string },
+  ): Promise<ApiResponse<{ user: User }> & { user?: User }> => {
+    return postJson<ApiResponse<{ user: User }> & { user?: User }>(
+      "/api/auth/set-role",
+      { user_role: role, ...extras },
+    );
   },
 };
 

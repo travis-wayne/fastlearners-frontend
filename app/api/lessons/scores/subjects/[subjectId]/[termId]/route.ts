@@ -15,10 +15,10 @@ export async function GET(
   const requestId = crypto.randomUUID();
 
   try {
-    const { subjectId, termId } = params;
+    const { subjectId, termId: classId } = params;
 
-    if (!subjectId || !termId) {
-      return createErrorResponse("Invalid request: subjectId and termId are required", 400, undefined, requestId);
+    if (!subjectId || !classId) {
+      return createErrorResponse("Invalid request: subjectId and classId are required", 400, undefined, requestId);
     }
 
     const controller = new AbortController();
@@ -26,7 +26,7 @@ export async function GET(
 
     try {
       const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/scores/subjects/${subjectId}/${termId}`,
+        `${UPSTREAM_BASE}/lessons/scores/subjects/${subjectId}/${classId}`,
         {
           method: "GET",
           headers: {
@@ -53,7 +53,7 @@ export async function GET(
       if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
         try {
           const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/scores/subjects/${subjectId}/${termId}`,
+            `${UPSTREAM_BASE}/lessons/scores/subjects/${subjectId}/${classId}`,
             {
               method: "GET",
               headers: {

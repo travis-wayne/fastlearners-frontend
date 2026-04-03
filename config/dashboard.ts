@@ -50,6 +50,12 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.GUARDIAN,
       },
       {
+        href: "/dashboard/settings/children",
+        icon: "users",
+        title: "Children",
+        authorizeOnly: UserRole.GUARDIAN,
+      },
+      {
         href: "/dashboard",
         icon: "home",
         title: "Dashboard",

@@ -25,6 +25,19 @@ export interface DashboardResponse {
   code: number;
 }
 
+export interface GuardianDashboardContent {
+  children: number;
+  report: null;
+}
+
+export interface GuardianDashboardResponse {
+  success: boolean;
+  message: string;
+  content: GuardianDashboardContent;
+  code: number;
+}
+
+
 /**
  * Get student dashboard data
  */
@@ -82,4 +95,47 @@ export async function getDashboard(): Promise<DashboardResponse> {
     };
   }
 }
+
+/**
+ * Get guardian dashboard data
+ */
+export async function getGuardianDashboard(): Promise<GuardianDashboardResponse> {
+  try {
+    const response = await fetch("/api/guardian", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+      cache: "no-store",
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      return {
+        success: false,
+        message: data.message || "Failed to fetch guardian dashboard",
+        content: {
+          children: 0,
+          report: null,
+        },
+        code: response.status,
+      };
+    }
+
+    return data as GuardianDashboardResponse;
+  } catch (error: any) {
+    return {
+      success: false,
+      message: error?.message || "Network error",
+      content: {
+        children: 0,
+        report: null,
+      },
+      code: 500,
+    };
+  }
+}
+
 

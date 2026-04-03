@@ -55,7 +55,7 @@ import { getGrade } from "@/lib/utils/grading";
 import type { Subject as ApiSubject } from "@/lib/types/subjects";
 
 export default function RecordsPage() {
-  const { currentClass, currentTerm, currentTermApiId } = useAcademicContext();
+  const { currentClass, currentTerm, currentClassApiId, currentTermApiId } = useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
   const [selectedTerm, setSelectedTerm] = useState("current");
   const user = useAuthStore((state) => state.user);
@@ -106,11 +106,11 @@ export default function RecordsPage() {
           if (isMounted) setSlugMap(map);
         }
 
-        // 3. Fetch scores using live term ID from context
-        // Ensure scores are only fetched when term ID and subjects are present
-        if (currentTermApiId && enrolled.length > 0) {
+        // 3. Fetch scores using live class ID from context
+        // Ensure scores are only fetched when class ID and subjects are present
+        if (currentClassApiId && enrolled.length > 0) {
           const scorePromises = enrolled.map(async (subj) => {
-            const res = await getSubjectScore(subj.id, currentTermApiId);
+            const res = await getSubjectScore(subj.id, currentClassApiId);
             let score = 0;
             if (res.success && res.content) {
               score = parseFloat(res.content.subject_total_score) || 0;
@@ -136,7 +136,7 @@ export default function RecordsPage() {
     fetchData();
 
     return () => { isMounted = false; };
-  }, [user?.class, currentTermApiId]);
+  }, [user?.class, currentClassApiId, currentTermApiId]);
 
   const filteredSubjects = useMemo(() => subjects, [subjects]);
 

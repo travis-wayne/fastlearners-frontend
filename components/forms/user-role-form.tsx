@@ -11,6 +11,7 @@ import { z } from "zod";
 import { profileApi } from "@/lib/api/auth";
 import { User as AuthUser, UserRole as AuthUserRole } from "@/lib/types/auth";
 import { userRoleSchema } from "@/lib/validations/user";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,7 +37,14 @@ interface UserRoleFormProps {
 
 type FormData = {
   role: UserRole;
+  child_email?: string;
+  child_phone?: string;
 };
+
+const extendedRoleSchema = userRoleSchema.extend({
+  child_email: z.string().email().optional().or(z.literal("")),
+  child_phone: z.string().optional(),
+});
 
 export function UserRoleForm({ user }: UserRoleFormProps) {
   const { updateUserProfile } = useAuthStore();
@@ -90,22 +98,38 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
   const [role, setRole] = useState(mapAuthRoleToEnum(user.role[0])); // Use first role as primary
 
   const form = useForm<FormData>({
-    resolver: zodResolver(userRoleSchema),
+    resolver: zodResolver(extendedRoleSchema),
     values: {
       role: role,
+      child_email: (user as any).child_email || "",
+      child_phone: (user as any).child_phone || "",
     },
   });
 
-  const onSubmit = async (data: z.infer<typeof userRoleSchema>) => {
+  const onSubmit = async (data: z.infer<typeof extendedRoleSchema>) => {
     try {
       setIsPending(true);
 
-      const response = await profileApi.updateProfile({ role: data.role });
+      let extras: { child_email?: string; child_phone?: string } | undefined;
+      if (data.role === UserRole.GUARDIAN) {
+        const childEmail = data.child_email?.trim();
+        const childPhone = data.child_phone?.trim();
+        if (childEmail || childPhone) {
+          extras = {};
+          if (childEmail) extras.child_email = childEmail;
+          if (childPhone) extras.child_phone = childPhone;
+        }
+      }
 
-      if (response.success && response.content) {
+      const response = await profileApi.updateRole(data.role, extras);
+
+      if (response.success && response.user) {
         // Convert enum value to auth role string
         const authRoleString = data.role.toLowerCase();
-        updateUserProfile({ role: [authRoleString as any] });
+        updateUserProfile({ 
+          ...response.user,
+          role: [authRoleString as any] 
+        });
         setUpdated(false);
         toast.success("Your role has been updated.");
       } else {
@@ -167,6 +191,52 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                 </FormItem>
               )}
             />
+            {role === UserRole.GUARDIAN && (
+              <div className="grid w-full gap-4 sm:grid-cols-2">
+                <FormField
+                  control={form.control}
+                  name="child_email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Child's Email Address</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="email"
+                          placeholder="child@example.com"
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setUpdated(true);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="child_phone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Child's Phone Number</FormLabel>
+                      <FormControl>
+                        <Input
+                          type="tel"
+                          placeholder="+123..."
+                          {...field}
+                          onChange={(e) => {
+                            field.onChange(e);
+                            setUpdated(true);
+                          }}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
             <Button
               type="submit"
               variant={updated ? "default" : "secondary"}

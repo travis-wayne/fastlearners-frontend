@@ -32,6 +32,7 @@ import {
   validateProfileData,
   checkUsernameAvailability,
 } from "@/lib/api/profile";
+import { profileApi } from "@/lib/api/auth";
 import { useDebounce } from "@/hooks/use-debounce";
 import { ProfilePageData } from "@/lib/types/profile";
 import { Button } from "@/components/ui/button";
@@ -268,21 +269,34 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         }
 
         try {
-          const roleUpdateResult = await updateProfile({
-            role: roleValue as "student" | "guardian",
-          });
+          let roleUpdateResult;
+          
+          if (roleValue === "guardian") {
+            const childEmail = data.child_email?.trim();
+            const childPhone = data.child_phone?.trim();
+            const extras: { child_email?: string; child_phone?: string } = {};
+            
+            if (childEmail) extras.child_email = childEmail;
+            if (childPhone) extras.child_phone = childPhone;
+            
+            roleUpdateResult = await profileApi.updateRole(roleValue, extras);
+          } else {
+            roleUpdateResult = await profileApi.updateRole(roleValue);
+          }
+          
           const refreshedProfile = await getProfile();
           setProfile(refreshedProfile);
           
            // Update auth store
-           const roles = Array.isArray(roleUpdateResult.role)
-           ? roleUpdateResult.role
-           : [roleUpdateResult.role];
+           const userToUpdate = roleUpdateResult.user || (refreshedProfile as any);
+           const roles = Array.isArray(userToUpdate.role)
+           ? userToUpdate.role
+           : [userToUpdate.role];
            
            updateUserProfile({
-             ...roleUpdateResult,
+             ...userToUpdate,
              role: roles,
-             username: roleUpdateResult.username || "" // Ensure username is string
+             username: userToUpdate.username || "" // Ensure username is string
            } as any);
 
           toast.success("Account type setup complete! Proceeding to save details...");
@@ -565,6 +579,62 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                              </Select>
                             </div>
                         )}
+                    </CardContent>
+                </Card>
+            )}
+
+            {/* Guardian Section */}
+            {(selectedRole === "guardian" || primaryRole === "guardian") && (
+                <Card className="border-border/60 shadow-sm transition-all hover:shadow-md">
+                    <CardHeader className="border-b bg-muted/20">
+                        <div className="flex items-center gap-3">
+                            <div className="flex size-10 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                                <User className="size-6" />
+                            </div>
+                            <div>
+                                <CardTitle>Guardian Details</CardTitle>
+                                <CardDescription>Your child's contact information.</CardDescription>
+                            </div>
+                        </div>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="child_email">Child's Email Address</Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                                <Input 
+                                    id="child_email" 
+                                    type="email"
+                                    {...register("child_email")} 
+                                    className="pl-9" 
+                                    placeholder="child@example.com"
+                                    disabled={!!profile?.child_email}
+                                />
+                            </div>
+                            {!!profile?.child_email && (
+                                <p className="text-xs text-muted-foreground">Contact support to change this.</p>
+                            )}
+                            {errors.child_email && <p className="text-xs text-destructive">{errors.child_email.message}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="child_phone">Child's Phone Number</Label>
+                            <div className="relative">
+                                <Phone className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                                <Input 
+                                    id="child_phone" 
+                                    type="tel"
+                                    {...register("child_phone")} 
+                                    className="pl-9" 
+                                    placeholder="+123..."
+                                    disabled={!!profile?.child_phone}
+                                />
+                            </div>
+                            {!!profile?.child_phone && (
+                                <p className="text-xs text-muted-foreground">Contact support to change this.</p>
+                            )}
+                            {errors.child_phone && <p className="text-xs text-destructive">{errors.child_phone.message}</p>}
+                        </div>
                     </CardContent>
                 </Card>
             )}

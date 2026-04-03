@@ -1,25 +1,26 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useAuthStore } from "@/store/authStore";
-import { format } from "date-fns";
+import { motion } from "framer-motion";
 import {
-  Bell,
-  BookOpen,
-  Calendar,
-  ChevronRight,
-  Clock,
-  Medal,
-  MessageCircle,
-  ShieldCheck,
-  Smile,
-  Star,
-  Target,
-  TrendingUp,
-  Trophy,
   Users,
+  UserCheck,
+  Clock,
+  Info,
+  Loader2,
+  UserPlus
 } from "lucide-react";
+
+
+import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
+import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
+import { DismissibleCard } from "@/components/ui/dismissible-card";
+
+import { getGuardianDashboard } from "@/lib/api/dashboard";
+import { getGuardianChildrenHistory } from "@/lib/api/guardian";
+import type { ChildRequestItem } from "@/lib/types/guardian";
+import { useAuthStore } from "@/store/authStore";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -30,308 +31,278 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Animation variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1,
+      delayChildren: 0.2,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { y: 20, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: "spring" as const,
+      stiffness: 100,
+    },
+  },
+};
 
 function formatDisplayName(user?: {
   name?: string | null;
   username?: string | null;
   email?: string | null;
 }) {
-  if (!user) return "Learner";
+  if (!user) return "Guardian";
   const candidates = [user.name, user.username, user.email].filter(
     (v): v is string => typeof v === "string" && v.trim().length > 0,
   );
   const first = candidates[0];
-  if (!first) return "Learner";
+  if (!first) return "Guardian";
   const base = first.includes("@") ? first.split("@")[0] : first;
   return base.split(" ")[0].replace(/\./g, " ");
 }
 
 export function GuardianDashboard() {
-  const today = format(new Date(), "EEEE do, yyyy");
   const { user } = useAuthStore();
   const displayName = formatDisplayName(user as any);
-  const role = (user?.role?.[0] || "guardian") as string;
-  const roleLabel = role.charAt(0).toUpperCase() + role.slice(1);
 
-  const [timePeriod, setTimePeriod] = useState<
-    "morning" | "afternoon" | "evening" | "night"
-  >("morning");
+  const [dashboardData, setDashboardData] = useState<{ children: number; report: null } | null>(null);
+  const [childrenHistory, setChildrenHistory] = useState<ChildRequestItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
   useEffect(() => {
-    const update = () => {
-      const h = new Date().getHours();
-      if (h >= 5 && h < 12) setTimePeriod("morning");
-      else if (h >= 12 && h < 17) setTimePeriod("afternoon");
-      else if (h >= 17 && h < 21) setTimePeriod("evening");
-      else setTimePeriod("night");
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const [dashResponse, historyResponse] = await Promise.all([
+          getGuardianDashboard(),
+          getGuardianChildrenHistory(),
+        ]);
+
+        if (dashResponse.success && dashResponse.content) {
+          setDashboardData(dashResponse.content);
+        }
+        if (historyResponse.success && historyResponse.content) {
+          setChildrenHistory(historyResponse.content.history.request_history ?? []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch guardian data:", error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    update();
-    const id = setInterval(update, 60_000);
-    return () => clearInterval(id);
+
+    fetchData();
   }, []);
 
-  const headerGradient = useMemo(() => {
-    switch (timePeriod) {
-      case "morning":
-        return "bg-gradient-to-br from-purple-200 via-slate-200 to-blue-100 dark:from-purple-500 dark:via-slate-700 dark:to-blue-700";
-      case "afternoon":
-        return "bg-gradient-to-br from-indigo-200 via-slate-200 to-teal-100 dark:from-indigo-500 dark:via-slate-700 dark:to-teal-700";
-      case "evening":
-        return "bg-gradient-to-br from-pink-200 via-purple-200 to-amber-100 dark:from-pink-600 dark:via-purple-700 dark:to-amber-700";
-      case "night":
-      default:
-        return "bg-gradient-to-br from-slate-200 via-purple-200 to-blue-200 dark:from-slate-800 dark:via-purple-900 dark:to-blue-900";
-    }
-  }, [timePeriod]);
-
-  // Mocked wards and metrics
-  const wards = [
-    { id: "w1", name: "MB" },
-    { id: "w2", name: "AJ" },
-  ];
-
-  const overview = {
-    learningHours: 300,
-    quizzesCompleted: "6/20",
-    lessonsCompleted: "10/200",
-    subscription: "Active",
-  };
-
-  const performance = [
-    { subject: "Mathematics", pct: 65 },
-    { subject: "Physics", pct: 50 },
-    { subject: "Chemistry", pct: 80 },
-    { subject: "Biology", pct: 90 },
-  ];
-
-  const achievements = [
-    {
-      id: 1,
-      label: "7-Day Learning Streak",
-      icon: <ShieldCheck className="size-4 text-amber-500" />,
-    },
-    {
-      id: 2,
-      label: "Perfect Score",
-      icon: <Medal className="size-4 text-yellow-500" />,
-    },
-    {
-      id: 3,
-      label: "Perfect Score",
-      icon: <Medal className="size-4 text-yellow-500" />,
-    },
-  ];
-
-  const Donut = ({ value }: { value: number }) => (
-    <div className="relative size-20 sm:size-24">
-      <svg viewBox="0 0 36 36" className="size-20 sm:size-24">
-        <path
-          className="fill-none stroke-muted"
-          strokeWidth="3"
-          d="M18 2.0845
-             a 15.9155 15.9155 0 0 1 0 31.831
-             a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-        <path
-          className="fill-none stroke-primary"
-          strokeWidth="3"
-          strokeDasharray={`${value}, 100`}
-          d="M18 2.0845
-             a 15.9155 15.9155 0 0 1 0 31.831
-             a 15.9155 15.9155 0 0 1 0 -31.831"
-        />
-      </svg>
-      <div className="absolute inset-0 grid place-items-center">
-        <span className="text-base font-semibold sm:text-lg">{value}%</span>
-      </div>
-    </div>
-  );
+  const totalChildren = dashboardData?.children ?? 0;
+  const pendingCount = childrenHistory.filter(c => c.status === 'pending').length;
+  const acceptedCount = childrenHistory.filter(c => c.status === 'accepted').length;
 
   return (
-    <div className="dashboard-spacing dashboard-container">
-      {/* Header banner */}
-      <div
-        className={`responsive-padding relative overflow-hidden rounded-2xl ${headerGradient} transition-all duration-700 ease-in-out`}
-      >
-        <div className="responsive-gap grid md:grid-cols-[1fr_auto] md:items-center">
-          <div>
-            <p className="text-sm text-gray-900 dark:text-white/90">{today}</p>
-            <h2 className="mt-1 text-xl font-bold text-gray-900 dark:text-white sm:text-2xl">
-              Good Morning, {displayName}
-            </h2>
-            <div className="mt-1 flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
-                Role: {roleLabel}
-              </Badge>
-              {user?.email ? (
-                <Badge variant="outline" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
-                  {user.email}
-                </Badge>
-              ) : null}
-            </div>
-            <p className="mt-2 max-w-xl text-sm text-gray-700 dark:text-white/90">
-              Possible announcements // Possible announcements // Possible
-              announcements.
-            </p>
-          </div>
-          <div className="hidden select-none md:block">
-            <div className="relative size-20 sm:size-24 md:size-28">
-              <div className="absolute inset-0 rounded-full bg-yellow-300" />
-              <div className="absolute inset-1 rounded-full bg-yellow-200" />
-              <div className="absolute right-3 top-5 h-2.5 w-4 rounded bg-black sm:right-4 sm:top-6 sm:h-3 sm:w-5" />
-              <div className="absolute right-8 top-5 h-2.5 w-4 rounded bg-black sm:right-10 sm:top-6 sm:h-3 sm:w-5" />
-              <div className="absolute right-6 top-10 h-1.5 w-8 rounded-full bg-amber-700 sm:right-7 sm:top-12 sm:h-1.5 sm:w-10" />
-            </div>
-          </div>
-        </div>
+    <motion.div
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+      className="dashboard-spacing"
+    >
+      <motion.div variants={itemVariants}>
+        <DismissibleCard
+          id="guardian_dashboard_intro"
+          title="Welcome to your Guardian Dashboard!"
+          icon={<Info className="size-5 text-blue-500" />}
+          content="Monitor your children's learning progress. Use the Children link in the sidebar to manage your linked students."
+          className="mb-6 border-blue-200 bg-blue-50/50 dark:border-blue-900/50 dark:bg-blue-900/20"
+        />
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <GlassGreetingCard
+          userName={displayName}
+          role="Guardian"
+          level={acceptedCount}
+          streak={pendingCount}
+          lessonsToday={totalChildren}
+        />
+      </motion.div>
+
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-3">
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-blue-500/10 p-3">
+                  <Users className="size-6 text-blue-600" />
+                </div>
+                <div className="space-y-1">
+                   <p className="text-sm font-medium text-muted-foreground">Total Children</p>
+                   {isLoading ? (
+                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                   ) : (
+                     <h3 className="text-2xl font-bold">{totalChildren}</h3>
+                   )}
+                   <p className="text-[10px] text-muted-foreground">Linked Children</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-amber-500/10 p-3">
+                  <Clock className="size-6 text-amber-600" />
+                </div>
+                <div className="space-y-1">
+                   <p className="text-sm font-medium text-muted-foreground">Pending Requests</p>
+                   {isLoading ? (
+                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                   ) : (
+                     <h3 className="text-2xl font-bold">{pendingCount}</h3>
+                   )}
+                   <p className="text-[10px] text-muted-foreground">Waiting response</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-emerald-500/10 p-3">
+                  <UserCheck className="size-6 text-emerald-600" />
+                </div>
+                <div className="space-y-1">
+                   <p className="text-sm font-medium text-muted-foreground">Accepted</p>
+                   {isLoading ? (
+                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                   ) : (
+                     <h3 className="text-2xl font-bold">{acceptedCount}</h3>
+                   )}
+                   <p className="text-[10px] text-muted-foreground">Linked students</p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </div>
 
-      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {/* Progress */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Progress</CardTitle>
-            <CardDescription>Physics</CardDescription>
-          </CardHeader>
-          <CardContent className="responsive-padding flex items-center justify-center">
-            <Donut value={72} />
-          </CardContent>
-        </Card>
-
-        {/* Achievements */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Achievements</CardTitle>
-          </CardHeader>
-          <CardContent className="responsive-padding space-y-component-sm">
-            {achievements.map((a) => (
-              <div
-                key={a.id}
-                className="flex items-center justify-between rounded-md border p-component-sm sm:p-component-md"
-              >
-                <div className="flex items-center gap-2 text-sm">
-                  {a.icon}
-                  <span>{a.label}</span>
-                </div>
-                <Smile className="size-4 text-primary" />
+      <div className="responsive-gap grid grid-cols-1 lg:grid-cols-3">
+        <motion.div variants={itemVariants} className="lg:col-span-2">
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <div>
+                <CardTitle>Linked Children</CardTitle>
+                <CardDescription>Recent child link requests and their status</CardDescription>
               </div>
-            ))}
-            <Button variant="outline" size="sm" className="mt-2 w-full">
-              View All Achievements
+              <Button asChild variant="outline" size="sm">
+                <Link href="/dashboard/settings/children">View All</Link>
+              </Button>
+            </CardHeader>
+            <CardContent>
+              {isLoading ? (
+                <div className="space-y-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center justify-between">
+                      <div className="space-y-2">
+                        <Skeleton className="h-4 w-[150px]" />
+                        <Skeleton className="h-3 w-[100px]" />
+                      </div>
+                      <Skeleton className="h-6 w-[80px]" />
+                    </div>
+                  ))}
+                </div>
+              ) : childrenHistory.length > 0 ? (
+                <div className="space-y-4">
+                  {childrenHistory.slice(0, 5).map((item) => (
+                    <div key={item.id} className="flex items-center justify-between rounded-lg border p-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
+                          <Users className="size-5 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium">{item.child_name || "Pending Invitation"}</p>
+                          <p className="text-xs text-muted-foreground">{item.child_email}</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {item.class && <Badge variant="outline" className="hidden sm:inline-flex">{item.class}</Badge>}
+                        <Badge
+                          variant={
+                            item.status === "accepted"
+                              ? "default"
+                              : item.status === "pending"
+                              ? "secondary"
+                              : "outline"
+                          }
+                        >
+                          {item.status}
+                        </Badge>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-10 text-center">
+                  <div className="mb-4 rounded-full bg-muted p-4">
+                    <Users className="size-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-medium">No children linked yet</h3>
+                  <p className="mb-6 text-sm text-muted-foreground">Invite your children to monitor their learning progress.</p>
+                  <Button asChild>
+                    <Link href="/dashboard/settings/children">
+                      <UserPlus className="mr-2 size-4" />
+                      Invite a Child
+                    </Link>
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants}>
+          <OverviewGrid
+            stats={[
+              { label: "Total Children", value: totalChildren },
+              { label: "Pending Requests", value: pendingCount },
+              { label: "Accepted", value: acceptedCount },
+              { label: "Cancelled", value: childrenHistory.filter(c => c.status === 'cancelled').length },
+            ]}
+          />
+        </motion.div>
+      </div>
+
+      <motion.div variants={itemVariants}>
+        <Card>
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+            <CardDescription>Manage your account and linked children</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-wrap gap-4">
+            <Button asChild>
+              <Link href="/dashboard/settings/children">Manage Children</Link>
+            </Button>
+            <Button asChild variant="outline">
+              <Link href="/dashboard/settings">Account Settings</Link>
             </Button>
           </CardContent>
         </Card>
-
-        {/* Overview + Ward select */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-base">Select Ward</CardTitle>
-              <Select defaultValue={wards[0].id}>
-                <SelectTrigger className="w-[120px] sm:w-[160px]">
-                  <SelectValue placeholder="Select Ward" />
-                </SelectTrigger>
-                <SelectContent>
-                  {wards.map((w) => (
-                    <SelectItem key={w.id} value={w.id}>
-                      {w.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </CardHeader>
-          <CardContent className="responsive-padding space-y-component-md">
-            <div>
-              <p className="text-sm font-medium">Overview</p>
-            </div>
-            <div className="grid grid-cols-2 gap-component-md text-sm">
-              <div>
-                <p className="text-muted-foreground">Time Spent Learning</p>
-                <p className="font-medium">{overview.learningHours} hrs</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Quizzes Comp.</p>
-                <p className="font-medium">{overview.quizzesCompleted}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Lessons Comp.</p>
-                <p className="font-medium">{overview.lessonsCompleted}</p>
-              </div>
-              <div>
-                <p className="text-muted-foreground">Subscription Status</p>
-                <p className="font-medium">{overview.subscription}</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Performance section */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg">View Performance</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="rounded-md border">
-            {/* Desktop Table View */}
-            <div className="hidden md:block">
-              <div className="grid grid-cols-1 items-center gap-4 px-4 py-3 text-sm font-medium text-muted-foreground md:grid-cols-[180px_1fr] lg:grid-cols-[220px_1fr]">
-                <span>Performance</span>
-                <span>Lesson&apos;s Progress</span>
-              </div>
-              <Separator />
-              <div className="divide-y">
-                {performance.map((row) => (
-                  <div
-                    key={row.subject}
-                    className="grid grid-cols-1 items-center gap-4 px-4 py-3 md:grid-cols-[180px_1fr] lg:grid-cols-[220px_1fr]"
-                  >
-                    <span className="text-sm">{row.subject}</span>
-                    <div className="flex items-center gap-3">
-                      <div className="h-2 w-full rounded bg-muted">
-                        <div
-                          className="h-2 rounded bg-primary"
-                          style={{ width: `${row.pct}%` }}
-                        />
-                      </div>
-                      <span className="w-10 shrink-0 text-right text-xs text-muted-foreground">
-                        {row.pct}%
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Mobile Card View */}
-            <div className="space-y-component-md p-component-md md:hidden">
-              {performance.map((row) => (
-                <div key={row.subject} className="rounded-lg border bg-muted/30 p-component-md">
-                  <div className="mb-2 flex items-center justify-between text-sm font-medium">
-                    <span>{row.subject}</span>
-                    <span className="text-muted-foreground">{row.pct}%</span>
-                  </div>
-                  <div className="h-1.5 w-full rounded bg-muted">
-                    <div
-                      className="h-1.5 rounded bg-primary"
-                      style={{ width: `${row.pct}%` }}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }

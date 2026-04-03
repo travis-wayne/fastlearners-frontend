@@ -27,7 +27,7 @@ export default function SubjectPerformancePage() {
   const router = useRouter();
   const subjectSlug = params?.slug as string;
   const user = useAuthStore((state) => state.user);
-  const { currentTermApiId } = useAcademicContext();
+  const { currentClassApiId, currentTermApiId } = useAcademicContext();
 
   const [subjectName, setSubjectName] = useState<string>("");
   const [subjectScore, setSubjectScore] = useState<number>(0);
@@ -90,9 +90,9 @@ export default function SubjectPerformancePage() {
         if (isMounted) setSubjectName(subject.name);
         const subjectId = subject.id;
 
-        // 2. Overall subject score using live term ID
-        if (currentTermApiId) {
-          const scoreRes = await getSubjectScore(subjectId, currentTermApiId);
+        // 2. Overall subject score using live class ID
+        if (currentClassApiId) {
+          const scoreRes = await getSubjectScore(subjectId, currentClassApiId);
           if (scoreRes.success && scoreRes.content) {
             if (isMounted) setSubjectScore(parseFloat(scoreRes.content.subject_total_score) || 0);
           }
@@ -141,7 +141,7 @@ export default function SubjectPerformancePage() {
     fetchData();
 
     return () => { isMounted = false; };
-  }, [subjectSlug, user?.class, currentTermApiId]);
+  }, [subjectSlug, currentClassApiId, currentTermApiId]);
 
   const renderTermSection = (title: string, termTopics?: TopicItem[]) => {
     if (!termTopics || termTopics.length === 0) return null;

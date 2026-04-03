@@ -645,9 +645,9 @@ export async function getLessonScore(lessonId: number): Promise<import("@/lib/ty
   }
 }
 
-export async function getSubjectScore(subjectId: number, termId: number): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
+export async function getSubjectScore(subjectId: number, classId: number): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
   try {
-    const res = await fetch(`/api/lessons/scores/subjects/${subjectId}/${termId}`, {
+    const res = await fetch(`/api/lessons/scores/subjects/${subjectId}/${classId}`, {
       method: "GET",
       headers: {
         Accept: "application/json",
