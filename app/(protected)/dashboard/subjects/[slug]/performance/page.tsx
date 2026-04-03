@@ -141,7 +141,7 @@ export default function SubjectPerformancePage() {
     fetchData();
 
     return () => { isMounted = false; };
-  }, [subjectSlug, currentClassApiId, currentTermApiId]);
+  }, [subjectSlug, user?.class, currentClassApiId, currentTermApiId]);
 
   const renderTermSection = (title: string, termTopics?: TopicItem[]) => {
     if (!termTopics || termTopics.length === 0) return null;

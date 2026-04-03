@@ -593,13 +593,13 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                             </div>
                             <div>
                                 <CardTitle>Guardian Details</CardTitle>
-                                <CardDescription>Your child's contact information.</CardDescription>
+                                <CardDescription>Your child&apos;s contact information.</CardDescription>
                             </div>
                         </div>
                     </CardHeader>
                     <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
                         <div className="space-y-2">
-                            <Label htmlFor="child_email">Child's Email Address</Label>
+                            <Label htmlFor="child_email">Child&apos;s Email Address</Label>
                             <div className="relative">
                                 <Mail className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
                                 <Input 
@@ -618,7 +618,7 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="child_phone">Child's Phone Number</Label>
+                            <Label htmlFor="child_phone">Child&apos;s Phone Number</Label>
                             <div className="relative">
                                 <Phone className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
                                 <Input 

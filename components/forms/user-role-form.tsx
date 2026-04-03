@@ -198,7 +198,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                   name="child_email"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Child's Email Address</FormLabel>
+                      <FormLabel>Child&apos;s Email Address</FormLabel>
                       <FormControl>
                         <Input
                           type="email"
@@ -219,7 +219,7 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
                   name="child_phone"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Child's Phone Number</FormLabel>
+                      <FormLabel>Child&apos;s Phone Number</FormLabel>
                       <FormControl>
                         <Input
                           type="tel"
