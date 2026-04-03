@@ -230,7 +230,7 @@ export default function SubjectPerformancePage() {
       {/* Header section */}
       <div className="mb-8 flex flex-col justify-between gap-4 border-b pb-6 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/performance")} className="shrink-0">
+          <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/records")} className="shrink-0">
             <ArrowLeft className="size-4" />
           </Button>
           <div>

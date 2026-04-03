@@ -19,12 +19,6 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.STUDENT,
       },
       {
-        href: "/dashboard/performance",
-        icon: "lineChart",
-        title: "Performance",
-        authorizeOnly: UserRole.STUDENT,
-      },
-      {
         href: "/dashboard/lessons",
         icon: "graduationCap",
         title: "Lessons",

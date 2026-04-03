@@ -127,7 +127,7 @@ export const profileApi = {
   },
 
   updateRole: async (role: string): Promise<ApiResponse<{ user: User }>> => {
-    return postJson<ApiResponse<{ user: User }>>("/api/auth/set-role", { role });
+    return postJson<ApiResponse<{ user: User }>>("/api/auth/set-role", { user_role: role });
   },
 };
 
