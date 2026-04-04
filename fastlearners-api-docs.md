@@ -3509,7 +3509,7 @@
 ```json
 {
   "success": false,
-  "message": "An error occurred while sending rejection mail, but the request was rejected successfully!",
+  "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!",
   "errors": null,
   "code": 400
 }
@@ -3604,7 +3604,7 @@
 ```json
 {
   "success": false,
-  "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!",
+  "message": "An error occurred while sending rejection mail, but the request was rejected successfully!",
   "errors": null,
   "code": 400
 }

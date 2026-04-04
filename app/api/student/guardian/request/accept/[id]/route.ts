@@ -39,13 +39,23 @@ export async function GET(
       );
 
       clearTimeout(timeoutId);
-      const data = await upstream.json();
+
+      // Check if response is JSON
+      const contentType = upstream.headers.get("content-type");
+      let data: any = null;
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          data = await upstream.json();
+        } catch (e) {
+          console.error(`[API] Failed to parse JSON from ${upstream.url}:`, e);
+        }
+      }
 
       if (!upstream.ok) {
         return handleUpstreamError(upstream, data, requestId);
       }
 
-      return NextResponse.json(data, { status: upstream.status });
+      return NextResponse.json(data || { success: true }, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
       
@@ -64,13 +74,22 @@ export async function GET(
             }
           );
 
-          const retryData = await retryUpstream.json();
+          // Check if response is JSON
+          const retryContentType = retryUpstream.headers.get("content-type");
+          let retryData: any = null;
+          if (retryContentType && retryContentType.includes("application/json")) {
+            try {
+              retryData = await retryUpstream.json();
+            } catch (e) {
+              console.error(`[API] Failed to parse JSON from ${retryUpstream.url}:`, e);
+            }
+          }
           
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
-          return NextResponse.json(retryData, { status: retryUpstream.status });
+          return NextResponse.json(retryData || { success: true }, { status: retryUpstream.status });
         } catch (retryError) {
           return handleApiError(retryError, "Network error: Failed to accept guardian request after retry", requestId);
         }
