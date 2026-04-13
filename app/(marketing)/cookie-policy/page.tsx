@@ -14,8 +14,9 @@ export default function CookiePolicyPage() {
             Cookie Policy
           </h1>
           <div className="flex flex-col space-y-1 text-muted-foreground">
-            <p>Effective Date: 29/11/2025</p>
-            <p>Controller: Fastlearners Limited</p>
+            <p>FastLearners App</p>
+            <p>Effective Date: 10 April 2026</p>
+            <p>Data Controller: FastLearners Limited</p>
           </div>
         </div>
 
@@ -24,103 +25,97 @@ export default function CookiePolicyPage() {
             1. Introduction
           </h2>
           <p className="leading-relaxed text-muted-foreground">
-            Fastlearners Limited (“Fastlearners”, “we”, “our”) uses cookies and similar tracking technologies on the Fastlearners App and website to improve functionality, analyze performance, and enhance user experience.
+            FastLearners Limited (“FastLearners”, “we”, “us”, or “our”) uses cookies and similar tracking technologies (such as local storage, session storage, and device identifiers) on our website and mobile application to ensure the Platform functions properly, improve user experience, analyse performance, and provide personalised learning features.
           </p>
           <p className="leading-relaxed text-muted-foreground">
-            This Cookie Policy explains what cookies are, why we use them, and how users can control them.
+            This Cookie Policy explains what cookies and similar technologies we use, why we use them, and how you can manage or control them. It should be read together with our <a href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</a>.
+          </p>
+          <p className="leading-relaxed text-muted-foreground">
+            We are committed to complying with the <span className="font-medium text-foreground">Nigeria Data Protection Act 2023 (NDPA)</span> and relevant guidelines from the Nigeria Data Protection Commission (NDPC).
           </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            2. What Are Cookies?
+            2. What Are Cookies and Similar Technologies?
           </h2>
           <p className="leading-relaxed text-muted-foreground">
-            Cookies are small text files stored on your device when you access our app or website. They help us remember your preferences and understand how you use our services.
+            Cookies are small text files that are placed on your device (computer, tablet, or mobile phone) when you visit our website or use our app. They help us remember your preferences and understand how you interact with the Platform.
           </p>
           <div className="space-y-2">
-            <p className="font-medium text-muted-foreground">We also use:</p>
+            <p className="font-medium text-muted-foreground">We also use other similar technologies, including:</p>
             <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
-              <li>Local storage</li>
-              <li>Session storage</li>
-              <li>SDK/device identifiers (only for app functionality)</li>
+              <li>Local storage and session storage</li>
+              <li>SDKs and device identifiers (primarily for app functionality and security)</li>
             </ul>
           </div>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            3. Types of Cookies We Use
+            3. Types of Cookies and Technologies We Use
           </h2>
 
           <div className="space-y-3">
-            <h3 className="text-lg font-medium text-foreground sm:text-xl">a. Strictly Necessary Cookies</h3>
-            <p className="text-muted-foreground">Required for the app to function.</p>
-            <div className="border-l-2 border-muted pl-4">
-              <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
-              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-                <li>User authentication cookies</li>
+            <h3 className="text-xl font-medium text-foreground">a. Strictly Necessary Cookies</h3>
+            <p className="text-muted-foreground">These cookies are essential for the Platform to function correctly and cannot be disabled.</p>
+            <div className="border-l-4 border-primary py-1 pl-4">
+              <p className="mb-2 font-medium text-foreground">Examples include:</p>
+              <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
+                <li>Authentication and login cookies</li>
                 <li>Security and fraud-prevention cookies</li>
-                <li>Session management</li>
+                <li>Session management cookies</li>
               </ul>
             </div>
-            <p className="flex items-center gap-2 text-sm font-medium text-red-500">
-              <span>🛑</span> Cannot be disabled.
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <h3 className="text-xl font-medium text-foreground">b. Functional Cookies</h3>
+            <p className="text-muted-foreground">These improve usability and allow the Platform to remember your choices.</p>
+            <div className="border-l-4 border-primary py-1 pl-4">
+              <p className="mb-2 font-medium text-foreground">Examples include:</p>
+              <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
+                <li>Saving your login state across sessions</li>
+                <li>Remembering preferences (e.g., language, theme, or class level)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <h3 className="text-xl font-medium text-foreground">c. Analytics and Performance Cookies</h3>
+            <p className="text-muted-foreground">These help us understand how users interact with the Platform, measure performance, and improve our services.</p>
+            <div className="border-l-4 border-primary py-1 pl-4">
+              <p className="mb-2 font-medium text-foreground">Examples include:</p>
+              <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
+                <li>Usage and engagement analytics</li>
+                <li>Crash reports and performance metrics</li>
+                <li>IP addresses (anonymised where possible)</li>
+              </ul>
+            </div>
+          </div>
+
+          <div className="space-y-3 pt-2">
+            <h3 className="text-xl font-medium text-foreground">d. Third-Party Cookies</h3>
+            <p className="leading-relaxed text-muted-foreground">
+              Some cookies may be set by third-party service providers (e.g., cloud hosting providers, analytics tools, or future payment gateways).
             </p>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <h3 className="text-lg font-medium text-foreground sm:text-xl">b. Functional Cookies</h3>
-            <p className="text-muted-foreground">Improve app usability.</p>
-            <div className="border-l-2 border-muted pl-4">
-              <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
-              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-                <li>Saving login state</li>
-                <li>Storing preferences (theme, language, class level)</li>
-              </ul>
-            </div>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <h3 className="text-lg font-medium text-foreground sm:text-xl">c. Analytics Cookies</h3>
-            <p className="text-muted-foreground">Used to understand how users interact with the app.</p>
-            <div className="border-l-2 border-muted pl-4">
-              <p className="mb-2 text-sm font-medium text-foreground">Examples:</p>
-              <ul className="list-disc space-y-1 pl-4 text-sm text-muted-foreground">
-                <li>Google Analytics (if used)</li>
-                <li>App crash/usage analytics</li>
-              </ul>
-            </div>
-            <p className="text-sm italic text-muted-foreground">We anonymize IP addresses where possible.</p>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <h3 className="text-lg font-medium text-foreground sm:text-xl">d. Performance Cookies</h3>
-            <p className="text-muted-foreground">Help optimize speed, loading, and responsiveness.</p>
-          </div>
-
-          <div className="space-y-3 pt-2">
-            <h3 className="text-lg font-medium text-foreground sm:text-xl">e. Third-Party Cookies</h3>
-            <p className="text-muted-foreground">These may come from:</p>
-            <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
-              <li>Hosting providers</li>
-              <li>Analytics services</li>
-              <li>Payment gateways (if added later)</li>
-            </ul>
-            <p className="text-sm text-muted-foreground">All third parties comply with GDPR/NDPR via Data Processing Agreements.</p>
+            <p className="leading-relaxed text-muted-foreground">
+              We ensure that all third parties we work with are bound by appropriate data protection agreements and comply with the NDPA.
+            </p>
           </div>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            4. Why We Use Cookies
+            4. Purposes of Using Cookies
           </h2>
+          <p className="text-muted-foreground">We use cookies and similar technologies to:</p>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
-            <li>To keep you signed in</li>
-            <li>To personalize educational content</li>
-            <li>To analyze app performance</li>
-            <li>To protect user accounts and detect fraud</li>
-            <li>To improve our services</li>
+            <li>Keep you signed in securely</li>
+            <li>Provide a smooth and personalised learning experience</li>
+            <li>Analyse Platform performance and user behaviour</li>
+            <li>Detect and prevent fraud or security threats</li>
+            <li>Improve the overall quality and speed of our services</li>
           </ul>
         </section>
 
@@ -128,50 +123,65 @@ export default function CookiePolicyPage() {
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             5. Legal Basis for Using Cookies
           </h2>
-          <p className="text-muted-foreground">Under NDPR & GDPR, our legal bases include:</p>
+          <p className="text-muted-foreground">Under the <span className="font-medium text-foreground">Nigeria Data Protection Act 2023 (NDPA)</span>, we rely on the following lawful bases:</p>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
-            <li><span className="font-medium text-foreground">Legitimate interest</span> (security, functionality)</li>
-            <li><span className="font-medium text-foreground">Consent</span> (for optional cookies such as analytics)</li>
+            <li><span className="font-medium text-foreground">Legitimate interests</span> — for strictly necessary, functional, security, and performance cookies.</li>
+            <li><span className="font-medium text-foreground">Consent</span> — for non-essential cookies, particularly analytics and tracking cookies.</li>
           </ul>
+          <p className="leading-relaxed text-muted-foreground">
+            You can withdraw your consent for optional cookies at any time (see Section 6 below).
+          </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             6. How to Manage or Disable Cookies
           </h2>
-          <p className="text-muted-foreground">Users can:</p>
+          <p className="text-muted-foreground">You have control over cookies and can manage them in the following ways:</p>
           <ul className="list-disc space-y-2 pl-6 text-muted-foreground">
-            <li>Disable cookies through device/app settings</li>
-            <li>Disable analytics in the app privacy settings (if available)</li>
-            <li>Clear stored cookies from browser or device cache</li>
+            <li>Through your browser or device settings (most browsers allow you to block or delete cookies).</li>
+            <li>Via in-app privacy/settings options (where available).</li>
+            <li>By clearing your browser cache or app data.</li>
           </ul>
-          <div className="rounded-lg border border-border bg-muted/50 p-4">
-            <p className="text-sm text-muted-foreground">
-              <span className="font-semibold text-foreground">Note:</span> Disabling essential cookies may limit app functionality.
+          <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              <span className="font-semibold text-foreground">Important Note:</span> Disabling strictly necessary cookies may prevent the Platform from functioning properly or limit your ability to use certain features.
             </p>
           </div>
-        </section>
-
-        <section className="space-y-4">
-          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            7. Changes to This Policy
-          </h2>
-          <p className="text-muted-foreground">
-            We may update this Cookie Policy occasionally. Users will be notified when significant changes occur.
+          <p className="leading-relaxed text-muted-foreground">
+            We may also provide a cookie consent banner or preference centre on the website to allow you to accept or reject categories of cookies.
           </p>
         </section>
 
         <section className="space-y-4">
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
-            8. Contact
+            7. Changes to This Cookie Policy
           </h2>
+          <p className="leading-relaxed text-muted-foreground">
+            We may update this Cookie Policy from time to time to reflect changes in our practices or legal requirements. Any material changes will be notified by updating the effective date and, where appropriate, through a prominent notice on the Platform. Your continued use of the Platform after such changes constitutes acceptance of the updated policy.
+          </p>
+        </section>
+
+        <section className="space-y-4">
+          <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
+            8. Contact and Data Protection Officer
+          </h2>
+          <p className="leading-relaxed text-muted-foreground">
+            If you have any questions about this Cookie Policy or our use of cookies, please contact us:
+          </p>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <p className="mb-2 font-medium text-foreground">Fastlearners Limited</p>
+            <p className="mb-2 font-medium text-foreground text-lg">Data Protection Officer (DPO): Oladele Joshua O.</p>
             <div className="space-y-1 text-muted-foreground">
-              <p>Email: <a href="mailto:info@fastlearnersapp.com" className="text-primary hover:underline">info@fastlearnersapp.com</a></p>
-              <p>Address: 3 Chief Aaron Nteubong Street Easter Obolo, Akwa Ibom State.</p>
+              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="text-primary hover:underline font-medium">joshua.oladele@fastlearnersapp.com</a></p>
+              <p className="mt-4 font-semibold text-foreground">Company: FastLearners Limited</p>
+              <p>Support Email: <a href="mailto:support@fastlearnersapp.com" className="text-primary hover:underline">support@fastlearnersapp.com</a></p>
+              <p>Telephone: +234 706 544 7436</p>
+              <p>Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
             </div>
           </div>
+          <p className="leading-relaxed text-muted-foreground mt-4">
+            You may also contact the Nigeria Data Protection Commission (NDPC) if needed.
+          </p>
         </section>
       </div>
     </div>
