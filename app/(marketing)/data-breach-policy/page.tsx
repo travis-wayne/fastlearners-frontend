@@ -52,7 +52,7 @@ export default function DataBreachPolicyPage() {
             <li>Unauthorised sharing or leakage of data to third parties</li>
             <li>Any incident that exposes students’ educational records, parental information, or children’s personal data</li>
           </ul>
-          <p className="leading-relaxed text-muted-foreground italic">
+          <p className="italic leading-relaxed text-muted-foreground">
             Even suspected or near-miss incidents must be reported internally for assessment.
           </p>
         </section>
@@ -95,7 +95,7 @@ export default function DataBreachPolicyPage() {
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Breach Response Procedure
           </h2>
-          <p className="text-muted-foreground italic">
+          <p className="italic text-muted-foreground">
             Our response follows a structured six-step process designed for speed and accountability.
           </p>
 
@@ -129,7 +129,7 @@ export default function DataBreachPolicyPage() {
 
             <div className="border-l-4 border-primary py-1 pl-4">
               <h3 className="text-lg font-bold text-foreground sm:text-xl">Step 4: Notification</h3>
-              <p className="mt-2 text-muted-foreground font-medium">Notification requirements are strictly time-bound under the NDPA:</p>
+              <p className="mt-2 font-medium text-muted-foreground">Notification requirements are strictly time-bound under the NDPA:</p>
               <div className="mt-3 space-y-4">
                 <div>
                   <h4 className="font-semibold text-foreground">To the NDPC:</h4>
@@ -195,7 +195,7 @@ export default function DataBreachPolicyPage() {
             <li>Regular security audits, vulnerability scanning, and penetration testing</li>
             <li>Staff training on data protection and security awareness</li>
           </ul>
-          <p className="leading-relaxed text-muted-foreground italic">
+          <p className="italic leading-relaxed text-muted-foreground">
             These measures are reviewed regularly and improved based on emerging threats.
           </p>
         </section>
@@ -217,16 +217,16 @@ export default function DataBreachPolicyPage() {
             For any questions regarding this policy or to report a suspected breach, please contact:
           </p>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <p className="mb-2 font-semibold text-foreground text-lg">Data Protection Officer: Oladele Joshua O.</p>
+            <p className="mb-2 text-lg font-semibold text-foreground">Data Protection Officer: Oladele Joshua O.</p>
             <div className="space-y-1 text-muted-foreground">
-              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="text-primary hover:underline font-medium">joshua.oladele@fastlearnersapp.com</a></p>
-              <p className="mt-4 font-semibold text-foreground text-base">FastLearners Limited</p>
+              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="font-medium text-primary hover:underline">joshua.oladele@fastlearnersapp.com</a></p>
+              <p className="mt-4 text-base font-semibold text-foreground">FastLearners Limited</p>
               <p>Support Email: <a href="mailto:support@fastlearnersapp.com" className="text-primary hover:underline">support@fastlearnersapp.com</a></p>
               <p>Telephone: +234 706 544 7436</p>
               <p>Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
             </div>
           </div>
-          <p className="leading-relaxed text-muted-foreground mt-4 italic">
+          <p className="mt-4 italic leading-relaxed text-muted-foreground">
             Users may also contact the Nigeria Data Protection Commission (NDPC) directly if they have concerns about our handling of a breach.
           </p>
         </section>

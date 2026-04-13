@@ -13,7 +13,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl md:text-5xl">
             Children’s Data Protection Policy
           </h1>
-          <div className="flex flex-col space-y-1 text-muted-foreground font-medium">
+          <div className="flex flex-col space-y-1 font-medium text-muted-foreground">
             <p>FastLearners App</p>
             <p>Effective Date: 10 April 2026</p>
             <p>Data Controller: FastLearners Limited</p>
@@ -30,7 +30,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <p className="leading-relaxed text-muted-foreground">
             We recognise that children are particularly vulnerable and deserve heightened protection. We are committed to safeguarding children’s privacy in full compliance with the Nigeria Data Protection Act 2023 (NDPA), especially Section 31 on the processing of personal data of a child, the General Application and Implementation Directive (GAID) 2025, and all applicable guidelines issued by the Nigeria Data Protection Commission (NDPC).
           </p>
-          <p className="leading-relaxed text-muted-foreground font-medium">
+          <p className="font-medium leading-relaxed text-muted-foreground">
             This policy should be read together with our <a href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</a> and <a href="/terms-of-service" className="text-primary hover:underline">Terms of Service</a>. Parents, guardians, and schools are strongly encouraged to review it carefully before allowing a child to use the Platform.
           </p>
         </section>
@@ -59,7 +59,7 @@ export default function ChildrensDataProtectionPolicyPage() {
             <li>Technical and usage data: login activity, device information, IP address (anonymised where possible), and session timestamps</li>
             <li>Any other data the child inputs or generates while using the learning tools (e.g., answers to exercises or uploaded schoolwork)</li>
           </ul>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed italic">
+          <p className="mt-2 text-sm italic leading-relaxed text-muted-foreground">
             We limit collection to what is necessary for providing educational services and do not knowingly collect sensitive personal data (such as health, biometric, or religious information) unless explicitly required and supported by additional consent or legal basis.
           </p>
         </section>
@@ -80,7 +80,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <p className="leading-relaxed text-muted-foreground">
             Consent is obtained during the child’s initial signup or when a parent creates a profile for their child. Parents must actively confirm consent — payment alone does not constitute verifiable consent. We keep records of when and how consent was obtained.
           </p>
-          <p className="leading-relaxed text-muted-foreground italic">
+          <p className="italic leading-relaxed text-muted-foreground">
             Parents can withdraw consent at any time. Withdrawal of consent may limit or terminate the child’s ability to use certain features of the Platform.
           </p>
         </section>
@@ -116,7 +116,7 @@ export default function ChildrensDataProtectionPolicyPage() {
             <li>Providing support and answering questions from the child or parent</li>
             <li>Improving the overall quality and safety of the Platform</li>
           </ul>
-          <p className="leading-relaxed text-foreground font-medium border-l-2 border-primary pl-4 py-1">
+          <p className="border-l-2 border-primary py-1 pl-4 font-medium leading-relaxed text-foreground">
             We do not use children’s data for behavioural advertising, profiling for marketing purposes, or any non-educational commercial activities.
           </p>
         </section>
@@ -125,7 +125,7 @@ export default function ChildrensDataProtectionPolicyPage() {
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             7. Data Sharing and Third Parties
           </h2>
-          <p className="leading-relaxed text-muted-foreground font-bold">
+          <p className="font-bold leading-relaxed text-muted-foreground">
             Children’s personal data is never shared with third parties without explicit parental consent or unless required by law.
           </p>
           <p className="leading-relaxed text-muted-foreground">
@@ -145,7 +145,7 @@ export default function ChildrensDataProtectionPolicyPage() {
             <li>Upon withdrawal of consent or a deletion request from a parent/guardian, the child’s account and associated data will be deleted or anonymised as soon as reasonably practicable.</li>
             <li>Inactive children’s accounts are generally deleted or anonymised after 24 months of inactivity.</li>
           </ul>
-          <p className="leading-relaxed text-muted-foreground italic">
+          <p className="italic leading-relaxed text-muted-foreground">
             We do not retain children’s data longer than necessary, and we apply stricter retention periods where appropriate due to the sensitive nature of the data.
           </p>
         </section>
@@ -163,8 +163,8 @@ export default function ChildrensDataProtectionPolicyPage() {
             <li>Background checks (where applicable) for employees with direct access to children’s data</li>
             <li>Monitoring systems to detect and prevent unauthorised access</li>
           </ul>
-          <p className="leading-relaxed text-muted-foreground border-l-2 border-primary pl-4 py-1 mt-4">
-            In the event of a data breach involving children’s data, we will follow our <a href="/data-breach-policy" className="text-primary hover:underline font-medium">Data Breach Response Policy</a> with heightened urgency and will notify parents/guardians immediately where there is a high risk to the child.
+          <p className="mt-4 border-l-2 border-primary py-1 pl-4 leading-relaxed text-muted-foreground">
+            In the event of a data breach involving children’s data, we will follow our <a href="/data-breach-policy" className="font-medium text-primary hover:underline">Data Breach Response Policy</a> with heightened urgency and will notify parents/guardians immediately where there is a high risk to the child.
           </p>
         </section>
 
@@ -173,16 +173,16 @@ export default function ChildrensDataProtectionPolicyPage() {
             10. Contact and Complaints
           </h2>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <p className="mb-2 font-medium text-foreground text-lg">Data Protection Officer (DPO): Oladele Joshua O.</p>
+            <p className="mb-2 text-lg font-medium text-foreground">Data Protection Officer (DPO): Oladele Joshua O.</p>
             <div className="space-y-1 text-muted-foreground">
-              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="text-primary hover:underline font-medium">joshua.oladele@fastlearnersapp.com</a></p>
-              <p className="mt-4 font-semibold text-foreground text-base">FastLearners Limited</p>
+              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="font-medium text-primary hover:underline">joshua.oladele@fastlearnersapp.com</a></p>
+              <p className="mt-4 font-semibold text-foreground">FastLearners Limited</p>
               <p>Support Email: <a href="mailto:support@fastlearnersapp.com" className="text-primary hover:underline">support@fastlearnersapp.com</a></p>
               <p>Telephone: +234 706 544 7436</p>
               <p>Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
             </div>
           </div>
-          <p className="leading-relaxed text-muted-foreground mt-4 text-sm font-medium">
+          <p className="mt-4 text-sm font-medium leading-relaxed text-muted-foreground">
             You also have the right to lodge a complaint with the Nigeria Data Protection Commission (NDPC) if you believe we have not handled your child’s data appropriately.
           </p>
         </section>

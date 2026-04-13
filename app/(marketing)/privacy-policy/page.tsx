@@ -258,7 +258,7 @@ export default function PrivacyPolicyPage() {
               <p>Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
             </div>
           </div>
-          <p className="leading-relaxed text-muted-foreground mt-4">
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             You may also contact the Nigeria Data Protection Commission (NDPC) if you are not satisfied with our response.
           </p>
         </section>

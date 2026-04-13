@@ -144,7 +144,7 @@ export default function CookiePolicyPage() {
             <li>By clearing your browser cache or app data.</li>
           </ul>
           <div className="rounded-lg border border-border bg-card p-4 shadow-sm">
-            <p className="text-sm text-muted-foreground leading-relaxed">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               <span className="font-semibold text-foreground">Important Note:</span> Disabling strictly necessary cookies may prevent the Platform from functioning properly or limit your ability to use certain features.
             </p>
           </div>
@@ -170,16 +170,16 @@ export default function CookiePolicyPage() {
             If you have any questions about this Cookie Policy or our use of cookies, please contact us:
           </p>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <p className="mb-2 font-medium text-foreground text-lg">Data Protection Officer (DPO): Oladele Joshua O.</p>
+            <p className="mb-2 text-lg font-medium text-foreground">Data Protection Officer (DPO): Oladele Joshua O.</p>
             <div className="space-y-1 text-muted-foreground">
-              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="text-primary hover:underline font-medium">joshua.oladele@fastlearnersapp.com</a></p>
+              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="font-medium text-primary hover:underline">joshua.oladele@fastlearnersapp.com</a></p>
               <p className="mt-4 font-semibold text-foreground">Company: FastLearners Limited</p>
               <p>Support Email: <a href="mailto:support@fastlearnersapp.com" className="text-primary hover:underline">support@fastlearnersapp.com</a></p>
               <p>Telephone: +234 706 544 7436</p>
               <p>Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
             </div>
           </div>
-          <p className="leading-relaxed text-muted-foreground mt-4">
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             You may also contact the Nigeria Data Protection Commission (NDPC) if needed.
           </p>
         </section>

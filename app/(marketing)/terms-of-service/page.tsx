@@ -39,7 +39,7 @@ export default function TermsOfServicePage() {
             <li>Parents or legal guardians are fully responsible for supervising their Child&apos;s use of the Platform, including all activities, communications, and content accessed or created by the Minor.</li>
             <li>We strongly encourage parents/guardians to review our Children&apos;s Data Protection Policy and Privacy Policy before granting consent.</li>
           </ul>
-          <p className="font-medium text-muted-foreground italic">
+          <p className="font-medium italic text-muted-foreground">
             Note: We do not assume that payment alone automatically constitutes parental consent.
           </p>
         </section>
@@ -105,7 +105,7 @@ export default function TermsOfServicePage() {
             <li>We suspect fraudulent, abusive, or unlawful activity.</li>
             <li>Your continued use poses a risk to the Platform, other users, or our compliance obligations.</li>
           </ul>
-          <p className="leading-relaxed text-muted-foreground mt-4">
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             Upon termination, your right to use the Platform will cease immediately. Any provisions of these Terms that by their nature should survive termination shall survive, including intellectual property rights, warranty disclaimers, and limitations of liability.
           </p>
         </section>
@@ -141,7 +141,7 @@ export default function TermsOfServicePage() {
           <p className="leading-relaxed text-muted-foreground">
             Any disputes arising under or in connection with these Terms shall be subject to the exclusive jurisdiction of the courts of Nigeria.
           </p>
-          <p className="leading-relaxed text-muted-foreground mt-4">
+          <p className="mt-4 leading-relaxed text-muted-foreground">
             We are committed to processing data in compliance with the Nigeria Data Protection Act 2023. For more details on how we handle data, please refer to our <a href="/privacy-policy" className="text-primary hover:underline">Privacy Policy</a>, <a href="/childrens-data-protection-policy" className="text-primary hover:underline">Children&apos;s Data Protection Policy</a>, and <a href="/data-breach-policy" className="text-primary hover:underline">Data Breach Response Policy</a>.
           </p>
         </section>

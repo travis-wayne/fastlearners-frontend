@@ -21,10 +21,10 @@ export default function DataProcessingAddendumPage() {
           <p className="mt-6 leading-relaxed text-muted-foreground">
             This Data Processing Addendum (“DPA”) forms part of the main agreement between the parties and governs the processing of personal data by FastLearners Limited on behalf of the Controller. It is entered into between:
           </p>
-          <div className="space-y-2 border-l-2 border-primary pl-6 py-1">
+          <div className="space-y-2 border-l-2 border-primary py-1 pl-6">
             <p className="font-bold text-foreground">FastLearners Limited</p>
             <p className="text-muted-foreground"> (“Processor” or “FastLearners”)</p>
-            <p className="text-muted-foreground text-sm">Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
+            <p className="text-sm text-muted-foreground">Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
           </div>
         </div>
 
@@ -65,7 +65,7 @@ export default function DataProcessingAddendumPage() {
             <li>Login and usage data (IP addresses, device information, timestamps, and session data)</li>
             <li>Any other personal data that the Controller uploads or instructs the Processor to process in connection with the services</li>
           </ul>
-          <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
             The Processor does not process sensitive personal data (such as health, biometric, or religious data) unless explicitly instructed in writing by the Controller and in full compliance with NDPA requirements for special categories of data.
           </p>
         </section>
@@ -74,7 +74,7 @@ export default function DataProcessingAddendumPage() {
           <h2 className="text-xl font-semibold tracking-tight text-foreground sm:text-2xl">
             4. Nature, Purpose, and Duration of Processing
           </h2>
-          <p className="text-muted-foreground text-sm font-medium">The Processor will process the personal data only for the following documented purposes:</p>
+          <p className="text-sm font-medium text-muted-foreground">The Processor will process the personal data only for the following documented purposes:</p>
           <ul className="list-disc space-y-1 pl-6 text-muted-foreground">
             <li>Creating and managing student and staff accounts on the FastLearners Platform</li>
             <li>Delivering personalised educational content and digital learning experiences</li>
@@ -83,7 +83,7 @@ export default function DataProcessingAddendumPage() {
             <li>Providing technical support and maintaining the functionality of the Platform</li>
             <li>Complying with legal obligations or as otherwise instructed in writing by the Controller</li>
           </ul>
-          <p className="mt-2 text-muted-foreground leading-relaxed">
+          <p className="mt-2 leading-relaxed text-muted-foreground">
             Processing shall continue for the duration of the main service agreement between the Parties, unless otherwise terminated earlier in accordance with this DPA or the main agreement.
           </p>
         </section>
@@ -93,7 +93,7 @@ export default function DataProcessingAddendumPage() {
             5. Processor Obligations
           </h2>
           <p className="text-muted-foreground">FastLearners, as the Processor, agrees to:</p>
-          <div className="space-y-4 text-muted-foreground leading-relaxed">
+          <div className="space-y-4 leading-relaxed text-muted-foreground">
             <p>
               <span className="font-semibold text-foreground">a.</span> Process personal data only on documented instructions from the Controller, including with regard to international transfers. If the Processor is required by law to process data without such instructions, it will inform the Controller of that legal requirement before processing, unless prohibited by law.
             </p>
@@ -133,7 +133,7 @@ export default function DataProcessingAddendumPage() {
               <li>Remain fully liable to the Controller for the performance of each sub-processor’s obligations.</li>
             </ul>
           </div>
-          <p className="text-muted-foreground leading-relaxed mt-2">
+          <p className="mt-2 leading-relaxed text-muted-foreground">
             The Controller may object to the appointment or replacement of any sub-processor within 14 days of being notified. If the Controller objects, the Parties shall discuss in good faith to find a mutually acceptable solution.
           </p>
         </section>
@@ -151,7 +151,7 @@ export default function DataProcessingAddendumPage() {
             <li>Adequacy decisions issued by the NDPC</li>
             <li>Other appropriate safeguards approved by the NDPC</li>
           </ul>
-          <p className="leading-relaxed text-muted-foreground mt-2 font-medium">
+          <p className="mt-2 text-sm font-medium leading-relaxed text-muted-foreground">
             The Processor shall inform the Controller of any intended international transfers and provide details of the safeguards in place.
           </p>
         </section>
@@ -172,10 +172,10 @@ export default function DataProcessingAddendumPage() {
           <p className="leading-relaxed text-muted-foreground">
             This DPA shall terminate automatically upon termination or expiry of the main service agreement. Upon termination, the Processor’s obligations under Section 5(g) regarding deletion or return of data shall apply.
           </p>
-          <p className="leading-relaxed text-muted-foreground border-t border-border/50 pt-4">
+          <p className="border-t border-border/50 pt-4 leading-relaxed text-muted-foreground">
             This DPA shall be governed by and construed in accordance with the laws of the Federal Republic of Nigeria. Any disputes arising out of or in connection with this DPA shall be subject to the exclusive jurisdiction of the competent courts in Nigeria.
           </p>
-          <p className="leading-relaxed text-foreground font-medium italic mt-2">
+          <p className="mt-2 font-medium italic leading-relaxed text-foreground">
             The Parties acknowledge that this DPA supplements and does not replace any obligations under the NDPA or other applicable laws.
           </p>
         </section>
@@ -185,10 +185,10 @@ export default function DataProcessingAddendumPage() {
             10. Contact and Data Protection Officer
           </h2>
           <div className="rounded-lg border border-border bg-card p-6 shadow-sm">
-            <p className="mb-2 font-medium text-foreground text-lg">Data Protection Officer (DPO): Oladele Joshua O.</p>
+            <p className="mb-2 text-lg font-medium text-foreground">Data Protection Officer (DPO): Oladele Joshua O.</p>
             <div className="space-y-1 text-muted-foreground">
-              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="text-primary hover:underline font-medium">joshua.oladele@fastlearnersapp.com</a></p>
-              <p className="mt-4 font-semibold text-foreground text-base">Company: FastLearners Limited</p>
+              <p>DPO Email: <a href="mailto:joshua.oladele@fastlearnersapp.com" className="font-medium text-primary hover:underline">joshua.oladele@fastlearnersapp.com</a></p>
+              <p className="mt-4 text-base font-semibold text-foreground">Company: FastLearners Limited</p>
               <p>Support Email: <a href="mailto:support@fastlearnersapp.com" className="text-primary hover:underline">support@fastlearnersapp.com</a></p>
               <p>Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria</p>
             </div>
