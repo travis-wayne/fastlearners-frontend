@@ -229,13 +229,13 @@ export function LessonContent({
                           )}
                           {desc.audio_path && (
                             <Card className="my-3 border-2">
-                              <CardHeader className="p-3 sm:p-4 pb-2 sm:pb-3">
+                              <CardHeader className="p-3 pb-2 sm:p-4 sm:pb-3">
                                 <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
                                   <Volume2 className="size-4 text-primary" />
                                   Pronunciation / Audio
                                 </CardTitle>
                               </CardHeader>
-                              <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
+                              <CardContent className="p-3 pt-0 sm:p-4 sm:pt-0">
                                 <audio controls className="w-full">
                                   <source src={desc.audio_path} />
                                   Your browser does not support the audio element.

@@ -96,7 +96,7 @@ export function RegisterForm({
       setReferralStatus("idle");
       setReferralMessage("");
     }
-  }, [referralCodeValue]);
+  }, [referralCodeValue, referralStatus]);
 
   const handleVerify = async () => {
     const code = watch("referral_code") ?? "";
