@@ -1,4 +1,4 @@
-# FastLearners Backend API Documentation
+﻿# FastLearners API Documentation
 
 **Base URL:** `https://api.fastlearnersapp.com`
 
@@ -10,11 +10,8 @@
 2. [User Management](#user-management)
 3. [Guest Management](#guest-management)
 4. [Student Management](#student-management)
-5. [Guardian Management](#guardian-management)
-6. [Lesson Management & Content](#lesson-management--content)
-7. [Answering System](#answering-system)
-8. [Lesson Completion Check System](#lesson-completion-check-system)
-9. [Admin & SuperAdmin Endpoints](#admin--superadmin-endpoints)
+5. [Parental Consent Management](#parental-consent-management)
+6. [Guardian Management](#guardian-management)
 
 ---
 
@@ -24,7 +21,12 @@
 
 **Endpoint:** `POST /api/v1/register`
 
-**Description:** Register a new user with their email address.
+**Description:** Register a new user with their email address and an optional referral code.
+
+**Notes:**
+- The referral code input field is optional.
+- The referral code is 8 characters.
+- Users can verify their referral code before continuing with registration.
 
 **Headers:**
 | Key | Value |
@@ -34,9 +36,17 @@
 **Request Body:**
 ```json
 {
-  "email": "john@example.com"
+  "email": "john@example.com",
+  "referral_code": "ABC1DEF2"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | verify-email |
+| validation error | none |
+| user not found error | none |
 
 **Success Response (200):**
 ```json
@@ -54,9 +64,7 @@
   "success": false,
   "message": "Validation failed",
   "errors": {
-    "email": [
-      "The email field is required."
-    ]
+    "email": ["The email field is required."]
   },
   "code": 422
 }
@@ -68,23 +76,91 @@
   "success": false,
   "message": "Validation failed",
   "errors": {
-    "email": [
-      "The email has already been taken."
+    "email": ["The email has already been taken."]
+  },
+  "code": 422
+}
+```
+
+---
+
+### 2. Verify Referral Code
+
+**Endpoint:** `POST /api/v1/verify-referral-code`
+
+**Description:** Verify referral code before proceeding with user registration.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Accept | application/json |
+
+**Request Body:**
+```json
+{
+  "referral_code": "ABC1DEF2"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+| validation error | none |
+| code not found error | none |
+
+**Success Response (200):**
+```json
+{
+  "success": true,
+  "message": "Agent Ceetny was verified successfully !",
+  "content": null,
+  "code": 200
+}
+```
+
+**Validation Error (422):**
+```json
+{
+  "success": false,
+  "message": "Validation failed",
+  "errors": {
+    "referral_code": [
+      "The referral code field is required.",
+      "The referral code field must be 8 characters."
     ]
   },
   "code": 422
 }
 ```
 
-**Redirection:** On success → `verify-email`
+**Code Not Found Error (404):**
+```json
+{
+  "success": false,
+  "message": "Referral code does not exist, try again!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Server Error (500):**
+```json
+{
+  "success": false,
+  "message": "An error occurred while verifying your referral code, try again!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
 
 ---
 
-### 2. Verify Email After Registration
+### 3. Verify Email After Registration
 
 **Endpoint:** `POST /api/v1/verify-email`
 
-**Description:** Verify email address after registration with a 6-digit code sent to the registered email address. Code expires after 15 minutes.
+**Description:** Verify email address after registration with a 6-digit code sent to the registered email. Code expires after 15 minutes.
 
 **Headers:**
 | Key | Value |
@@ -98,6 +174,14 @@
   "code": "849201"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | create-password |
+| validation error | none |
+| code not found error | none |
+| code expired error | none |
 
 **Success Response (200):**
 ```json
@@ -172,11 +256,9 @@
 }
 ```
 
-**Redirection:** On success → `create-password`
-
 ---
 
-### 3. Create Password
+### 4. Create Password
 
 **Endpoint:** `POST /api/v1/create-password`
 
@@ -196,6 +278,12 @@
 }
 ```
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | set-role |
+| validation error | none |
+
 **Success Response (200):**
 ```json
 {
@@ -212,8 +300,11 @@
   "success": false,
   "message": "Validation failed",
   "errors": {
-    "password": ["The password field is required."],
-    "password_confirmation": ["The password_confirmation field is required.", "The password field confirmation does not match."]
+    "password": [
+      "The password field is required.",
+      "The password confirmation field is required.",
+      "The password field confirmation does not match."
+    ]
   },
   "code": 422
 }
@@ -229,19 +320,16 @@
 }
 ```
 
-**Redirection:** On success → `set-role`
-
 ---
 
-### 4. Set Role
+### 5. Set Role
 
 **Endpoint:** `POST /api/v1/set-role`
 
 **Description:** Set role after successfully creating password.
 
 **Notes:**
-- Users must select from `['guest', 'student', 'guardian']`
-- If the user role selected is `guardian`, add extra input for `child_email` and `child_phone`
+- Users are to select from `['guest', 'student', 'guardian']`.
 
 **Headers:**
 | Key | Value |
@@ -249,21 +337,18 @@
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
 
-**Request Body (Student):**
+**Request Body:**
 ```json
 {
   "user_role": "student"
 }
 ```
 
-**Request Body (Guardian):**
-```json
-{
-  "user_role": "guardian",
-  "child_email": "child@example.com",
-  "child_phone": "08098765432"
-}
-```
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | dashboard (redirect according to user's role) |
+| validation error | none |
 
 **Success Response (200):**
 ```json
@@ -307,11 +392,9 @@
 }
 ```
 
-**Redirection:** On success → `dashboard` (redirect according to user's role)
-
 ---
 
-### 5. Resend Verification Code
+### 6. Resend Verification Code
 
 **Endpoint:** `POST /api/v1/resend-verification-code`
 
@@ -328,6 +411,14 @@
   "email": "john@example.com"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+| validation error | none |
+| user not found error | none |
+| error sending code | none |
 
 **Success Response (200):**
 ```json
@@ -373,7 +464,7 @@
 
 ---
 
-### 6. Login
+### 7. Login
 
 **Endpoint:** `POST /api/v1/login`
 
@@ -391,6 +482,15 @@
   "password": "password"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | dashboard (redirect according to user's role) |
+| validation error | none |
+| invalid login details error | none |
+| inactive user error | verify-email |
+| user suspended error | none |
 
 **Success Response (200):**
 ```json
@@ -428,7 +528,7 @@
   "success": false,
   "message": "Validation failed!",
   "errors": {
-    "email_phone": ["The email field is required."],
+    "email": ["The email field is required."],
     "password": ["The password field is required."]
   },
   "code": 422
@@ -465,11 +565,9 @@
 }
 ```
 
-**Redirection:** On success → `dashboard` (redirect according to user's role) | Inactive user → `verify-email`
-
 ---
 
-### 7. Login/Register With Google
+### 8. Login/Register With Google
 
 **Endpoint:** `POST /api/v1/google/redirect`
 
@@ -485,11 +583,15 @@
 {}
 ```
 
-**Redirection:** On success → `dashboard` or `create-password` (depending on account status)
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | dashboard or create-password |
+| validation error | none |
 
 ---
 
-### 8. Logout
+### 9. Logout
 
 **Endpoint:** `POST /api/v1/logout`
 
@@ -500,6 +602,12 @@
 |-----|-------|
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | login |
+| unauthorized error | none |
 
 **Success Response (200):**
 ```json
@@ -521,11 +629,9 @@
 }
 ```
 
-**Redirection:** On success → `login`
-
 ---
 
-### 9. Forgot Password
+### 10. Forgot Password
 
 **Endpoint:** `POST /api/v1/forgot-password`
 
@@ -542,6 +648,14 @@
   "email": "john@example.com"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | verify reset code |
+| validation error | none |
+| email not found error | none |
+| email sending error | none |
 
 **Success Response (200):**
 ```json
@@ -579,7 +693,7 @@
 
 ---
 
-### 10. Verify Password Reset Code
+### 11. Verify Password Reset Code
 
 **Endpoint:** `POST /api/v1/verify-reset-code`
 
@@ -597,6 +711,15 @@
   "code": "849201"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | reset password |
+| validation error | none |
+| code not found error | none |
+| invalid code error | none |
+| code expired error | none |
 
 **Success Response (200):**
 ```json
@@ -653,11 +776,9 @@
 }
 ```
 
-**Redirection:** On success → `reset password`
-
 ---
 
-### 11. Resend Password Reset Code
+### 12. Resend Password Reset Code
 
 **Endpoint:** `POST /api/v1/resend-reset-code`
 
@@ -674,6 +795,14 @@
   "email": "john@example.com"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+| validation error | none |
+| email not found error | none |
+| email sending error | none |
 
 **Success Response (200):**
 ```json
@@ -711,7 +840,7 @@
 
 ---
 
-### 12. Reset Password
+### 13. Reset Password
 
 **Endpoint:** `POST /api/v1/reset-password`
 
@@ -730,6 +859,14 @@
   "password_confirmation": "NewPass123"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | login |
+| validation error | none |
+| email not found error | none |
+| email sending error | none |
 
 **Success Response (200):**
 ```json
@@ -785,17 +922,14 @@
 }
 ```
 
-**Redirection:** On success → `login`
-
 ---
-
 ## User Management
 
 ### 1. Profile Details
 
 **Endpoint:** `GET /api/v1/profile`
 
-**Description:** User's profile displays user's information (all users i.e., guest, student, guardian, admin, etc.).
+**Description:** Displays user information for all user types (guest, student, guardian, admin, etc.).
 
 **Headers:**
 | Key | Value |
@@ -819,6 +953,9 @@
       "class": null,
       "discipline": null,
       "date_of_birth": null,
+      "age": null,
+      "parent_email": null,
+      "parent_phone": null,
       "country": null,
       "state": null,
       "city": null,
@@ -848,7 +985,7 @@
 
 **Endpoint:** `GET /api/v1/profile/data`
 
-**Description:** Get user's profile data including classes, roles, and disciplines.
+**Description:** Get user's profile page data (classes, roles, disciplines).
 
 **Headers:**
 | Key | Value |
@@ -863,18 +1000,12 @@
   "message": "Profile page data",
   "content": {
     "classes": [
-      { "name": "JSS1" },
-      { "name": "JSS2" },
-      { "name": "JSS3" },
-      { "name": "SSS1" },
-      { "name": "SSS2" },
-      { "name": "SSS3" }
+      {"name": "JSS1"}, {"name": "JSS2"}, {"name": "JSS3"},
+      {"name": "SSS1"}, {"name": "SSS2"}, {"name": "SSS3"}
     ],
     "roles": ["guest", "student", "guardian"],
     "discipline": [
-      { "name": "Art" },
-      { "name": "Commercial" },
-      { "name": "Science" }
+      {"name": "Art"}, {"name": "Commercial"}, {"name": "Science"}
     ]
   },
   "code": 200
@@ -907,7 +1038,7 @@
 
 **Endpoint:** `GET /api/v1/check-username-availability/{username}`
 
-**Description:** Check if username is available.
+**Description:** Check if a username is available.
 
 **Headers:**
 | Key | Value |
@@ -969,16 +1100,15 @@
 
 **Description:** Edit user profile information.
 
-**Important Notes:**
-- If role is `guardian`, `child_email` and `child_phone` are required
-- Show the role input field only if user's role === "guest", else show disabled
-- Show username input field if `username == null`, else show disabled
-- Show date of birth input field if `date_of_birth == null`, else show disabled
-- Show class input field if `class == null`, else show disabled
-- Show discipline input field if `discipline == null` AND `class == SSS1 || SSS2 || SSS3`, else show disabled
-- Discipline must be a select option of: Art, Commercial, Science
-- Show gender input field if `gender == null`, else show disabled
-- Except for students, school, class, and discipline are NOT required for other roles (guest, guardian, teacher, admin, superadmin)
+**Notes:**
+- Show the role input field if `user.role === 'guest'` else show a disabled input field. Users set their role once.
+- Show the username input field if `user.username == null` else show a disabled input field. Users set their username once.
+- Show an enabled date of birth input if `user.date_of_birth == null` else disabled. Users set DOB once.
+- Show an enabled class input if `user.class == null` else disabled. Users set their class once.
+- Show an enabled discipline input if `user.discipline == null` AND `user.class` is SSS1/SSS2/SSS3 else disabled. Users set discipline once.
+- Discipline must be a select option of Art, Commercial, and Science.
+- Show an enabled gender input if `user.gender == null` else disabled. Users set gender once.
+- School, class, and discipline are not required for non-student roles (guest, guardian, teacher, admin, superadmin).
 
 **Headers:**
 | Key | Value |
@@ -986,7 +1116,7 @@
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
 
-**Request Body (Student):**
+**Request Body:**
 ```json
 {
   "name": "Linus Thompson",
@@ -997,31 +1127,23 @@
   "discipline": "Science",
   "date_of_birth": "03/11/2018",
   "gender": "male",
+  "age": 22,
+  "parent_email": "parent.email@email.com",
+  "parent_phone": "09036745284",
   "country": "Nigeria",
   "state": "Akwa Ibom",
   "city": "Uyo",
   "address": "123 Oron Road",
-  "role": "student"
+  "role": ["student"]
 }
 ```
 
-**Request Body (Guardian):**
-```json
-{
-  "name": "Linus Thompson",
-  "username": "linus",
-  "phone": "08012345678",
-  "date_of_birth": "03/11/2018",
-  "gender": "male",
-  "country": "Nigeria",
-  "state": "Akwa Ibom",
-  "city": "Uyo",
-  "address": "123 Oron Road",
-  "role": "guardian",
-  "child_email": "child@example.com",
-  "child_phone": "08098765432"
-}
-```
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | profile |
+| validation error | none |
+| unauthorized | login |
 
 **Success Response (200):**
 ```json
@@ -1040,6 +1162,9 @@
       "discipline": "Science",
       "date_of_birth": "03/11/2018",
       "gender": "male",
+      "age": 22,
+      "parent_email": "parent.email@email.com",
+      "parent_phone": "09036745284",
       "country": "Nigeria",
       "state": "Akwa Ibom",
       "city": "Uyo",
@@ -1066,7 +1191,8 @@
     "class": ["The class field is required."],
     "discipline": ["The discipline field is required."],
     "date_of_birth": ["The date of birth field is required."],
-    "gender": ["The gender is required for guardians."],
+    "gender": ["The gender is required."],
+    "parent_email": ["The parent email is required."],
     "country": ["The country is required for guardians."],
     "state": ["The state field is required."],
     "city": ["The city field is required."],
@@ -1081,82 +1207,42 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Username Already Set Error (401):**
 ```json
-{
-  "success": false,
-  "message": "Username already updated and cannot be changed.",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Username already updated and cannot be changed.", "errors": null, "code": 401}
 ```
 
 **Role Already Set Error (401):**
 ```json
-{
-  "success": false,
-  "message": "Role already updated and cannot be changed. For further enquiries, please contact our support team.",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Role already updated and cannot be changed. For further enquiries, please contact our support team.", "errors": null, "code": 401}
 ```
 
 **Class Already Set Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Class already updated. Make a request for class upgrade.",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Class already updated. Make a request for class upgrade.", "errors": null, "code": 400}
 ```
 
-**Discipline Error (400):**
+**Discipline Error (JSS class) (400):**
 ```json
-{
-  "success": false,
-  "message": "You have to be in SSS class to choose a discipline!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "You have to be in SSS class to choose a discipline!", "errors": null, "code": 400}
 ```
 
 **Discipline Already Set Error (401):**
 ```json
-{
-  "success": false,
-  "message": "Discipline already updated. For further enquiries, please contact our support team.",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Discipline already updated. For further enquiries, please contact our support team.", "errors": null, "code": 401}
 ```
 
 **Gender Already Set Error (401):**
 ```json
-{
-  "success": false,
-  "message": "Gender already updated. For further enquiries, please contact our support team.",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Gender already updated. For further enquiries, please contact our support team.", "errors": null, "code": 401}
 ```
 
 **Date of Birth Already Set Error (401):**
 ```json
-{
-  "success": false,
-  "message": "Date of birth already updated. For further enquiries, please contact our support team.",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Date of birth already updated. For further enquiries, please contact our support team.", "errors": null, "code": 401}
 ```
 
 ---
@@ -1180,6 +1266,13 @@
 }
 ```
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | profile |
+| validation error | none |
+| unauthorized | login |
+
 **Success Response (200):**
 ```json
 {
@@ -1198,7 +1291,7 @@
   "errors": {
     "profile_picture": [
       "The profile picture field is required.",
-      "Profile picture must be of type, png, jpg, jpeg,webp.",
+      "Profile picture must be of type, png, jpg, jpeg, webp.",
       "Profile picture size must not be larger than 1MB."
     ]
   },
@@ -1206,94 +1299,16 @@
 }
 ```
 
-**Current Password Error (422):**
-```json
-{
-  "success": false,
-  "message": "Your current password is incorrect!",
-  "errors": null,
-  "code": 422
-}
-```
-
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
-
-**Redirection:** On success → `profile`
-
----
-
-### 6. Check Username Availability
-
-**Endpoint:** `GET /api/v1/check-username-availability/{username}`
-
-**Description:** Check if username is available.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Username is available!",
-  "content": {
-    "is_available": true,
-    "username": "Username is available!"
-  },
-  "code": 200
-}
-```
-
-**Not Available Response (400):**
-```json
-{
-  "success": false,
-  "message": "Username is not available!",
-  "errors": {
-    "is_available": false,
-    "username": "Username is already taken!"
-  },
-  "code": 400
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**Server Error Response (400):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while checking username availability!",
-  "errors": null,
-  "code": 400
-}
-```
-
 
 ---
 
 ### 6. Change Password
 
-**Endpoint:** `POST /api/v1/profile/edit/password`
+**Endpoint:** `GET /api/v1/profile/edit/password`
 
 **Description:** Change user's password.
 
@@ -1311,6 +1326,14 @@
   "new_password_confirmation": "newpassword"
 }
 ```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | profile |
+| validation error | none |
+| current password error | none |
+| unauthorized | login |
 
 **Success Response (200):**
 ```json
@@ -1338,26 +1361,13 @@
 
 **Current Password Error (422):**
 ```json
-{
-  "success": false,
-  "message": "Your current password is incorrect!",
-  "errors": null,
-  "code": 422
-}
+{"success": false, "message": "Your current password is incorrect!", "errors": null, "code": 422}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
-
----
-
 
 ---
 
@@ -1365,13 +1375,19 @@
 
 **Endpoint:** `DELETE /api/v1/profile/delete`
 
-**Description:** Delete account request by user. Account delete request can be cancelled as well by this endpoint.
+**Description:** Delete account request. The request can also be cancelled using this endpoint.
 
 **Headers:**
 | Key | Value |
 |-----|-------|
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | profile |
+| unauthorized | login |
 
 **Success Response (200):**
 ```json
@@ -1385,22 +1401,12 @@
 
 **Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while sending account delete request, try again",
-  "errors": null,
-  "code": 500
-}
+{"success": false, "message": "An error occurred while sending account delete request, try again", "errors": null, "code": 500}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 ---
@@ -1417,6 +1423,12 @@
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | login |
+| unauthorized | login |
+
 **Success Response (200):**
 ```json
 {
@@ -1429,34 +1441,20 @@
 
 **Failed Error (400):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while deleting your account, try again!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "An error occurred while deleting your account, try again!", "errors": null, "code": 400}
 ```
 
 **Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while deleting your account, try again!",
-  "errors": null,
-  "code": 500
-}
+{"success": false, "message": "An error occurred while deleting your account, try again!", "errors": null, "code": 500}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
+---
 ## Guest Management
 
 ### 1. Dashboard
@@ -1476,31 +1474,19 @@
 {
   "success": true,
   "message": "Your dashboard!",
-  "content": {
-    "data": ""
-  },
+  "content": {"data": ""},
   "code": 200
 }
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Error Message (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": null,
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": null, "code": 500}
 ```
 
 ---
@@ -1542,22 +1528,12 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Error Message (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": null,
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": null, "code": 500}
 ```
 
 ---
@@ -1566,9 +1542,7 @@
 
 **Endpoint:** `GET /api/v1/subjects`
 
-**Description:** Get the list of a student's subjects, compulsory selective subjects status, selective subjects and selective subject status.
-
-**Note:** The compulsory selective subject status and selective subjects data is returned if the student is in a JSS class.
+**Description:** Get the list of a student's subjects including compulsory, compulsory selective, and selective subjects. Compulsory selective and selective data is returned only if the student is in a JSS class.
 
 **Headers:**
 | Key | Value |
@@ -1583,116 +1557,38 @@
   "message": "Success",
   "content": {
     "subjects": [
-      {
-        "id": 1,
-        "name": "General Mathematics"
-      },
-      {
-        "id": 2,
-        "name": "English Language"
-      },
-      {
-        "id": 18,
-        "name": "Civic Education"
-      },
-      {
-        "id": 4,
-        "name": "Biology"
-      },
-      {
-        "id": 5,
-        "name": "Physics"
-      },
-      {
-        "id": 6,
-        "name": "Chemistry"
-      },
-      {
-        "id": 22,
-        "name": "Christian Religious Studies"
-      },
-      {
-        "id": 31,
-        "name": "Efik"
-      },
-      {
-        "id": 7,
-        "name": "Further Mathematics"
-      },
-      {
-        "id": 8,
-        "name": "Economics"
-      },
-      {
-        "id": 36,
-        "name": "Computer Studies"
-      }
+      {"id": 1, "name": "General Mathematics"},
+      {"id": 2, "name": "English Language"},
+      {"id": 18, "name": "Civic Education"},
+      {"id": 4, "name": "Biology"},
+      {"id": 5, "name": "Physics"},
+      {"id": 6, "name": "Chemistry"},
+      {"id": 22, "name": "Christian Religious Studies"},
+      {"id": 31, "name": "Efik"},
+      {"id": 7, "name": "Further Mathematics"},
+      {"id": 8, "name": "Economics"},
+      {"id": 36, "name": "Computer Studies"}
     ],
     "compulsory_selective_status": "selected",
     "compulsory_selective": [
-      {
-        "id": 22,
-        "name": "Christian Religious Studies"
-      },
-      {
-        "id": 23,
-        "name": "Islamic Religious Studies"
-      },
-      {
-        "id": 24,
-        "name": "Religious and Moral Education"
-      }
+      {"id": 22, "name": "Christian Religious Studies"},
+      {"id": 23, "name": "Islamic Religious Studies"},
+      {"id": 24, "name": "Religious and Moral Education"}
     ],
     "selective_status": "selected",
     "selective": [
-      {
-        "id": 3,
-        "name": "Agricultural Science"
-      },
-      {
-        "id": 7,
-        "name": "Further Mathematics"
-      },
-      {
-        "id": 8,
-        "name": "Economics"
-      },
-      {
-        "id": 9,
-        "name": "Geography"
-      },
-      {
-        "id": 27,
-        "name": "Yoruba"
-      },
-      {
-        "id": 28,
-        "name": "Hausa"
-      },
-      {
-        "id": 29,
-        "name": "Igbo"
-      },
-      {
-        "id": 30,
-        "name": "Ibibio"
-      },
-      {
-        "id": 31,
-        "name": "Efik"
-      },
-      {
-        "id": 32,
-        "name": "Obolo"
-      },
-      {
-        "id": 35,
-        "name": "Technical Drawing"
-      },
-      {
-        "id": 36,
-        "name": "Computer Studies"
-      }
+      {"id": 3, "name": "Agricultural Science"},
+      {"id": 7, "name": "Further Mathematics"},
+      {"id": 8, "name": "Economics"},
+      {"id": 9, "name": "Geography"},
+      {"id": 27, "name": "Yoruba"},
+      {"id": 28, "name": "Hausa"},
+      {"id": 29, "name": "Igbo"},
+      {"id": 30, "name": "Ibibio"},
+      {"id": 31, "name": "Efik"},
+      {"id": 32, "name": "Obolo"},
+      {"id": 35, "name": "Technical Drawing"},
+      {"id": 36, "name": "Computer Studies"}
     ]
   },
   "code": 200
@@ -1701,12 +1597,7 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 ---
@@ -1715,11 +1606,7 @@
 
 **Endpoint:** `POST /api/v1/subjects/update-compulsory-selective`
 
-**Description:** Update compulsory selective subject. Only applicable to JSS classes.
-
-**Notes:**
-- A student must select one (1) subject from the list of religious studies
-- Post the subject ID in the request body
+**Description:** Update compulsory selective subject (only applicable to JSS classes). Student selects one (1) religious studies subject.
 
 **Headers:**
 | Key | Value |
@@ -1736,42 +1623,22 @@
 
 **Success Response (200):**
 ```json
-{
-  "success": true,
-  "message": "Compulsory Selective subject Updated successfully!",
-  "content": null,
-  "code": 200
-}
+{"success": true, "message": "Compulsory Selective subject Updated successfully!", "content": null, "code": 200}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Error Response (400):**
 ```json
-{
-  "success": false,
-  "message": "Error updating compulsory selective subject, try again!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Error updating compulsory selective subject, try again!", "errors": null, "code": 400}
 ```
 
-**Server Error Response (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while updating compulsory selective subject!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while updating compulsory selective subject!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
@@ -1780,12 +1647,7 @@
 
 **Endpoint:** `POST /api/v1/subjects/update-selective`
 
-**Description:** Update a student's selective/discipline selective subjects.
-
-**Notes:**
-- For JSS classes: students select four (4) subjects from the list of subjects
-- For SSS classes: students select four (4) subjects from discipline selective subjects
-- Post the subject IDs in the request body
+**Description:** Update a student's selective/discipline selective subjects. Students select four (4) subjects.
 
 **Headers:**
 | Key | Value |
@@ -1796,50 +1658,29 @@
 **Request Body:**
 ```json
 {
-  "subjects[]": 31,
-  "subjects[]": 7,
-  "subjects[]": 8,
-  "subjects[]": 36
+  "subjects[]": [31, 7, 8, 36]
 }
 ```
 
 **Success Response (200):**
 ```json
-{
-  "success": true,
-  "message": "Selective subjects Updated successfully!",
-  "content": null,
-  "code": 200
-}
+{"success": true, "message": "Selective subjects Updated successfully!", "content": null, "code": 200}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Response (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while updating selective subjects!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while updating selective subjects!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 5. Student's Class, Classes, Terms & Weeks
+### 5. Get Student's Class
 
-**Base URL:** `https://api.fastlearnersapp.com`
-
-#### Get Student's Class
 **Endpoint:** `GET /api/v1/student/class`
 
 **Description:** Get a student's current class.
@@ -1855,35 +1696,25 @@
 {
   "success": true,
   "message": "Success",
-  "content": {
-    "class_id": 4,
-    "class_name": "SSS1"
-  },
+  "content": {"class_id": 4, "class_name": "SSS1"},
   "code": 200
 }
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting student class",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting student class", "errors": ["error message"], "code": 500}
 ```
 
-#### Get Classes
+---
+
+### 6. Get All Classes
+
 **Endpoint:** `GET /api/v1/student/classes`
 
 **Description:** Get all classes.
@@ -1901,49 +1732,28 @@
   "message": "Success",
   "content": {
     "classes": [
-      { "id": 1, "name": "JSS1" },
-      { "id": 2, "name": "JSS2" },
-      { "id": 3, "name": "JSS3" },
-      { "id": 4, "name": "SSS1" },
-      { "id": 5, "name": "SSS2" },
-      { "id": 6, "name": "SSS3" }
+      {"id": 1, "name": "JSS1"}, {"id": 2, "name": "JSS2"}, {"id": 3, "name": "JSS3"},
+      {"id": 4, "name": "SSS1"}, {"id": 5, "name": "SSS2"}, {"id": 6, "name": "SSS3"}
     ]
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
 **Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "No class was found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "No class was found!", "errors": null, "code": 404}
 ```
 
 **Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting classes",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting classes", "errors": ["error message"], "code": 500}
 ```
 
-#### Get Terms
+---
+
+### 7. Get Terms
+
 **Endpoint:** `GET /api/v1/student/terms`
 
 **Description:** Get all Terms.
@@ -1961,49 +1771,30 @@
   "message": "Success",
   "content": {
     "terms": [
-      { "id": 1, "name": "First" },
-      { "id": 2, "name": "Second" },
-      { "id": 3, "name": "Third" }
+      {"id": 1, "name": "First"}, {"id": 2, "name": "Second"}, {"id": 3, "name": "Third"}
     ]
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
 **Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "No term was found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "No term was found!", "errors": null, "code": 404}
 ```
 
 **Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting terms",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting terms", "errors": ["error message"], "code": 500}
 ```
 
-#### Get Weeks
+---
+
+### 8. Get Weeks
+
 **Endpoint:** `GET /api/v1/student/weeks`
 
-**Description:** Get all weeks.
+**Description:** Get all weeks (1–12).
 
 **Headers:**
 | Key | Value |
@@ -2018,63 +1809,34 @@
   "message": "Success",
   "content": {
     "weeks": [
-      { "id": 1, "name": 1 },
-      { "id": 2, "name": 2 },
-      { "id": 3, "name": 3 },
-      { "id": 4, "name": 4 },
-      { "id": 5, "name": 5 },
-      { "id": 6, "name": 6 },
-      { "id": 7, "name": 7 },
-      { "id": 8, "name": 8 },
-      { "id": 9, "name": 9 },
-      { "id": 10, "name": 10 },
-      { "id": 11, "name": 11 },
-      { "id": 12, "name": 12 }
+      {"id": 1, "name": 1}, {"id": 2, "name": 2}, {"id": 3, "name": 3},
+      {"id": 4, "name": 4}, {"id": 5, "name": 5}, {"id": 6, "name": 6},
+      {"id": 7, "name": 7}, {"id": 8, "name": 8}, {"id": 9, "name": 9},
+      {"id": 10, "name": 10}, {"id": 11, "name": 11}, {"id": 12, "name": 12}
     ]
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
 **Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "No week was found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "No week was found!", "errors": null, "code": 404}
 ```
 
 **Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting weeks",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting weeks", "errors": ["error message"], "code": 500}
 ```
 
 ---
-
-### 6. Get Student's Subjects (Lessons)
+### 9. List Student's Subjects (Lessons)
 
 **Endpoint:** `GET /api/v1/lessons/`
 
-**Description:** Get the list of a student's subjects (compulsory subjects, compulsory selective, selective subjects).
+**Description:** Get the list of a student's subjects (compulsory, compulsory selective, selective) with slugs for lesson navigation.
 
-**Note:** The subject "slug" should be appended to the topics URL to get the topics.
+**Note:** The subject `slug` should be appended to the topics URL to get topics.
 
 **Headers:**
 | Key | Value |
@@ -2089,16 +1851,17 @@
   "message": "Success",
   "content": {
     "subjects": [
-      {
-        "id": 1,
-        "name": "General Mathematics",
-        "slug": "general-mathematics"
-      },
-      {
-        "id": 2,
-        "name": "English Language",
-        "slug": "english-language"
-      }
+      {"id": 1, "name": "General Mathematics", "slug": "general-mathematics"},
+      {"id": 2, "name": "English Language", "slug": "english-language"},
+      {"id": 18, "name": "Civic Education", "slug": "civic-education"},
+      {"id": 4, "name": "Biology", "slug": "biology"},
+      {"id": 5, "name": "Physics", "slug": "physics"},
+      {"id": 6, "name": "Chemistry", "slug": "chemistry"},
+      {"id": 22, "name": "Christian Religious Studies", "slug": "christian-religious-studies"},
+      {"id": 31, "name": "Efik", "slug": "efik"},
+      {"id": 7, "name": "Further Mathematics", "slug": "further-mathematics"},
+      {"id": 8, "name": "Economics", "slug": "economics"},
+      {"id": 36, "name": "Computer Studies", "slug": "computer-studies"}
     ]
   },
   "code": 200
@@ -2107,45 +1870,30 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **User Class Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "User class not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "User class not found!", "errors": null, "code": 404}
 ```
 
-**Server Error Response (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "There was an error fetching your subjects!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "There was an error fetching your subjects!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 6. Get Topics
+### 10. Get Topics
 
-**Endpoint:** `GET /api/v1/lessons/{subject_slug}`
-
-**Description:** Get the list of topics of a subject.
-
-**Note:** The subject "slug" should be appended to the URL to get the lesson topic overview.
+**Endpoint:** `GET /api/v1/lessons/{subject-slug}`
 
 **Example:** `GET /api/v1/lessons/general-mathematics`
+
+**Description:** Get the list of topics for a subject organized by term.
+
+**Note:** The subject `slug` should be appended to the overview URL to get the topic overview.
 
 **Headers:**
 | Key | Value |
@@ -2161,31 +1909,13 @@
   "content": {
     "topics": {
       "first_term": [
-        {
-          "id": 1,
-          "topic": "Number Bases System",
-          "slug": "number-bases-system",
-          "week": 1,
-          "order_index": 1
-        }
+        {"id": 1, "topic": "Number Bases System", "slug": "number-bases-system", "week": 1, "order_index": 1}
       ],
       "second_term": [
-        {
-          "id": 2,
-          "topic": "Number Bases System",
-          "slug": "number-bases-system",
-          "week": 1,
-          "order_index": 2
-        }
+        {"id": 2, "topic": "Number Bases System", "slug": "number-bases-system", "week": 1, "order_index": 2}
       ],
       "third_term": [
-        {
-          "id": 3,
-          "topic": "Number Bases System",
-          "slug": "number-bases-system",
-          "week": 1,
-          "order_index": 3
-        }
+        {"id": 3, "topic": "Number Bases System", "slug": "number-bases-system", "week": 1, "order_index": 3}
       ]
     }
   },
@@ -2195,65 +1925,40 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Subject Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Subject not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Subject not found!", "errors": null, "code": 404}
 ```
 
 **Class Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Error getting your class!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Error getting your class!", "errors": null, "code": 404}
 ```
 
 **Term Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Error getting your term!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Error getting your term!", "errors": null, "code": 404}
 ```
 
-**Server Error Response (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting lesson topics!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting lesson topics!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 7. Get Topics Overview
+### 11. Get Topic Overview
 
-**Endpoint:** `GET /api/v1/lessons/{subject_slug}/{topic_slug}/overview`
-
-**Description:** Get the overview of a topic which comprises Introduction, Concepts, Application, Summary, and General Exercises.
-
-**Note:** For concepts, it returns a count of the total number of concepts a lesson topic has. Loop through the count and append the count number to the concept URL to display specific content (e.g., `lessons/economics/meaning-of-economics-and-related-concepts/concepts/1` for concept 1).
+**Endpoint:** `GET /api/v1/lessons/{subject-slug}/{topic-slug}/overview`
 
 **Example:** `GET /api/v1/lessons/general-mathematics/number-bases-system/overview`
+
+**Description:** Get the overview of a topic (Introduction, Concepts count, Application, Summary, General Exercises).
+
+**Note:** The concepts count is the total number of concepts in a lesson. Loop through the count and append the number to the concept URL, e.g. `lessons/economics/meaning-of-economics/concepts/1` for concept 1.
 
 **Headers:**
 | Key | Value |
@@ -2281,53 +1986,33 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Subject Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Subject not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Subject not found!", "errors": null, "code": 404}
 ```
 
 **Topic Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Lesson topic not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Lesson topic not found!", "errors": null, "code": 404}
 ```
 
-**Server Error Response (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting lesson content: ",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting lesson content: ", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 8. Get Lesson Content
+### 12. Get Lesson Content
 
-**Endpoint:** `GET /api/v1/lessons/{subject_slug}/{topic_slug}/content`
-
-**Description:** Get the lesson content which includes Introduction, Concepts, Application, Summary, and General Exercises.
+**Endpoint:** `GET /api/v1/lessons/{subject-slug}/{topic-slug}/content`
 
 **Example:** `GET /api/v1/lessons/general-mathematics/number-bases-system/content`
+
+**Description:** Get the full lesson content including Introduction, Concepts, Application, Summary, General Exercises, and Check Markers.
 
 **Headers:**
 | Key | Value |
@@ -2383,7 +2068,7 @@
           "description": [
             {
               "heading": null,
-              "description": "The Modal Arithmetic that you will learn later in the session is useful in this problem. Its utility here will prepare you for the main topic. For conversion from base 10 to other bases;",
+              "description": "For conversion from base 10 to other bases: Divide the given number repeatedly by the required base, write down the remainders, divide till quotient becomes 0, read remainders from bottom to top.",
               "image_path": null,
               "points": [
                 "Divide the given number repeatedly by the required base",
@@ -2402,15 +2087,7 @@
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Example 1",
               "problem": "Convert 67₁₀ to base 2",
-              "solution_steps": [
-                "67 ÷ 2 = 33 R1",
-                "33 ÷ 2 = 16 R1",
-                "16 ÷ 2 = 8 R0",
-                "8 ÷ 2 = 4 R0",
-                "4 ÷ 2 = 2 R0",
-                "2 ÷ 2 = 1 R0",
-                "1 ÷ 2 = 0 R1"
-              ],
+              "solution_steps": ["67 ÷ 2 = 33 R1", "33 ÷ 2 = 16 R1", "16 ÷ 2 = 8 R0", "8 ÷ 2 = 4 R0", "4 ÷ 2 = 2 R0", "2 ÷ 2 = 1 R0", "1 ÷ 2 = 0 R1"],
               "answer": "1000011₂",
               "created_at": "22-08-2025",
               "updated_at": "22-08-2025"
@@ -2423,13 +2100,8 @@
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Exercise 1",
               "problem": "Convert 97₁₀ to base 2",
-              "solution_steps": ["..."],
-              "answers": [
-                "1110011₂",
-                "1001011₂",
-                "0101011₂",
-                "1000011₂"
-              ],
+              "solution_steps": ["67 ÷ 2 = 33 R1", "33 ÷ 2 = 16 R1", "16 ÷ 2 = 8 R0", "8 ÷ 2 = 4 R0", "4 ÷ 2 = 2 R0", "2 ÷ 2 = 1 R0", "1 ÷ 2 = 0 R1"],
+              "answers": ["1110011₂", "1001011₂", "0101011₂", "1000011₂"],
               "correct_answer": "1000011₂",
               "correct_answer_option": "D",
               "created_at": "22-08-2025",
@@ -2444,13 +2116,8 @@
           "order_index": 1,
           "lesson_topic": "Number Bases System",
           "problem": "Convert 97₁₀ to base 2",
-          "solution_steps": ["..."],
-          "answers": [
-            "1110011₂",
-            "1001011₂",
-            "0101011₂",
-            "1000011₂"
-          ],
+          "solution_steps": ["67 ÷ 2 = 33 R1", "33 ÷ 2 = 16 R1", "16 ÷ 2 = 8 R0"],
+          "answers": ["1110011₂", "1001011₂", "0101011₂", "1000011₂"],
           "correct_answer": "1000011₂",
           "correct_answer_option": "D",
           "created_at": "22-08-2025",
@@ -2483,49 +2150,27 @@
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Class Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Class not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Class not found!", "errors": null, "code": 404}
 ```
 
 **Lesson Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "Lesson not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "Lesson not found!", "errors": null, "code": 404}
 ```
 
-**Server Error Response (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while getting lesson content: ",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "An error occurred while getting lesson content: ", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-## Answering System
-
-### 1. Handle Concept Exercise Answers
+### 13. Handle Concept Exercise Answers
 
 **Endpoint:** `POST /api/v1/lessons/check-exercise-answer`
 
@@ -2550,7 +2195,12 @@
 {
   "success": true,
   "message": "Great job! You scored 50% on your 1st attempt.",
-  "content": null,
+  "content": {
+    "score": "50",
+    "attempt": "1st",
+    "concept_total_score": "5.00",
+    "concept_weight": "10.00"
+  },
   "code": 200
 }
 ```
@@ -2568,37 +2218,19 @@
 }
 ```
 
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**Exercise Already Answered Error (200):**
+**Exercise Already Answered (200):**
 ```json
 {
   "success": true,
   "message": "Exercise already answered, continue learning!",
-  "content": {
-    "score": "50",
-    "attempt": "1st"
-  },
+  "content": {"score": "50", "attempt": "1st"},
   "code": 200
 }
 ```
 
 **Wrong Answer Response (400):**
 ```json
-{
-  "success": false,
-  "message": "Wrong answer. Try again!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Wrong answer. Try again!", "errors": null, "code": 400}
 ```
 
 **Exercise Not Found Error (422):**
@@ -2606,30 +2238,28 @@
 {
   "success": false,
   "message": "Validation failed",
-  "errors": {
-    "exercise_id": ["The selected exercise was not found!!"]
-  },
+  "errors": {"exercise_id": ["The selected exercise was not found!!"]},
   "code": 422
 }
 ```
 
-**Server Error Response (500):**
+**Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "There was an error checking your answer!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "There was an error checking your answer!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 2. Handle General Exercise Answers
+### 14. Handle General Exercise Answers
 
 **Endpoint:** `POST /api/v1/lessons/check-general-exercise-answer`
 
-**Description:** Verify student's general exercises answers.
+**Description:** Verify student's general exercise answers.
 
 **Headers:**
 | Key | Value |
@@ -2650,7 +2280,12 @@
 {
   "success": true,
   "message": "Great job! You scored 5% on your 1st attempt.",
-  "content": null,
+  "content": {
+    "score": "5",
+    "attempt": "1st",
+    "general_exercise_total_score": "1.50",
+    "general_exercise_weight": "30.00"
+  },
   "code": 200
 }
 ```
@@ -2668,37 +2303,19 @@
 }
 ```
 
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**General Exercise Already Answered Error (200):**
+**General Exercise Already Answered (200):**
 ```json
 {
   "success": true,
   "message": "General Exercise already answered, continue learning!",
-  "content": {
-    "score": "5",
-    "attempt": "1st"
-  },
+  "content": {"score": "5", "attempt": "1st"},
   "code": 200
 }
 ```
 
 **Wrong Answer Response (400):**
 ```json
-{
-  "success": false,
-  "message": "Wrong answer. Try again!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Wrong answer. Try again!", "errors": null, "code": 400}
 ```
 
 **General Exercise Not Found Error (422):**
@@ -2706,36 +2323,31 @@
 {
   "success": false,
   "message": "Validation failed",
-  "errors": {
-    "exercise_id": ["The selected general exercise was not found!"]
-  },
+  "errors": {"exercise_id": ["The selected general exercise was not found!"]},
   "code": 422
 }
 ```
 
-**Server Error Response (500):**
+**Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "There was an error checking your answer!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "There was an error checking your answer!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
-
-## Lesson Completion Check System
-
-### 1. Lesson Overview Completion Check
+### 15. Lesson Overview Completion Check
 
 **Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/check/overview/2`
+**Example:** `GET /api/v1/lessons/check/overview/2`
 
-**Description:** Check if a student has completed the lesson overview section before continuing to the next section (Concepts).
+**Description:** Check if a student has completed the lesson overview section before continuing to Concepts.
 
-**Note:** The `{type}` is the section type (overview, concept, summary-and-application, general-exercises).
+**Note:** `{type}` is the section type: `overview`, `concept`, `summary-and-application`, or `general-exercises`.
 
 **Headers:**
 | Key | Value |
@@ -2749,56 +2361,31 @@
   "success": true,
   "message": "Overview completed successfully.",
   "content": {
-    "check": [
-      "is_completed": true,
-      "score": "100%"
-    ]
+    "check": {"is_completed": true, "score": "100%"}
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
+**Lesson Check Marker Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
 ```
 
-**Lesson Check Marker Not Found Error (400):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "There was an error verifying overview completion!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "There was an error verifying overview completion!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 2. Lesson Concepts Completion Check
+### 16. Lesson Concepts Completion Check
 
 **Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}/{concept_id}`
 
-**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/2/1`
+**Example:** `GET /api/v1/lessons/check/concept/2/1`
 
-**Description:** Check if a student has completed the lesson concepts section before continuing to the next section.
-
-**Note:** The `{type}` is the section type, `{lesson_id}` is the lesson ID, and `{concept_id}` is the concept ID.
+**Description:** Check if a student has completed a lesson concept section before continuing to the next section.
 
 **Headers:**
 | Key | Value |
@@ -2812,54 +2399,31 @@
   "success": true,
   "message": "Concept completed successfully.",
   "content": {
-    "check": [
-      "is_completed": true,
-      "score": "20%"
-    ]
+    "check": {"is_completed": true, "score": "20%"}
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
+**Lesson Check Marker Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
 ```
 
-**Lesson Check Marker Not Found Error (400):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "There was an error verifying summary and application completion!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "There was an error verifying summary and application completion!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 3. Lesson Summary & Application Completion Check
+### 17. Lesson Summary & Application Completion Check
 
 **Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/2`
+**Example:** `GET /api/v1/lessons/check/summary-and-application/2`
 
-**Description:** Check if a student has completed the lesson summary and application section before continuing to the next section (General Exercises).
+**Description:** Check if a student has completed the lesson summary and application section before continuing to General Exercises.
 
 **Headers:**
 | Key | Value |
@@ -2873,54 +2437,31 @@
   "success": true,
   "message": "Summary and Application completed successfully.",
   "content": {
-    "check": [
-      "is_completed": true,
-      "score": "100%"
-    ]
+    "check": {"is_completed": true, "score": "100%"}
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
+**Lesson Check Marker Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
 ```
 
-**Lesson Check Marker Not Found Error (400):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "There was an error verifying summary and application completion!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "There was an error verifying summary and application completion!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 4. Lesson General Exercises Completion Check
+### 18. Lesson General Exercises Completion Check
 
 **Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/check/general-exercises/2`
+**Example:** `GET /api/v1/lessons/check/general-exercises/2`
 
-**Description:** Check if a student has completed the lesson general exercise section before continuing to the next lesson topic.
+**Description:** Check if a student has completed the lesson general exercises section before continuing to the next lesson topic.
 
 **Headers:**
 | Key | Value |
@@ -2934,67 +2475,36 @@
   "success": true,
   "message": "General exercises completed successfully.",
   "content": {
-    "check": [
-      "is_completed": true,
-      "score": "65%"
-    ]
+    "check": {"is_completed": true, "score": "65%"}
   },
   "code": 200
 }
 ```
 
-**Unauthorized Access (401):**
+**Not Completed Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Complete your lesson general exercises to continue learning!", "errors": null, "code": 400}
 ```
 
-**Lesson Check Marker Not Found Error (400):**
+**Lesson Check Marker Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
 ```
 
-**Not Completed Error Response (400):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "Complete your lesson general exercises to continue learning!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "There was an error verifying general exercises completion!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "There was an error verifying general exercises completion!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-
-## Total Scores API Request
-
-### 1. Concepts Total Scores API Request
+### 19. Concepts Total Scores
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/concepts/{concept_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/concepts/1`
+**Example:** `GET /api/v1/lessons/scores/concepts/1`
 
-**Description:** Use this endpoint to get a lesson's concept total score using the concept_id.
+**Description:** Get a lesson's concept total score using the concept_id.
 
 **Headers:**
 | Key | Value |
@@ -3007,54 +2517,35 @@
 {
   "success": true,
   "message": "Success",
-  "content": {
-    "concept_id": 1,
-    "total_score": "10.00",
-    "weight": "10.00"
-  },
+  "content": {"concept_id": 1, "total_score": "10.00", "weight": "10.00"},
   "code": 200
 }
 ```
 
-**Concept Total Score Not Found Error (400):**
+**Concept Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Concept total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the concept total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "Concept total score not found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting the concept total score!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 2. General Exercises Total Scores API Request
+### 20. General Exercises Total Scores
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/general-exercises/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/general-exercises/1`
+**Example:** `GET /api/v1/lessons/scores/general-exercises/1`
 
-**Description:** Use this endpoint to get a lesson's general exercise total score using the lesson_id.
+**Description:** Get a lesson's general exercise total score using the lesson_id.
 
 **Headers:**
 | Key | Value |
@@ -3067,53 +2558,35 @@
 {
   "success": true,
   "message": "Success",
-  "content": {
-    "total_score": "4.50",
-    "weight": "30.00"
-  },
+  "content": {"total_score": "4.50", "weight": "30.00"},
   "code": 200
 }
 ```
 
-**General Exercise Total Score Not Found Error (400):**
+**General Exercise Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "General Exercise total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the general exercise total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "General Exercise total score not found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting the general exercise total score!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 3. Lessons Total Scores API Request
+### 21. Lesson Total Score
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/lessons/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/lessons/1`
+**Example:** `GET /api/v1/lessons/scores/lessons/1`
 
-**Description:** Use this endpoint to get a lesson's total score using the lesson_id.
+**Description:** Get a lesson's total score using the lesson_id.
 
 **Headers:**
 | Key | Value |
@@ -3126,53 +2599,35 @@
 {
   "success": true,
   "message": "Success",
-  "content": {
-    "lesson_total_score": "32.50",
-    "weight": 100.00
-  },
+  "content": {"lesson_total_score": "32.50", "weight": 100.00},
   "code": 200
 }
 ```
 
-**Lesson Total Score Not Found Error (400):**
+**Lesson Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Lesson total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the lesson total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "Lesson total score not found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting the lesson total score!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 4. Lessons Total Scores Summary API Request
+### 22. Lesson Total Scores Summary
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/lessons/summary/{lesson_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/lessons/summary/1`
+**Example:** `GET /api/v1/lessons/scores/lessons/summary/1`
 
-**Description:** Use this endpoint to get a lesson's total score summary using the lesson_id.
+**Description:** Get a lesson's total score summary using the lesson_id.
 
 **Headers:**
 | Key | Value |
@@ -3201,65 +2656,40 @@
 }
 ```
 
-**Lesson Check Marker Not Found Error (400):**
+**Lesson Check Marker Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Lesson check marker not found!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Lesson check marker not found!", "errors": null, "code": 400}
 ```
 
-**Lesson Total Score Not Found Error (400):**
+**Lesson Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Lesson total score not found!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Lesson total score not found!", "errors": null, "code": 400}
 ```
 
-**Concept Total Scores Not Found Error (400):**
+**Concept Total Scores Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "No concepts total scores found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting lesson's total scores summary!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "No concepts total scores found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting lesson's total scores summary!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 5. Subjects Total Scores API Request
+### 23. Subject Total Score
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/subjects/{subject_id}/{term_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/subjects/4/1`
+**Example:** `GET /api/v1/lessons/scores/subjects/4/1`
 
-**Description:** Use this endpoint to get a subject's total score using the subject_id and term_id.
+**Description:** Get a subject's total score using the subject_id and term_id.
 
 **Headers:**
 | Key | Value |
@@ -3272,53 +2702,35 @@
 {
   "success": true,
   "message": "Success",
-  "content": {
-    "subject_total_score": "3.25",
-    "weight": 100.00
-  },
+  "content": {"subject_total_score": "3.25", "weight": 100.00},
   "code": 200
 }
 ```
 
-**Subject Total Score Not Found Error (400):**
+**Subject Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "Subject total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the subject total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "Subject total score not found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting the subject total score!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 6. All Lessons Total Scores API Request
+### 24. All Lessons Total Scores
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/lessons/total/{subject_id}/{term_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/lessons/total/4/1`
+**Example:** `GET /api/v1/lessons/scores/lessons/total/4/1`
 
-**Description:** Use this endpoint to get all the lesson's total scores of a specific subject using the subject_id and term_id.
+**Description:** Get all lesson total scores for a specific subject using subject_id and term_id.
 
 **Headers:**
 | Key | Value |
@@ -3333,56 +2745,37 @@
   "message": "Success",
   "content": {
     "total_scores": {
-      "Introduction to Biology": [
-        {
-          "total_score": "32.50"
-        }
-      ]
+      "Introduction to Biology": [{"total_score": "32.50"}]
     }
   },
   "code": 200
 }
 ```
 
-**Lessons Total Score Not Found Error (400):**
+**Lessons Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "No lessons total score found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting all lesson's total scores!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "No lessons total score found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting all lesson's total scores!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-### 7. All Subjects Total Scores API Request
+### 25. All Subjects Total Scores
 
 **Endpoint Format:** `GET /api/v1/lessons/scores/subjects/total/{term_id}`
 
-**Endpoint:** `GET /api/v1/lessons/scores/subjects/total/1`
+**Example:** `GET /api/v1/lessons/scores/subjects/total/1`
 
-**Description:** Use this endpoint to get all the subject's total score of the student current class.
+**Description:** Get all subject total scores for the student's current class.
 
 **Headers:**
 | Key | Value |
@@ -3397,57 +2790,35 @@
   "message": "Success",
   "content": {
     "total_scores": {
-      "Biology": [
-        {
-          "total_score": "3.25"
-        }
-      ]
+      "Biology": [{"total_score": "3.25"}]
     }
   },
   "code": 200
 }
 ```
 
-**Subject Total Score Not Found Error (400):**
+**Subject Total Score Not Found (400):**
 ```json
-{
-  "success": false,
-  "message": "No subjects total score found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting all subject's total scores!",
-  "errors": ["error messages"],
-  "code": 500
-}
+{"success": false, "message": "No subjects total score found!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "An error occurred while getting all subject's total scores!", "errors": ["error messages"], "code": 500}
 ```
 
 ---
 
-## Guardian Request Management
+### 26. Guardian Request — Accept Request
 
-**Base Url:** `https://api.fastlearnersapp.com`
-
-### Accept Request
 **Endpoint:** `GET /api/v1/student/guardian/request/accept/{id}`
 
-**Description:** Accept guardian request with this endpoint using the request id.
+**Description:** Accept a guardian request using the request id.
 
 **Headers:**
 | Key | Value |
@@ -3455,94 +2826,58 @@
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | request-history |
+
 **Success Response (200):**
 ```json
-{
-  "success": true,
-  "message": "Guardian request accepted successfully!",
-  "content": null,
-  "code": 200
-}
+{"success": true, "message": "Guardian request accepted successfully!", "content": null, "code": 200}
 ```
 
 **Request Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "This request was not found, try again!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "This request was not found, try again!", "errors": null, "code": 404}
 ```
 
 **Guardian Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "This guardian was not found, try again!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "This guardian was not found, try again!", "errors": null, "code": 404}
 ```
 
 **Acceptance Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Request already accepted!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Request already accepted!", "errors": null, "code": 400}
 ```
 
 **Request Already Rejected Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Request already rejected!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Request already rejected!", "errors": null, "code": 400}
 ```
 
 **Mail Sending Error (400):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "An error occurred while sending rejection mail, but the request was rejected successfully!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Message (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
 ```
-
-**Redirection:** On success → `request-history`
 
 ---
 
-### Reject Request
+### 27. Guardian Request — Reject Request
+
 **Endpoint:** `GET /api/v1/student/guardian/request/reject/{id}`
 
-**Description:** Reject guardian request with this endpoint using the request id.
+**Description:** Reject a guardian request using the request id.
 
 **Headers:**
 | Key | Value |
@@ -3550,94 +2885,58 @@
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | request-history |
+
 **Success Response (200):**
 ```json
-{
-  "success": true,
-  "message": "Guardian request rejected successfully!",
-  "content": null,
-  "code": 200
-}
+{"success": true, "message": "Guardian request rejected successfully!", "content": null, "code": 200}
 ```
 
 **Request Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "This request was not found, try again",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "This request was not found, try again", "errors": null, "code": 404}
 ```
 
 **Guardian Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "This guardian was not found, try again!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "This guardian was not found, try again!", "errors": null, "code": 404}
 ```
 
-**Acceptance Error (400):**
+**Only Pending Requests Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Only pending requests can be accepted!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Only pending requests can be accepted!", "errors": null, "code": 400}
 ```
 
 **Request Already Accepted Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Request already accepted!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Request already accepted!", "errors": null, "code": 400}
 ```
 
 **Mail Sending Error (400):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while sending rejection mail, but the request was rejected successfully!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Message (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
 ```
-
-**Redirection:** On success → `request-history`
 
 ---
 
-### Request History
+### 28. Guardian Request — Request History
+
 **Endpoint:** `GET /api/v1/student/guardian/request/history`
 
-**Description:** Get all guardian history request with this endpoint.
+**Description:** Get all guardian request history.
 
 **Headers:**
 | Key | Value |
@@ -3667,12 +2966,7 @@
         "prev": null,
         "next": null
       },
-      "meta": {
-        "current_page": 1,
-        "last_page": 1,
-        "per_page": 20,
-        "total": 1
-      }
+      "meta": {"current_page": 1, "last_page": 1, "per_page": 20, "total": 1}
     }
   },
   "code": 200
@@ -3681,35 +2975,114 @@
 
 **Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "No history found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "No history found!", "errors": null, "code": 404}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Message (500):**
+**Server Error (500):**
+```json
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+```
+
+---
+
+## Parental Consent Management
+
+### 1. Accept Consent
+
+**Endpoint:** `POST /api/v1/parental-consent/{token}/accept`
+
+**Example:** `POST /api/v1/parental-consent/6d18-1bf5-66d6-03e2-c6cb-19ca/accept`
+
+**Description:** Parent can accept a parental consent request through this endpoint.
+
+**Notes:**
+- The `{token}` in the endpoint is obtained from the acceptance URL.
+- Acceptance link (e.g. `https://fastlearnersapp.com/6d18-1bf5-66d6-03e2-c6cb-19ca/accept`) is sent to parent's email.
+- The `name` in the request body is optional.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Accept | application/json |
+
+**Request Body:**
 ```json
 {
-  "success": false,
-  "message": "Server error",
-  "errors": ["error message"],
-  "code": 500
+  "name": "John Doe"
 }
 ```
 
-**Redirection:** On success → `request-history`
+**Success Response (200):**
+```json
+{"success": true, "message": "Parental consent request accepted successfully!", "content": null, "code": 200}
+```
+
+**Consent Request Not Found Error (400):**
+```json
+{"success": false, "message": "Consent request not found!", "errors": null, "code": 400}
+```
+
+**Unauthorized Access (401):**
+```json
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+```
+
+---
+
+### 2. Reject Consent
+
+**Endpoint:** `POST /api/v1/parental-consent/{token}/reject`
+
+**Example:** `POST /api/v1/parental-consent/6d18-1bf5-66d6-03e2-c6cb-19ca/reject`
+
+**Description:** Parent can reject a parental consent request through this endpoint.
+
+**Notes:**
+- The `{token}` in the endpoint is obtained from the rejection URL.
+- Rejection link (e.g. `https://fastlearnersapp.com/6d18-1bf5-66d6-03e2-c6cb-19ca/reject`) is sent to parent's email.
+- The `name` in the request body is optional.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Accept | application/json |
+
+**Request Body:**
+```json
+{
+  "name": "John Doe"
+}
+```
+
+**Success Response (200):**
+```json
+{"success": true, "message": "Parental consent request rejected successfully!", "content": null, "code": 200}
+```
+
+**Consent Request Not Found Error (400):**
+```json
+{"success": false, "message": "Consent request not found!", "errors": null, "code": 400}
+```
+
+**Unauthorized Access (401):**
+```json
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+```
+
+**Server Error (500):**
+```json
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+```
 
 ---
 
@@ -3732,44 +3105,28 @@
 {
   "success": true,
   "message": "Your children's report and statistics",
-  "content": {
-    "children": 1,
-    "report": null
-  },
+  "content": {"children": 1, "report": null},
   "code": 200
 }
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
 **Error Message (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": null,
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": null, "code": 500}
 ```
 
 ---
 
-## Children Request Management
+### 2. Make New Child Request
 
-**Base Url:** `https://api.fastlearnersapp.com`
-
-### Make New Request
 **Endpoint:** `POST /api/v1/guardian/children/request/new`
 
-**Description:** Guardian's can make new child request using this endpoint.
+**Description:** Guardian can make a new child request.
 
 **Headers:**
 | Key | Value |
@@ -3784,14 +3141,15 @@
 }
 ```
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | request-history |
+| validation error | none |
+
 **Success Response (200):**
 ```json
-{
-  "success": true,
-  "message": "Child request sent successfully!",
-  "content": null,
-  "code": 200
-}
+{"success": true, "message": "Child request sent successfully!", "content": null, "code": 200}
 ```
 
 **Validation Error (422):**
@@ -3811,92 +3169,51 @@
 
 **Email Does Not Exist Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Child email does not exist on our record!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Child email does not exist on our record!", "errors": null, "code": 400}
 ```
 
 **User Not A Guardian Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Only guardians can make this request!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Only guardians can make this request!", "errors": null, "code": 400}
 ```
 
 **User Not A Student Error (400):**
 ```json
-{
-  "success": false,
-  "message": "The email you entered does not belong to a student, try again!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "The email you entered does not belong to a student, try again!", "errors": null, "code": 400}
 ```
 
 **Pending Request Error (400):**
 ```json
-{
-  "success": false,
-  "message": "This child request is still pending!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "This child request is still pending!", "errors": null, "code": 400}
 ```
 
 **Accepted Request Error (400):**
 ```json
-{
-  "success": false,
-  "message": "This child request was accepted and assigned to you as child!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "This child request was accepted and assigned to you as child!", "errors": null, "code": 400}
 ```
 
 **Mail Sending Error (400):**
 ```json
-{
-  "success": false,
-  "message": "An error occurred while sending request mail to your child, but your request has been sent successfully!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "An error occurred while sending request mail to your child, but your request has been sent successfully!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Message (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
 ```
-
-**Redirection:** On success → `request-history`
 
 ---
 
-### Cancel Request
+### 3. Cancel Child Request
+
 **Endpoint:** `GET /api/v1/guardian/children/request/cancel/{id}`
 
-**Description:** Cancel child request with this endpoint using the request id.
+**Description:** Cancel a child request using the request id.
 
 **Headers:**
 | Key | Value |
@@ -3904,64 +3221,43 @@
 | Authorization | Bearer {access_token} |
 | Accept | application/json |
 
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | request-history |
+
 **Success Response (200):**
 ```json
-{
-  "success": true,
-  "message": "Child request cancelled successfully!",
-  "content": null,
-  "code": 200
-}
+{"success": true, "message": "Child request cancelled successfully!", "content": null, "code": 200}
 ```
 
 **Request Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "This child request was not found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "This child request was not found!", "errors": null, "code": 404}
 ```
 
 **Cancel Error (400):**
 ```json
-{
-  "success": false,
-  "message": "Sorry, you can only cancel a pending request!",
-  "errors": null,
-  "code": 400
-}
+{"success": false, "message": "Sorry, you can only cancel a pending request!", "errors": null, "code": 400}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Message (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": ["error message"],
-  "code": 500
-}
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
 ```
-
-**Redirection:** On success → `request-history`
 
 ---
 
-### Request History
+### 4. Children Request History
+
 **Endpoint:** `GET /api/v1/guardian/children/request/history`
 
-**Description:** Get all children history request with this endpoint.
+**Description:** Get all children request history.
 
 **Headers:**
 | Key | Value |
@@ -4008,12 +3304,7 @@
         "prev": null,
         "next": null
       },
-      "meta": {
-        "current_page": 1,
-        "last_page": 1,
-        "per_page": 20,
-        "total": 3
-      }
+      "meta": {"current_page": 1, "last_page": 1, "per_page": 20, "total": 3}
     }
   },
   "code": 200
@@ -4022,1856 +3313,19 @@
 
 **Not Found Error (404):**
 ```json
-{
-  "success": false,
-  "message": "No history found!",
-  "errors": null,
-  "code": 404
-}
+{"success": false, "message": "No history found!", "errors": null, "code": 404}
 ```
 
 **Unauthorized Access (401):**
 ```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
 ```
 
-**Server Error Message (500):**
+**Server Error (500):**
 ```json
-{
-  "success": false,
-  "message": "Server error",
-  "errors": ["error message"],
-  "code": 500
-}
-```
-
-**Redirection:** On success → `request-history`
-
----
-
-## Admin & SuperAdmin Endpoints
-
-### All Lessons Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/all-lesson-files`
-
-**Description:** All lesson files (lesson, concepts, examples, exercises, general-exercises, check-markers) upload.
-
-**Notes:**
-- Uploaded file type should only be CSV or TXT.
-- **Delimiter:** Use pipe (`|`) as the column delimiter. The parser also supports commas, but pipe is recommended for fields containing commas (like JSON array strings).
-- **Templates:** Use the canonical format defined in `public/lesson-csv-files/` templates.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "lessons_file": "(binary-file)",
-  "concepts_file": "(binary-file)",
-  "examples_file": "(binary-file)",
-  "exercises_file": "(binary-file)",
-  "general_exercises_file": "(binary-file)",
-  "check_markers_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "All CSV files uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "lessons_file": ["The lessons file field is required."],
-    "concepts_file": ["The concepts file field is required."],
-    "examples_file": ["The school examples file is required."],
-    "exercises_file": ["The exercises file field is required."],
-    "general_exercises_file": ["The general exercises file field is required."],
-    "check_markers_file": ["The check markers file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid (filename) CSV format. Missing column: (column name)",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Class Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Class (class name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Subject Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Subject (subject name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Term Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Term (term name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Week Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Week (week name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Lesson Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Lesson (lesson topic) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Concept Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Concept (concept title) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error processing CSV files: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
+{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
 ```
 
 ---
 
-### Lessons Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/lessons`
-
-**Description:** Lessons files upload.
-
-**Notes:**
-- Lessons file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "lessons_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Lessons uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "lessons_file": ["The lessons file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid lesson CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Lesson Already Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "Lesson (topic) already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Class Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Class (class name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Subject Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Subject (subject name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Term Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Term (term name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Week Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Week (week name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Invalid JSON Format Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid JSON format in objectives or key_concepts",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading lessons: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Concepts Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/concepts`
-
-**Description:** Concepts files upload.
-
-**Notes:**
-- Concepts file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "concepts_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson's concepts uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "concepts_file": ["The concepts file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid concepts CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Lesson Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Lesson (lesson topic) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Concept Already Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "Concept (title) already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Invalid JSON Format Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid JSON format in description",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading lesson's concept: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Examples Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/examples`
-
-**Description:** Examples files upload.
-
-**Notes:**
-- Examples file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "examples_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson's concepts examples uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "examples_file": ["The examples file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid examples CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Concept Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Concept (concept title) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Example Already Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "Example problem (problem) already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Invalid JSON Format Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid JSON format in solution_steps",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading lesson's concepts examples: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Exercises Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/exercises`
-
-**Description:** Exercises files upload.
-
-**Notes:**
-- Exercises file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "exercises_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Lesson's concepts exercises uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "exercises_file": ["The exercises file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid exercises CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Concept Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Concept (concept title) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Exercise Already Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "Exercise problem (problem) already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Invalid JSON Format Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid JSON format in solution_steps or answers",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading lesson's concepts exercises: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### General Exercises Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/general-exercises`
-
-**Description:** General exercises files upload.
-
-**Notes:**
-- General exercises file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "general_exercises_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "General exercises uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "general_exercises_file": ["The general exercises file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid general exercises CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Lesson Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Lesson (lesson topic) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**General Exercise Already Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "General exercise problem (problem) already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Invalid JSON Format Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid JSON format in solution_steps or answers",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading general exercises: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Check Markers Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/check-markers`
-
-**Description:** Check markers files upload.
-
-**Notes:**
-- Check markers file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "check_markers_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Check markers uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "check_markers_file": ["The check markers file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid check markers CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Lesson Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Lesson (lesson topic) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Check Marker Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "Check marker already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading check markers: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Scheme Of Work Upload
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/uploads/scheme-of-work`
-
-**Description:** Scheme of work files upload.
-
-**Notes:**
-- Scheme of work file type should be CSV or TXT
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "scheme_of_work_file": "(binary-file)"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Scheme of work uploaded successfully.",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "scheme_of_work_file": ["The scheme of work file field is required."]
-  },
-  "code": 422
-}
-```
-
-**Missing Column Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid scheme of work CSV format. All columns are required.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Class Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Class (class name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Subject Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Subject (subject name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Term Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Term (term name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Week Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Week (week name) not found",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Scheme Of Work Exist Error (400):**
-```json
-{
-  "success": false,
-  "message": "Scheme of work already exist.",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Invalid JSON Format Error (400):**
-```json
-{
-  "success": false,
-  "message": "Invalid JSON format in breakdown",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Upload Error (500):**
-```json
-{
-  "success": false,
-  "message": "Error uploading scheme of work: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Get Classes, Subjects, Terms And Weeks
-
-**Endpoint:** `GET /api/v1/superadmin/lessons/get-classes-subjects-terms-weeks`
-
-**Description:** Get classes, subjects, terms, and weeks to query lessons according to class, subject, term, and week.
-
-**Note:** To get lessons you have to select classes, subjects, terms, and week.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "classes": [
-      { "id": 1, "name": "JSS1" },
-      { "id": 2, "name": "JSS2" },
-      { "id": 3, "name": "JSS3" },
-      { "id": 4, "name": "SSS1" },
-      { "id": 5, "name": "SSS2" },
-      { "id": 6, "name": "SSS3" }
-    ],
-    "subjects": [
-      { "id": 1, "name": "General Mathematics" },
-      { "id": 2, "name": "English Language" },
-      { "id": 3, "name": "Agricultural Science" }
-    ],
-    "terms": [
-      { "id": 1, "name": "First" },
-      { "id": 2, "name": "Second" },
-      { "id": 3, "name": "Third" }
-    ],
-    "weeks": [
-      { "id": 1, "name": 1 },
-      { "id": 2, "name": 2 },
-      { "id": 3, "name": 3 },
-      { "id": 4, "name": 4 },
-      { "id": 5, "name": 5 }
-    ]
-  },
-  "code": 200
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Get Lessons
-
-**Endpoint:** `POST /api/v1/superadmin/lessons/lessons`
-
-**Description:** Get lessons queried by class ID, subject ID, term ID, and week ID.
-
-**Note:** To get lessons you'll have to query it by class ID, subject ID, term ID, and week ID through the request body. Field names must include the `_id` suffix.
-
-**Important:** Do not include a trailing slash in the URL - it will cause a redirect that converts POST to GET.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-| Content-Type | application/json |
-
-**Request Body:**
-```json
-{
-  "class_id": "4",
-  "subject_id": "1",
-  "term_id": "1",
-  "week_id": "1"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "lessons": [
-      {
-        "id": 2,
-        "class": "SSS1",
-        "subject": "General Mathematics",
-        "term": "First",
-        "week": 1,
-        "topic": "Number Bases System",
-        "status": "active",
-        "created_at": "22-08-2025",
-        "updated_at": "22-08-2025"
-      }
-    ],
-    "links": {
-      "first": "http://fastleanersapp.com/api/v1/superadmin/lessons/lessons?page=1",
-      "last": "http://fastleanersapp.com/api/v1/superadmin/lessons/lessons?page=1",
-      "prev": null,
-      "next": null
-    },
-    "meta": {
-      "current_page": 1,
-      "last_page": 1,
-      "per_page": 20,
-      "total": 1
-    }
-  },
-  "code": 200
-}
-```
-
-**No Lesson Found Response (200):**
-```json
-{
-  "success": true,
-  "message": "No lesson found, add lessons",
-  "content": null,
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed.",
-  "errors": {
-    "class_id": ["The class id field is required."],
-    "subject_id": ["The subject id field is required."],
-    "term_id": ["The term id field is required."],
-    "week_id": ["The week id field is required."]
-  },
-  "code": 422
-}
-```
-
-**Fetch Error (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while fetching lessons: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Get Specific Lesson
-
-**Endpoint:** `GET /api/v1/superadmin/lessons/lesson/{lesson_id}`
-
-**Description:** Get specific lesson details.
-
-**Note:** To get a specific lesson, the lesson ID must be passed as a URL parameter.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "id": 2,
-    "order_index": 1,
-    "class": "SSS1",
-    "subject": "General Mathematics",
-    "term": "First",
-    "week": 1,
-    "topic": "Number Bases System",
-    "overview": "A number base system is a way of representing numbers using a set of digits or symbols.",
-    "objectives": [
-      {
-        "description": "At the end of the lesson, students should understand the following concepts:",
-        "points": [
-          "Convert from base 10 to other bases",
-          "Convert from other bases to base 10"
-        ]
-      }
-    ],
-    "key_concepts": {
-      "Conversion of number bases": "Changing numbers between different base systems using division or expansion methods."
-    },
-    "summary": "Summary",
-    "application": "Application",
-    "video_path": null,
-    "status": "active",
-    "created_at": "22-08-2025",
-    "updated_at": "22-08-2025"
-  },
-  "code": 200
-}
-```
-
-**Lesson Not Found Error (404):**
-```json
-{
-  "success": false,
-  "message": "Lesson not found!",
-  "errors": null,
-  "code": 404
-}
-```
-
-**Fetch Error (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while fetching lessons: (error message)",
-  "errors": null,
-  "code": 500
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
----
-
-### Get Specific Lesson Content
-
-**Endpoint:** `GET /api/v1/superadmin/lessons/lesson/{lesson_id}/content`
-
-**Description:** Get specific lesson content including all concepts, examples, exercises, and general exercises.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-This endpoint returns detailed lesson content similar to the student endpoint but with admin/superadmin access controls.
-
----
-
-## Answering System
-
-### 1. Handle Concept Exercise Answers
-
-**Endpoint:** `POST /api/v1/lessons/check-exercise-answer`
-
-**Description:** Use this endpoint to verify student's answers to concept exercises.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "exercise_id": 5,
-  "answer": "B"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Great job! You scored 50% on your 1st attempt.",
-  "content": {
-    "score": "50",
-    "attempt": "1st",
-    "concept_total_score": "5.00",
-    "concept_weight": "10.00"
-  },
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "errors": {
-    "answer": ["The answer field is required."],
-    "exercise_id": ["The exercise id field is required."]
-  },
-  "code": 422
-}
-```
-
-**Exercise Already Answered Error (400):**
-```json
-{
-  "success": false,
-  "message": "Exercise already answered, continue learning!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Wrong Answer Response (400):**
-```json
-{
-  "success": false,
-  "message": "Wrong answer. Try again!",
-  "errors": null,
-  "code": 400
-}
-```
-
----
-
-### 2. Handle General Exercise Answers
-
-**Endpoint:** `POST /api/v1/lessons/check-general-exercise-answer`
-
-**Description:** Use this endpoint to verify student's general exercises answers.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Request Body:**
-```json
-{
-  "general_exercise_id": 3,
-  "answer": "C"
-}
-```
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Great job! You scored 5% on your 1st attempt.",
-  "content": {
-    "score": "5",
-    "attempt": "1st",
-    "general_exercise_total_score": "1.50",
-    "general_exercise_weight": "30.00"
-  },
-  "code": 200
-}
-```
-
-**Validation Error (422):**
-```json
-{
-  "success": false,
-  "message": "Validation failed",
-  "errors": {
-    "answer": ["The answer field is required."],
-    "general_exercise_id": ["The general exercise id field is required."]
-  },
-  "code": 422
-}
-```
-
-**Exercise Already Answered Error (400):**
-```json
-{
-  "success": false,
-  "message": "General exercise already answered, continue learning!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Wrong Answer Response (400):**
-```json
-{
-  "success": false,
-  "message": "Wrong answer. Try again!",
-  "errors": null,
-  "code": 400
-}
-```
-
----
-
-## Lesson Completion Check System
-
-### 1. Lesson Overview Completion Check
-
-**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`
-
-**Endpoint:** `GET /api/v1/lessons/check/overview/{lesson_id}`
-
-**Description:** Use this endpoint to check if a student has completed the lesson overview section before continuing to the next section (Concepts).
-
-**Note:** The `{type}` is the section type (overview, concept, summary-and-application & general-exercises).
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Overview completed successfully.",
-  "content": {
-    "check": {
-      "is_completed": true,
-      "score": "100%"
-    }
-  },
-  "code": 200
-}
-```
-
-**Lesson Check Marker Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
----
-
-### 2. Lesson Concept Completion Check
-
-**Endpoint Format:** `GET /api/v1/lessons/check/concept/{lesson_id}/{concept_id}`
-
-**Endpoint:** `GET /api/v1/lessons/check/concept/{lesson_id}/{concept_id}`
-
-**Description:** Use this endpoint to check if a student has completed the lesson concepts section before continuing to the next section.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Concept completed successfully.",
-  "content": {
-    "check": {
-      "is_completed": true,
-      "score": "20%"
-    }
-  },
-  "code": 200
-}
-```
-
-**Lesson Check Marker Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
----
-
-### 3. Lesson Summary & Application Completion Check
-
-**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/{lesson_id}`
-
-**Description:** Use this endpoint to check if a student has completed the lesson summary and application section before continuing to the next section (General Exercises).
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Summary and Application completed successfully.",
-  "content": {
-    "check": {
-      "is_completed": true,
-      "score": "100%"
-    }
-  },
-  "code": 200
-}
-```
-
-**Lesson Check Marker Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
----
-
-### 4. Lesson General Exercises Completion Check
-
-**Endpoint:** `GET /api/v1/lessons/check/general-exercises/{lesson_id}`
-
-**Description:** Use this endpoint to check if a student has completed the lesson general exercise section before continuing to the next lesson topic.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "General exercises completed successfully.",
-  "content": {
-    "check": {
-      "is_completed": true,
-      "score": "65%"
-    }
-  },
-  "code": 200
-}
-```
-
-**Lesson Check Marker Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Not Completed Error Response (400):**
-```json
-{
-  "success": false,
-  "message": "Complete your lesson general exercises to continue learning!",
-  "errors": null,
-  "code": 400
-}
-```
-
----
-
-## Total Scores API
-
-### 1. Concept Total Score
-
-**Endpoint:** `GET /api/v1/lessons/scores/concepts/{concept_id}`
-
-**Description:** Get a lesson's concept total score using the concept_id. Returns the cumulative score and weight for all exercises within a specific concept.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "concept_id": 1,
-    "total_score": "10.00",
-    "weight": "10.00"
-  },
-  "code": 200
-}
-```
-
-**Concept Total Score Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "Concept total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the concept total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
-```
-
----
-
-### 2. General Exercise Total Score
-
-**Endpoint:** `GET /api/v1/lessons/scores/general-exercises/{general_exercise_id}`
-
-**Description:** Get a lesson's general exercise total score using the general_exercise_id.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "total_score": "4.50",
-    "weight": "30.00"
-  },
-  "code": 200
-}
-```
-
-**General Exercise Total Score Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "General Exercise total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the general exercise total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
-```
-
----
-
-### 3. Lesson Total Score
-
-**Endpoint:** `GET /api/v1/lessons/scores/lesson/{lesson_id}`
-
-**Description:** Get a lesson's total score using the lesson_id. Returns the cumulative score across all concepts and general exercises in the lesson.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "lesson_total_score": "32.50"
-  },
-  "code": 200
-}
-```
-
-**Lesson Total Score Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "Lesson total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the lesson total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
-```
-
----
-
-### 4. Subject Total Score
-
-**Endpoint:** `GET /api/v1/lessons/scores/subjects/{subject_id}/{class_id}`
-
-**Description:** Get a subject's total score using the subject_id and class_id. Returns the cumulative score across all lessons in the subject for a specific class.
-
-**Headers:**
-| Key | Value |
-|-----|-------|
-| Authorization | Bearer {access_token} |
-| Accept | application/json |
-
-**Success Response (200):**
-```json
-{
-  "success": true,
-  "message": "Success",
-  "content": {
-    "subject_total_score": "3.25"
-  },
-  "code": 200
-}
-```
-
-**Subject Total Score Not Found Error (400):**
-```json
-{
-  "success": false,
-  "message": "Subject total score not found!",
-  "errors": null,
-  "code": 400
-}
-```
-
-**Unauthorized Access (401):**
-```json
-{
-  "success": false,
-  "message": "Unauthorized",
-  "errors": null,
-  "code": 401
-}
-```
-
-**Server Error Response (500):**
-```json
-{
-  "success": false,
-  "message": "An error occurred while getting the subject total score!",
-  "errors": ["error messages"],
-  "code": 500
-}
-```
-
-**Notes:**
-- All score endpoints return 400 with "not found" message when the user hasn't answered any exercises yet
-- Scores are cumulative and persist across sessions
-- Frontend should handle 400 errors gracefully by not displaying scores when none exist
-
----
-
-## Authentication & Authorization
-
-### Access Token
-
-All endpoints require a Bearer token in the `Authorization` header, except for public endpoints like registration and login.
-
-**Format:**
-```
-Authorization: Bearer {access_token}
-```
-
-### Token Expiration
-
-Access tokens are issued upon successful registration or login and should be stored securely on the client-side.
-
-### User Roles
-
-The API supports the following user roles:
-
-| Role | Description |
-|------|-------------|
-| guest | Trial user with limited access |
-| student | Full student with all learning features |
-| guardian | Parent/guardian who can monitor child's progress |
-| teacher | Educator with content management access |
-| admin | Administrative user |
-| superadmin | Super administrator with full system access |
-
----
-
-## Common Error Codes
-
-| Code | Description |
-|------|-------------|
-| 200 | Success |
-| 400 | Bad Request / Validation Error |
-| 401 | Unauthorized / Authentication Error |
-| 404 | Not Found |
-| 422 | Validation Failed |
-| 500 | Server Error |
-
----
-
-## Notes & Best Practices
-
-1. **Rate Limiting:** The API may have rate limiting in place. Please implement exponential backoff for retries.
-2. **Error Handling:** Always check the `success` field in responses to determine request outcome.
-3. **Token Refresh:** Implement token refresh logic to handle token expiration.
-4. **Data Validation:** Validate all user input before sending requests.
-5. **File Uploads:** Ensure file types match the specified formats (CSV/TXT for lesson uploads, PNG/JPG/JPEG/WEBP for profile pictures).
-6. **Profile Completion:** Some fields (role, username, date of birth, class, discipline, gender) can only be set once.
-7. **Guardian Setup:** When setting role as guardian, child_email and child_phone are required.
-8. **Class Constraints:** Discipline selection is only available for SSS students (SSS1, SSS2, SSS3).
-9. **Subject Selection:** JSS students select compulsory and selective subjects; SSS students select discipline-based subjects.
-
----
-
-End of Documentation
+*© Copyright FastLearners App. All Rights Reserved.*

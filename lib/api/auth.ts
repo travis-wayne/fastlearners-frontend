@@ -54,6 +54,9 @@ export const authApi = {
     return postJson<ApiResponse>("/api/auth/register", data);
   },
 
+  verifyReferralCode: async (code: string): Promise<ApiResponse> =>
+    postJson<ApiResponse>("/api/auth/verify-referral-code", { referral_code: code }),
+
   verifyEmail: async (
     data: VerifyEmailData,
   ): Promise<ApiResponse<AuthTokens>> => {

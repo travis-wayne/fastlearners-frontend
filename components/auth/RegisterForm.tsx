@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -30,6 +30,7 @@ export function RegisterForm({
   const {
     register,
     handleSubmit,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<RegisterFormData>({
     resolver: zodResolver(registerSchema),
@@ -80,6 +81,45 @@ export function RegisterForm({
       setIsLoading(false);
     }
   };
+
+  // ── Referral code verification ──────────────────────────────────────────────
+  const [referralStatus, setReferralStatus] = useState<
+    "idle" | "checking" | "verified" | "invalid"
+  >("idle");
+  const [referralMessage, setReferralMessage] = useState<string>("");
+
+  const referralCodeValue = watch("referral_code");
+
+  // Reset verification state when the code changes
+  useEffect(() => {
+    if (referralStatus !== "idle") {
+      setReferralStatus("idle");
+      setReferralMessage("");
+    }
+  }, [referralCodeValue]);
+
+  const handleVerify = async () => {
+    const code = watch("referral_code") ?? "";
+
+    if (!code || code.length < 8) {
+      setReferralStatus("invalid");
+      setReferralMessage("Please enter a valid 8-character referral code.");
+      return;
+    }
+
+    try {
+      setReferralStatus("checking");
+      const response = await authApi.verifyReferralCode(code);
+      setReferralStatus("verified");
+      setReferralMessage(response.message ?? "Referral code verified successfully!");
+    } catch (err: any) {
+      setReferralStatus("invalid");
+      setReferralMessage(
+        err?.message ?? "Referral code does not exist, try again!",
+      );
+    }
+  };
+  // ───────────────────────────────────────────────────────────────────────────
 
   const handleGoogleSignUp = () => {
     try {
@@ -134,6 +174,7 @@ export function RegisterForm({
       )}
 
       <div className="grid gap-component-md sm:gap-component-lg">
+        {/* Email field */}
         <div className="grid gap-component-sm sm:gap-component-md">
           <Label htmlFor="email">Email</Label>
           <Input
@@ -151,6 +192,61 @@ export function RegisterForm({
             <p className="text-sm text-destructive">{errors.email.message}</p>
           )}
         </div>
+
+        {/* ── Referral code field ─────────────────────────────────────────── */}
+        <div className="grid gap-component-sm sm:gap-component-md">
+          <Label htmlFor="referral_code">
+            Referral Code{" "}
+            <span className="text-muted-foreground">(optional)</span>
+          </Label>
+          <div className="flex gap-2">
+            <Input
+              id="referral_code"
+              type="text"
+              placeholder="ABC1DEF2"
+              maxLength={8}
+              {...register("referral_code")}
+              disabled={isLoading}
+              autoComplete="off"
+              className={
+                referralStatus === "invalid"
+                  ? "border-destructive"
+                  : referralStatus === "verified"
+                    ? "border-green-500"
+                    : ""
+              }
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={handleVerify}
+              disabled={isLoading || referralStatus === "checking"}
+            >
+              {referralStatus === "checking" ? (
+                <Loader2 className="size-4 animate-spin" />
+              ) : (
+                "Verify"
+              )}
+            </Button>
+          </div>
+          {referralMessage && (
+            <p
+              className={
+                referralStatus === "verified"
+                  ? "text-sm text-green-600 dark:text-green-400"
+                  : "text-sm text-destructive"
+              }
+            >
+              {referralMessage}
+            </p>
+          )}
+          {errors.referral_code && (
+            <p className="text-sm text-destructive">
+              {errors.referral_code.message}
+            </p>
+          )}
+        </div>
+        {/* ──────────────────────────────────────────────────────────────────── */}
 
         <Button
           type="submit"

@@ -60,6 +60,7 @@ export interface LoginCredentials {
 
 export interface RegisterData {
   email: string;
+  referral_code?: string;
 }
 
 export interface VerifyEmailData {

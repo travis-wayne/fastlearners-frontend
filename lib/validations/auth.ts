@@ -3,6 +3,7 @@ import * as z from "zod";
 // Registration schema
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
+  referral_code: z.string().length(8).or(z.literal("")).optional(),
 });
 
 // Email verification schema
@@ -88,6 +89,16 @@ export const profileUpdateSchema = z.object({
   address: z.string().optional(),
   gender: z.enum(["male", "female", "other"]).optional(),
   role: z.enum(["student", "parent"]).optional(),
+  parent_email: z.string().email("Invalid email").optional().or(z.literal("")),
+  parent_phone: z.string().optional().or(z.literal("")),
+}).refine((data) => {
+  if (data.role === "student" && (!data.parent_email || data.parent_email.trim() === "")) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Parent email is required for students",
+  path: ["parent_email"],
 });
 
 // Change password schema

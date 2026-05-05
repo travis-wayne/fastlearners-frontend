@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { BookOpen, CheckCircle, PlayCircle, Target } from "lucide-react";
+import { BookOpen, CheckCircle, PlayCircle, Target, Volume2 } from "lucide-react";
 
 import type { LessonContent as LessonContentType } from "@/lib/types/lessons";
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ExerciseModal } from "@/components/lessons/ExerciseModal";
 import { cn } from "@/lib/utils";
+import { getYouTubeEmbedUrl } from "@/lib/utils/media";
 
 interface LessonContentProps {
   content: LessonContentType;
@@ -60,14 +61,48 @@ export function LessonContent({
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
             <div className="aspect-video w-full bg-black">
-              <video
-                controls
-                className="size-full"
-                src={content.video_path}
-              >
-                Your browser does not support the video tag.
-              </video>
+              {(() => {
+                const embedUrl = getYouTubeEmbedUrl(content.video_path);
+                if (embedUrl) {
+                  return (
+                    <iframe
+                      src={embedUrl}
+                      className="size-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                      title={content.topic || content.title || "Lesson Video"}
+                    />
+                  );
+                }
+                return (
+                  <video
+                    controls
+                    className="size-full"
+                    src={content.video_path}
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                );
+              })()}
             </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Audio Player */}
+      {content.audio_path && (
+        <Card className="border-2">
+          <CardHeader className="responsive-padding pb-2 sm:pb-3">
+            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
+              <Volume2 className="size-4 text-primary sm:size-5" />
+              Pronunciation / Audio
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="responsive-padding">
+            <audio controls className="w-full">
+              <source src={content.audio_path} />
+              Your browser does not support the audio element.
+            </audio>
           </CardContent>
         </Card>
       )}
@@ -191,6 +226,22 @@ export function LessonContent({
                                 style={{ width: "100%", height: "auto" }}
                               />
                             </div>
+                          )}
+                          {desc.audio_path && (
+                            <Card className="my-3 border-2">
+                              <CardHeader className="p-3 sm:p-4 pb-2 sm:pb-3">
+                                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+                                  <Volume2 className="size-4 text-primary" />
+                                  Pronunciation / Audio
+                                </CardTitle>
+                              </CardHeader>
+                              <CardContent className="p-3 sm:p-4 pt-0 sm:pt-0">
+                                <audio controls className="w-full">
+                                  <source src={desc.audio_path} />
+                                  Your browser does not support the audio element.
+                                </audio>
+                              </CardContent>
+                            </Card>
                           )}
                           {desc.points &&
                             Array.isArray(desc.points) &&

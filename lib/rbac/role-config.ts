@@ -193,6 +193,7 @@ export const PUBLIC_ROUTES = [
   "/auth/create-password",
   "/auth/set-role",
   "/auth/role", // Legacy
+  "/parental-consent",
 ];
 
 /**

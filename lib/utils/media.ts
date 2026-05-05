@@ -1,0 +1,37 @@
+/**
+ * Utility to convert various YouTube URL formats to an embeddable URL.
+ * Supports:
+ * - youtube.com/watch?v=VIDEO_ID
+ * - youtu.be/VIDEO_ID
+ * - youtube.com/embed/VIDEO_ID (returns as-is)
+ * 
+ * Returns null if the URL is not a recognized YouTube format or is empty.
+ */
+export function getYouTubeEmbedUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+
+  // If it's already an embed URL, return as-is
+  if (url.includes("youtube.com/embed/")) {
+    return url;
+  }
+
+  let videoId: string | null = null;
+
+  // Match youtube.com/watch?v=VIDEO_ID
+  const watchMatch = url.match(/[?&]v=([^&]+)/);
+  if (watchMatch) {
+    videoId = watchMatch[1];
+  } else {
+    // Match youtu.be/VIDEO_ID
+    const shortMatch = url.match(/youtu\.be\/([^?#]+)/);
+    if (shortMatch) {
+      videoId = shortMatch[1];
+    }
+  }
+
+  if (videoId) {
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+
+  return null;
+}

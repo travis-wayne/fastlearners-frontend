@@ -76,6 +76,8 @@ const profileSchema = z
     city: z.string().optional(),
     child_email: z.string().email().optional().or(z.literal("")),
     child_phone: z.string().optional().or(z.literal("")),
+    parent_email: z.string().email("Please enter a valid parent email").optional().or(z.literal("")),
+    parent_phone: z.string().optional().or(z.literal("")),
   })
   .refine(
     (data) => {
@@ -92,6 +94,19 @@ const profileSchema = z
     {
       message: "Discipline is required for senior secondary classes",
       path: ["discipline"],
+    },
+  )
+  .refine(
+    (data) => {
+      // Require parent email for students
+      if (data.role === "student" && (!data.parent_email || data.parent_email.trim() === "")) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Parent email is required for students",
+      path: ["parent_email"],
     },
   );
 
@@ -243,6 +258,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
           city: profileData.city || "",
           child_email: profileData.child_email || "",
           child_phone: profileData.child_phone || "",
+          parent_email: profileData.parent_email || "",
+          parent_phone: profileData.parent_phone || "",
         } as ProfileFormData);
       } catch (error: any) {
         toast.error(error.message || "Failed to load profile");
@@ -322,6 +339,8 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
         city: data.city,
         child_email: data.child_email,
         child_phone: data.child_phone,
+        parent_email: data.parent_email,
+        parent_phone: data.parent_phone,
       };
 
       if (data.class && data.class.startsWith("SSS")) {
@@ -579,6 +598,46 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                              </Select>
                             </div>
                         )}
+                    </CardContent>
+
+                    <Separator />
+                    
+                    <CardHeader>
+                        <CardTitle className="text-lg">Parent / Guardian Contact</CardTitle>
+                        <CardDescription>An email will be sent to your parent/guardian for consent.</CardDescription>
+                    </CardHeader>
+                    <CardContent className="grid gap-6 p-6 sm:grid-cols-2">
+                        <div className="space-y-2">
+                            <Label htmlFor="parent_email">
+                                Parent Email <span className="text-destructive">*</span>
+                            </Label>
+                            <div className="relative">
+                                <Mail className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                                <Input 
+                                    id="parent_email" 
+                                    type="email" 
+                                    {...register("parent_email")} 
+                                    className="pl-9" 
+                                    placeholder="parent@example.com"
+                                />
+                            </div>
+                            {errors.parent_email && <p className="text-xs text-destructive">{errors.parent_email.message}</p>}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="parent_phone">Parent Phone (optional)</Label>
+                            <div className="relative">
+                                <Phone className="absolute left-3 top-2.5 size-4 text-muted-foreground" />
+                                <Input 
+                                    id="parent_phone" 
+                                    type="tel" 
+                                    {...register("parent_phone")} 
+                                    className="pl-9" 
+                                    placeholder="+123..."
+                                />
+                            </div>
+                            {errors.parent_phone && <p className="text-xs text-destructive">{errors.parent_phone.message}</p>}
+                        </div>
                     </CardContent>
                 </Card>
             )}

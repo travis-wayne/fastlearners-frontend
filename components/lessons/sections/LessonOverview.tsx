@@ -8,6 +8,7 @@ import { BookOpen, Target, Lightbulb, Sparkles, CheckCircle2, Play, Clock, Troph
 import { LessonContent } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
 import { useLessonsStore } from "@/lib/store/lessons";
+import { getYouTubeEmbedUrl } from "@/lib/utils/media";
 
 interface LessonOverviewProps {
   lesson: LessonContent;
@@ -186,14 +187,31 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
                 <Play className="size-4 text-primary" />
                 <span className="text-sm font-medium">Video Introduction</span>
               </div>
-              <video
-                controls
-                className="w-full rounded-lg"
-                poster="/api/placeholder/640/360"
-              >
-                <source src={lesson.video_path} type="video/mp4" />
-                Your browser does not support the video tag.
-              </video>
+              <div className="aspect-video w-full overflow-hidden rounded-lg">
+                {(() => {
+                  const embedUrl = getYouTubeEmbedUrl(lesson.video_path);
+                  if (embedUrl) {
+                    return (
+                      <iframe
+                        src={embedUrl}
+                        className="size-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                        title={lesson.topic || lesson.title || "Lesson Video"}
+                      />
+                    );
+                  }
+                  return (
+                    <video
+                      controls
+                      className="w-full rounded-lg"
+                    >
+                      <source src={lesson.video_path} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  );
+                })()}
+              </div>
             </div>
           )}
 

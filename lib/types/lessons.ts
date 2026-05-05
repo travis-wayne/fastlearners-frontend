@@ -45,6 +45,7 @@ export interface ConceptDescription {
   heading: string | null;
   description: string;
   image_path: string | null;
+  audio_path?: string | null;
   points: string[];
 }
 
@@ -160,6 +161,7 @@ export interface LessonContent {
   concepts?: Concept[];
   general_exercises?: GeneralExercise[];
   video_path?: string | null;
+  audio_path?: string | null;
   content?: any;
   check_markers?: any[];
   summary?: string;

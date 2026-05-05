@@ -96,6 +96,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
   
+  // 0. Unconditional bypass for Parental Consent pages (Bypass auth and RBAC for all users)
+  // Covers /parental-consent/[token]/[action] AND /[token]/[action]
+  const isConsentPath = pathname.startsWith('/parental-consent') || 
+    (/^\/[^\/]+\/(accept|reject)$/.test(pathname));
+  
+  if (isConsentPath) {
+    if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
+      console.log(`Bypassing auth for parental consent path: ${pathname}`);
+    }
+    return NextResponse.next();
+  }
+  
   const authData = parseAuthCookiesServer(request);
   const isAuthenticated = !!authData;
   let userRole: RoleFetchResult = null;

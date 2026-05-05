@@ -19,6 +19,8 @@ export interface UserProfile {
   // Guardian-specific fields
   child_email?: string;
   child_phone?: string;
+  parent_email?: string | null;
+  parent_phone?: string | null;
   avatar?: string | null;
   // Additional fields from API
   username: string | null;
@@ -49,6 +51,8 @@ export interface ProfileEditData {
   // Required only for guardians
   child_email?: string;
   child_phone?: string;
+  parent_email?: string | null;
+  parent_phone?: string | null;
   // Additional fields
   username?: string;
   school?: string;
@@ -358,8 +362,11 @@ export const validateProfileData = (data: ProfileEditData): string[] => {
 
   // Student-specific validations (only if role is student)
   if (data.role === "student") {
-    // Student fields are optional - backend will enforce what's needed
-    // Only validate format if provided
+    if (!data.parent_email?.trim()) {
+      errors.push("Parent email is required for students to process consent");
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.parent_email)) {
+      errors.push("Please enter a valid parent email address");
+    }
   }
 
   // Guardian-specific validation (only if role is guardian)
