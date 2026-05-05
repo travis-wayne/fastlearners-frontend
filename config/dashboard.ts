@@ -42,6 +42,12 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Reports",
         authorizeOnly: UserRole.STUDENT,
       },
+      {
+        href: "/dashboard/guardians",
+        icon: "shield",
+        title: "Guardians",
+        authorizeOnly: UserRole.STUDENT,
+      },
       // Guardian specific menu remains but streamlined
       {
         href: "/dashboard/records",
@@ -50,9 +56,9 @@ export const sidebarLinks: SidebarNavItem[] = [
         authorizeOnly: UserRole.GUARDIAN,
       },
       {
-        href: "/dashboard/settings/children",
+        href: "/dashboard/children",
         icon: "users",
-        title: "Children",
+        title: "My Children",
         authorizeOnly: UserRole.GUARDIAN,
       },
       {

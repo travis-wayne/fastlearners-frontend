@@ -210,7 +210,7 @@ export function GuardianDashboard() {
                 <CardDescription>Recent child link requests and their status</CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
-                <Link href="/dashboard/settings/children">View All</Link>
+                <Link href="/dashboard/children">View All</Link>
               </Button>
             </CardHeader>
             <CardContent>
@@ -264,7 +264,7 @@ export function GuardianDashboard() {
                   <h3 className="text-lg font-medium">No children linked yet</h3>
                   <p className="mb-6 text-sm text-muted-foreground">Invite your children to monitor their learning progress.</p>
                   <Button asChild>
-                    <Link href="/dashboard/settings/children">
+                    <Link href="/dashboard/children">
                       <UserPlus className="mr-2 size-4" />
                       Invite a Child
                     </Link>
@@ -295,7 +295,7 @@ export function GuardianDashboard() {
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4">
             <Button asChild>
-              <Link href="/dashboard/settings/children">Manage Children</Link>
+              <Link href="/dashboard/children">Manage Children</Link>
             </Button>
             <Button asChild variant="outline">
               <Link href="/dashboard/settings">Account Settings</Link>

@@ -122,6 +122,17 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
         ],
       },
       {
+        title: "FAMILY",
+        items: [
+          {
+            href: "/dashboard/guardians",
+            icon: "shield",
+            title: "Guardians",
+            description: "Manage guardian requests",
+          },
+        ],
+      },
+      {
         title: "ACCOUNT",
         items: [
           {
@@ -176,6 +187,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             href: "/dashboard/children",
             icon: "users",
             title: "My Children",
+            description: "Manage child monitoring requests",
           },
         ],
       },

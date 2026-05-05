@@ -154,7 +154,7 @@ export function NavUser({ user }: NavUserProps) {
                 </DropdownMenuItem>
                 <DropdownMenuItem asChild>
                   <Link
-                    href="/dashboard/settings"
+                    href="/dashboard/settings/billing"
                     className="flex items-center"
                   >
                     <CreditCard className="mr-2 size-4" />

@@ -8,8 +8,8 @@ if (!fs.existsSync(logFile)) {
 }
 
 const date = new Date().toISOString().split('T')[0];
-const technicalChange = "Resolved platform-wide build errors including unescaped React entities, Tailwind CSS class order/shorthands, and TypeScript type mismatches.";
-const socialMediaContent = "🚀 Clean build unlocked! We just polished FastLearners by resolving platform-wide Tailwind CSS order issues, fixing React entity bugs, and tightening our TypeScript types. The dashboard is now building faster and smoother than ever! 📈 #BuildInPublic #NextJS #TypeScript #CleanCode";
+const technicalChange = "Restored settings subpage navigation with horizontal tabs in layout, added missing Separator, and reverted Guardians/Children settings routes to render forms instead of redirects.";
+const socialMediaContent = "🚀 Refined FastLearners settings! 🛠️ Restored full navigation between settings subpages with a sleek new tab bar, fixed header spacing, and brought back dedicated management for Guardians and Children. Smooth and complete. #BuildInPublic #NextJS #UIUX #EdTech";
 
 const newRow = `${date},"${technicalChange}","${socialMediaContent}"\n`;
 
