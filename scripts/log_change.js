@@ -8,8 +8,8 @@ if (!fs.existsSync(logFile)) {
 }
 
 const date = new Date().toISOString().split('T')[0];
-const technicalChange = "Restored settings subpage navigation with horizontal tabs in layout, added missing Separator, and reverted Guardians/Children settings routes to render forms instead of redirects.";
-const socialMediaContent = "🚀 Refined FastLearners settings! 🛠️ Restored full navigation between settings subpages with a sleek new tab bar, fixed header spacing, and brought back dedicated management for Guardians and Children. Smooth and complete. #BuildInPublic #NextJS #UIUX #EdTech";
+const technicalChange = "Resolved Tailwind CSS classname order lint error in settings layout to fix build failure.";
+const socialMediaContent = "🚀 Build fixed! Just resolved a Tailwind CSS class ordering issue in the FastLearners settings layout to keep our deployments smooth and error-free. Quality and consistency first! ✅📈 #BuildInPublic #NextJS #TailwindCSS #BugFix";
 
 const newRow = `${date},"${technicalChange}","${socialMediaContent}"\n`;
 

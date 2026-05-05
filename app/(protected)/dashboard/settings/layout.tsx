@@ -75,7 +75,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
         <DashboardHeader heading="Settings" text="Manage account and website settings." />
         <Separator />
         
-        <div className="flex overflow-x-auto pb-1 scrollbar-hide">
+        <div className="scrollbar-hide flex overflow-x-auto pb-1">
           <nav className="flex space-x-4">
             {navItems.map((item) => (
               <Link
