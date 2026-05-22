@@ -92,10 +92,10 @@ export function SubjectCard({
                 </Badge>
               ) : null}
             </div>
-            <p className="line-clamp-1 flex items-center gap-1 text-sm text-muted-foreground">
+            <div className="line-clamp-1 flex items-center gap-1 text-sm text-muted-foreground">
               Week {progress.currentWeek}/{progress.totalWeeks} •{" "}
               {isLoading ? <Skeleton className="inline-block h-4 w-8" /> : progress.termProgress}% complete
-            </p>
+            </div>
           </div>
         </div>
         {slug && (
@@ -178,9 +178,9 @@ export function SubjectCard({
             <div className="mt-4 space-y-2">
               <div className="flex items-center justify-between text-sm">
                 <span className="text-muted-foreground">Term Progress</span>
-                <span className="font-medium">
+                <div className="font-medium">
                   {isLoading ? <Skeleton className="h-4 w-8" /> : `${progress.termProgress}%`}
-                </span>
+                </div>
               </div>
               <Progress value={progress.termProgress} className="h-2" />
               <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -322,9 +322,9 @@ export function SubjectCard({
           <div className="mt-3 space-y-2 sm:mt-4">
             <div className="flex items-center justify-between text-xs sm:text-sm">
               <span className="text-muted-foreground">Term Progress</span>
-              <span className="font-medium">
+              <div className="font-medium">
                 {isLoading ? <Skeleton className="h-4 w-8" /> : `${progress.termProgress}%`}
-              </span>
+              </div>
             </div>
             <Progress value={progress.termProgress} className="h-2" />
             <div className="flex flex-col gap-1 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
@@ -341,7 +341,7 @@ export function SubjectCard({
         <div className="mt-3 flex flex-wrap items-center gap-2 sm:mt-4 sm:space-x-3">
           <div className="flex items-center gap-2 text-xs text-muted-foreground sm:text-sm">
             <Target className="size-3 sm:size-4" />
-            <span>CA: {isLoading ? <Skeleton className="inline-block h-3 w-8 align-middle" /> : (progress.caScore ? `${progress.caScore}%` : "N/A")}</span>
+            <div>CA: {isLoading ? <Skeleton className="inline-block h-3 w-8 align-middle" /> : (progress.caScore ? `${progress.caScore}%` : "N/A")}</div>
           </div>
           {progress.upcomingAssessments > 0 && (
             <Badge variant="outline" className="text-xs">

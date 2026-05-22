@@ -36,18 +36,26 @@ export function AchievementsSection({
           {description}
         </CardDescription>
       </CardHeader>
-      <CardContent className="responsive-padding grid grid-cols-2 gap-component-sm sm:grid-cols-3 sm:gap-component-md">
-        {items.map((a, i) => (
-          <div
-            key={`${a.title}-${i}`}
-            className="rounded-xl border bg-card p-component-sm text-center shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-component-md"
-          >
-            <div className="text-xl sm:text-2xl">{a.icon}</div>
-            <div className="mt-1 text-xs font-medium text-gray-900 dark:text-slate-100 sm:text-sm">
-              {a.title}
-            </div>
+      <CardContent className="responsive-padding">
+        {items.length > 0 ? (
+          <div className="grid grid-cols-2 gap-component-sm sm:grid-cols-3 sm:gap-component-md">
+            {items.map((a, i) => (
+              <div
+                key={`${a.title}-${i}`}
+                className="rounded-xl border bg-card p-component-sm text-center shadow-sm transition-transform duration-200 hover:-translate-y-0.5 hover:shadow-md sm:p-component-md"
+              >
+                <div className="text-xl sm:text-2xl">{a.icon}</div>
+                <div className="mt-1 text-xs font-medium text-gray-900 dark:text-slate-100 sm:text-sm">
+                  {a.title}
+                </div>
+              </div>
+            ))}
           </div>
-        ))}
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+            <p>No achievements yet.</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

@@ -76,7 +76,6 @@ const createOnboardingSchema = (
       country: z.string().optional(),
       state: z.string().optional(),
       city: z.string().optional(),
-      address: z.string().optional(),
       school: z.string().optional(),
       class: z.string().optional(),
       discipline: z.string().optional(),
@@ -246,19 +245,6 @@ const createOnboardingSchema = (
           });
         }
 
-        // Require address when not present in profile
-        if (
-          (profile?.address === null ||
-            profile?.address === undefined ||
-            profile?.address === "") &&
-          (!data.address || data.address.trim() === "")
-        ) {
-          ctx.addIssue({
-            code: z.ZodIssueCode.custom,
-            message: "Address is required for guardians",
-            path: ["address"],
-          });
-        }
       }
     });
 };
@@ -396,7 +382,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         setValue("country", profileData.country || "");
         setValue("state", profileData.state || "");
         setValue("city", profileData.city || "");
-        setValue("address", profileData.address || "");
         setValue("child_email", profileData.child_email || "");
         setValue("child_phone", profileData.child_phone || "");
       } catch (error: any) {
@@ -452,7 +437,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
             country: updatedProfile.country,
             state: updatedProfile.state,
             city: updatedProfile.city,
-            address: updatedProfile.address,
             gender: updatedProfile.gender,
             child_email: updatedProfile.child_email,
             child_phone: updatedProfile.child_phone,
@@ -523,13 +507,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         ) {
           fieldsToValidate.push("city");
         }
-        if (
-          profile?.address === null ||
-          profile?.address === undefined ||
-          profile?.address === ""
-        ) {
-          fieldsToValidate.push("address");
-        }
       }
 
       isValid = await trigger(fieldsToValidate as (keyof OnboardingFormData)[]);
@@ -590,7 +567,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         country: data.country,
         state: data.state,
         city: data.city,
-        address: data.address,
         child_email: data.child_email,
         child_phone: data.child_phone,
       };
@@ -620,7 +596,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         country: updatedProfile.country,
         state: updatedProfile.state,
         city: updatedProfile.city,
-        address: updatedProfile.address,
         gender: updatedProfile.gender,
         child_email: updatedProfile.child_email,
         child_phone: updatedProfile.child_phone,
@@ -972,20 +947,6 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       </p>
                     )}
                   </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="address">Address</Label>
-                    <Input
-                      id="address"
-                      {...register("address")}
-                      placeholder="Enter your address"
-                    />
-                    {errors.address && (
-                      <p className="text-sm text-destructive">
-                        {errors.address.message}
-                      </p>
-                    )}
-                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -1196,7 +1157,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     Gender: {watch("gender")}
                     <br />
                     Location: {watch("country")}, {watch("state")},{" "}
-                    {watch("city")}, {watch("address")}
+                    {watch("city")}
                   </p>
                 </div>
 

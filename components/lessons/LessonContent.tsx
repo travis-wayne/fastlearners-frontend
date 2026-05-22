@@ -1,15 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import { BookOpen, CheckCircle, PlayCircle, Target, Volume2 } from "lucide-react";
+import { BookOpen, CheckCircle, PlayCircle, Target } from "lucide-react";
 
 import type { LessonContent as LessonContentType } from "@/lib/types/lessons";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { ExerciseModal } from "@/components/lessons/ExerciseModal";
+import { AudioPlayer } from "@/components/lessons/AudioPlayer";
 import { cn } from "@/lib/utils";
-import { getYouTubeEmbedUrl } from "@/lib/utils/media";
+import { YouTubeEmbed } from "@/components/lessons/YouTubeEmbed";
 
 interface LessonContentProps {
   content: LessonContentType;
@@ -60,51 +61,14 @@ export function LessonContent({
       {content.video_path && (
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
-            <div className="aspect-video w-full bg-black">
-              {(() => {
-                const embedUrl = getYouTubeEmbedUrl(content.video_path);
-                if (embedUrl) {
-                  return (
-                    <iframe
-                      src={embedUrl}
-                      className="size-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                      title={content.topic || content.title || "Lesson Video"}
-                    />
-                  );
-                }
-                return (
-                  <video
-                    controls
-                    className="size-full"
-                    src={content.video_path}
-                  >
-                    Your browser does not support the video tag.
-                  </video>
-                );
-              })()}
-            </div>
+            <YouTubeEmbed src={content.video_path} title={content.topic ?? content.title} />
           </CardContent>
         </Card>
       )}
 
       {/* Audio Player */}
       {content.audio_path && (
-        <Card className="border-2">
-          <CardHeader className="responsive-padding pb-2 sm:pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg sm:text-xl">
-              <Volume2 className="size-4 text-primary sm:size-5" />
-              Pronunciation / Audio
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="responsive-padding">
-            <audio controls className="w-full">
-              <source src={content.audio_path} />
-              Your browser does not support the audio element.
-            </audio>
-          </CardContent>
-        </Card>
+        <AudioPlayer src={content.audio_path} title="Pronunciation / Audio" className="border-2" />
       )}
 
       {/* Overview */}
@@ -224,24 +188,12 @@ export function LessonContent({
                                 height={450}
                                 className="h-auto max-w-full rounded-lg"
                                 style={{ width: "100%", height: "auto" }}
+                                unoptimized
                               />
                             </div>
                           )}
                           {desc.audio_path && (
-                            <Card className="my-3 border-2">
-                              <CardHeader className="p-3 pb-2 sm:p-4 sm:pb-3">
-                                <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
-                                  <Volume2 className="size-4 text-primary" />
-                                  Pronunciation / Audio
-                                </CardTitle>
-                              </CardHeader>
-                              <CardContent className="p-3 pt-0 sm:p-4 sm:pt-0">
-                                <audio controls className="w-full">
-                                  <source src={desc.audio_path} />
-                                  Your browser does not support the audio element.
-                                </audio>
-                              </CardContent>
-                            </Card>
+                            <AudioPlayer src={desc.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
                           )}
                           {desc.points &&
                             Array.isArray(desc.points) &&
@@ -296,6 +248,22 @@ export function LessonContent({
                               {example.answer}
                             </span>
                           </p>
+                        )}
+                        {example.image_path && (example.image_path.startsWith('/') || example.image_path.startsWith('http')) && (
+                          <div className="my-2">
+                            <Image
+                              src={example.image_path}
+                              alt={example.title || "Example illustration"}
+                              width={800}
+                              height={450}
+                              className="h-auto max-w-full rounded-lg"
+                              style={{ width: "100%", height: "auto" }}
+                              unoptimized
+                            />
+                          </div>
+                        )}
+                        {example.audio_path && (
+                          <AudioPlayer src={example.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
                         )}
                       </div>
                     ))}

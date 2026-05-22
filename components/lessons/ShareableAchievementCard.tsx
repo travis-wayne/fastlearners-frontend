@@ -58,6 +58,7 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
                   alt={userName}
                   fill
                   className="object-cover"
+                  unoptimized
                 />
               </div>
             ) : (

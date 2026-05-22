@@ -21,6 +21,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Card, CardContent } from "@/components/ui/card";
+import Image from "next/image";
+import { AudioPlayer } from "./AudioPlayer";
 
 interface ExerciseModalProps {
   exercise: Exercise;
@@ -73,21 +75,46 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <Card className="border-dashed bg-muted/30 transition-colors hover:bg-muted/50">
-        <CardContent className="flex items-center justify-between gap-3 p-3 sm:p-4">
-          <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
-              Practice {index + 1}
-            </p>
-            <p className="truncate text-sm font-medium sm:text-base">
-              {exercise.title || exercise.problem?.slice(0, 60) || "Practice Exercise"}
-            </p>
+        <CardContent className="flex flex-col gap-3 p-3 sm:p-4">
+          <div className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground sm:text-xs">
+                Practice {index + 1}
+              </p>
+              <p className="text-sm font-medium sm:text-base">
+                {exercise.title || "Practice Exercise"}
+              </p>
+            </div>
+            <DialogTrigger asChild>
+              <Button size="sm" variant="outline" className="h-9 shrink-0 px-4 font-semibold">
+                Go
+                <ArrowRight className="ml-1.5 size-3.5" />
+              </Button>
+            </DialogTrigger>
           </div>
-          <DialogTrigger asChild>
-            <Button size="sm" variant="outline" className="h-9 shrink-0 px-4 font-semibold">
-              Go
-              <ArrowRight className="ml-1.5 size-3.5" />
-            </Button>
-          </DialogTrigger>
+
+          {exercise.problem && (
+            <p className="text-sm text-muted-foreground">
+              {exercise.problem}
+            </p>
+          )}
+
+          {exercise.image_path && (exercise.image_path.startsWith('/') || exercise.image_path.startsWith('http')) && (
+            <div className="my-2">
+              <Image
+                src={exercise.image_path}
+                alt={exercise.title || "Exercise illustration"}
+                width={800}
+                height={450}
+                className="h-auto max-w-full rounded-lg"
+                style={{ width: "100%", height: "auto" }}
+                unoptimized
+              />
+            </div>
+          )}
+          {exercise.audio_path && (
+            <AudioPlayer src={exercise.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+          )}
         </CardContent>
       </Card>
 
@@ -103,6 +130,23 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
             </DialogDescription>
           )}
         </DialogHeader>
+
+        {exercise.image_path && (exercise.image_path.startsWith('/') || exercise.image_path.startsWith('http')) && (
+          <div className="my-2">
+            <Image
+              src={exercise.image_path}
+              alt={exercise.title || "Exercise illustration"}
+              width={800}
+              height={450}
+              className="h-auto max-w-full rounded-lg"
+              style={{ width: "100%", height: "auto" }}
+              unoptimized
+            />
+          </div>
+        )}
+        {exercise.audio_path && (
+          <AudioPlayer src={exercise.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+        )}
 
         <div className="space-y-4">
           {options.length > 0 ? (

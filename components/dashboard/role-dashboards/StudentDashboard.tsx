@@ -1,28 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import {
-  ArrowRight,
   BookOpen,
   Calendar,
-  CheckCircle2,
-  ChevronRight,
-  Circle,
-  Loader2,
-  Play,
-  Star,
-  Target,
-  TrendingUp,
-  Trophy,
   Info,
+  Loader2,
+  Target,
+  Trophy,
 } from "lucide-react";
+import { toast } from "sonner";
 
+import { useAcademicContext } from "@/components/providers/academic-context";
+import { getAllSubjectsTotalScores } from "@/lib/api/lessons";
 import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { BentoGrid, BentoGridItem } from "@/components/ui/bento-grid";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,16 +24,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { ChartConfig } from "@/components/ui/chart";
 import { Progress } from "@/components/ui/progress";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { AchievementsSection } from "@/components/dashboard/AchievementsSection";
 import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
@@ -74,17 +59,14 @@ const itemVariants = {
 };
 
 export function StudentDashboard() {
-  const [selectedSubject, setSelectedSubject] = useState<string>("Physics");
+  const { currentTermApiId } = useAcademicContext();
+  const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [dashboardData, setDashboardData] = useState<DashboardContent | null>(
     null,
   );
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(true);
-  const subjectToProgress: Record<string, number> = {
-    Mathematics: 65,
-    Physics: 50,
-    Chemistry: 80,
-    Biology: 90,
-  };
+  const [termPerformanceData, setTermPerformanceData] = useState<Array<{ subject: string; percentage: number }>>([]);
+  const [isLoadingPerformance, setIsLoadingPerformance] = useState(true);
 
   // Fetch dashboard data
   useEffect(() => {
@@ -98,9 +80,12 @@ export function StudentDashboard() {
           if (response.content.progress?.subject) {
             setSelectedSubject(response.content.progress.subject);
           }
+        } else {
+          toast.error(response.message || "Could not load dashboard data");
         }
       } catch (error) {
         console.error("Failed to fetch dashboard:", error);
+        toast.error("Could not load dashboard data");
       } finally {
         setIsLoadingDashboard(false);
       }
@@ -109,89 +94,70 @@ export function StudentDashboard() {
     fetchDashboard();
   }, []);
 
-  const termPerformance = [
-    { subject: "Mathematics", progress: 68, target: 80 },
-    { subject: "Physics", progress: 85, target: 80 },
-    { subject: "Chemistry", progress: 92, target: 85 },
-    { subject: "Biology", progress: 45, target: 70 },
-  ];
+  useEffect(() => {
+    const fetchPerformance = async () => {
+      if (typeof currentTermApiId !== "number") {
+        setTermPerformanceData([]);
+        setIsLoadingPerformance(false);
+        return;
+      }
+      
+      setIsLoadingPerformance(true);
+      try {
+        const response = await getAllSubjectsTotalScores(currentTermApiId);
+        if (response.success && response.content?.total_scores) {
+          const scores = response.content.total_scores;
+          const performanceData = Object.entries(scores).map(([subject, scoreArray]) => {
+            if (!scoreArray || scoreArray.length === 0) {
+              return { subject, percentage: 0 };
+            }
+            const avg = scoreArray.reduce((acc, curr) => acc + parseFloat(curr.total_score || "0"), 0) / scoreArray.length;
+            const percentage = Math.min(100, Math.max(0, Math.round(avg)));
+            return { subject, percentage };
+          });
+          setTermPerformanceData(performanceData);
+        } else {
+          setTermPerformanceData([]);
+          if (!(response as any).noData) {
+            toast.error(response.message || "Could not load performance data");
+          }
+        }
+      } catch (error) {
+        setTermPerformanceData([]);
+        toast.error("Could not load performance data");
+      } finally {
+        setIsLoadingPerformance(false);
+      }
+    };
 
-  const achievements = [
-    { title: "7-Day Streak", icon: "🔥", earned: true },
-    { title: "Perfect Score", icon: "⭐", earned: true },
-    { title: "Fast Learner", icon: "⚡", earned: false },
-    { title: "Subject Master", icon: "🏆", earned: false },
-  ];
+    fetchPerformance();
+  }, [currentTermApiId]);
 
-  const achievementHighlights = achievements.slice(0, 3).map(
-    ({ title, icon }) => ({
-      title,
-      icon,
-    }),
-  );
+  // Derived data for donut
+  const progressPercent =
+    dashboardData?.progress && dashboardData.progress.covered + dashboardData.progress.left > 0
+      ? Math.round(
+          (dashboardData.progress.covered / (dashboardData.progress.covered + dashboardData.progress.left)) * 100
+        )
+      : 0;
 
-  const stats = [
-    { label: "Lessons Completed", value: "24", change: "+12%", positive: true },
-    { label: "Current Streak", value: "7 days", change: "🔥", positive: true },
-    { label: "Average Score", value: "85%", change: "+5%", positive: true },
-    { label: "Time This Week", value: "12h", change: "+2h", positive: true },
-  ];
+  const donutSubject = dashboardData?.progress?.subject ?? selectedSubject;
 
-  // NEW SECTIONS DATA for the three cards from the image
+  const donutOptions = isLoadingDashboard || !donutSubject
+    ? []
+    : [
+        {
+          label: donutSubject,
+          value: donutSubject,
+          color: "#3b82f6",
+        },
+      ];
 
-  // Leaderboard data
-  const leaderboard = [
-    { rank: 1, name: "Alex Johnson", score: 2840, avatar: "/avatars/avatar-1.svg" },
-    {
-      rank: 2,
-      name: "Sarah Wilson",
-      score: 2750,
-      avatar: "/avatars/avatar-2.svg",
-    },
-    { rank: 3, name: "Mike Chen", score: 2680, avatar: "/avatars/avatar-3.svg" },
-    {
-      rank: 4,
-      name: "You",
-      score: 2620,
-      avatar: "/avatars/avatar-4.svg",
-      isCurrentUser: true,
-    },
-  ];
-
-  // Overview data
-  const overviewStats = [
-    { label: "Subjects Registered", value: "8/9" },
-    { label: "Lessons Completed", value: "10/20" },
-    { label: "Quizzes Completed", value: "6/20" },
-  ];
-
-  // Today's Lessons for table format
-  const todaysLessonsTable = [
-    {
-      id: 1,
-      subject: "Physics",
-      lesson: "Introduction to Mechanics",
-      duration: "45 min",
-      status: "Continue",
-      progress: 65,
-    },
-    {
-      id: 2,
-      subject: "Mathematics",
-      lesson: "Algebra Fundamentals",
-      duration: "30 min",
-      status: "Start",
-      progress: 0,
-    },
-    {
-      id: 3,
-      subject: "Chemistry",
-      lesson: "Atomic Structure",
-      duration: "40 min",
-      status: "Continue",
-      progress: 80,
-    },
-  ];
+  const donutProgressMap = isLoadingDashboard || !donutSubject
+    ? {}
+    : {
+        [donutSubject]: progressPercent,
+      };
 
   return (
     <motion.div
@@ -235,35 +201,99 @@ export function StudentDashboard() {
         variants={itemVariants}
         className="responsive-gap grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"
       >
-        {stats.map((stat, index) => (
-          <motion.div
-            key={stat.label}
-            whileHover={{ scale: 1.02, y: -2 }}
-            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-          >
-            <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
-              <CardContent className="responsive-padding">
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    {stat.label}
-                  </p>
-                  <div className="flex items-baseline gap-2">
-                    <h3 className="text-xl font-bold sm:text-2xl">{stat.value}</h3>
-                    <Badge
-                      variant={stat.positive ? "default" : "secondary"}
-                      className="text-[10px] sm:text-xs"
-                    >
-                      {stat.change}
-                    </Badge>
-                  </div>
+        {/* Lessons Completed */}
+        <motion.div
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Lessons Completed</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-xl font-bold sm:text-2xl">
+                    {isLoadingDashboard ? <Skeleton className="h-8 w-16" /> : dashboardData?.lessons ?? "—"}
+                  </h3>
                 </div>
-                <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
-                  <div className="size-2 rounded-full bg-primary/40"></div>
+              </div>
+              <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
+                <div className="size-2 rounded-full bg-primary/40"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Subjects */}
+        <motion.div
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Subjects</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-xl font-bold sm:text-2xl">
+                    {isLoadingDashboard ? <Skeleton className="h-8 w-16" /> : dashboardData?.subjects ?? "—"}
+                  </h3>
                 </div>
-              </CardContent>
-            </Card>
-          </motion.div>
-        ))}
+              </div>
+              <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
+                <div className="size-2 rounded-full bg-primary/40"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Quizzes */}
+        <motion.div
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Quizzes</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-xl font-bold sm:text-2xl">
+                    {isLoadingDashboard ? <Skeleton className="h-8 w-16" /> : dashboardData?.quizzes ?? "—"}
+                  </h3>
+                </div>
+              </div>
+              <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
+                <div className="size-2 rounded-full bg-primary/40"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Subscription */}
+        <motion.div
+          whileHover={{ scale: 1.02, y: -2 }}
+          transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        >
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">Subscription</p>
+                <div className="flex items-baseline gap-2">
+                  <h3 className="text-xl font-bold sm:text-2xl">
+                    {isLoadingDashboard ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : dashboardData?.subscription_status ? (
+                      dashboardData.subscription_status.charAt(0).toUpperCase() + dashboardData.subscription_status.slice(1)
+                    ) : (
+                      "—"
+                    )}
+                  </h3>
+                </div>
+              </div>
+              <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
+                <div className="size-2 rounded-full bg-primary/40"></div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
       </motion.div>
 
       {/* Progress + Achievements + Overview row */}
@@ -273,19 +303,14 @@ export function StudentDashboard() {
       >
         {/* Progress Donut - Phase B replacement */}
         <ProgressDonut
-          options={[
-            { label: "Mathematics", value: "Mathematics", color: "#3b82f6" },
-            { label: "Physics", value: "Physics", color: "#8b5cf6" },
-            { label: "Chemistry", value: "Chemistry", color: "#10b981" },
-            { label: "Biology", value: "Biology", color: "#f59e0b" },
-          ]}
-          value={selectedSubject}
+          options={donutOptions}
+          value={donutSubject}
           onChange={setSelectedSubject}
-          progressMap={subjectToProgress}
+          progressMap={donutProgressMap}
         />
 
         {/* Achievements (3 cards) - extracted */}
-        <AchievementsSection items={achievementHighlights} />
+        <AchievementsSection items={[]} description="Achievements coming soon" />
 
         {/* Overview grid - extracted */}
         <div className="md:col-span-2 lg:col-span-1">
@@ -409,100 +434,15 @@ export function StudentDashboard() {
                   </CardDescription>
                 </div>
               </div>
-              <Badge variant="secondary" className="bg-primary/10 text-primary">
-                3 lessons
-              </Badge>
             </div>
           </CardHeader>
           <CardContent>
-            <div className="space-y-component-sm sm:hidden">
-              {todaysLessonsTable.map((lesson) => (
-                <div
-                  key={`lesson-card-${lesson.id}`}
-                  className="responsive-padding rounded-2xl border bg-background shadow-sm"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="text-sm font-semibold">{lesson.subject}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {lesson.lesson}
-                      </p>
-                    </div>
-                    <Badge variant="outline">{lesson.duration}</Badge>
-                  </div>
-                  <div className="mt-4 flex flex-col gap-3">
-                    {lesson.progress > 0 ? (
-                      <div className="flex items-center gap-2">
-                        <Progress value={lesson.progress} className="w-24" />
-                        <span className="text-sm font-medium">
-                          {lesson.progress}%
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="text-sm text-muted-foreground">
-                        Not started
-                      </span>
-                    )}
-                    <Button
-                      size="sm"
-                      variant={lesson.progress === 0 ? "default" : "outline"}
-                    >
-                      {lesson.status}
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <div className="hidden w-full overflow-x-auto sm:block">
-              <Table className="min-w-[640px]">
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Subject</TableHead>
-                    <TableHead>Lesson</TableHead>
-                    <TableHead>Duration</TableHead>
-                    <TableHead>Progress</TableHead>
-                    <TableHead>Action</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {todaysLessonsTable.map((lesson) => (
-                    <TableRow key={lesson.id}>
-                      <TableCell className="font-medium">
-                        {lesson.subject}
-                      </TableCell>
-                      <TableCell>{lesson.lesson}</TableCell>
-                      <TableCell>{lesson.duration}</TableCell>
-                      <TableCell>
-                        {lesson.progress > 0 ? (
-                          <div className="flex items-center gap-2">
-                            <Progress
-                              value={lesson.progress}
-                              className="w-16"
-                            />
-                            <span className="text-sm">{lesson.progress}%</span>
-                          </div>
-                        ) : (
-                          <span className="text-sm text-muted-foreground">
-                            Not started
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        <Button
-                          size="sm"
-                          className="h-9"
-                          variant={
-                            lesson.progress === 0 ? "default" : "outline"
-                          }
-                        >
-                          {lesson.status}
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="mb-4 rounded-full bg-primary/10 p-4">
+                <BookOpen className="size-8 text-primary" />
+              </div>
+              <h3 className="mb-1 text-lg font-semibold">Your lesson schedule will appear here</h3>
+              <p className="text-sm text-muted-foreground">Lesson scheduling is coming soon.</p>
             </div>
           </CardContent>
         </Card>
@@ -511,13 +451,8 @@ export function StudentDashboard() {
       {/* Leaderboard Section - extracted */}
       <motion.div variants={itemVariants}>
         <LeaderBoard
-          entries={leaderboard.map((e) => ({
-            rank: e.rank,
-            name: e.name,
-            avatar: e.avatar,
-            score: e.score,
-            isCurrentUser: (e as any).isCurrentUser,
-          }))}
+          entries={[]}
+          subtitle="Leaderboard coming soon"
         />
       </motion.div>
 
@@ -525,16 +460,26 @@ export function StudentDashboard() {
       <div className="responsive-gap grid grid-cols-1 lg:grid-cols-3">
         {/* Term Performance - extracted (takes 2 columns) */}
         <motion.div variants={itemVariants} className="lg:col-span-2">
-          <PerformanceSection
-            items={termPerformance.map((s) => ({
-              subject: s.subject,
-              percentage: s.progress,
-              target: s.target,
-              colorClass: "bg-primary",
-            }))}
-            title="Term Performance"
-            description="Overall performance across all subjects this term"
-          />
+          {isLoadingPerformance ? (
+            <Skeleton className="h-48 w-full" />
+          ) : termPerformanceData.length > 0 ? (
+            <PerformanceSection
+              items={termPerformanceData.map((s) => ({
+                subject: s.subject,
+                percentage: s.percentage,
+                target: 100,
+                colorClass: "bg-primary",
+              }))}
+              title="Term Performance"
+              description="Overall performance across all subjects this term"
+            />
+          ) : (
+            <PerformanceSection
+              items={[]}
+              title="Term Performance"
+              description="No performance data available yet."
+            />
+          )}
         </motion.div>
 
         {/* Achievements - Original */}
@@ -550,44 +495,10 @@ export function StudentDashboard() {
               <CardDescription>Your learning milestones</CardDescription>
             </CardHeader>
             <CardContent className="space-y-component-sm sm:space-y-component-md">
-              {achievements.map((achievement, index) => (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.1 * index }}
-                  whileHover={{ scale: 1.02 }}
-                  className={`flex items-center gap-component-md rounded-lg p-component-sm transition-colors sm:p-component-md ${achievement.earned
-                    ? "border border-primary/20 bg-primary/5"
-                    : "bg-muted/30"
-                    }`}
-                >
-                  <div
-                    className={`text-base sm:text-xl ${achievement.earned ? "" : "opacity-50 grayscale"}`}
-                  >
-                    {achievement.icon}
-                  </div>
-                  <div className="flex-1">
-                    <span
-                      className={`font-medium ${achievement.earned
-                        ? "text-foreground"
-                        : "text-muted-foreground"
-                        }`}
-                    >
-                      {achievement.title}
-                    </span>
-                  </div>
-                  {achievement.earned && (
-                    <motion.div
-                      initial={{ scale: 0, rotate: -180 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ type: "spring", delay: 0.3 }}
-                    >
-                      <Star className="size-3.5 fill-current text-yellow-500 sm:size-4" />
-                    </motion.div>
-                  )}
-                </motion.div>
-              ))}
+              <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+                <Trophy className="mb-2 size-8 opacity-20" />
+                <p>Achievements coming soon</p>
+              </div>
               <Button variant="outline" size="sm" className="mt-3 w-full">
                 View All Achievements
               </Button>

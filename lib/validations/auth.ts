@@ -86,7 +86,6 @@ export const profileUpdateSchema = z.object({
   country: z.string().optional(),
   state: z.string().optional(),
   city: z.string().optional(),
-  address: z.string().optional(),
   gender: z.enum(["male", "female", "other"]).optional(),
   role: z.enum(["student", "parent"]).optional(),
   parent_email: z.string().email("Invalid email").optional().or(z.literal("")),

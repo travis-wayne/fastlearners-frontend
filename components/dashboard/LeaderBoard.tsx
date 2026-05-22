@@ -41,39 +41,47 @@ export function LeaderBoard({
               </p>
             ) : null}
           </div>
-          <Button variant="ghost" size="sm" onClick={onViewAll}>
-            View All
-          </Button>
+          {entries.length > 0 && (
+            <Button variant="ghost" size="sm" onClick={onViewAll}>
+              View All
+            </Button>
+          )}
         </div>
       </CardHeader>
       <CardContent className="responsive-padding">
-        <div className="space-y-component-sm">
-          {entries.map((student) => (
-            <div
-              key={student.rank}
-              className={`flex items-center gap-component-md rounded-lg border p-component-sm transition-colors sm:p-component-md ${student.isCurrentUser
-                  ? "border-primary/30 bg-primary/10"
-                  : "hover:bg-muted"
-                }`}
-            >
-              <div className="w-5 text-sm font-bold sm:w-6">#{student.rank}</div>
-              <Avatar className="size-7 sm:size-8">
-                {student.avatar ? (
-                  <AvatarImage src={student.avatar} alt={student.name} />
-                ) : null}
-                <AvatarFallback>{student.name?.[0] ?? "U"}</AvatarFallback>
-              </Avatar>
-              <div className="flex-1">
-                <div className="text-xs font-medium text-gray-900 dark:text-slate-200 sm:text-sm">
-                  {student.name}
+        {entries.length > 0 ? (
+          <div className="space-y-component-sm">
+            {entries.map((student) => (
+              <div
+                key={student.rank}
+                className={`flex items-center gap-component-md rounded-lg border p-component-sm transition-colors sm:p-component-md ${student.isCurrentUser
+                    ? "border-primary/30 bg-primary/10"
+                    : "hover:bg-muted"
+                  }`}
+              >
+                <div className="w-5 text-sm font-bold sm:w-6">#{student.rank}</div>
+                <Avatar className="size-7 sm:size-8">
+                  {student.avatar ? (
+                    <AvatarImage src={student.avatar} alt={student.name} />
+                  ) : null}
+                  <AvatarFallback>{student.name?.[0] ?? "U"}</AvatarFallback>
+                </Avatar>
+                <div className="flex-1">
+                  <div className="text-xs font-medium text-gray-900 dark:text-slate-200 sm:text-sm">
+                    {student.name}
+                  </div>
+                </div>
+                <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
+                  {student.score.toLocaleString()}
                 </div>
               </div>
-              <div className="text-sm font-semibold text-gray-900 dark:text-slate-100">
-                {student.score.toLocaleString()}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <div className="flex flex-col items-center justify-center py-8 text-center text-muted-foreground">
+            <p>No entries yet.</p>
+          </div>
+        )}
       </CardContent>
     </Card>
   );

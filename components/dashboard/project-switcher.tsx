@@ -16,6 +16,7 @@ export default function ProjectSwitcher() {
         width={100}
         height={16}
         className="h-5 w-auto object-contain sm:h-4"
+        style={{ width: "auto" }}
       />
     </Link>
   );

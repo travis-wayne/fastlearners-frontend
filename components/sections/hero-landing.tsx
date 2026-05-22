@@ -40,6 +40,7 @@ const InfiniteLogoSlider = () => {
               width={100}
               height={40}
               className="h-8 w-auto object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert sm:h-10 lg:h-12"
+              style={{ width: "auto" }}
             />
           </div>
         ))}

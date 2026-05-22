@@ -32,7 +32,6 @@ export interface UpdateData {
   country?: string;
   state?: string;
   city?: string;
-  address?: string;
   child_email?: string;
   child_phone?: string;
   [key: string]: any;
@@ -197,9 +196,6 @@ export function validateProfileEdit(
     }
     if (!cleanedData.city || (typeof cleanedData.city === 'string' && cleanedData.city.trim() === '')) {
       errors.city = ['The city field is required.'];
-    }
-    if (!cleanedData.address || (typeof cleanedData.address === 'string' && cleanedData.address.trim() === '')) {
-      errors.address = ['The address field is required.'];
     }
   }
 

@@ -9,6 +9,8 @@ import { CheckCircle2, X, Clock, RotateCcw, AlertTriangle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Exercise, GeneralExercise } from "@/lib/types/lessons";
 import { useLessonsStore } from "@/lib/store/lessons";
+import Image from "next/image";
+import { AudioPlayer } from "./AudioPlayer";
 
 interface ExerciseCardProps {
   exercise: Exercise | GeneralExercise;
@@ -377,6 +379,23 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
             {exercise.problem}
           </p>
         </div>
+
+        {exercise.image_path && (exercise.image_path.startsWith('/') || exercise.image_path.startsWith('http')) && (
+          <div className="my-2">
+            <Image
+              src={exercise.image_path}
+              alt={('title' in exercise ? exercise.title : null) || "Exercise illustration"}
+              width={800}
+              height={450}
+              className="h-auto max-w-full rounded-lg"
+              style={{ width: "100%", height: "auto" }}
+              unoptimized
+            />
+          </div>
+        )}
+        {exercise.audio_path && (
+          <AudioPlayer src={exercise.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+        )}
 
         <RadioGroup
           value={selectedOptionKey}

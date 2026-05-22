@@ -9,6 +9,8 @@ import { useLessonsStore, selectConceptScore } from "@/lib/store/lessons";
 import { ExerciseCard } from "../ExerciseCard";
 import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { AudioPlayer } from "../AudioPlayer";
 
 interface LessonConceptProps {
   concept: Concept;
@@ -95,6 +97,22 @@ const ExampleCard = React.memo(function ExampleCard({ example, index }: ExampleC
                     <span className="mr-2">✓</span>Answer: {example.answer}
                   </p>
                 </div>
+                {example.image_path && (example.image_path.startsWith('/') || example.image_path.startsWith('http')) && (
+                  <div className="my-2">
+                    <Image
+                      src={example.image_path}
+                      alt={example.title || "Example illustration"}
+                      width={800}
+                      height={450}
+                      className="h-auto max-w-full rounded-lg"
+                      style={{ width: "100%", height: "auto" }}
+                      unoptimized
+                    />
+                  </div>
+                )}
+                {example.audio_path && (
+                  <AudioPlayer src={example.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+                )}
               </motion.div>
             )}
           </AnimatePresence>
@@ -231,6 +249,22 @@ export const LessonConcept = React.memo(function LessonConcept({
                      <p className="text-base leading-relaxed text-foreground">
                        {desc.description}
                      </p>
+                  )}
+                  {desc.image_path && (desc.image_path.startsWith('/') || desc.image_path.startsWith('http')) && (
+                    <div className="my-2">
+                      <Image
+                        src={desc.image_path}
+                        alt={desc.heading || "Concept illustration"}
+                        width={800}
+                        height={450}
+                        className="h-auto max-w-full rounded-lg"
+                        style={{ width: "100%", height: "auto" }}
+                        unoptimized
+                      />
+                    </div>
+                  )}
+                  {desc.audio_path && (
+                    <AudioPlayer src={desc.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
                   )}
                   {desc.points && desc.points.length > 0 && (
                      <ul className="ml-6 space-y-2">

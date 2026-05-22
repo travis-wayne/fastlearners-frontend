@@ -58,6 +58,8 @@ export interface Example {
   problem: string;
   solution_steps: string[];
   answer: string;
+  image_path?: string | null;
+  audio_path?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -72,6 +74,8 @@ export interface Exercise {
   solution_steps?: string[];
   answers: string[];
   correct_answer: string;
+  image_path?: string | null;
+  audio_path?: string | null;
   created_at?: string;
   updated_at?: string;
 }
@@ -85,6 +89,8 @@ export interface GeneralExercise {
   solution_steps?: string[];
   answers: string[];
   correct_answer: string;
+  image_path?: string | null;
+  audio_path?: string | null;
   created_at?: string;
   updated_at?: string;
 }

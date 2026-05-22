@@ -1,4 +1,4 @@
-﻿# FastLearners API Documentation
+# FastLearners API Documentation
 
 **Base URL:** `https://api.fastlearnersapp.com`
 
@@ -16,6 +16,8 @@
 ---
 
 ## Authentication System
+
+**Base URL:** `https://api.fastlearnersapp.com`
 
 ### 1. Registration
 
@@ -923,7 +925,10 @@
 ```
 
 ---
+
 ## User Management
+
+**Base URL:** `https://api.fastlearnersapp.com`
 
 ### 1. Profile Details
 
@@ -1308,7 +1313,7 @@
 
 ### 6. Change Password
 
-**Endpoint:** `GET /api/v1/profile/edit/password`
+**Endpoint:** `POST /api/v1/profile/edit/password`
 
 **Description:** Change user's password.
 
@@ -1455,7 +1460,10 @@
 ```
 
 ---
+
 ## Guest Management
+
+**Base URL:** `https://api.fastlearnersapp.com`
 
 ### 1. Dashboard
 
@@ -1492,6 +1500,8 @@
 ---
 
 ## Student Management
+
+**Base URL:** `https://api.fastlearnersapp.com`
 
 ### 1. Dashboard
 
@@ -1830,6 +1840,7 @@
 ```
 
 ---
+
 ### 9. List Student's Subjects (Lessons)
 
 **Endpoint:** `GET /api/v1/lessons/`
@@ -2339,6 +2350,7 @@
 ```
 
 ---
+
 ### 15. Lesson Overview Completion Check
 
 **Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`
