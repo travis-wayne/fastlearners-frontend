@@ -1,10 +1,12 @@
 import React, { ComponentType } from "react";
+
 import { LessonContent } from "@/lib/types/lessons";
-import { LessonOverview } from "./sections/LessonOverview";
+
+import { getSectionData, getSectionType, SectionType } from "./section-types";
 import { LessonConcept } from "./sections/LessonConcept";
-import { LessonSummaryApplication } from "./sections/LessonSummaryApplication";
 import { LessonGeneralExercises } from "./sections/LessonGeneralExercises";
-import { SectionType, getSectionType, getSectionData } from "./section-types";
+import { LessonOverview } from "./sections/LessonOverview";
+import { LessonSummaryApplication } from "./sections/LessonSummaryApplication";
 
 /**
  * SectionRenderer uses a registry pattern to dynamically render the appropriate
@@ -25,7 +27,11 @@ import { SectionType, getSectionType, getSectionData } from "./section-types";
 interface SectionRendererProps {
   lesson: LessonContent;
   currentStepIndex: number;
-  onAnswerExercise: (exerciseId: number, answer: string, isGeneral?: boolean) => Promise<any>;
+  onAnswerExercise: (
+    exerciseId: number,
+    answer: string,
+    isGeneral?: boolean,
+  ) => Promise<any>;
   onStartLesson?: () => void;
   onResumeLesson?: () => void;
 }
@@ -41,25 +47,28 @@ const SECTION_COMPONENT_MAP: Record<SectionType, ComponentType<any>> = {
   interactive_lab: () => null, // Placeholder for valid type
 } as const;
 
-export function SectionRenderer({ 
-  lesson, 
-  currentStepIndex, 
+export function SectionRenderer({
+  lesson,
+  currentStepIndex,
   onAnswerExercise,
   onStartLesson,
-  onResumeLesson
+  onResumeLesson,
 }: SectionRendererProps) {
   const conceptsLength = lesson.concepts?.length || 0;
   const sectionType = getSectionType(currentStepIndex, conceptsLength);
-  
-  const handleAnswerExercise = React.useCallback((exerciseId: number, answer: string) => {
-    // Determine if this is a general exercise based on the section type
-    const isGeneral = sectionType === 'general_exercises';
-    return onAnswerExercise(exerciseId, answer, isGeneral);
-  }, [sectionType, onAnswerExercise]);
-  
+
+  const handleAnswerExercise = React.useCallback(
+    (exerciseId: number, answer: string) => {
+      // Determine if this is a general exercise based on the section type
+      const isGeneral = sectionType === "general_exercises";
+      return onAnswerExercise(exerciseId, answer, isGeneral);
+    },
+    [sectionType, onAnswerExercise],
+  );
+
   // Get the component from the registry
   const Component = SECTION_COMPONENT_MAP[sectionType];
-  
+
   if (!Component) {
     console.warn(`No component found for section type: ${sectionType}`);
     return null;
@@ -67,12 +76,12 @@ export function SectionRenderer({
 
   // Get data specific to this section
   const sectionData = getSectionData(sectionType, lesson, currentStepIndex);
-  
+
   if (!sectionData) {
     console.warn(`No data found for section type: ${sectionType}`);
     return null;
   }
-  
+
   // Combine all props
   // We explicitly pass callbacks that might be needed by specific sections
   const props = {

@@ -23,9 +23,7 @@ export function useRBACGuard(options: UseRBACGuardOptions = {}) {
   const { user, isAuthenticated } = useAuthStore();
 
   const userRole = user?.role[0];
-  const canAccess = user
-    ? RBACUtils.canAccessRoute(user, pathname)
-    : false;
+  const canAccess = user ? RBACUtils.canAccessRoute(user, pathname) : false;
   const homeRoute = userRole ? RBACUtils.getHomeRoute(userRole) : "/auth/login";
 
   useEffect(() => {
@@ -37,7 +35,10 @@ export function useRBACGuard(options: UseRBACGuardOptions = {}) {
     // Check if user can access current route
     if (!canAccess) {
       if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
-        console.log("🚫 Client RBAC: Access denied for", { userRole, pathname });
+        console.log("🚫 Client RBAC: Access denied for", {
+          userRole,
+          pathname,
+        });
       }
 
       if (showToast) {
@@ -174,9 +175,7 @@ export function usePermissionCheck() {
       case "switch_roles":
         result = RBACUtils.canSwitchRoles(userRole);
         if (debugAuth) {
-          console.log(
-            `   - RBACUtils.canSwitchRoles(${userRole}) = ${result}`,
-          );
+          console.log(`   - RBACUtils.canSwitchRoles(${userRole}) = ${result}`);
         }
         break;
       case "view_admin_panel":

@@ -4,11 +4,11 @@
  */
 
 export enum SoundType {
-  COMPLETION = 'completion',
-  ACHIEVEMENT = 'achievement',
-  PERFECT_SCORE = 'perfect',
-  STAR_EARNED = 'star',
-  LEVEL_UP = 'level_up',
+  COMPLETION = "completion",
+  ACHIEVEMENT = "achievement",
+  PERFECT_SCORE = "perfect",
+  STAR_EARNED = "star",
+  LEVEL_UP = "level_up",
 }
 
 class SoundManagerClass {
@@ -18,9 +18,9 @@ class SoundManagerClass {
 
   constructor() {
     // Load mute preference from localStorage
-    if (typeof window !== 'undefined') {
-      const storedMute = localStorage.getItem('lesson-sounds-muted');
-      this.muted = storedMute === 'true';
+    if (typeof window !== "undefined") {
+      const storedMute = localStorage.getItem("lesson-sounds-muted");
+      this.muted = storedMute === "true";
     }
   }
 
@@ -28,27 +28,29 @@ class SoundManagerClass {
    * Preload all sound files
    */
   preload(): void {
-    if (this.initialized || typeof window === 'undefined') return;
+    if (this.initialized || typeof window === "undefined") return;
 
     const soundFiles: Record<SoundType, string> = {
-      [SoundType.COMPLETION]: '/sounds/completion.mp3',
-      [SoundType.ACHIEVEMENT]: '/sounds/achievement.mp3',
-      [SoundType.PERFECT_SCORE]: '/sounds/perfect.mp3',
-      [SoundType.STAR_EARNED]: '/sounds/star.mp3',
-      [SoundType.LEVEL_UP]: '/sounds/level_up.mp3',
+      [SoundType.COMPLETION]: "/sounds/completion.mp3",
+      [SoundType.ACHIEVEMENT]: "/sounds/achievement.mp3",
+      [SoundType.PERFECT_SCORE]: "/sounds/perfect.mp3",
+      [SoundType.STAR_EARNED]: "/sounds/star.mp3",
+      [SoundType.LEVEL_UP]: "/sounds/level_up.mp3",
     };
 
     Object.entries(soundFiles).forEach(([type, src]) => {
       try {
         const audio = new Audio();
-        
+
         // Handle load errors gracefully
-        audio.addEventListener('error', () => {
-          console.warn(`Failed to load sound file: ${src}. Sound will be skipped.`);
+        audio.addEventListener("error", () => {
+          console.warn(
+            `Failed to load sound file: ${src}. Sound will be skipped.`,
+          );
         });
-        
+
         audio.src = src;
-        audio.preload = 'auto';
+        audio.preload = "auto";
         // Set volume to 70% for pleasant sound levels
         audio.volume = 0.7;
         this.sounds.set(type as SoundType, audio);
@@ -66,7 +68,7 @@ class SoundManagerClass {
    * @param volume - Optional volume override (0-1)
    */
   play(soundType: SoundType, volume?: number): void {
-    if (this.muted || typeof window === 'undefined') return;
+    if (this.muted || typeof window === "undefined") return;
 
     const audio = this.sounds.get(soundType);
     if (!audio) {
@@ -80,14 +82,14 @@ class SoundManagerClass {
       if (volume !== undefined) {
         audioClone.volume = Math.max(0, Math.min(1, volume));
       }
-      
+
       // Play with error handling for autoplay restrictions
       const playPromise = audioClone.play();
-      
+
       if (playPromise !== undefined) {
-        playPromise.catch(error => {
+        playPromise.catch((error) => {
           // Autoplay was prevented - this is expected in some browsers
-          console.debug('Sound playback prevented:', error);
+          console.debug("Sound playback prevented:", error);
         });
       }
     } catch (error) {
@@ -100,8 +102,8 @@ class SoundManagerClass {
    */
   setMuted(muted: boolean): void {
     this.muted = muted;
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('lesson-sounds-muted', String(muted));
+    if (typeof window !== "undefined") {
+      localStorage.setItem("lesson-sounds-muted", String(muted));
     }
   }
 

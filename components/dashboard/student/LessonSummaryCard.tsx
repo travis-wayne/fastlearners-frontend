@@ -1,15 +1,19 @@
 "use client";
 
 import { BookOpen } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import type { LessonSummaryResponse } from "@/lib/types/lessons";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface LessonSummaryCardProps {
   summary: LessonSummaryResponse;
   isLoading: boolean;
 }
 
-export function LessonSummaryCard({ summary, isLoading }: LessonSummaryCardProps) {
+export function LessonSummaryCard({
+  summary,
+  isLoading,
+}: LessonSummaryCardProps) {
   if (isLoading) {
     return (
       <div className="mt-3 space-y-3 rounded-lg border border-border bg-muted/40 p-4">

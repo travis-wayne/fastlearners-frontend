@@ -108,7 +108,9 @@ export function UserNameForm({ user }: UserNameFormProps) {
               {errors.name.message}
             </p>
           )}
-          <p className="text-xs text-muted-foreground sm:text-sm">Max 32 characters</p>
+          <p className="text-xs text-muted-foreground sm:text-sm">
+            Max 32 characters
+          </p>
         </div>
       </SectionColumns>
     </form>

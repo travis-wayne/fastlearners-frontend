@@ -2,15 +2,26 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
-import { Trophy, Star, ArrowLeft, Loader2, Target, CheckCircle2 } from "lucide-react";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+  Star,
+  Target,
+  Trophy,
+} from "lucide-react";
+
+import {
+  getLessonCompletionData,
+  getLessonContentById,
+} from "@/lib/api/lessons";
 import { useLessonsStore } from "@/lib/store/lessons";
-import { getLessonContentById, getLessonCompletionData } from "@/lib/api/lessons";
-import { cn } from "@/lib/utils";
 import { LessonCompletionData, LessonContent } from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 
 interface LessonCompletedPageProps {
   params: {
@@ -18,7 +29,9 @@ interface LessonCompletedPageProps {
   };
 }
 
-export default function LessonCompletedPage({ params }: LessonCompletedPageProps) {
+export default function LessonCompletedPage({
+  params,
+}: LessonCompletedPageProps) {
   const router = useRouter();
   const lessonId = parseInt(params.lessonId);
   const [loading, setLoading] = useState(true);
@@ -26,7 +39,8 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
   const [error, setError] = useState<string | null>(null);
 
   // Get store data to supplement API data
-  const { exerciseProgress, sectionTimeTracking, selectedLesson } = useLessonsStore();
+  const { exerciseProgress, sectionTimeTracking, selectedLesson } =
+    useLessonsStore();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -46,9 +60,11 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
           // Fallback: Fetch from API if store is empty or mismatch (e.g. direct nav/refresh)
           const contentRes = await getLessonContentById(lessonId);
           if (!contentRes.success || !contentRes.content) {
-             // If API fails, we can't do much on refresh. 
-             // But valid flow should use Store.
-             throw new Error(contentRes.message || "Failed to load lesson content");
+            // If API fails, we can't do much on refresh.
+            // But valid flow should use Store.
+            throw new Error(
+              contentRes.message || "Failed to load lesson content",
+            );
           }
           content = contentRes.content;
         }
@@ -62,11 +78,13 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
           lessonId,
           content,
           sectionTimeTracking,
-          exerciseProgress
+          exerciseProgress,
         );
 
         if (!completionRes.success || !completionRes.data) {
-          throw new Error(completionRes.message || "Failed to load completion data");
+          throw new Error(
+            completionRes.message || "Failed to load completion data",
+          );
         }
 
         setData(completionRes.data);
@@ -116,57 +134,71 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
         </div>
         <h1 className="text-3xl font-bold tracking-tight">Lesson Complete!</h1>
         <p className="text-xl text-muted-foreground">{data.lessonTitle}</p>
-        
+
         <div className="mt-6 flex justify-center">
-           <div className="relative flex size-40 items-center justify-center rounded-full border-8 border-primary/20">
-             <div className="absolute inset-0 flex items-center justify-center">
-                <div className="text-center">
-                  <span className="block text-4xl font-bold text-primary">{Math.round(data.lessonScore)}%</span>
-                  <span className="text-xs uppercase tracking-wider text-muted-foreground">Grand Total</span>
-                </div>
-             </div>
-             <svg className="absolute inset-0 size-full -rotate-90 text-primary" viewBox="0 0 100 100">
-               <circle
-                 className="stroke-current transition-all duration-1000 ease-out"
-                 strokeWidth="8"
-                 fill="none"
-                 cx="50"
-                 cy="50"
-                 r="46"
-                 strokeDasharray="289.02652413" // 2 * pi * 46
-                 strokeDashoffset={289.02652413 * (1 - data.lessonScore / 100)}
-               />
-             </svg>
-           </div>
+          <div className="relative flex size-40 items-center justify-center rounded-full border-8 border-primary/20">
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="text-center">
+                <span className="block text-4xl font-bold text-primary">
+                  {Math.round(data.lessonScore)}%
+                </span>
+                <span className="text-xs uppercase tracking-wider text-muted-foreground">
+                  Grand Total
+                </span>
+              </div>
+            </div>
+            <svg
+              className="absolute inset-0 size-full -rotate-90 text-primary"
+              viewBox="0 0 100 100"
+            >
+              <circle
+                className="stroke-current transition-all duration-1000 ease-out"
+                strokeWidth="8"
+                fill="none"
+                cx="50"
+                cy="50"
+                r="46"
+                strokeDasharray="289.02652413" // 2 * pi * 46
+                strokeDashoffset={289.02652413 * (1 - data.lessonScore / 100)}
+              />
+            </svg>
+          </div>
         </div>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         {/* Concept Scores */}
         <Card className="border-2">
-           <CardHeader>
-             <CardTitle className="flex items-center gap-2">
-               <Target className="size-5 text-primary" />
-               Concept Breakdown
-             </CardTitle>
-           </CardHeader>
-           <CardContent className="space-y-6">
-             {data.conceptScores.map((concept) => (
-               <div key={concept.conceptId} className="space-y-2">
-                 <div className="flex items-center justify-between text-sm">
-                   <span className="max-w-[70%] truncate font-medium">{concept.title}</span>
-                   <Badge variant={concept.score >= 80 ? "default" : "secondary"}>
-                     {Math.round(concept.score)}%
-                   </Badge>
-                 </div>
-                 <Progress value={concept.score} className="h-2" />
-                 <div className="flex justify-between text-xs text-muted-foreground">
-                    <span>{concept.completedExercises}/{concept.totalExercises} exercises</span>
-                    <span>Weight: {concept.weight}%</span>
-                 </div>
-               </div>
-             ))}
-           </CardContent>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Target className="size-5 text-primary" />
+              Concept Breakdown
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {data.conceptScores.map((concept) => (
+              <div key={concept.conceptId} className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="max-w-[70%] truncate font-medium">
+                    {concept.title}
+                  </span>
+                  <Badge
+                    variant={concept.score >= 80 ? "default" : "secondary"}
+                  >
+                    {Math.round(concept.score)}%
+                  </Badge>
+                </div>
+                <Progress value={concept.score} className="h-2" />
+                <div className="flex justify-between text-xs text-muted-foreground">
+                  <span>
+                    {concept.completedExercises}/{concept.totalExercises}{" "}
+                    exercises
+                  </span>
+                  <span>Weight: {concept.weight}%</span>
+                </div>
+              </div>
+            ))}
+          </CardContent>
         </Card>
 
         {/* General Exercises & Summary */}
@@ -182,23 +214,35 @@ export default function LessonCompletedPage({ params }: LessonCompletedPageProps
               <CardContent className="space-y-4">
                 <div className="flex items-end justify-between">
                   <div>
-                    <p className="text-3xl font-bold text-primary">{Math.round(data.generalExercisesScore)}%</p>
-                    <p className="text-sm text-muted-foreground">Section Score</p>
+                    <p className="text-3xl font-bold text-primary">
+                      {Math.round(data.generalExercisesScore)}%
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Section Score
+                    </p>
                   </div>
-                  <Badge variant="outline">Weight: {data.generalExercisesWeight}%</Badge>
+                  <Badge variant="outline">
+                    Weight: {data.generalExercisesWeight}%
+                  </Badge>
                 </div>
-                <Progress value={data.generalExercisesScore} className="h-3 bg-primary/20" />
+                <Progress
+                  value={data.generalExercisesScore}
+                  className="h-3 bg-primary/20"
+                />
               </CardContent>
             </Card>
           )}
 
           <Card>
-             <CardContent className="pt-6">
-                <Button className="size-lg w-full text-lg" onClick={handleBackToDashboard}>
-                   <ArrowLeft className="mr-2 size-5" />
-                   Back to Dashboard
-                </Button>
-             </CardContent>
+            <CardContent className="pt-6">
+              <Button
+                className="size-lg w-full text-lg"
+                onClick={handleBackToDashboard}
+              >
+                <ArrowLeft className="mr-2 size-5" />
+                Back to Dashboard
+              </Button>
+            </CardContent>
           </Card>
         </div>
       </div>

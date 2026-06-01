@@ -1,14 +1,28 @@
-import { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
-import { Badge } from "@/components/ui/badge";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { FileText, Lightbulb, Sparkles, Download, Brain, CheckCircle, Share2, ArrowRight, BookOpen, Target, Star, ChevronRight } from "lucide-react";
-import { LessonContent } from "@/lib/types/lessons";
+import { useEffect, useState } from "react";
+import {
+  ArrowRight,
+  BookOpen,
+  Brain,
+  CheckCircle,
+  ChevronRight,
+  Download,
+  FileText,
+  Lightbulb,
+  Share2,
+  Sparkles,
+  Star,
+  Target,
+} from "lucide-react";
+
 import { useLessonsStore } from "@/lib/store/lessons";
+import { LessonContent } from "@/lib/types/lessons";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 
 interface LessonSummaryApplicationProps {
   lesson: LessonContent;
@@ -17,24 +31,24 @@ interface LessonSummaryApplicationProps {
 export function LessonSummaryApplication({
   lesson,
 }: LessonSummaryApplicationProps) {
-  const progress = useLessonsStore(state => state.progress);
-  const nextStep = useLessonsStore(state => state.nextStep);
-  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
-  const selectedLesson = useLessonsStore(state => state.selectedLesson);
-  const startSectionTimer = useLessonsStore(state => state.startSectionTimer);
-  const endSectionTimer = useLessonsStore(state => state.endSectionTimer);
-  const addUserNote = useLessonsStore(state => state.addUserNote);
-  const updateAnalytics = useLessonsStore(state => state.updateAnalytics);
+  const progress = useLessonsStore((state) => state.progress);
+  const nextStep = useLessonsStore((state) => state.nextStep);
+  const currentStepIndex = useLessonsStore((state) => state.currentStepIndex);
+  const selectedLesson = useLessonsStore((state) => state.selectedLesson);
+  const startSectionTimer = useLessonsStore((state) => state.startSectionTimer);
+  const endSectionTimer = useLessonsStore((state) => state.endSectionTimer);
+  const addUserNote = useLessonsStore((state) => state.addUserNote);
+  const updateAnalytics = useLessonsStore((state) => state.updateAnalytics);
   const [reflectionNotes, setReflectionNotes] = useState("");
   const [quizAnswers, setQuizAnswers] = useState<Record<number, string>>({});
   const [confidenceLevel, setConfidenceLevel] = useState<number>(3);
   const [showQuizResults, setShowQuizResults] = useState(false);
-  
+
   // Start section timer when component mounts
   useEffect(() => {
-    startSectionTimer('summary_application');
+    startSectionTimer("summary_application");
     return () => {
-      endSectionTimer('summary_application');
+      endSectionTimer("summary_application");
     };
   }, [startSectionTimer, endSectionTimer]);
 
@@ -43,19 +57,34 @@ export function LessonSummaryApplication({
     {
       id: 1,
       question: "What is the main concept covered in this lesson?",
-      options: ["Basic arithmetic", lesson.topic || "Topic", "Advanced calculus", "Geometry"],
+      options: [
+        "Basic arithmetic",
+        lesson.topic || "Topic",
+        "Advanced calculus",
+        "Geometry",
+      ],
       correct: lesson.topic || "Topic",
     },
     {
       id: 2,
       question: "Which of these is a key takeaway?",
-      options: ["Practice regularly", "Skip exercises", "Don't apply concepts", "Ignore examples"],
+      options: [
+        "Practice regularly",
+        "Skip exercises",
+        "Don't apply concepts",
+        "Ignore examples",
+      ],
       correct: "Practice regularly",
     },
     {
       id: 3,
       question: "How should you apply what you've learned?",
-      options: ["Only in theory", "In real-world scenarios", "Never", "Only when forced"],
+      options: [
+        "Only in theory",
+        "In real-world scenarios",
+        "Never",
+        "Only when forced",
+      ],
       correct: "In real-world scenarios",
     },
   ];
@@ -72,32 +101,31 @@ export function LessonSummaryApplication({
   };
 
   const handleShareApplication = async () => {
-    if (typeof window === 'undefined' || !navigator.clipboard) {
+    if (typeof window === "undefined" || !navigator.clipboard) {
       return;
     }
-    
+
     const shareText = `I just learned about ${lesson.topic}! Here's how to apply it: ${lesson.application}`;
     try {
       await navigator.clipboard.writeText(shareText);
       // In real app, could integrate with social sharing APIs
     } catch (error) {
-      console.error('Failed to copy to clipboard:', error);
+      console.error("Failed to copy to clipboard:", error);
     }
   };
-  
+
   const handleReflectionNotesChange = (value: string) => {
     setReflectionNotes(value);
     if (value.trim()) {
-      addUserNote('summary_application', value);
+      addUserNote("summary_application", value);
     }
   };
-  
+
   const handleQuizSubmit = () => {
     setShowQuizResults(true);
     // Update analytics after quiz submission
     updateAnalytics(lesson.id);
   };
-
 
   const getQuizScore = () => {
     let correct = 0;
@@ -108,8 +136,10 @@ export function LessonSummaryApplication({
   };
 
   const getRecommendations = () => {
-    if (confidenceLevel >= 4) return "Great confidence! Try advanced exercises.";
-    if (confidenceLevel >= 2) return "Good! Review key concepts and practice more.";
+    if (confidenceLevel >= 4)
+      return "Great confidence! Try advanced exercises.";
+    if (confidenceLevel >= 2)
+      return "Good! Review key concepts and practice more.";
     return "Consider revisiting the concepts before moving on.";
   };
 
@@ -134,7 +164,9 @@ export function LessonSummaryApplication({
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">Lesson Progress</h3>
-              <p className="text-sm text-muted-foreground">You&apos;re almost done!</p>
+              <p className="text-sm text-muted-foreground">
+                You&apos;re almost done!
+              </p>
             </div>
             <div className="text-right">
               <div className="text-2xl font-bold">{progress}%</div>
@@ -175,14 +207,20 @@ export function LessonSummaryApplication({
               </ul>
             </div>
             {/* Download Button */}
-            <Button onClick={handleDownloadSummary} variant="outline" className="w-full">
+            <Button
+              onClick={handleDownloadSummary}
+              variant="outline"
+              className="w-full"
+            >
               <Download className="mr-2 size-4" />
               Download Summary
             </Button>
             {/* Mind Map Placeholder */}
             <div className="mt-4 rounded-lg border-2 border-dashed p-4 text-center">
               <Brain className="mx-auto size-8 text-muted-foreground" />
-              <p className="mt-2 text-sm text-muted-foreground">Mind Map Visualization</p>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Mind Map Visualization
+              </p>
               {/* In real app, integrate a mind map library */}
             </div>
           </CardContent>
@@ -237,16 +275,22 @@ export function LessonSummaryApplication({
             {/* Try It Yourself */}
             <div className="rounded-lg bg-muted p-4">
               <h4 className="font-semibold">Try It Yourself</h4>
-              <p className="mt-1 text-sm">Apply the concept to a problem you encounter today.</p>
+              <p className="mt-1 text-sm">
+                Apply the concept to a problem you encounter today.
+              </p>
               <Textarea
-                placeholder="Describe how you&apos;ll apply this concept..."
+                placeholder="Describe how you'll apply this concept..."
                 className="mt-2"
                 value={reflectionNotes}
                 onChange={(e) => handleReflectionNotesChange(e.target.value)}
               />
             </div>
             {/* Share Feature */}
-            <Button onClick={handleShareApplication} variant="outline" className="w-full">
+            <Button
+              onClick={handleShareApplication}
+              variant="outline"
+              className="w-full"
+            >
               <Share2 className="mr-2 size-4" />
               Share Your Application
             </Button>
@@ -261,7 +305,9 @@ export function LessonSummaryApplication({
             <Target className="size-5" />
             Quiz Yourself
           </CardTitle>
-          <p className="text-sm text-muted-foreground">Test your understanding with these quick questions.</p>
+          <p className="text-sm text-muted-foreground">
+            Test your understanding with these quick questions.
+          </p>
         </CardHeader>
         <CardContent className="space-y-4">
           {quizQuestions.map((q) => (
@@ -269,7 +315,9 @@ export function LessonSummaryApplication({
               <Label className="font-medium">{q.question}</Label>
               <RadioGroup
                 value={quizAnswers[q.id] || ""}
-                onValueChange={(value) => setQuizAnswers({ ...quizAnswers, [q.id]: value })}
+                onValueChange={(value) =>
+                  setQuizAnswers({ ...quizAnswers, [q.id]: value })
+                }
                 className="mt-2"
               >
                 {q.options.map((option) => (
@@ -286,8 +334,12 @@ export function LessonSummaryApplication({
           </Button>
           {showQuizResults && (
             <div className="mt-4 rounded-lg bg-muted p-4">
-              <p className="font-semibold">Your Score: {getQuizScore()}/{quizQuestions.length}</p>
-              <p className="mt-1 text-sm">Great effort! Keep practicing to improve.</p>
+              <p className="font-semibold">
+                Your Score: {getQuizScore()}/{quizQuestions.length}
+              </p>
+              <p className="mt-1 text-sm">
+                Great effort! Keep practicing to improve.
+              </p>
             </div>
           )}
         </CardContent>
@@ -303,7 +355,9 @@ export function LessonSummaryApplication({
         </CardHeader>
         <CardContent className="space-y-4">
           <div>
-            <Label>How confident are you in understanding this topic? (1-5)</Label>
+            <Label>
+              How confident are you in understanding this topic? (1-5)
+            </Label>
             <RadioGroup
               value={confidenceLevel.toString()}
               onValueChange={(value) => setConfidenceLevel(parseInt(value))}
@@ -311,7 +365,10 @@ export function LessonSummaryApplication({
             >
               {[1, 2, 3, 4, 5].map((level) => (
                 <div key={level} className="flex items-center space-x-2">
-                  <RadioGroupItem value={level.toString()} id={`confidence-${level}`} />
+                  <RadioGroupItem
+                    value={level.toString()}
+                    id={`confidence-${level}`}
+                  />
                   <Label htmlFor={`confidence-${level}`}>{level}</Label>
                 </div>
               ))}
@@ -347,9 +404,14 @@ export function LessonSummaryApplication({
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold">Next Steps</h3>
-              <p className="text-sm text-muted-foreground">Continue your learning journey</p>
+              <p className="text-sm text-muted-foreground">
+                Continue your learning journey
+              </p>
             </div>
-            <Button onClick={() => nextStep()} className="bg-primary hover:bg-primary/90">
+            <Button
+              onClick={() => nextStep()}
+              className="bg-primary hover:bg-primary/90"
+            >
               Continue to Exercises
               <ArrowRight className="ml-2 size-4" />
             </Button>

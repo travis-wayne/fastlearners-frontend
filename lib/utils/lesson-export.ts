@@ -1,8 +1,8 @@
-import { toast } from "sonner";
+import { createElement } from "react";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { createElement } from "react";
 import { createRoot } from "react-dom/client";
+import { toast } from "sonner";
 
 interface LessonCompletionData {
   lessonTitle: string;
@@ -36,13 +36,12 @@ interface UserInfo {
 export async function generateShareableImage(
   data: LessonCompletionData,
   userInfo: UserInfo,
-  includePersonalInfo: boolean = true
+  includePersonalInfo: boolean = true,
 ): Promise<Blob> {
   try {
     // Dynamically import the ShareableAchievementCard component
-    const { ShareableAchievementCard } = await import(
-      "@/components/lessons/ShareableAchievementCard"
-    );
+    const { ShareableAchievementCard } =
+      await import("@/components/lessons/ShareableAchievementCard");
 
     // Create a temporary container
     const container = document.createElement("div");
@@ -98,7 +97,7 @@ export async function generateShareableImage(
           }
         },
         "image/png",
-        1.0
+        1.0,
       );
     });
   } catch (error) {
@@ -147,7 +146,7 @@ export async function copyImageToClipboard(blob: Blob): Promise<void> {
     toast.success("Image copied to clipboard!");
   } catch (error) {
     console.error("Error copying to clipboard:", error);
-    
+
     // Fallback: Show message to manually save
     toast.error("Clipboard not supported. Please use Download instead.");
     throw error;
@@ -161,7 +160,7 @@ export async function generatePDFReport(
   data: LessonCompletionData,
   userInfo: UserInfo,
   includePersonalInfo: boolean = true,
-  includeDetailedStats: boolean = true
+  includeDetailedStats: boolean = true,
 ): Promise<jsPDF> {
   try {
     const doc = new jsPDF({
@@ -180,12 +179,9 @@ export async function generatePDFReport(
     const addPageNumber = (pageNum: number) => {
       doc.setFontSize(10);
       doc.setTextColor(128, 128, 128);
-      doc.text(
-        `Page ${pageNum}`,
-        pageWidth / 2,
-        pageHeight - 10,
-        { align: "center" }
-      );
+      doc.text(`Page ${pageNum}`, pageWidth / 2, pageHeight - 10, {
+        align: "center",
+      });
     };
 
     // Helper function for headers
@@ -247,8 +243,12 @@ export async function generatePDFReport(
     yPos += lineHeight;
     doc.text(`Time Spent: ${data.timeSpent} minutes`, margin + 5, yPos);
     yPos += lineHeight;
-    doc.text(`Rating: ${"★".repeat(data.starRating)}${"☆".repeat(5 - data.starRating)}`, margin + 5, yPos);
-    
+    doc.text(
+      `Rating: ${"★".repeat(data.starRating)}${"☆".repeat(5 - data.starRating)}`,
+      margin + 5,
+      yPos,
+    );
+
     addPageNumber(1);
 
     // PAGE 2: Concept Breakdown
@@ -331,9 +331,18 @@ export async function generatePDFReport(
       addHeader("Performance Analytics");
 
       const analytics = [
-        { label: "Average Time per Concept", value: `${data.analytics.averageTimePerConcept} min` },
-        { label: "Total Attempts", value: data.analytics.totalAttempts.toString() },
-        { label: "Improvement Rate", value: `${data.analytics.improvementRate}%` },
+        {
+          label: "Average Time per Concept",
+          value: `${data.analytics.averageTimePerConcept} min`,
+        },
+        {
+          label: "Total Attempts",
+          value: data.analytics.totalAttempts.toString(),
+        },
+        {
+          label: "Improvement Rate",
+          value: `${data.analytics.improvementRate}%`,
+        },
       ];
 
       analytics.forEach((item) => {

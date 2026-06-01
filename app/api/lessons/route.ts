@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -16,18 +21,15 @@ export async function GET(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
     try {
-      const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
-          cache: "no-store",
-          signal: controller.signal,
-        }
-      );
+      const upstream = await fetch(`${UPSTREAM_BASE}/lessons/`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        cache: "no-store",
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
       const data = await upstream.json();
@@ -39,34 +41,38 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Retry on network errors
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
-          const retryUpstream = await fetch(
-            `${UPSTREAM_BASE}/lessons/`,
-            {
-              method: "GET",
-              headers: {
-                Accept: "application/json",
-                Authorization: `Bearer ${auth.token}`,
-              },
-              cache: "no-store",
-            }
-          );
+          const retryUpstream = await fetch(`${UPSTREAM_BASE}/lessons/`, {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${auth.token}`,
+            },
+            cache: "no-store",
+          });
 
           const retryData = await retryUpstream.json();
-          
+
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch lesson subjects after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to fetch lesson subjects after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (err: any) {

@@ -1,8 +1,8 @@
 "use client";
 
 import * as React from "react";
-import { useTheme } from "next-themes";
 import { startTransition } from "react";
+import { useTheme } from "next-themes";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -16,12 +16,15 @@ import { Icons } from "@/components/shared/icons";
 export function ModeToggle() {
   const { setTheme } = useTheme();
 
-  const handleThemeChange = React.useCallback((theme: "light" | "dark" | "system") => {
-    // Use startTransition to mark theme change as non-urgent
-    startTransition(() => {
-      setTheme(theme);
-    });
-  }, [setTheme]);
+  const handleThemeChange = React.useCallback(
+    (theme: "light" | "dark" | "system") => {
+      // Use startTransition to mark theme change as non-urgent
+      startTransition(() => {
+        setTheme(theme);
+      });
+    },
+    [setTheme],
+  );
 
   return (
     <DropdownMenu>

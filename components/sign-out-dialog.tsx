@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter, usePathname } from "next/navigation";
+import { startTransition, useCallback, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { useCallback, startTransition, useEffect } from "react";
 
 import {
   AlertDialog,

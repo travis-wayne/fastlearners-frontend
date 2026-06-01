@@ -4,7 +4,11 @@
 /**
  * Section types in a lesson
  */
-export type SectionType = 'overview' | 'concept' | 'summary_application' | 'general_exercises';
+export type SectionType =
+  | "overview"
+  | "concept"
+  | "summary_application"
+  | "general_exercises";
 
 /**
  * Progress tracking for individual exercises

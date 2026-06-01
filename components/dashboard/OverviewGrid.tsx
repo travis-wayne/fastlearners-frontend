@@ -61,10 +61,11 @@ export function OverviewGrid({
                 </div>
                 {stat.change && (
                   <Badge
-                    className={`border-0 ${stat.change.trend === "up"
+                    className={`border-0 ${
+                      stat.change.trend === "up"
                         ? "bg-emerald-500/10 text-emerald-400"
                         : "bg-red-500/10 text-red-400"
-                      }`}
+                    }`}
                   >
                     {stat.change.trend === "up" ? (
                       <ArrowUp className="mr-1 size-3" />

@@ -191,10 +191,13 @@ export function parseCSVContent(content: string): CSVValidationResult {
  */
 export async function previewCSVFile(
   file: File,
-  maxSampleRows: number = 20
+  maxSampleRows: number = 20,
 ): Promise<CSVPreviewResult> {
   const content = await file.text();
-  const lines = content.trim().split("\n").filter(line => line.trim());
+  const lines = content
+    .trim()
+    .split("\n")
+    .filter((line) => line.trim());
 
   if (lines.length < 1) {
     return {
@@ -243,7 +246,7 @@ export async function previewCSVFile(
 
   for (let i = 0; i < rowsToSample; i++) {
     let dataLine = dataLines[i].replace(/^\uFEFF/, "").replace(/^\d+\|/, "");
-    
+
     let cells: string[];
     if (format === "comma") {
       cells = parseCSVLine(dataLine);

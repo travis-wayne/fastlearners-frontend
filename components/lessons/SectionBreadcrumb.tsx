@@ -1,6 +1,13 @@
-import { CheckCircle2, Circle, Lock, ChevronRight, Sparkles } from "lucide-react";
-import { cn } from "@/lib/utils";
+import {
+  CheckCircle2,
+  ChevronRight,
+  Circle,
+  Lock,
+  Sparkles,
+} from "lucide-react";
+
 import { useLessonsStore } from "@/lib/store/lessons";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import {
   Tooltip,
@@ -25,7 +32,7 @@ export function SectionBreadcrumb({
   onNavigate,
   className,
 }: SectionBreadcrumbProps) {
-  const sectionProgress = useLessonsStore(state => state.sectionProgress);
+  const sectionProgress = useLessonsStore((state) => state.sectionProgress);
 
   // Define all sections
   const sections = [
@@ -65,24 +72,28 @@ export function SectionBreadcrumb({
                 <TooltipTrigger asChild>
                   <div className="flex items-center gap-2">
                     <button
-                      onClick={() => isAccessible && onNavigate(section.stepIndex)}
+                      onClick={() =>
+                        isAccessible && onNavigate(section.stepIndex)
+                      }
                       disabled={!isAccessible}
                       className={cn(
                         "group relative flex items-center gap-1.5 whitespace-nowrap rounded-xl border-2 px-3 py-2 text-xs font-semibold transition-all duration-200 sm:gap-2 sm:px-4 sm:py-2.5 sm:text-sm",
                         isCurrent &&
-                        "scale-105 bg-primary text-primary-foreground shadow-lg",
+                          "scale-105 bg-primary text-primary-foreground shadow-lg",
                         isCompleted &&
-                        !isCurrent &&
-                        "border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/40",
+                          !isCurrent &&
+                          "border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-200 dark:border-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300 dark:hover:bg-emerald-900/40",
                         !isCompleted &&
-                        !isCurrent &&
-                        isAccessible &&
-                        "border-transparent bg-muted text-muted-foreground hover:border-primary/50 hover:bg-muted/80",
+                          !isCurrent &&
+                          isAccessible &&
+                          "border-transparent bg-muted text-muted-foreground hover:border-primary/50 hover:bg-muted/80",
                         !isAccessible &&
-                        "cursor-not-allowed border-transparent bg-muted/50 text-muted-foreground opacity-50",
+                          "cursor-not-allowed border-transparent bg-muted/50 text-muted-foreground opacity-50",
                       )}
                     >
-                      <span className="text-sm sm:text-base">{section.icon}</span>
+                      <span className="text-sm sm:text-base">
+                        {section.icon}
+                      </span>
                       {isCompleted && (
                         <CheckCircle2 className="size-4 text-emerald-600 dark:text-emerald-400" />
                       )}

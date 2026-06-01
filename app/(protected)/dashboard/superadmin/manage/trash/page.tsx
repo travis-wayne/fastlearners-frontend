@@ -1,15 +1,23 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Trash2, RotateCcw, AlertCircle, Loader2, RefreshCw } from "lucide-react";
+import {
+  AlertCircle,
+  Loader2,
+  RefreshCw,
+  RotateCcw,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 
 import {
   getTrashedLessons,
-  restoreLesson,
   permanentlyDeleteLesson,
+  restoreLesson,
 } from "@/lib/api/superadmin-lessons";
 import { TrashedLesson } from "@/lib/types/superadmin";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -18,6 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   Table,
   TableBody,
@@ -26,9 +35,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export default function TrashedLessonsPage() {
   const [lessons, setLessons] = useState<TrashedLesson[]>([]);
@@ -70,7 +76,9 @@ export default function TrashedLessonsPage() {
         setCurrentPage(response.content.meta.current_page);
       }
     } catch (err: any) {
-      setError(err.message || "An error occurred while fetching trashed lessons");
+      setError(
+        err.message || "An error occurred while fetching trashed lessons",
+      );
     } finally {
       setIsLoading(false);
     }
@@ -113,7 +121,9 @@ export default function TrashedLessonsPage() {
         if (response.success) {
           toast.success("Lesson restored successfully!");
           // Remove from list
-          setLessons((prev) => prev.filter((l) => l.id !== confirmDialog.lessonId));
+          setLessons((prev) =>
+            prev.filter((l) => l.id !== confirmDialog.lessonId),
+          );
         } else {
           toast.error(response.message || "Failed to restore lesson");
         }
@@ -122,7 +132,9 @@ export default function TrashedLessonsPage() {
         if (response.success) {
           toast.success("Lesson permanently deleted!");
           // Remove from list
-          setLessons((prev) => prev.filter((l) => l.id !== confirmDialog.lessonId));
+          setLessons((prev) =>
+            prev.filter((l) => l.id !== confirmDialog.lessonId),
+          );
         } else {
           toast.error(response.message || "Failed to delete lesson");
         }
@@ -157,7 +169,9 @@ export default function TrashedLessonsPage() {
           onClick={() => fetchTrashedLessons(currentPage)}
           disabled={isLoading}
         >
-          <RefreshCw className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`} />
+          <RefreshCw
+            className={`mr-2 size-4 ${isLoading ? "animate-spin" : ""}`}
+          />
           Refresh
         </Button>
       </div>
@@ -208,7 +222,9 @@ export default function TrashedLessonsPage() {
                 <TableBody>
                   {lessons.map((lesson) => (
                     <TableRow key={lesson.id}>
-                      <TableCell className="font-medium">{lesson.topic}</TableCell>
+                      <TableCell className="font-medium">
+                        {lesson.topic}
+                      </TableCell>
                       <TableCell>
                         <Badge variant="outline">{lesson.class}</Badge>
                       </TableCell>
@@ -223,7 +239,9 @@ export default function TrashedLessonsPage() {
                           <Button
                             variant="outline"
                             size="sm"
-                            onClick={() => handleRestore(lesson.id, lesson.topic)}
+                            onClick={() =>
+                              handleRestore(lesson.id, lesson.topic)
+                            }
                           >
                             <RotateCcw className="mr-1 size-3" />
                             Restore

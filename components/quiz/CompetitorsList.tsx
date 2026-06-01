@@ -1,10 +1,11 @@
 "use client";
 
-import { Users, Award, TrendingUp, Circle } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Award, Circle, TrendingUp, Users } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface Competitor {
   userId: string;
@@ -78,7 +79,7 @@ export function CompetitorsList({
                   className={cn(
                     "flex flex-col items-start gap-3 rounded-lg border p-3 transition-colors sm:flex-row sm:items-center sm:gap-4 sm:p-4",
                     isCurrentUser && "ring-2 ring-primary",
-                    "hover:bg-muted/50"
+                    "hover:bg-muted/50",
                   )}
                 >
                   {/* Rank */}
@@ -88,7 +89,7 @@ export function CompetitorsList({
                         "text-base font-bold sm:text-lg",
                         competitor.rank <= 3
                           ? "text-primary"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground",
                       )}
                     >
                       #{competitor.rank}
@@ -98,7 +99,10 @@ export function CompetitorsList({
                   {/* Avatar with Online Status */}
                   <div className="relative">
                     <Avatar className="size-10 sm:size-12">
-                      <AvatarImage src={competitor.avatar} alt={competitor.username} />
+                      <AvatarImage
+                        src={competitor.avatar}
+                        alt={competitor.username}
+                      />
                       <AvatarFallback>
                         {getInitials(competitor.username)}
                       </AvatarFallback>
@@ -114,13 +118,16 @@ export function CompetitorsList({
                       <span
                         className={cn(
                           "text-sm font-semibold sm:text-base",
-                          isCurrentUser && "text-primary"
+                          isCurrentUser && "text-primary",
                         )}
                       >
                         {competitor.username}
                       </span>
                       {isCurrentUser && (
-                        <Badge variant="outline" className="text-[10px] sm:text-xs">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] sm:text-xs"
+                        >
                           You
                         </Badge>
                       )}
@@ -160,7 +167,9 @@ export function CompetitorsList({
                     <div className="text-base font-bold text-primary sm:text-lg">
                       {competitor.totalPoints}
                     </div>
-                    <div className="text-[10px] text-muted-foreground sm:text-xs">points</div>
+                    <div className="text-[10px] text-muted-foreground sm:text-xs">
+                      points
+                    </div>
                   </div>
                 </div>
               );
@@ -171,4 +180,3 @@ export function CompetitorsList({
     </Card>
   );
 }
-

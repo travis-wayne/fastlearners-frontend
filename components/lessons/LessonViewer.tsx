@@ -1,32 +1,37 @@
 "use client";
 
-import React, { useState, useRef, useMemo } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import {
   AlertCircle,
   ArrowLeft,
   BookOpen,
+  RefreshCw,
   Wifi,
   WifiOff,
-  RefreshCw,
 } from "lucide-react";
 
-import { SectionRenderer } from "./SectionRenderer";
-import { SectionBreadcrumb } from "./SectionBreadcrumb";
-import { useLessonsStore, selectNavigationState, selectProgressData } from "@/lib/store/lessons";
+import {
+  selectNavigationState,
+  selectProgressData,
+  useLessonsStore,
+} from "@/lib/store/lessons";
 import { cn } from "@/lib/utils";
+import { useLessonAccessibility } from "@/hooks/use-lesson-accessibility";
+import { useLessonAutoAdvance } from "@/hooks/use-lesson-auto-advance";
+import { useLessonData } from "@/hooks/use-lesson-data";
+import { useLessonGestures } from "@/hooks/use-lesson-gestures";
+import { useLessonKeyboard } from "@/hooks/use-lesson-keyboard";
+import { useLessonNavigation } from "@/hooks/use-lesson-navigation";
 import { AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useLessonNavigation } from "@/hooks/use-lesson-navigation";
-import { useLessonGestures } from "@/hooks/use-lesson-gestures";
-import { useLessonKeyboard } from "@/hooks/use-lesson-keyboard";
-import { useLessonData } from "@/hooks/use-lesson-data";
-import { useLessonAutoAdvance } from "@/hooks/use-lesson-auto-advance";
-import { useLessonAccessibility } from "@/hooks/use-lesson-accessibility";
-import { LoadingSkeleton } from "./LoadingSkeleton";
-import { LessonProgressCard } from "./LessonProgressCard";
+
 import { LessonNavigationControls } from "./LessonNavigationControls";
+import { LessonProgressCard } from "./LessonProgressCard";
+import { LoadingSkeleton } from "./LoadingSkeleton";
+import { SectionBreadcrumb } from "./SectionBreadcrumb";
+import { SectionRenderer } from "./SectionRenderer";
 
 interface LessonViewerProps {
   lessonId?: number;
@@ -44,45 +49,59 @@ export function LessonViewer({
   autoLoad = true,
 }: LessonViewerProps) {
   const router = useRouter();
-  
+
   // Granular State Selectors to prevent unnecessary re-renders
-  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
-  const sectionProgress = useLessonsStore(state => state.sectionProgress);
-  const isLoadingLessonContent = useLessonsStore(state => state.isLoadingLessonContent);
-  const progress = useLessonsStore(state => state.progress);
+  const currentStepIndex = useLessonsStore((state) => state.currentStepIndex);
+  const sectionProgress = useLessonsStore((state) => state.sectionProgress);
+  const isLoadingLessonContent = useLessonsStore(
+    (state) => state.isLoadingLessonContent,
+  );
+  const progress = useLessonsStore((state) => state.progress);
   // actions are stable
-  const selectedLesson = useLessonsStore(state => state.selectedLesson);
-  const isOffline = useLessonsStore(state => state.isOffline);
+  const selectedLesson = useLessonsStore((state) => state.selectedLesson);
+  const isOffline = useLessonsStore((state) => state.isOffline);
 
   // Actions (stable references)
-  const nextStep = useLessonsStore(state => state.nextStep);
-  const prevStep = useLessonsStore(state => state.prevStep);
-  const checkCurrentStepCompletion = useLessonsStore(state => state.checkCurrentStepCompletion);
-  const submitExerciseAnswer = useLessonsStore(state => state.submitExerciseAnswer);
-  const clearSelectedLesson = useLessonsStore(state => state.clearSelectedLesson);
-  const clearError = useLessonsStore(state => state.clearError);
-  const getNextIncompleteSection = useLessonsStore(state => state.getNextIncompleteSection);
-  const autoAdvanceToNextSection = useLessonsStore(state => state.autoAdvanceToNextSection);
-  const fetchCompletionData = useLessonsStore(state => state.fetchCompletionData);
+  const nextStep = useLessonsStore((state) => state.nextStep);
+  const prevStep = useLessonsStore((state) => state.prevStep);
+  const checkCurrentStepCompletion = useLessonsStore(
+    (state) => state.checkCurrentStepCompletion,
+  );
+  const submitExerciseAnswer = useLessonsStore(
+    (state) => state.submitExerciseAnswer,
+  );
+  const clearSelectedLesson = useLessonsStore(
+    (state) => state.clearSelectedLesson,
+  );
+  const clearError = useLessonsStore((state) => state.clearError);
+  const getNextIncompleteSection = useLessonsStore(
+    (state) => state.getNextIncompleteSection,
+  );
+  const autoAdvanceToNextSection = useLessonsStore(
+    (state) => state.autoAdvanceToNextSection,
+  );
+  const fetchCompletionData = useLessonsStore(
+    (state) => state.fetchCompletionData,
+  );
 
   // Performance Monitoring
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      performance.mark('lesson-viewer-mount-start');
+    if (process.env.NODE_ENV === "development") {
+      performance.mark("lesson-viewer-mount-start");
     }
     return () => {
-       // Cleanup if needed
+      // Cleanup if needed
     };
   }, []);
 
   React.useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      performance.mark('lesson-viewer-render-end');
+    if (process.env.NODE_ENV === "development") {
+      performance.mark("lesson-viewer-render-end");
       try {
         performance.measure(
-          'lesson-viewer-initial-render',
-          'lesson-viewer-mount-start',
-          'lesson-viewer-render-end'
+          "lesson-viewer-initial-render",
+          "lesson-viewer-mount-start",
+          "lesson-viewer-render-end",
         );
       } catch (e) {
         // Ignore errors if marks are missing
@@ -94,30 +113,29 @@ export function LessonViewer({
   const [progressCardCollapsed, setProgressCardCollapsed] = useState(false);
 
   // Hook 1: Data Management (Loading, Score, Errors)
-  const { 
-    lessonScore, 
-    enhancedError, 
-    estimatedTimeRemaining, 
-    handleRetry 
-  } = useLessonData({
-    lessonId,
-    subjectSlug,
-    topicSlug,
-    autoLoad,
-    selectedLesson,
-    progress,
-  });
+  const { lessonScore, enhancedError, estimatedTimeRemaining, handleRetry } =
+    useLessonData({
+      lessonId,
+      subjectSlug,
+      topicSlug,
+      autoLoad,
+      selectedLesson,
+      progress,
+    });
 
   // Derived state
-  const concepts = useMemo(() => selectedLesson?.concepts || [], [selectedLesson?.concepts]);
+  const concepts = useMemo(
+    () => selectedLesson?.concepts || [],
+    [selectedLesson?.concepts],
+  );
 
   // Hook 2: Navigation Logic
-  const { 
-    handleNext, 
-    handlePrev, 
-    handleNavigateToSection, 
+  const {
+    handleNext,
+    handlePrev,
+    handleNavigateToSection,
     isRedirecting,
-    setCelebrationShown 
+    setCelebrationShown,
   } = useLessonNavigation({
     selectedLesson,
     currentStepIndex,
@@ -141,10 +159,11 @@ export function LessonViewer({
   });
 
   // Hook 4: Gestures
-  const { handleTouchStart, handleTouchMove, handleTouchEnd } = useLessonGestures({
-    onSwipeLeft: handleNext,
-    onSwipeRight: handlePrev,
-  });
+  const { handleTouchStart, handleTouchMove, handleTouchEnd } =
+    useLessonGestures({
+      onSwipeLeft: handleNext,
+      onSwipeRight: handlePrev,
+    });
 
   // Hook 5: Keyboard Shortcuts
   useLessonKeyboard({
@@ -165,7 +184,7 @@ export function LessonViewer({
     if (onBack) {
       onBack();
     } else {
-      router.push('/dashboard/lessons');
+      router.push("/dashboard/lessons");
     }
   };
 
@@ -178,11 +197,15 @@ export function LessonViewer({
   if (enhancedError) {
     const getErrorIcon = () => {
       switch (enhancedError.type) {
-        case 'network':
-          return isOffline ? <WifiOff className="size-6" /> : <Wifi className="size-6" />;
-        case 'not_found':
+        case "network":
+          return isOffline ? (
+            <WifiOff className="size-6" />
+          ) : (
+            <Wifi className="size-6" />
+          );
+        case "not_found":
           return <BookOpen className="size-6" />;
-        case 'unauthorized':
+        case "unauthorized":
           return <AlertCircle className="size-6" />;
         default:
           return <AlertCircle className="size-6" />;
@@ -209,7 +232,12 @@ export function LessonViewer({
                 className="gap-2"
                 disabled={isLoadingLessonContent}
               >
-                <RefreshCw className={cn("size-4", isLoadingLessonContent && "animate-spin")} />
+                <RefreshCw
+                  className={cn(
+                    "size-4",
+                    isLoadingLessonContent && "animate-spin",
+                  )}
+                />
                 Try Again
               </Button>
             )}
@@ -260,8 +288,8 @@ export function LessonViewer({
   const lesson = selectedLesson;
 
   return (
-    <div 
-      className="flex flex-col gap-6" 
+    <div
+      className="flex flex-col gap-6"
       ref={containerRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
@@ -269,13 +297,13 @@ export function LessonViewer({
     >
       {/* Header with Breadcrumb and Progress */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-        <SectionBreadcrumb 
+        <SectionBreadcrumb
           lessonId={lesson.id}
           concepts={concepts}
           currentStepIndex={currentStepIndex}
           onNavigate={(index) => handleNavigateToSection(index)}
         />
-        
+
         {/* Progress Card Component */}
         <LessonProgressCard
           progress={progress}
@@ -284,7 +312,9 @@ export function LessonViewer({
           currentStepIndex={currentStepIndex}
           totalSteps={concepts.length + 3}
           progressCardCollapsed={progressCardCollapsed}
-          onToggleCollapse={() => setProgressCardCollapsed(!progressCardCollapsed)}
+          onToggleCollapse={() =>
+            setProgressCardCollapsed(!progressCardCollapsed)
+          }
         />
       </div>
 

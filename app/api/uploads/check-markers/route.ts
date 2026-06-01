@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import { handleApiError, handleUpstreamError } from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import {
   isValidUploadFile,
   MAX_UPLOAD_SIZE_BYTES,
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
   if (!auth) {
     return NextResponse.json(
       { success: false, message: "Unauthorized", code: 401, content: null },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -31,7 +32,7 @@ export async function POST(req: NextRequest) {
           content: null,
           code: 422,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
           content: null,
           code: 422,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -75,7 +76,7 @@ export async function POST(req: NextRequest) {
         },
         body: upstreamFormData,
         cache: "no-store",
-      }
+      },
     );
 
     const data = await upstream.json();

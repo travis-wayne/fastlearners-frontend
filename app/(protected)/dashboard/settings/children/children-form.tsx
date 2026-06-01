@@ -1,17 +1,18 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-  getGuardianChildrenHistory, 
-  sendChildRequest, 
-  cancelChildRequest 
+import { GraduationCap, UserPlus, XCircle } from "lucide-react";
+
+import {
+  cancelChildRequest,
+  getGuardianChildrenHistory,
+  sendChildRequest,
 } from "@/lib/api/guardian";
 import { ChildRequestItem } from "@/lib/types/guardian";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
-import { UserPlus, XCircle, GraduationCap } from "lucide-react";
 
 export function ChildrenForm() {
   const [children, setChildren] = useState<ChildRequestItem[]>([]);
@@ -20,7 +21,9 @@ export function ChildrenForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitSuccess, setSubmitSuccess] = useState<string | null>(null);
-  const [cancelLoading, setCancelLoading] = useState<Record<number, boolean>>({});
+  const [cancelLoading, setCancelLoading] = useState<Record<number, boolean>>(
+    {},
+  );
 
   const fetchChildren = async () => {
     setIsLoading(true);
@@ -58,7 +61,7 @@ export function ChildrenForm() {
   const handleCancel = async (id: number) => {
     setCancelLoading((prev) => ({ ...prev, [id]: true }));
     const result = await cancelChildRequest(id);
-    
+
     if (result.success) {
       await fetchChildren();
     } else {
@@ -92,7 +95,9 @@ export function ChildrenForm() {
             <p className="text-sm font-medium text-red-500">{submitError}</p>
           )}
           {submitSuccess && (
-            <p className="text-sm font-medium text-green-600">{submitSuccess}</p>
+            <p className="text-sm font-medium text-green-600">
+              {submitSuccess}
+            </p>
           )}
         </form>
       </div>
@@ -100,7 +105,7 @@ export function ChildrenForm() {
       {/* Children List */}
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Monitoring History</h3>
-        
+
         {isLoading ? (
           <div className="space-y-4">
             {[1, 2].map((i) => (
@@ -124,17 +129,25 @@ export function ChildrenForm() {
               >
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-semibold">{item.child_name || "New Invitation"}</span>
-                    <Badge 
-                      variant={item.status === "pending" ? "secondary" : "outline"}
+                    <span className="font-semibold">
+                      {item.child_name || "New Invitation"}
+                    </span>
+                    <Badge
+                      variant={
+                        item.status === "pending" ? "secondary" : "outline"
+                      }
                       className="capitalize"
                     >
                       {item.status}
                     </Badge>
                   </div>
-                  <p className="text-sm text-muted-foreground">{item.child_email}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.child_email}
+                  </p>
                   {item.class && (
-                    <p className="text-xs font-medium text-primary">Class: {item.class}</p>
+                    <p className="text-xs font-medium text-primary">
+                      Class: {item.class}
+                    </p>
                   )}
                 </div>
 

@@ -1,19 +1,14 @@
 "use client";
 
-import {
-  Dispatch,
-  SetStateAction,
-  useEffect,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
 
+import { deleteAccountRequest } from "@/lib/api/profile";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Modal } from "@/components/ui/modal";
 import { UserAvatar } from "@/components/shared/user-avatar";
-import { deleteAccountRequest } from "@/lib/api/profile";
 
 export function DeleteAccountModal({
   showDeleteAccountModal,
@@ -29,10 +24,10 @@ export function DeleteAccountModal({
   const pathname = usePathname();
   const [deleting, setDeleting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
+
   type ModalState = "confirm" | "pending";
   const [uiState, setUiState] = useState<ModalState>(
-    isPendingDeletion ? "pending" : "confirm"
+    isPendingDeletion ? "pending" : "confirm",
   );
 
   // Close modal on route changes
@@ -78,10 +73,13 @@ export function DeleteAccountModal({
         <p className="responsive-text text-center text-muted-foreground">
           {uiState === "confirm" ? (
             <>
-              <b>Warning:</b> This will permanently delete your account. Your account will be deleted in 7 days, but you can cancel the request anytime.
+              <b>Warning:</b> This will permanently delete your account. Your
+              account will be deleted in 7 days, but you can cancel the request
+              anytime.
             </>
           ) : (
-            successMessage ?? "Your account will be deleted in 7 days. You can cancel this request at any time."
+            (successMessage ??
+            "Your account will be deleted in 7 days. You can cancel this request at any time.")
           )}
         </p>
 
@@ -97,7 +95,10 @@ export function DeleteAccountModal({
           className="flex flex-col space-y-component-md bg-accent px-component-md py-component-xl text-left sm:space-y-component-lg sm:px-component-lg md:px-component-xl"
         >
           <div>
-            <label htmlFor="verification" className="block text-sm sm:text-base">
+            <label
+              htmlFor="verification"
+              className="block text-sm sm:text-base"
+            >
               To verify, type{" "}
               <span className="font-semibold text-black dark:text-white">
                 confirm delete account

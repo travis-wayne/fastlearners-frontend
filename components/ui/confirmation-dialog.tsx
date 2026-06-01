@@ -42,14 +42,20 @@ export function ConfirmationDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel disabled={loading}>{cancelLabel}</AlertDialogCancel>
+          <AlertDialogCancel disabled={loading}>
+            {cancelLabel}
+          </AlertDialogCancel>
           <AlertDialogAction
             onClick={(e) => {
               e.preventDefault();
               onConfirm();
             }}
             disabled={loading}
-            className={variant === "destructive" ? "bg-destructive hover:bg-destructive/90" : ""}
+            className={
+              variant === "destructive"
+                ? "bg-destructive hover:bg-destructive/90"
+                : ""
+            }
           >
             {loading ? "Processing..." : confirmLabel}
           </AlertDialogAction>

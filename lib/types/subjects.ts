@@ -6,9 +6,9 @@ export interface ApiSubjectsResponse {
   message: string;
   content: {
     subjects: SubjectItem[]; // All user's subjects
-    compulsory_selective_status: 'not_selected' | 'selected';
+    compulsory_selective_status: "not_selected" | "selected";
     compulsory_selective: SubjectItem[]; // Religious studies options
-    selective_status: 'not_selected' | 'selected';
+    selective_status: "not_selected" | "selected";
     selective: SubjectItem[]; // Available elective subjects
   };
   code: number;
@@ -30,9 +30,9 @@ export interface Class {
 
 export interface SubjectsContent {
   subjects: SubjectItem[];
-  compulsory_selective_status: 'not_selected' | 'selected' | 'pending';
+  compulsory_selective_status: "not_selected" | "selected" | "pending";
   compulsory_selective: SubjectItem[];
-  selective_status: 'not_selected' | 'selected' | 'pending';
+  selective_status: "not_selected" | "selected" | "pending";
   selective: SubjectItem[];
 }
 
@@ -87,7 +87,6 @@ export interface DashboardData {
   };
   code: number;
 }
-
 
 // Frontend State Types
 export interface SubjectRegistrationState {
@@ -153,4 +152,4 @@ export interface WeeksResponse {
   message: string;
   content: { weeks: WeekItem[] } | null;
   code: number;
-}
+}

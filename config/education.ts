@@ -552,14 +552,7 @@ export const subjects: Subject[] = [
     icon: "globe",
     color: "#0D9488",
     compulsory: false,
-    levels: [
-      "jss1",
-      "jss2",
-      "jss3",
-      "sss1-arts",
-      "sss2-arts",
-      "sss3-arts",
-    ],
+    levels: ["jss1", "jss2", "jss3", "sss1-arts", "sss2-arts", "sss3-arts"],
     track: "arts",
   },
   {
@@ -896,31 +889,33 @@ export function getTermById(id: string): Term | undefined {
  * Maps SS1 → SSS1, SS2 → SSS2, SS3 → SSS3
  * This handles cases where the API returns "SS1" but internal config uses "SSS1"
  */
-export function normalizeClassString(className: string | null | undefined): string | null {
+export function normalizeClassString(
+  className: string | null | undefined,
+): string | null {
   if (!className) return null;
-  
+
   // Normalize to handle SS1/SS2/SS3 → SSS1/SSS2/SSS3
   const normalized = className.trim();
-  
+
   // Map SS1/SS2/SS3 to SSS1/SSS2/SSS3 (without track)
   // For classes with track, they should already be in correct format
   if (normalized.match(/^SS[123]$/i)) {
-    return normalized.replace(/^SS/i, 'SSS');
+    return normalized.replace(/^SS/i, "SSS");
   }
-  
+
   return normalized;
 }
 
 /**
  * Mapping from upstream API subject IDs to config subject IDs
  * This provides a definitive mapping to avoid fragile name-based matching
- * 
+ *
  * TODO: Populate this map with actual API subject IDs from the upstream API
  * To populate:
  * 1. Fetch subjects from /api/subjects endpoint
  * 2. Match API subject names to config subject names
  * 3. Add entries: [API_ID]: "config-subject-id"
- * 
+ *
  * Example structure:
  * {
  *   1: "english",
@@ -951,6 +946,8 @@ export const apiSubjectIdToConfigIdMap: Record<number, string> = {
  * Get config subject ID from API subject ID
  * Falls back to name-based matching if mapping is missing
  */
-export function getConfigSubjectIdFromApiId(apiSubjectId: number): string | null {
+export function getConfigSubjectIdFromApiId(
+  apiSubjectId: number,
+): string | null {
   return apiSubjectIdToConfigIdMap[apiSubjectId] || null;
 }

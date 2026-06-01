@@ -134,7 +134,9 @@ export function AcademicSetupForm({
   return (
     <Card>
       <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
-        <CardTitle className="text-xl font-bold sm:text-2xl">Academic Setup</CardTitle>
+        <CardTitle className="text-xl font-bold sm:text-2xl">
+          Academic Setup
+        </CardTitle>
         <CardDescription className="text-xs sm:text-sm">
           Set up your class, term, and discipline to begin subject registration
         </CardDescription>
@@ -142,7 +144,9 @@ export function AcademicSetupForm({
       <CardContent className="space-y-6">
         {/* Class Selection */}
         <div className="space-y-3">
-          <Label className="text-sm font-bold text-foreground sm:text-base">Select Your Class</Label>
+          <Label className="text-sm font-bold text-foreground sm:text-base">
+            Select Your Class
+          </Label>
           <RadioGroup value={selectedClass} onValueChange={setSelectedClass}>
             <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 sm:gap-3">
               {classes.map((cls) => (
@@ -156,7 +160,9 @@ export function AcademicSetupForm({
                     htmlFor={cls.value}
                     className="flex cursor-pointer items-center justify-center rounded-lg border-2 p-3 shadow-sm transition-all hover:bg-accent active:scale-[0.97] peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 sm:p-4"
                   >
-                    <span className="text-sm font-bold sm:text-base">{cls.label}</span>
+                    <span className="text-sm font-bold sm:text-base">
+                      {cls.label}
+                    </span>
                   </Label>
                 </div>
               ))}
@@ -186,9 +192,13 @@ export function AcademicSetupForm({
                       htmlFor={disc.value}
                       className="flex cursor-pointer items-start gap-3 rounded-lg border-2 p-3.5 shadow-sm transition-all hover:bg-accent active:scale-[0.98] peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 sm:gap-4 sm:p-4"
                     >
-                      <span className="shrink-0 text-2xl sm:text-3xl">{disc.icon}</span>
+                      <span className="shrink-0 text-2xl sm:text-3xl">
+                        {disc.icon}
+                      </span>
                       <div>
-                        <div className="text-sm font-bold leading-tight sm:text-base">{disc.label}</div>
+                        <div className="text-sm font-bold leading-tight sm:text-base">
+                          {disc.label}
+                        </div>
                         <p className="mt-0.5 text-[11px] text-muted-foreground sm:mt-1 sm:text-sm">
                           {disc.description}
                         </p>
@@ -203,7 +213,9 @@ export function AcademicSetupForm({
 
         {/* Term Selection */}
         <div className="space-y-3">
-          <Label className="text-sm font-bold text-foreground sm:text-base">Select Current Term</Label>
+          <Label className="text-sm font-bold text-foreground sm:text-base">
+            Select Current Term
+          </Label>
           <RadioGroup value={selectedTerm} onValueChange={setSelectedTerm}>
             <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-3 sm:gap-3">
               {academicTerms.map((term) => (
@@ -217,7 +229,9 @@ export function AcademicSetupForm({
                     htmlFor={`term-${term.id}`}
                     className="flex cursor-pointer flex-col items-center justify-center rounded-lg border-2 p-3.5 shadow-sm transition-all hover:bg-accent active:scale-[0.98] peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary/10 sm:p-4"
                   >
-                    <span className="text-sm font-bold sm:text-base">{term.name}</span>
+                    <span className="text-sm font-bold sm:text-base">
+                      {term.name}
+                    </span>
                     <span className="mt-0.5 text-[11px] text-muted-foreground sm:text-sm">
                       {term.description}
                     </span>

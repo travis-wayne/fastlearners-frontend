@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useCallback } from "react";
+import { useCallback, useEffect } from "react";
+
 import { LessonContent } from "@/lib/types/lessons";
 
 interface UseLessonKeyboardParams {
@@ -22,33 +23,32 @@ export function useLessonKeyboard({
   onNavigateToSection,
   enabled = true,
 }: UseLessonKeyboardParams) {
-  
   const handleKeyDown = useCallback(
     (event: KeyboardEvent) => {
       if (!selectedLesson) return;
 
       switch (event.key) {
-        case 'ArrowLeft':
+        case "ArrowLeft":
           if (currentStepIndex > 0) {
-              event.preventDefault();
-              onPrevious();
+            event.preventDefault();
+            onPrevious();
           }
           break;
-        case 'ArrowRight':
+        case "ArrowRight":
           if (currentStepIndex < maxStepIndex) {
-              event.preventDefault();
-              onNext();
+            event.preventDefault();
+            onNext();
           }
           break;
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
+        case "1":
+        case "2":
+        case "3":
+        case "4":
+        case "5":
+        case "6":
+        case "7":
+        case "8":
+        case "9":
           const num = parseInt(event.key) - 1;
           if (num >= 0 && num <= maxStepIndex) {
             event.preventDefault();
@@ -57,13 +57,20 @@ export function useLessonKeyboard({
           break;
       }
     },
-    [selectedLesson, currentStepIndex, maxStepIndex, onPrevious, onNext, onNavigateToSection]
+    [
+      selectedLesson,
+      currentStepIndex,
+      maxStepIndex,
+      onPrevious,
+      onNext,
+      onNavigateToSection,
+    ],
   );
 
   useEffect(() => {
-    if (typeof window === 'undefined' || !enabled) return;
+    if (typeof window === "undefined" || !enabled) return;
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [handleKeyDown, enabled]);
 }

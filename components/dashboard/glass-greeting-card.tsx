@@ -1,17 +1,18 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useCallback, useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
+  BookOpen,
   Calendar,
   Clock,
   Flame,
-  BookOpen,
+  GraduationCap,
   Moon,
+  Star,
   Sun,
   Sunrise,
   Sunset,
-  Star,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -32,33 +33,38 @@ interface GlassGreetingCardProps {
   streak?: number;
   lessonsToday?: number;
   className?: string;
+  currentClass?: string | null;
 }
 
 const periodConfig = {
   morning: {
     gradient: "from-amber-500/30 via-orange-400/25 to-yellow-300/30",
-    darkGradient: "dark:from-amber-400/20 dark:via-orange-300/15 dark:to-yellow-200/20",
+    darkGradient:
+      "dark:from-amber-400/20 dark:via-orange-300/15 dark:to-yellow-200/20",
     glowColor: "shadow-orange-500/30 dark:shadow-orange-500/20",
     accentColor: "text-amber-600 dark:text-amber-400",
     icon: Sunrise,
   },
   afternoon: {
     gradient: "from-blue-500/30 via-cyan-400/25 to-sky-300/30",
-    darkGradient: "dark:from-blue-400/20 dark:via-cyan-300/15 dark:to-sky-200/20",
+    darkGradient:
+      "dark:from-blue-400/20 dark:via-cyan-300/15 dark:to-sky-200/20",
     glowColor: "shadow-blue-500/30 dark:shadow-blue-500/20",
     accentColor: "text-blue-600 dark:text-blue-400",
     icon: Sun,
   },
   evening: {
     gradient: "from-purple-500/30 via-pink-400/25 to-orange-300/30",
-    darkGradient: "dark:from-purple-500/20 dark:via-pink-400/15 dark:to-orange-300/20",
+    darkGradient:
+      "dark:from-purple-500/20 dark:via-pink-400/15 dark:to-orange-300/20",
     glowColor: "shadow-purple-500/30 dark:shadow-purple-500/20",
     accentColor: "text-purple-600 dark:text-purple-400",
     icon: Sunset,
   },
   night: {
     gradient: "from-indigo-600/30 via-purple-500/25 to-blue-400/30",
-    darkGradient: "dark:from-indigo-600/20 dark:via-purple-500/15 dark:to-blue-400/20",
+    darkGradient:
+      "dark:from-indigo-600/20 dark:via-purple-500/15 dark:to-blue-400/20",
     glowColor: "shadow-indigo-500/30 dark:shadow-indigo-500/20",
     accentColor: "text-indigo-600 dark:text-indigo-400",
     icon: Moon,
@@ -111,6 +117,7 @@ export function GlassGreetingCard({
   streak = 7,
   lessonsToday = 3,
   className,
+  currentClass,
 }: GlassGreetingCardProps) {
   const [timeData, setTimeData] = useState<TimeData | null>(null);
   const [showHelloAnimation, setShowHelloAnimation] = useState(true);
@@ -183,7 +190,7 @@ export function GlassGreetingCard({
         className={cn(
           "absolute -inset-1 rounded-3xl bg-gradient-to-br opacity-50 blur-xl transition-all duration-1000",
           config.gradient,
-          config.darkGradient
+          config.darkGradient,
         )}
       />
 
@@ -200,7 +207,7 @@ export function GlassGreetingCard({
           "border border-white/50 dark:border-white/10",
           // Combined shadow (inset highlight + outer shadow-2xl)
           "shadow-[inset_0_1px_1px_rgba(255,255,255,0.4),0_25px_50px_-12px_rgba(0,0,0,0.15)] dark:shadow-[inset_0_1px_1px_rgba(255,255,255,0.1),0_25px_50px_-12px_rgba(0,0,0,0.25)]",
-          config.glowColor
+          config.glowColor,
         )}
       >
         {/* Gradient overlay */}
@@ -208,7 +215,7 @@ export function GlassGreetingCard({
           className={cn(
             "absolute inset-0 bg-gradient-to-br opacity-80 transition-all duration-1000 dark:opacity-60",
             config.gradient,
-            config.darkGradient
+            config.darkGradient,
           )}
         />
 
@@ -280,7 +287,9 @@ export function GlassGreetingCard({
                       <motion.span
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        transition={{ delay: 0.1 + userName.length * 0.05 + 0.3 }}
+                        transition={{
+                          delay: 0.1 + userName.length * 0.05 + 0.3,
+                        }}
                       >
                         !
                       </motion.span>
@@ -333,6 +342,16 @@ export function GlassGreetingCard({
               <Star className="mr-1.5 size-3.5 fill-yellow-500 text-yellow-500" />
               Level {level}
             </Badge>
+
+            {currentClass && (
+              <Badge
+                variant="secondary"
+                className="border border-gray-300/50 bg-white/60 px-3 py-1.5 text-gray-800 backdrop-blur-md transition-all hover:bg-white/80 dark:border-white/20 dark:bg-white/15 dark:text-white dark:hover:bg-white/25"
+              >
+                <GraduationCap className="mr-1.5 size-3.5 text-primary" />
+                {currentClass}
+              </Badge>
+            )}
           </motion.div>
 
           {/* Stats row */}

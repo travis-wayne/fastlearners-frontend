@@ -106,11 +106,11 @@ export interface TopicsByTerm {
  */
 export function mapTermIdToApiKey(termId: string): keyof TopicsByTerm {
   const termKeyMap: Record<string, keyof TopicsByTerm> = {
-    'term1': 'first_term',
-    'term2': 'second_term',
-    'term3': 'third_term',
+    term1: "first_term",
+    term2: "second_term",
+    term3: "third_term",
   };
-  return termKeyMap[termId] || 'first_term';
+  return termKeyMap[termId] || "first_term";
 }
 
 /**
@@ -118,7 +118,7 @@ export function mapTermIdToApiKey(termId: string): keyof TopicsByTerm {
  */
 export function getTopicsForTerm(
   topics: TopicsByTerm | undefined,
-  termId: string
+  termId: string,
 ): TopicItem[] {
   if (!topics) return [];
   const apiKey = mapTermIdToApiKey(termId);
@@ -351,7 +351,6 @@ export interface LessonCompletionSummaryProps {
   onClose: () => void;
 }
 
-
 export interface LessonSummaryContent {
   overview: string;
   video: string;
@@ -362,7 +361,10 @@ export interface LessonSummaryContent {
 export interface LessonSummaryResponse {
   success: boolean;
   message: string;
-  content: { lesson_summary: LessonSummaryContent; lesson_total: string } | null;
+  content: {
+    lesson_summary: LessonSummaryContent;
+    lesson_total: string;
+  } | null;
   code: number;
   noData?: boolean;
 }
@@ -370,7 +372,9 @@ export interface LessonSummaryResponse {
 export interface AllLessonsTotalScoresResponse {
   success: boolean;
   message: string;
-  content: { total_scores: Record<string, Array<{ total_score: string }>> } | null;
+  content: {
+    total_scores: Record<string, Array<{ total_score: string }>>;
+  } | null;
   code: number;
   noData?: boolean;
 }
@@ -378,7 +382,9 @@ export interface AllLessonsTotalScoresResponse {
 export interface AllSubjectsTotalScoresResponse {
   success: boolean;
   message: string;
-  content: { total_scores: Record<string, Array<{ total_score: string }>> } | null;
+  content: {
+    total_scores: Record<string, Array<{ total_score: string }>>;
+  } | null;
   code: number;
   noData?: boolean;
 }

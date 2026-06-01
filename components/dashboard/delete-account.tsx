@@ -41,10 +41,9 @@ export function DeleteAccountSection() {
               ) : null}
             </div>
             <div className="text-balance text-sm text-muted-foreground">
-              {isPendingDeletion 
+              {isPendingDeletion
                 ? "A deletion request is pending. Your account will be removed in 7 days."
-                : `Permanently delete your ${siteConfig.name} account${userPaidPlan ? " and your subscription" : ""}. This action cannot be undone - please proceed with caution.`
-              }
+                : `Permanently delete your ${siteConfig.name} account${userPaidPlan ? " and your subscription" : ""}. This action cannot be undone - please proceed with caution.`}
             </div>
           </div>
           <div className="flex items-center gap-2">

@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle, 
-  User, 
-  ShieldCheck 
+import {
+  AlertCircle,
+  CheckCircle2,
+  Loader2,
+  ShieldCheck,
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -27,7 +27,9 @@ interface AcceptConsentFormProps {
 
 export function AcceptConsentForm({ token }: AcceptConsentFormProps) {
   const [name, setName] = useState("");
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleAccept = async () => {
@@ -48,7 +50,10 @@ export function AcceptConsentForm({ token }: AcceptConsentFormProps) {
         toast.success("Consent accepted successfully!");
       } else {
         setStatus("error");
-        setErrorMessage(data.message || "Failed to accept consent. The link may be expired or invalid.");
+        setErrorMessage(
+          data.message ||
+            "Failed to accept consent. The link may be expired or invalid.",
+        );
         toast.error(data.message || "Failed to accept consent.");
       }
     } catch (error: any) {
@@ -66,9 +71,12 @@ export function AcceptConsentForm({ token }: AcceptConsentFormProps) {
             <div className="flex size-16 items-center justify-center rounded-full bg-green-100 text-green-600">
               <CheckCircle2 className="size-10" />
             </div>
-            <CardTitle className="text-2xl font-bold">Consent Accepted!</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Consent Accepted!
+            </CardTitle>
             <CardDescription className="text-base">
-              Consent accepted successfully! Your child can now fully participate in FastLearners.
+              Consent accepted successfully! Your child can now fully
+              participate in FastLearners.
             </CardDescription>
             <p className="mt-4 text-sm text-muted-foreground">
               You can now close this window.
@@ -86,9 +94,12 @@ export function AcceptConsentForm({ token }: AcceptConsentFormProps) {
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-primary/10 text-primary">
             <ShieldCheck className="size-8" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">Accept Parental Consent</CardTitle>
+          <CardTitle className="text-2xl font-bold text-foreground">
+            Accept Parental Consent
+          </CardTitle>
           <CardDescription className="text-muted-foreground">
-            You are about to grant consent for your child to participate in FastLearners.
+            You are about to grant consent for your child to participate in
+            FastLearners.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-2">
@@ -136,13 +147,20 @@ export function AcceptConsentForm({ token }: AcceptConsentFormProps) {
 
           <p className="text-center text-xs text-muted-foreground">
             By clicking &quot;Accept Consent&quot;, you agree to our{" "}
-            <a href="/terms" className="underline underline-offset-4 hover:text-primary">
+            <a
+              href="/terms"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="/privacy" className="underline underline-offset-4 hover:text-primary">
+            <a
+              href="/privacy"
+              className="underline underline-offset-4 hover:text-primary"
+            >
               Privacy Policy
-            </a>.
+            </a>
+            .
           </p>
         </CardContent>
       </Card>

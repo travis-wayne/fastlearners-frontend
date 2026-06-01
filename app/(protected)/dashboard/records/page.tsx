@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -15,6 +16,10 @@ import {
   TrendingUp,
 } from "lucide-react";
 
+import { getSubjectScore, getSubjectsWithSlugs } from "@/lib/api/lessons";
+import { getStudentSubjects } from "@/lib/api/subjects";
+import type { Subject as ApiSubject } from "@/lib/types/subjects";
+import { getGrade } from "@/lib/utils/grading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -25,7 +30,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
   SelectContent,
@@ -33,6 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -48,20 +53,17 @@ import {
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
 
-import { getStudentSubjects } from "@/lib/api/subjects";
-import { getSubjectScore, getSubjectsWithSlugs } from "@/lib/api/lessons";
-import { useAuthStore } from "@/store/authStore";
-import { getGrade } from "@/lib/utils/grading";
-import type { Subject as ApiSubject } from "@/lib/types/subjects";
-
 export default function RecordsPage() {
-  const { currentClass, currentTerm, currentClassApiId, currentTermApiId } = useAcademicContext();
+  const { currentClass, currentTerm, currentClassApiId, currentTermApiId } =
+    useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
   const [selectedTerm, setSelectedTerm] = useState("current");
   const user = useAuthStore((state) => state.user);
 
   const [subjects, setSubjects] = useState<ApiSubject[]>([]);
-  const [subjectScores, setSubjectScores] = useState<Map<number, number>>(new Map());
+  const [subjectScores, setSubjectScores] = useState<Map<number, number>>(
+    new Map(),
+  );
   const [slugMap, setSlugMap] = useState<Map<string, ApiSubject>>(new Map());
   const [masteryLoading, setMasteryLoading] = useState(true);
   const [masteryError, setMasteryError] = useState<string | null>(null);
@@ -97,8 +99,8 @@ export default function RecordsPage() {
         const slugsRes = await getSubjectsWithSlugs();
         if (slugsRes.success && slugsRes.content?.subjects) {
           const map = new Map<string, ApiSubject>();
-          slugsRes.content.subjects.forEach(s => {
-            const matched = enrolled.find(e => e.id === s.id);
+          slugsRes.content.subjects.forEach((s) => {
+            const matched = enrolled.find((e) => e.id === s.id);
             if (matched) {
               map.set(s.slug, matched);
             }
@@ -117,11 +119,11 @@ export default function RecordsPage() {
             }
             return { id: subj.id, score };
           });
-          
+
           const results = await Promise.all(scorePromises);
           if (isMounted) {
             const newScores = new Map<number, number>();
-            results.forEach(r => newScores.set(r.id, r.score));
+            results.forEach((r) => newScores.set(r.id, r.score));
             setSubjectScores(newScores);
           }
         }
@@ -135,17 +137,29 @@ export default function RecordsPage() {
 
     fetchData();
 
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [user?.class, currentClassApiId, currentTermApiId]);
 
   const filteredSubjects = useMemo(() => subjects, [subjects]);
 
   // Calculate live stats
-  const liveTotalScores = Array.from(subjectScores.values()).reduce((sum, score) => (sum as number) + (score as number), 0);
-  const averageScore = subjectScores.size > 0 ? Math.round((liveTotalScores as number) / subjectScores.size) : 0;
-  const subjectsPassing = Array.from(subjectScores.values()).filter(score => (score as number) >= 50).length;
+  const liveTotalScores = Array.from(subjectScores.values()).reduce(
+    (sum, score) => (sum as number) + (score as number),
+    0,
+  );
+  const averageScore =
+    subjectScores.size > 0
+      ? Math.round((liveTotalScores as number) / subjectScores.size)
+      : 0;
+  const subjectsPassing = Array.from(subjectScores.values()).filter(
+    (score) => (score as number) >= 50,
+  ).length;
   const subjectsCount = subjects.length;
-  const aGradesCount = Array.from(subjectScores.values()).filter(score => (score as number) >= 90).length;
+  const aGradesCount = Array.from(subjectScores.values()).filter(
+    (score) => (score as number) >= 90,
+  ).length;
 
   if (!currentClass || !currentTerm) {
     return (
@@ -165,7 +179,6 @@ export default function RecordsPage() {
       </div>
     );
   }
-
 
   return (
     <motion.div
@@ -218,9 +231,7 @@ export default function RecordsPage() {
               </span>
             </div>
             <p className="text-2xl font-bold">{subjectsCount}</p>
-            <p className="text-sm text-muted-foreground">
-              assigned to you
-            </p>
+            <p className="text-sm text-muted-foreground">assigned to you</p>
           </CardContent>
         </Card>
 
@@ -241,9 +252,7 @@ export default function RecordsPage() {
               <Award className="size-4 text-yellow-600" />
               <span className="text-sm text-muted-foreground">A Grades</span>
             </div>
-            <p className="text-2xl font-bold">
-              {aGradesCount}
-            </p>
+            <p className="text-2xl font-bold">{aGradesCount}</p>
             <p className="text-sm text-muted-foreground">score ≥ 90%</p>
           </CardContent>
         </Card>
@@ -269,7 +278,6 @@ export default function RecordsPage() {
             </SelectContent>
           </Select>
         </div>
-
 
         <TabsContent value="progress" className="space-y-4">
           <Card>

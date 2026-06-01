@@ -41,8 +41,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
 
   return (
     <header
-      className={`sticky top-0 flex w-full justify-center bg-background/60 backdrop-blur-xl transition-all ${scroll ? (scrolled ? "border-b" : "bg-transparent") : "border-b"
-        }`}
+      className={`sticky top-0 flex w-full justify-center bg-background/60 backdrop-blur-xl transition-all ${
+        scroll ? (scrolled ? "border-b" : "bg-transparent") : "border-b"
+      }`}
       style={{ zIndex: Z_INDEX.navbar }}
     >
       <MaxWidthWrapper

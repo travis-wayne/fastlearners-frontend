@@ -14,7 +14,8 @@ export const infos: InfoLdg[] = [
       },
       {
         title: "Exam-Aligned",
-        description: "Practice questions and lessons mirror actual exam formats.",
+        description:
+          "Practice questions and lessons mirror actual exam formats.",
         icon: "settings",
       },
       {
@@ -39,7 +40,8 @@ export const infos: InfoLdg[] = [
       },
       {
         title: "Progress Tracking",
-        description: "Visual dashboards show mastery levels across all subjects.",
+        description:
+          "Visual dashboards show mastery levels across all subjects.",
         icon: "search",
       },
       {

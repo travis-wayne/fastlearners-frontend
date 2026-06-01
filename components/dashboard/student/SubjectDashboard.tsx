@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
 import {
   BookOpen,
@@ -20,14 +21,13 @@ import {
   getSubjects,
   type Subject as ConfigSubject,
 } from "@/config/education";
-import { getGrade } from "@/lib/utils/grading";
-import { getSubjectsWithSlugs, getSubjectScore } from "@/lib/api/lessons";
+import { getSubjectScore, getSubjectsWithSlugs } from "@/lib/api/lessons";
 import { getStudentSubjects } from "@/lib/api/subjects";
-import { useAuthStore } from "@/store/authStore";
 import type {
   Subject as ApiSubject,
   SubjectsContent,
 } from "@/lib/types/subjects";
+import { getGrade } from "@/lib/utils/grading";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -39,6 +39,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { AcademicSelector } from "@/components/dashboard/student/shared/academic-selector";
 import { SubjectCard } from "@/components/dashboard/student/shared/subject-card";
@@ -46,7 +47,6 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
-import { Skeleton } from "@/components/ui/skeleton";
 
 interface SubjectDashboardProps {
   initialData?: SubjectsContent;
@@ -148,7 +148,7 @@ function mapApiSubjectToConfig(
   if (process.env.NODE_ENV === "development") {
     console.warn(
       `[SubjectDashboard] Unmapped API subject: ID=${apiSubject.id}, Name="${apiSubject.name}". ` +
-      `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`,
+        `Add mapping to apiSubjectIdToConfigIdMap in config/education.ts`,
     );
   }
 
@@ -173,10 +173,13 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedTrack, setSelectedTrack] = useState<string>("all");
 
-  const [subjectScores, setSubjectScores] = useState<Map<number, number>>(new Map());
+  const [subjectScores, setSubjectScores] = useState<Map<number, number>>(
+    new Map(),
+  );
   const [scoresLoading, setScoresLoading] = useState(true);
 
-  const { currentClass, currentTermApiId, availableSubjects } = useAcademicContext();
+  const { currentClass, currentTermApiId, availableSubjects } =
+    useAcademicContext();
   const { classDisplay, termDisplay } = useAcademicDisplay();
   const user = useAuthStore((state) => state.user);
 
@@ -298,10 +301,10 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
 
     // Create sets for quick lookup to determine subject type
     const compulsorySelectiveIds = new Set(
-      (subjectsData.compulsory_selective || []).map(s => s.id)
+      (subjectsData.compulsory_selective || []).map((s) => s.id),
     );
     const selectiveIds = new Set(
-      (subjectsData.selective || []).map(s => s.id)
+      (subjectsData.selective || []).map((s) => s.id),
     );
 
     // Only show user's ASSIGNED subjects (from subjects array)
@@ -323,7 +326,11 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   useEffect(() => {
     let isMounted = true;
     const fetchScores = async () => {
-      if (!currentClass?.name || !currentTermApiId || allApiSubjects.length === 0) {
+      if (
+        !currentClass?.name ||
+        !currentTermApiId ||
+        allApiSubjects.length === 0
+      ) {
         setScoresLoading(false);
         return;
       }
@@ -340,7 +347,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
         });
 
         const results = await Promise.all(scorePromises);
-        
+
         if (isMounted) {
           const newScores = new Map<number, number>();
           results.forEach((r) => newScores.set(r.id, r.score));
@@ -385,7 +392,7 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
   // Separate subjects by type for display
   // Core subjects = compulsory subjects + compulsory selective (religious study)
   const coreSubjects = filteredSubjects.filter(
-    (s) => s.type === "core" || s.type === "compulsory_selective"
+    (s) => s.type === "core" || s.type === "compulsory_selective",
   );
   // Elective subjects = selective subjects chosen by user
   const electiveSubjects = filteredSubjects.filter(
@@ -479,14 +486,25 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       <motion.div variants={itemVariants}>
         <div className="flex flex-col items-center justify-between gap-4 transition-all sm:flex-row">
           <div className="text-center sm:text-left">
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Subjects</h1>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              Subjects
+            </h1>
             <p className="mt-1 text-xs text-muted-foreground sm:text-sm">
-              Your subjects for <span className="font-medium text-primary">{classDisplay}</span> • <span className="font-medium text-primary">{termDisplay}</span>
+              Your subjects for{" "}
+              <span className="font-medium text-primary">{classDisplay}</span> •{" "}
+              <span className="font-medium text-primary">{termDisplay}</span>
             </p>
           </div>
           <div className="flex w-full items-center justify-center gap-2 sm:w-auto">
-            <Link href="/dashboard/subjects/manage" className="w-full sm:w-auto">
-              <Button variant="outline" size="sm" className="h-9 w-full px-4 font-semibold shadow-sm transition-all hover:shadow-md">
+            <Link
+              href="/dashboard/subjects/manage"
+              className="w-full sm:w-auto"
+            >
+              <Button
+                variant="outline"
+                size="sm"
+                className="h-9 w-full px-4 font-semibold shadow-sm transition-all hover:shadow-md"
+              >
                 <Settings className="mr-2 size-3.5" />
                 Manage
               </Button>
@@ -509,7 +527,11 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </span>
               </div>
               <p className="mt-1 text-xl font-black text-blue-900 dark:text-blue-100 sm:mt-2 sm:text-2xl">
-                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : totalSubjects}
+                {isLoading || scoresLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  totalSubjects
+                )}
               </p>
             </CardContent>
           </Card>
@@ -525,7 +547,11 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </span>
               </div>
               <p className="mt-1 text-xl font-black text-emerald-900 dark:text-emerald-100 sm:mt-2 sm:text-2xl">
-                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : completedSubjects}
+                {isLoading || scoresLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  completedSubjects
+                )}
               </p>
             </CardContent>
           </Card>
@@ -541,7 +567,11 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </span>
               </div>
               <p className="mt-1 text-xl font-black text-purple-900 dark:text-purple-100 sm:mt-2 sm:text-2xl">
-                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : `${averageProgress}%`}
+                {isLoading || scoresLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  `${averageProgress}%`
+                )}
               </p>
             </CardContent>
           </Card>
@@ -557,7 +587,11 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
                 </span>
               </div>
               <p className="mt-1 text-xl font-black text-orange-900 dark:text-orange-100 sm:mt-2 sm:text-2xl">
-                {isLoading || scoresLoading ? <Skeleton className="h-8 w-12" /> : upcomingAssessments}
+                {isLoading || scoresLoading ? (
+                  <Skeleton className="h-8 w-12" />
+                ) : (
+                  upcomingAssessments
+                )}
               </p>
             </CardContent>
           </Card>
@@ -601,14 +635,27 @@ export function SubjectDashboard({ initialData }: SubjectDashboardProps) {
       <motion.div variants={itemVariants}>
         <Tabs defaultValue="all" className="space-y-6">
           <TabsList className="no-scrollbar flex h-auto w-full overflow-x-auto rounded-lg bg-muted/50 p-1">
-            <TabsTrigger value="all" className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm">
-              All <span className="ml-1 hidden sm:inline">Subjects</span> ({filteredSubjects.length})
+            <TabsTrigger
+              value="all"
+              className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm"
+            >
+              All <span className="ml-1 hidden sm:inline">Subjects</span> (
+              {filteredSubjects.length})
             </TabsTrigger>
-            <TabsTrigger value="core" className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm">
-              Core <span className="ml-1 hidden sm:inline">Subjects</span> ({coreSubjects.length})
+            <TabsTrigger
+              value="core"
+              className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm"
+            >
+              Core <span className="ml-1 hidden sm:inline">Subjects</span> (
+              {coreSubjects.length})
             </TabsTrigger>
-            <TabsTrigger value="elective" className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm">
-              <span className="hidden sm:inline">Electives</span><span className="sm:hidden">Elect.</span> ({electiveSubjects.length})
+            <TabsTrigger
+              value="elective"
+              className="flex-1 rounded-md px-3 py-2 text-xs font-bold transition-all sm:py-2.5 sm:text-sm"
+            >
+              <span className="hidden sm:inline">Electives</span>
+              <span className="sm:hidden">Elect.</span> (
+              {electiveSubjects.length})
             </TabsTrigger>
           </TabsList>
 

@@ -2,21 +2,18 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import mockQuizData from "@/data/mock-quizzes.json";
 import { motion } from "framer-motion";
-import { CheckCircle2, XCircle, Trophy } from "lucide-react";
+import { CheckCircle2, Trophy, XCircle } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import {
-  QuestionModal,
-  QuizQuestion,
-} from "@/components/quiz/QuestionModal";
-import { Timer } from "@/components/quiz/Timer";
-import { ScoreDisplay } from "@/components/quiz/ScoreDisplay";
-import { Leaderboard } from "@/components/quiz/Leaderboard";
 import { FeedbackMessage } from "@/components/quiz/FeedbackMessage";
-import mockQuizData from "@/data/mock-quizzes.json";
+import { Leaderboard } from "@/components/quiz/Leaderboard";
+import { QuestionModal, QuizQuestion } from "@/components/quiz/QuestionModal";
+import { ScoreDisplay } from "@/components/quiz/ScoreDisplay";
+import { Timer } from "@/components/quiz/Timer";
 
 interface Quiz {
   id: string;
@@ -164,10 +161,11 @@ export default function QuizTakePage() {
               <CardContent className="p-6">
                 <div className="mb-6 text-center">
                   <div
-                    className={`mx-auto mb-4 flex size-20 items-center justify-center rounded-full ${passed
+                    className={`mx-auto mb-4 flex size-20 items-center justify-center rounded-full ${
+                      passed
                         ? "bg-green-100 text-green-600"
                         : "bg-orange-100 text-orange-600"
-                      }`}
+                    }`}
                   >
                     {passed ? (
                       <CheckCircle2 className="size-10" />
@@ -208,7 +206,9 @@ export default function QuizTakePage() {
                     Back to Quizzes
                   </Button>
                   <Button
-                    onClick={() => router.push(`/dashboard/quizzes/${quizId}/results`)}
+                    onClick={() =>
+                      router.push(`/dashboard/quizzes/${quizId}/results`)
+                    }
                     className="flex-1"
                   >
                     View Detailed Results
@@ -246,7 +246,8 @@ export default function QuizTakePage() {
             <Trophy className="mx-auto mb-4 size-16 text-primary" />
             <h1 className="mb-2 text-2xl font-bold">{quiz.title}</h1>
             <p className="mb-6 text-muted-foreground">
-              Are you ready to start? Click the button below when you&apos;re ready.
+              Are you ready to start? Click the button below when you&apos;re
+              ready.
             </p>
             <Button onClick={handleStartQuiz} size="lg">
               Start Quiz
@@ -282,7 +283,8 @@ export default function QuizTakePage() {
       {/* Question Navigation Cards */}
       <div className="grid grid-cols-5 gap-2 md:grid-cols-10">
         {quiz.questions.map((q, idx) => {
-          const isAnswered = answers[q.id] !== null && answers[q.id] !== undefined;
+          const isAnswered =
+            answers[q.id] !== null && answers[q.id] !== undefined;
           const isCurrent = idx === currentQuestionIndex;
 
           return (
@@ -292,12 +294,13 @@ export default function QuizTakePage() {
                 setCurrentQuestionIndex(idx);
                 setShowFeedback(false);
               }}
-              className={`rounded-lg border p-2 text-sm transition-colors ${isCurrent
+              className={`rounded-lg border p-2 text-sm transition-colors ${
+                isCurrent
                   ? "border-primary bg-primary text-primary-foreground"
                   : isAnswered
                     ? "border-green-500 bg-green-50 text-green-700"
                     : "border-muted hover:border-primary"
-                }`}
+              }`}
             >
               {idx + 1}
             </button>
@@ -315,7 +318,6 @@ export default function QuizTakePage() {
           onAnswerSelect={(answer) =>
             handleAnswerSelect(currentQuestion.id, answer)
           }
-
           onNext={handleNextQuestion}
           onPrevious={handlePreviousQuestion}
           onClose={() => setIsQuestionModalOpen(false)}
@@ -327,7 +329,7 @@ export default function QuizTakePage() {
         />
       )}
 
-       {isStarted && !isCompleted && !isQuestionModalOpen && (
+      {isStarted && !isCompleted && !isQuestionModalOpen && (
         <Card>
           <CardContent className="flex flex-col gap-4 text-center">
             <p className="text-lg font-semibold">Quiz paused</p>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface SharingPreferences {
   allowSharing: boolean;
@@ -19,9 +19,8 @@ const STORAGE_KEY = "lesson-sharing-preferences";
  * Stores preferences in localStorage
  */
 export function useSharingPreferences() {
-  const [preferences, setPreferencesState] = useState<SharingPreferences>(
-    DEFAULT_PREFERENCES
-  );
+  const [preferences, setPreferencesState] =
+    useState<SharingPreferences>(DEFAULT_PREFERENCES);
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Load preferences from localStorage on mount
@@ -58,7 +57,7 @@ export function useSharingPreferences() {
   // Update individual preference
   const updatePreference = <K extends keyof SharingPreferences>(
     key: K,
-    value: SharingPreferences[K]
+    value: SharingPreferences[K],
   ) => {
     setPreferences({ [key]: value });
   };

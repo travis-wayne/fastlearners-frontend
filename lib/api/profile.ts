@@ -93,11 +93,13 @@ export interface ApiError {
  * Helper function to normalize avatar URL
  * Converts relative paths from backend to full URLs
  */
-const normalizeAvatarUrl = (avatarPath: string | null | undefined): string | null => {
+const normalizeAvatarUrl = (
+  avatarPath: string | null | undefined,
+): string | null => {
   if (!avatarPath) return null;
 
   // If it's already a full URL, return as-is
-  if (avatarPath.startsWith('http://') || avatarPath.startsWith('https://')) {
+  if (avatarPath.startsWith("http://") || avatarPath.startsWith("https://")) {
     return avatarPath;
   }
 
@@ -105,15 +107,19 @@ const normalizeAvatarUrl = (avatarPath: string | null | undefined): string | nul
   const apiBase = process.env.NEXT_PUBLIC_API_URL;
 
   if (!apiBase) {
-    console.error('NEXT_PUBLIC_API_URL is not defined in environment variables');
+    console.error(
+      "NEXT_PUBLIC_API_URL is not defined in environment variables",
+    );
     return avatarPath; // Return as-is if no base URL configured
   }
 
   // Remove /api/v1 from the base URL to get the domain root
-  const baseUrl = apiBase.replace('/api/v1', '');
+  const baseUrl = apiBase.replace("/api/v1", "");
 
   // Remove leading slash from avatar path if present
-  const cleanPath = avatarPath.startsWith('/') ? avatarPath.slice(1) : avatarPath;
+  const cleanPath = avatarPath.startsWith("/")
+    ? avatarPath.slice(1)
+    : avatarPath;
 
   return `${baseUrl}/${cleanPath}`;
 };
@@ -136,7 +142,7 @@ export const getProfile = async (): Promise<UserProfile> => {
       throw new Error(errorData.message || "Failed to fetch profile");
     }
 
-    const data = await response.json() as ProfileResponse;
+    const data = (await response.json()) as ProfileResponse;
 
     if (!data.success) {
       throw new Error(data.message || "Failed to fetch profile");
@@ -176,32 +182,34 @@ export const updateProfile = async (
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      
+
       if (errorData.errors) {
         // Handle validation errors - collect all error messages
         const errors = errorData.errors;
         const errorMessages: string[] = [];
-        
+
         // Collect all error messages from all fields
         Object.entries(errors).forEach(([field, messages]) => {
           const msgArray = Array.isArray(messages) ? messages : [messages];
-          msgArray.forEach(msg => {
-            if (typeof msg === 'string') {
+          msgArray.forEach((msg) => {
+            if (typeof msg === "string") {
               errorMessages.push(msg);
             }
           });
         });
-        
+
         // Return all error messages joined, or just the first if only one
         if (errorMessages.length > 0) {
-          throw new Error(errorMessages.length === 1 
-            ? errorMessages[0] 
-            : errorMessages.join('; '));
+          throw new Error(
+            errorMessages.length === 1
+              ? errorMessages[0]
+              : errorMessages.join("; "),
+          );
         }
-        
+
         throw new Error("Validation failed");
       }
-      
+
       throw new Error(errorData.message || "Failed to update profile");
     }
 
@@ -246,18 +254,18 @@ export const changePassword = async (
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      
+
       if (errorData.errors) {
         // Handle validation errors
         const errors = errorData.errors;
         const firstError = Object.values(errors)[0] as string[];
         throw new Error(firstError[0] || "Validation failed");
       }
-      
+
       throw new Error(errorData.message || "Failed to change password");
     }
 
-    const data = await response.json() as ChangePasswordResponse;
+    const data = (await response.json()) as ChangePasswordResponse;
 
     if (!data.success) {
       throw new Error(data.message || "Failed to change password");
@@ -276,40 +284,49 @@ export const changePassword = async (
 /**
  * Request to delete user account, or cancel an existing request
  */
-export const deleteAccountRequest = async (): Promise<DeleteAccountRequestResponse> => {
-  try {
-    const response = await fetch("/api/profile/delete", {
-      method: "DELETE",
-      headers: {
-        Accept: "application/json",
-      },
-      credentials: "include",
-    });
+export const deleteAccountRequest =
+  async (): Promise<DeleteAccountRequestResponse> => {
+    try {
+      const response = await fetch("/api/profile/delete", {
+        method: "DELETE",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(errorData.message || "Failed to process delete account request");
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          errorData.message || "Failed to process delete account request",
+        );
+      }
+
+      const data = (await response.json()) as DeleteAccountRequestResponse;
+
+      if (!data.success) {
+        throw new Error(
+          data.message || "Failed to process delete account request",
+        );
+      }
+
+      return data;
+    } catch (error: any) {
+      if (error.message) {
+        throw error;
+      }
+      throw new Error("Failed to process delete account request");
     }
-
-    const data = await response.json() as DeleteAccountRequestResponse;
-
-    if (!data.success) {
-      throw new Error(data.message || "Failed to process delete account request");
-    }
-
-    return data;
-  } catch (error: any) {
-    if (error.message) {
-      throw error;
-    }
-    throw new Error("Failed to process delete account request");
-  }
-};
+  };
 
 /**
  * Get profile metadata (classes, roles, disciplines)
  */
-export const getProfileData = async (): Promise<{ classes: Array<{ name: string }>; roles: string[]; discipline: Array<{ name: string }> }> => {
+export const getProfileData = async (): Promise<{
+  classes: Array<{ name: string }>;
+  roles: string[];
+  discipline: Array<{ name: string }>;
+}> => {
   try {
     const response = await fetch("/api/profile/data", {
       method: "GET",
@@ -318,12 +335,12 @@ export const getProfileData = async (): Promise<{ classes: Array<{ name: string 
       },
       credentials: "include",
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(errorData.message || "Failed to fetch profile data");
     }
-    
+
     const data = await response.json();
 
     if (!data.success) {
@@ -355,7 +372,7 @@ export const validateProfileData = (data: ProfileEditData): string[] => {
   // Let backend handle nuanced requirements
 
   // Role validation - only for student/guardian (not guest)
-  if (data.role && !['student', 'guardian'].includes(data.role)) {
+  if (data.role && !["student", "guardian"].includes(data.role)) {
     errors.push("Role must be student or guardian");
   }
 
@@ -370,18 +387,27 @@ export const validateProfileData = (data: ProfileEditData): string[] => {
 
   // Guardian-specific validation (only if role is guardian)
   if (data.role === "guardian") {
-    if (data.child_email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.child_email)) {
+    if (
+      data.child_email &&
+      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.child_email)
+    ) {
       errors.push("Please enter a valid child email address");
     }
     // Let backend enforce required fields for guardians
   }
 
   // Format validations for optional fields (only if provided)
-  if (data.discipline && !['Art', 'Commercial', 'Science'].includes(data.discipline)) {
+  if (
+    data.discipline &&
+    !["Art", "Commercial", "Science"].includes(data.discipline)
+  ) {
     errors.push("Discipline must be Art, Commercial, or Science");
   }
 
-  if (data.class && !['JSS1', 'JSS2', 'JSS3', 'SSS1', 'SSS2', 'SSS3'].includes(data.class)) {
+  if (
+    data.class &&
+    !["JSS1", "JSS2", "JSS3", "SSS1", "SSS2", "SSS3"].includes(data.class)
+  ) {
     errors.push("Class must be JSS1-JSS3 or SSS1-SSS3");
   }
 
@@ -389,7 +415,7 @@ export const validateProfileData = (data: ProfileEditData): string[] => {
     errors.push("Date of birth must be in DD/MM/YYYY format");
   }
 
-  if (data.gender && !['male', 'female'].includes(data.gender)) {
+  if (data.gender && !["male", "female"].includes(data.gender)) {
     errors.push("Gender must be male or female");
   }
 
@@ -429,7 +455,7 @@ export const validatePasswordData = (data: ChangePasswordData): string[] => {
  * Check if a username is available
  */
 export const checkUsernameAvailability = async (
-  username: string
+  username: string,
 ): Promise<{ available: boolean; message?: string }> => {
   try {
     if (!username || username.trim().length === 0) {
@@ -444,7 +470,7 @@ export const checkUsernameAvailability = async (
           Accept: "application/json",
         },
         credentials: "include",
-      }
+      },
     );
 
     if (!response.ok) {
@@ -460,17 +486,18 @@ export const checkUsernameAvailability = async (
     // The API proxy now returns 200 OK for both available and unavailable outcomes
     // with success: true for available, success: false for unavailable.
     // Content will have { is_available: boolean, username: string }
-    
+
     if (data.success) {
-        return {
-            available: true,
-            message: data.content?.username || "Username is available"
-        };
+      return {
+        available: true,
+        message: data.content?.username || "Username is available",
+      };
     } else {
-        return {
-            available: false,
-            message: data.message || data.content?.username || "Username is not available"
-        };
+      return {
+        available: false,
+        message:
+          data.message || data.content?.username || "Username is not available",
+      };
     }
   } catch (error: any) {
     return {
@@ -488,7 +515,9 @@ export const uploadProfilePicture = async (file: File): Promise<string> => {
     // Client-side validation
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
-      throw new Error("Invalid file type. Only PNG, JPG, JPEG, and WEBP are allowed.");
+      throw new Error(
+        "Invalid file type. Only PNG, JPG, JPEG, and WEBP are allowed.",
+      );
     }
 
     if (file.size > 1048576) {
@@ -531,21 +560,26 @@ export const uploadProfilePicture = async (file: File): Promise<string> => {
 
     if (data.content?.avatar) {
       avatarUrl = normalizeAvatarUrl(data.content.avatar);
-    } 
-    
+    }
+
     // Fallback: if no avatar in response or normalization failed (shouldn't happen for valid string), fetch profile
     if (!avatarUrl) {
-       try {
-         const userProfile = await getProfile();
-         avatarUrl = userProfile.avatar || null;
-       } catch (fetchError) {
-         console.error("Failed to fetch updated profile after upload:", fetchError);
-         // If we can't fetch the profile, we can't return the new URL. 
-         // But the upload WAS successful. 
-         // We might return null or throw. 
-         // Since the function signature allows returning string, let's assume getProfile works or throw.
-         throw new Error("Profile picture uploaded, but failed to retrieve new image URL.");
-       }
+      try {
+        const userProfile = await getProfile();
+        avatarUrl = userProfile.avatar || null;
+      } catch (fetchError) {
+        console.error(
+          "Failed to fetch updated profile after upload:",
+          fetchError,
+        );
+        // If we can't fetch the profile, we can't return the new URL.
+        // But the upload WAS successful.
+        // We might return null or throw.
+        // Since the function signature allows returning string, let's assume getProfile works or throw.
+        throw new Error(
+          "Profile picture uploaded, but failed to retrieve new image URL.",
+        );
+      }
     }
 
     if (!avatarUrl) {

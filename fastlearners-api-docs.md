@@ -26,6 +26,7 @@
 **Description:** Register a new user with their email address and an optional referral code.
 
 **Notes:**
+
 - The referral code input field is optional.
 - The referral code is 8 characters.
 - Users can verify their referral code before continuing with registration.
@@ -36,6 +37,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -51,6 +53,7 @@
 | user not found error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -61,6 +64,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -73,6 +77,7 @@
 ```
 
 **User Exist Error (422):**
+
 ```json
 {
   "success": false,
@@ -98,6 +103,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "referral_code": "ABC1DEF2"
@@ -112,6 +118,7 @@
 | code not found error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -122,6 +129,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -137,6 +145,7 @@
 ```
 
 **Code Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -147,6 +156,7 @@
 ```
 
 **Server Error (500):**
+
 ```json
 {
   "success": false,
@@ -170,6 +180,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -186,6 +197,7 @@
 | code expired error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -216,6 +228,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -229,6 +242,7 @@
 ```
 
 **Code Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -239,6 +253,7 @@
 ```
 
 **Invalid Code Error (400):**
+
 ```json
 {
   "success": false,
@@ -249,6 +264,7 @@
 ```
 
 **Code Expired Error (400):**
+
 ```json
 {
   "success": false,
@@ -273,6 +289,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "password": "password",
@@ -287,6 +304,7 @@
 | validation error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -297,6 +315,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -313,6 +332,7 @@
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -331,6 +351,7 @@
 **Description:** Set role after successfully creating password.
 
 **Notes:**
+
 - Users are to select from `['guest', 'student', 'guardian']`.
 
 **Headers:**
@@ -340,6 +361,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "user_role": "student"
@@ -353,6 +375,7 @@
 | validation error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -363,6 +386,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -375,6 +399,7 @@
 ```
 
 **Invalid Role Error (400):**
+
 ```json
 {
   "success": false,
@@ -385,6 +410,7 @@
 ```
 
 **Error Response (500):**
+
 ```json
 {
   "success": false,
@@ -408,6 +434,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -423,6 +450,7 @@
 | error sending code | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -433,6 +461,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -445,6 +474,7 @@
 ```
 
 **User Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -455,6 +485,7 @@
 ```
 
 **Error Sending Code (500):**
+
 ```json
 {
   "success": false,
@@ -478,6 +509,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email_phone": "john@example.com",
@@ -495,6 +527,7 @@
 | user suspended error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -525,6 +558,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -538,6 +572,7 @@
 ```
 
 **Invalid Login Details Error (401):**
+
 ```json
 {
   "success": false,
@@ -548,6 +583,7 @@
 ```
 
 **Inactive User Response (401):**
+
 ```json
 {
   "success": false,
@@ -558,6 +594,7 @@
 ```
 
 **User Suspended Response (400):**
+
 ```json
 {
   "success": false,
@@ -581,6 +618,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {}
 ```
@@ -612,6 +650,7 @@
 | unauthorized error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -622,6 +661,7 @@
 ```
 
 **Unauthorized (401):**
+
 ```json
 {
   "success": false,
@@ -645,6 +685,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -660,6 +701,7 @@
 | email sending error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -670,6 +712,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -682,6 +725,7 @@
 ```
 
 **Email Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -707,6 +751,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -724,6 +769,7 @@
 | code expired error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -734,6 +780,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -749,6 +796,7 @@
 ```
 
 **Code Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -759,6 +807,7 @@
 ```
 
 **Invalid Code Error (400):**
+
 ```json
 {
   "success": false,
@@ -769,6 +818,7 @@
 ```
 
 **Code Expired Error (400):**
+
 ```json
 {
   "success": false,
@@ -792,6 +842,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com"
@@ -807,6 +858,7 @@
 | email sending error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -817,6 +869,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -829,6 +882,7 @@
 ```
 
 **Email Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -854,6 +908,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "email": "john@example.com",
@@ -871,6 +926,7 @@
 | email sending error | none |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -881,6 +937,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -895,6 +952,7 @@
 ```
 
 **Code Not Found Error (404):**
+
 ```json
 {
   "success": false,
@@ -905,6 +963,7 @@
 ```
 
 **Invalid Code Error (400):**
+
 ```json
 {
   "success": false,
@@ -915,6 +974,7 @@
 ```
 
 **Code Expired Error (400):**
+
 ```json
 {
   "success": false,
@@ -943,6 +1003,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -975,6 +1036,7 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
 {
   "success": false,
@@ -999,18 +1061,25 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Profile page data",
   "content": {
     "classes": [
-      {"name": "JSS1"}, {"name": "JSS2"}, {"name": "JSS3"},
-      {"name": "SSS1"}, {"name": "SSS2"}, {"name": "SSS3"}
+      { "name": "JSS1" },
+      { "name": "JSS2" },
+      { "name": "JSS3" },
+      { "name": "SSS1" },
+      { "name": "SSS2" },
+      { "name": "SSS3" }
     ],
     "roles": ["guest", "student", "guardian"],
     "discipline": [
-      {"name": "Art"}, {"name": "Commercial"}, {"name": "Science"}
+      { "name": "Art" },
+      { "name": "Commercial" },
+      { "name": "Science" }
     ]
   },
   "code": 200
@@ -1018,6 +1087,7 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
 {
   "success": false,
@@ -1028,6 +1098,7 @@
 ```
 
 **Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -1052,6 +1123,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1065,6 +1137,7 @@
 ```
 
 **Not Available Response (400):**
+
 ```json
 {
   "success": false,
@@ -1078,6 +1151,7 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
 {
   "success": false,
@@ -1088,6 +1162,7 @@
 ```
 
 **Server Error Response (400):**
+
 ```json
 {
   "success": false,
@@ -1106,6 +1181,7 @@
 **Description:** Edit user profile information.
 
 **Notes:**
+
 - Show the role input field if `user.role === 'guest'` else show a disabled input field. Users set their role once.
 - Show the username input field if `user.username == null` else show a disabled input field. Users set their username once.
 - Show an enabled date of birth input if `user.date_of_birth == null` else disabled. Users set DOB once.
@@ -1122,6 +1198,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "name": "Linus Thompson",
@@ -1151,6 +1228,7 @@
 | unauthorized | login |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1184,6 +1262,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -1211,43 +1290,86 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Username Already Set Error (401):**
+
 ```json
-{"success": false, "message": "Username already updated and cannot be changed.", "errors": null, "code": 401}
+{
+  "success": false,
+  "message": "Username already updated and cannot be changed.",
+  "errors": null,
+  "code": 401
+}
 ```
 
 **Role Already Set Error (401):**
+
 ```json
-{"success": false, "message": "Role already updated and cannot be changed. For further enquiries, please contact our support team.", "errors": null, "code": 401}
+{
+  "success": false,
+  "message": "Role already updated and cannot be changed. For further enquiries, please contact our support team.",
+  "errors": null,
+  "code": 401
+}
 ```
 
 **Class Already Set Error (400):**
+
 ```json
-{"success": false, "message": "Class already updated. Make a request for class upgrade.", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Class already updated. Make a request for class upgrade.",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Discipline Error (JSS class) (400):**
+
 ```json
-{"success": false, "message": "You have to be in SSS class to choose a discipline!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "You have to be in SSS class to choose a discipline!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Discipline Already Set Error (401):**
+
 ```json
-{"success": false, "message": "Discipline already updated. For further enquiries, please contact our support team.", "errors": null, "code": 401}
+{
+  "success": false,
+  "message": "Discipline already updated. For further enquiries, please contact our support team.",
+  "errors": null,
+  "code": 401
+}
 ```
 
 **Gender Already Set Error (401):**
+
 ```json
-{"success": false, "message": "Gender already updated. For further enquiries, please contact our support team.", "errors": null, "code": 401}
+{
+  "success": false,
+  "message": "Gender already updated. For further enquiries, please contact our support team.",
+  "errors": null,
+  "code": 401
+}
 ```
 
 **Date of Birth Already Set Error (401):**
+
 ```json
-{"success": false, "message": "Date of birth already updated. For further enquiries, please contact our support team.", "errors": null, "code": 401}
+{
+  "success": false,
+  "message": "Date of birth already updated. For further enquiries, please contact our support team.",
+  "errors": null,
+  "code": 401
+}
 ```
 
 ---
@@ -1265,6 +1387,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "profile_picture": "form-data"
@@ -1279,6 +1402,7 @@
 | unauthorized | login |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1289,6 +1413,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -1305,8 +1430,9 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 ---
@@ -1324,6 +1450,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "current_password": "password",
@@ -1341,6 +1468,7 @@
 | unauthorized | login |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1351,6 +1479,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -1358,20 +1487,29 @@
   "errors": {
     "current_password": ["The current_password field is required."],
     "new_password": ["The new_password field is required."],
-    "new_password_confirmation": ["The new_password_confirmation field is required."]
+    "new_password_confirmation": [
+      "The new_password_confirmation field is required."
+    ]
   },
   "code": 422
 }
 ```
 
 **Current Password Error (422):**
+
 ```json
-{"success": false, "message": "Your current password is incorrect!", "errors": null, "code": 422}
+{
+  "success": false,
+  "message": "Your current password is incorrect!",
+  "errors": null,
+  "code": 422
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 ---
@@ -1395,6 +1533,7 @@
 | unauthorized | login |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1405,13 +1544,20 @@
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while sending account delete request, try again", "errors": null, "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while sending account delete request, try again",
+  "errors": null,
+  "code": 500
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 ---
@@ -1435,6 +1581,7 @@
 | unauthorized | login |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1445,18 +1592,31 @@
 ```
 
 **Failed Error (400):**
+
 ```json
-{"success": false, "message": "An error occurred while deleting your account, try again!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "An error occurred while deleting your account, try again!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while deleting your account, try again!", "errors": null, "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while deleting your account, try again!",
+  "errors": null,
+  "code": 500
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 ---
@@ -1478,23 +1638,26 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Your dashboard!",
-  "content": {"data": ""},
+  "content": { "data": "" },
   "code": 200
 }
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Error Message (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": null, "code": 500}
+{ "success": false, "message": "Server error", "errors": null, "code": 500 }
 ```
 
 ---
@@ -1516,6 +1679,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1537,13 +1701,15 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Error Message (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": null, "code": 500}
+{ "success": false, "message": "Server error", "errors": null, "code": 500 }
 ```
 
 ---
@@ -1561,44 +1727,45 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "subjects": [
-      {"id": 1, "name": "General Mathematics"},
-      {"id": 2, "name": "English Language"},
-      {"id": 18, "name": "Civic Education"},
-      {"id": 4, "name": "Biology"},
-      {"id": 5, "name": "Physics"},
-      {"id": 6, "name": "Chemistry"},
-      {"id": 22, "name": "Christian Religious Studies"},
-      {"id": 31, "name": "Efik"},
-      {"id": 7, "name": "Further Mathematics"},
-      {"id": 8, "name": "Economics"},
-      {"id": 36, "name": "Computer Studies"}
+      { "id": 1, "name": "General Mathematics" },
+      { "id": 2, "name": "English Language" },
+      { "id": 18, "name": "Civic Education" },
+      { "id": 4, "name": "Biology" },
+      { "id": 5, "name": "Physics" },
+      { "id": 6, "name": "Chemistry" },
+      { "id": 22, "name": "Christian Religious Studies" },
+      { "id": 31, "name": "Efik" },
+      { "id": 7, "name": "Further Mathematics" },
+      { "id": 8, "name": "Economics" },
+      { "id": 36, "name": "Computer Studies" }
     ],
     "compulsory_selective_status": "selected",
     "compulsory_selective": [
-      {"id": 22, "name": "Christian Religious Studies"},
-      {"id": 23, "name": "Islamic Religious Studies"},
-      {"id": 24, "name": "Religious and Moral Education"}
+      { "id": 22, "name": "Christian Religious Studies" },
+      { "id": 23, "name": "Islamic Religious Studies" },
+      { "id": 24, "name": "Religious and Moral Education" }
     ],
     "selective_status": "selected",
     "selective": [
-      {"id": 3, "name": "Agricultural Science"},
-      {"id": 7, "name": "Further Mathematics"},
-      {"id": 8, "name": "Economics"},
-      {"id": 9, "name": "Geography"},
-      {"id": 27, "name": "Yoruba"},
-      {"id": 28, "name": "Hausa"},
-      {"id": 29, "name": "Igbo"},
-      {"id": 30, "name": "Ibibio"},
-      {"id": 31, "name": "Efik"},
-      {"id": 32, "name": "Obolo"},
-      {"id": 35, "name": "Technical Drawing"},
-      {"id": 36, "name": "Computer Studies"}
+      { "id": 3, "name": "Agricultural Science" },
+      { "id": 7, "name": "Further Mathematics" },
+      { "id": 8, "name": "Economics" },
+      { "id": 9, "name": "Geography" },
+      { "id": 27, "name": "Yoruba" },
+      { "id": 28, "name": "Hausa" },
+      { "id": 29, "name": "Igbo" },
+      { "id": 30, "name": "Ibibio" },
+      { "id": 31, "name": "Efik" },
+      { "id": 32, "name": "Obolo" },
+      { "id": 35, "name": "Technical Drawing" },
+      { "id": 36, "name": "Computer Studies" }
     ]
   },
   "code": 200
@@ -1606,8 +1773,9 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 ---
@@ -1625,6 +1793,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "subject": 22
@@ -1632,23 +1801,42 @@
 ```
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Compulsory Selective subject Updated successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Compulsory Selective subject Updated successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Error Response (400):**
+
 ```json
-{"success": false, "message": "Error updating compulsory selective subject, try again!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Error updating compulsory selective subject, try again!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while updating compulsory selective subject!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while updating compulsory selective subject!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -1666,6 +1854,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "subjects[]": [31, 7, 8, 36]
@@ -1673,18 +1862,31 @@
 ```
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Selective subjects Updated successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Selective subjects Updated successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while updating selective subjects!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while updating selective subjects!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -1702,23 +1904,31 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
-  "content": {"class_id": 4, "class_name": "SSS1"},
+  "content": { "class_id": 4, "class_name": "SSS1" },
   "code": 200
 }
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting student class", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting student class",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -1736,14 +1946,19 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "classes": [
-      {"id": 1, "name": "JSS1"}, {"id": 2, "name": "JSS2"}, {"id": 3, "name": "JSS3"},
-      {"id": 4, "name": "SSS1"}, {"id": 5, "name": "SSS2"}, {"id": 6, "name": "SSS3"}
+      { "id": 1, "name": "JSS1" },
+      { "id": 2, "name": "JSS2" },
+      { "id": 3, "name": "JSS3" },
+      { "id": 4, "name": "SSS1" },
+      { "id": 5, "name": "SSS2" },
+      { "id": 6, "name": "SSS3" }
     ]
   },
   "code": 200
@@ -1751,13 +1966,25 @@
 ```
 
 **Not Found Error (404):**
+
 ```json
-{"success": false, "message": "No class was found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "No class was found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting classes", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting classes",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -1775,13 +2002,16 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "terms": [
-      {"id": 1, "name": "First"}, {"id": 2, "name": "Second"}, {"id": 3, "name": "Third"}
+      { "id": 1, "name": "First" },
+      { "id": 2, "name": "Second" },
+      { "id": 3, "name": "Third" }
     ]
   },
   "code": 200
@@ -1789,13 +2019,25 @@
 ```
 
 **Not Found Error (404):**
+
 ```json
-{"success": false, "message": "No term was found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "No term was found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting terms", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting terms",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -1813,16 +2055,25 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "weeks": [
-      {"id": 1, "name": 1}, {"id": 2, "name": 2}, {"id": 3, "name": 3},
-      {"id": 4, "name": 4}, {"id": 5, "name": 5}, {"id": 6, "name": 6},
-      {"id": 7, "name": 7}, {"id": 8, "name": 8}, {"id": 9, "name": 9},
-      {"id": 10, "name": 10}, {"id": 11, "name": 11}, {"id": 12, "name": 12}
+      { "id": 1, "name": 1 },
+      { "id": 2, "name": 2 },
+      { "id": 3, "name": 3 },
+      { "id": 4, "name": 4 },
+      { "id": 5, "name": 5 },
+      { "id": 6, "name": 6 },
+      { "id": 7, "name": 7 },
+      { "id": 8, "name": 8 },
+      { "id": 9, "name": 9 },
+      { "id": 10, "name": 10 },
+      { "id": 11, "name": 11 },
+      { "id": 12, "name": 12 }
     ]
   },
   "code": 200
@@ -1830,13 +2081,25 @@
 ```
 
 **Not Found Error (404):**
+
 ```json
-{"success": false, "message": "No week was found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "No week was found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting weeks", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting weeks",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -1856,23 +2119,28 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "subjects": [
-      {"id": 1, "name": "General Mathematics", "slug": "general-mathematics"},
-      {"id": 2, "name": "English Language", "slug": "english-language"},
-      {"id": 18, "name": "Civic Education", "slug": "civic-education"},
-      {"id": 4, "name": "Biology", "slug": "biology"},
-      {"id": 5, "name": "Physics", "slug": "physics"},
-      {"id": 6, "name": "Chemistry", "slug": "chemistry"},
-      {"id": 22, "name": "Christian Religious Studies", "slug": "christian-religious-studies"},
-      {"id": 31, "name": "Efik", "slug": "efik"},
-      {"id": 7, "name": "Further Mathematics", "slug": "further-mathematics"},
-      {"id": 8, "name": "Economics", "slug": "economics"},
-      {"id": 36, "name": "Computer Studies", "slug": "computer-studies"}
+      { "id": 1, "name": "General Mathematics", "slug": "general-mathematics" },
+      { "id": 2, "name": "English Language", "slug": "english-language" },
+      { "id": 18, "name": "Civic Education", "slug": "civic-education" },
+      { "id": 4, "name": "Biology", "slug": "biology" },
+      { "id": 5, "name": "Physics", "slug": "physics" },
+      { "id": 6, "name": "Chemistry", "slug": "chemistry" },
+      {
+        "id": 22,
+        "name": "Christian Religious Studies",
+        "slug": "christian-religious-studies"
+      },
+      { "id": 31, "name": "Efik", "slug": "efik" },
+      { "id": 7, "name": "Further Mathematics", "slug": "further-mathematics" },
+      { "id": 8, "name": "Economics", "slug": "economics" },
+      { "id": 36, "name": "Computer Studies", "slug": "computer-studies" }
     ]
   },
   "code": 200
@@ -1880,18 +2148,31 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **User Class Not Found Error (404):**
+
 ```json
-{"success": false, "message": "User class not found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "User class not found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error fetching your subjects!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error fetching your subjects!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -1913,6 +2194,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1920,13 +2202,31 @@
   "content": {
     "topics": {
       "first_term": [
-        {"id": 1, "topic": "Number Bases System", "slug": "number-bases-system", "week": 1, "order_index": 1}
+        {
+          "id": 1,
+          "topic": "Number Bases System",
+          "slug": "number-bases-system",
+          "week": 1,
+          "order_index": 1
+        }
       ],
       "second_term": [
-        {"id": 2, "topic": "Number Bases System", "slug": "number-bases-system", "week": 1, "order_index": 2}
+        {
+          "id": 2,
+          "topic": "Number Bases System",
+          "slug": "number-bases-system",
+          "week": 1,
+          "order_index": 2
+        }
       ],
       "third_term": [
-        {"id": 3, "topic": "Number Bases System", "slug": "number-bases-system", "week": 1, "order_index": 3}
+        {
+          "id": 3,
+          "topic": "Number Bases System",
+          "slug": "number-bases-system",
+          "week": 1,
+          "order_index": 3
+        }
       ]
     }
   },
@@ -1935,28 +2235,53 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Subject Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Subject not found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "Subject not found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Class Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Error getting your class!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "Error getting your class!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Term Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Error getting your term!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "Error getting your term!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting lesson topics!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting lesson topics!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -1978,6 +2303,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -1996,23 +2322,42 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Subject Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Subject not found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "Subject not found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Topic Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Lesson topic not found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "Lesson topic not found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting lesson content: ", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting lesson content: ",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2032,6 +2377,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -2098,7 +2444,15 @@
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Example 1",
               "problem": "Convert 67₁₀ to base 2",
-              "solution_steps": ["67 ÷ 2 = 33 R1", "33 ÷ 2 = 16 R1", "16 ÷ 2 = 8 R0", "8 ÷ 2 = 4 R0", "4 ÷ 2 = 2 R0", "2 ÷ 2 = 1 R0", "1 ÷ 2 = 0 R1"],
+              "solution_steps": [
+                "67 ÷ 2 = 33 R1",
+                "33 ÷ 2 = 16 R1",
+                "16 ÷ 2 = 8 R0",
+                "8 ÷ 2 = 4 R0",
+                "4 ÷ 2 = 2 R0",
+                "2 ÷ 2 = 1 R0",
+                "1 ÷ 2 = 0 R1"
+              ],
               "answer": "1000011₂",
               "created_at": "22-08-2025",
               "updated_at": "22-08-2025"
@@ -2111,7 +2465,15 @@
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Exercise 1",
               "problem": "Convert 97₁₀ to base 2",
-              "solution_steps": ["67 ÷ 2 = 33 R1", "33 ÷ 2 = 16 R1", "16 ÷ 2 = 8 R0", "8 ÷ 2 = 4 R0", "4 ÷ 2 = 2 R0", "2 ÷ 2 = 1 R0", "1 ÷ 2 = 0 R1"],
+              "solution_steps": [
+                "67 ÷ 2 = 33 R1",
+                "33 ÷ 2 = 16 R1",
+                "16 ÷ 2 = 8 R0",
+                "8 ÷ 2 = 4 R0",
+                "4 ÷ 2 = 2 R0",
+                "2 ÷ 2 = 1 R0",
+                "1 ÷ 2 = 0 R1"
+              ],
               "answers": ["1110011₂", "1001011₂", "0101011₂", "1000011₂"],
               "correct_answer": "1000011₂",
               "correct_answer_option": "D",
@@ -2127,7 +2489,11 @@
           "order_index": 1,
           "lesson_topic": "Number Bases System",
           "problem": "Convert 97₁₀ to base 2",
-          "solution_steps": ["67 ÷ 2 = 33 R1", "33 ÷ 2 = 16 R1", "16 ÷ 2 = 8 R0"],
+          "solution_steps": [
+            "67 ÷ 2 = 33 R1",
+            "33 ÷ 2 = 16 R1",
+            "16 ÷ 2 = 8 R0"
+          ],
           "answers": ["1110011₂", "1001011₂", "0101011₂", "1000011₂"],
           "correct_answer": "1000011₂",
           "correct_answer_option": "D",
@@ -2160,23 +2526,37 @@
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Class Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Class not found!", "errors": null, "code": 404}
+{ "success": false, "message": "Class not found!", "errors": null, "code": 404 }
 ```
 
 **Lesson Not Found Error (404):**
+
 ```json
-{"success": false, "message": "Lesson not found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "Lesson not found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting lesson content: ", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting lesson content: ",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2194,6 +2574,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "exercise_id": 5,
@@ -2202,6 +2583,7 @@
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -2217,6 +2599,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -2230,38 +2613,53 @@
 ```
 
 **Exercise Already Answered (200):**
+
 ```json
 {
   "success": true,
   "message": "Exercise already answered, continue learning!",
-  "content": {"score": "50", "attempt": "1st"},
+  "content": { "score": "50", "attempt": "1st" },
   "code": 200
 }
 ```
 
 **Wrong Answer Response (400):**
+
 ```json
-{"success": false, "message": "Wrong answer. Try again!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Wrong answer. Try again!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Exercise Not Found Error (422):**
+
 ```json
 {
   "success": false,
   "message": "Validation failed",
-  "errors": {"exercise_id": ["The selected exercise was not found!!"]},
+  "errors": { "exercise_id": ["The selected exercise was not found!!"] },
   "code": 422
 }
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error checking your answer!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error checking your answer!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2279,6 +2677,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "general_exercise_id": 3,
@@ -2287,6 +2686,7 @@
 ```
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -2302,6 +2702,7 @@
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -2315,38 +2716,53 @@
 ```
 
 **General Exercise Already Answered (200):**
+
 ```json
 {
   "success": true,
   "message": "General Exercise already answered, continue learning!",
-  "content": {"score": "5", "attempt": "1st"},
+  "content": { "score": "5", "attempt": "1st" },
   "code": 200
 }
 ```
 
 **Wrong Answer Response (400):**
+
 ```json
-{"success": false, "message": "Wrong answer. Try again!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Wrong answer. Try again!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **General Exercise Not Found Error (422):**
+
 ```json
 {
   "success": false,
   "message": "Validation failed",
-  "errors": {"exercise_id": ["The selected general exercise was not found!"]},
+  "errors": { "exercise_id": ["The selected general exercise was not found!"] },
   "code": 422
 }
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error checking your answer!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error checking your answer!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2368,25 +2784,38 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Overview completed successfully.",
   "content": {
-    "check": {"is_completed": true, "score": "100%"}
+    "check": { "is_completed": true, "score": "100%" }
   },
   "code": 200
 }
 ```
 
 **Lesson Check Marker Not Found (400):**
+
 ```json
-{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error verifying overview completion!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error verifying overview completion!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2406,25 +2835,38 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Concept completed successfully.",
   "content": {
-    "check": {"is_completed": true, "score": "20%"}
+    "check": { "is_completed": true, "score": "20%" }
   },
   "code": 200
 }
 ```
 
 **Lesson Check Marker Not Found (400):**
+
 ```json
-{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error verifying summary and application completion!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error verifying summary and application completion!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2444,25 +2886,38 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Summary and Application completed successfully.",
   "content": {
-    "check": {"is_completed": true, "score": "100%"}
+    "check": { "is_completed": true, "score": "100%" }
   },
   "code": 200
 }
 ```
 
 **Lesson Check Marker Not Found (400):**
+
 ```json
-{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error verifying summary and application completion!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error verifying summary and application completion!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2482,30 +2937,49 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "General exercises completed successfully.",
   "content": {
-    "check": {"is_completed": true, "score": "65%"}
+    "check": { "is_completed": true, "score": "65%" }
   },
   "code": 200
 }
 ```
 
 **Not Completed Error (400):**
+
 ```json
-{"success": false, "message": "Complete your lesson general exercises to continue learning!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Complete your lesson general exercises to continue learning!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Lesson Check Marker Not Found (400):**
+
 ```json
-{"success": false, "message": "No lesson check marker found, contact support with this error message code: 1001-2", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No lesson check marker found, contact support with this error message code: 1001-2",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "There was an error verifying general exercises completion!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "There was an error verifying general exercises completion!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2525,28 +2999,42 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
-  "content": {"concept_id": 1, "total_score": "10.00", "weight": "10.00"},
+  "content": { "concept_id": 1, "total_score": "10.00", "weight": "10.00" },
   "code": 200
 }
 ```
 
 **Concept Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "Concept total score not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Concept total score not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting the concept total score!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting the concept total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2566,28 +3054,42 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
-  "content": {"total_score": "4.50", "weight": "30.00"},
+  "content": { "total_score": "4.50", "weight": "30.00" },
   "code": 200
 }
 ```
 
 **General Exercise Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "General Exercise total score not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "General Exercise total score not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting the general exercise total score!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting the general exercise total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2607,28 +3109,42 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
-  "content": {"lesson_total_score": "32.50", "weight": 100.00},
+  "content": { "lesson_total_score": "32.50", "weight": 100.0 },
   "code": 200
 }
 ```
 
 **Lesson Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "Lesson total score not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Lesson total score not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting the lesson total score!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting the lesson total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2648,6 +3164,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -2669,28 +3186,53 @@
 ```
 
 **Lesson Check Marker Not Found (400):**
+
 ```json
-{"success": false, "message": "Lesson check marker not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Lesson check marker not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Lesson Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "Lesson total score not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Lesson total score not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Concept Total Scores Not Found (400):**
+
 ```json
-{"success": false, "message": "No concepts total scores found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No concepts total scores found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting lesson's total scores summary!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting lesson's total scores summary!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2710,28 +3252,42 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
-  "content": {"subject_total_score": "3.25", "weight": 100.00},
+  "content": { "subject_total_score": "3.25", "weight": 100.0 },
   "code": 200
 }
 ```
 
 **Subject Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "Subject total score not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Subject total score not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting the subject total score!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting the subject total score!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2751,13 +3307,14 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "total_scores": {
-      "Introduction to Biology": [{"total_score": "32.50"}]
+      "Introduction to Biology": [{ "total_score": "32.50" }]
     }
   },
   "code": 200
@@ -2765,18 +3322,31 @@
 ```
 
 **Lessons Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "No lessons total score found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No lessons total score found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting all lesson's total scores!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting all lesson's total scores!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2796,13 +3366,14 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Success",
   "content": {
     "total_scores": {
-      "Biology": [{"total_score": "3.25"}]
+      "Biology": [{ "total_score": "3.25" }]
     }
   },
   "code": 200
@@ -2810,18 +3381,31 @@
 ```
 
 **Subject Total Score Not Found (400):**
+
 ```json
-{"success": false, "message": "No subjects total score found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "No subjects total score found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "An error occurred while getting all subject's total scores!", "errors": ["error messages"], "code": 500}
+{
+  "success": false,
+  "message": "An error occurred while getting all subject's total scores!",
+  "errors": ["error messages"],
+  "code": 500
+}
 ```
 
 ---
@@ -2844,43 +3428,86 @@
 | success | request-history |
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Guardian request accepted successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Guardian request accepted successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Request Not Found Error (404):**
+
 ```json
-{"success": false, "message": "This request was not found, try again!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "This request was not found, try again!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Guardian Not Found Error (404):**
+
 ```json
-{"success": false, "message": "This guardian was not found, try again!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "This guardian was not found, try again!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Acceptance Error (400):**
+
 ```json
-{"success": false, "message": "Request already accepted!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Request already accepted!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Request Already Rejected Error (400):**
+
 ```json
-{"success": false, "message": "Request already rejected!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Request already rejected!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Mail Sending Error (400):**
+
 ```json
-{"success": false, "message": "An error occurred while sending rejection mail, but the request was rejected successfully!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "An error occurred while sending rejection mail, but the request was rejected successfully!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -2903,43 +3530,86 @@
 | success | request-history |
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Guardian request rejected successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Guardian request rejected successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Request Not Found Error (404):**
+
 ```json
-{"success": false, "message": "This request was not found, try again", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "This request was not found, try again",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Guardian Not Found Error (404):**
+
 ```json
-{"success": false, "message": "This guardian was not found, try again!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "This guardian was not found, try again!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Only Pending Requests Error (400):**
+
 ```json
-{"success": false, "message": "Only pending requests can be accepted!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Only pending requests can be accepted!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Request Already Accepted Error (400):**
+
 ```json
-{"success": false, "message": "Request already accepted!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Request already accepted!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Mail Sending Error (400):**
+
 ```json
-{"success": false, "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "An error occurred while sending acceptance mail, but the request was accepted successfully!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -2957,6 +3627,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -2978,7 +3649,7 @@
         "prev": null,
         "next": null
       },
-      "meta": {"current_page": 1, "last_page": 1, "per_page": 20, "total": 1}
+      "meta": { "current_page": 1, "last_page": 1, "per_page": 20, "total": 1 }
     }
   },
   "code": 200
@@ -2986,18 +3657,31 @@
 ```
 
 **Not Found Error (404):**
+
 ```json
-{"success": false, "message": "No history found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "No history found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -3013,6 +3697,7 @@
 **Description:** Parent can accept a parental consent request through this endpoint.
 
 **Notes:**
+
 - The `{token}` in the endpoint is obtained from the acceptance URL.
 - Acceptance link (e.g. `https://fastlearnersapp.com/6d18-1bf5-66d6-03e2-c6cb-19ca/accept`) is sent to parent's email.
 - The `name` in the request body is optional.
@@ -3023,6 +3708,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe"
@@ -3030,23 +3716,42 @@
 ```
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Parental consent request accepted successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Parental consent request accepted successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Consent Request Not Found Error (400):**
+
 ```json
-{"success": false, "message": "Consent request not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Consent request not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -3060,6 +3765,7 @@
 **Description:** Parent can reject a parental consent request through this endpoint.
 
 **Notes:**
+
 - The `{token}` in the endpoint is obtained from the rejection URL.
 - Rejection link (e.g. `https://fastlearnersapp.com/6d18-1bf5-66d6-03e2-c6cb-19ca/reject`) is sent to parent's email.
 - The `name` in the request body is optional.
@@ -3070,6 +3776,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "name": "John Doe"
@@ -3077,23 +3784,42 @@
 ```
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Parental consent request rejected successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Parental consent request rejected successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Consent Request Not Found Error (400):**
+
 ```json
-{"success": false, "message": "Consent request not found!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Consent request not found!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -3113,23 +3839,26 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
   "message": "Your children's report and statistics",
-  "content": {"children": 1, "report": null},
+  "content": { "children": 1, "report": null },
   "code": 200
 }
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Error Message (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": null, "code": 500}
+{ "success": false, "message": "Server error", "errors": null, "code": 500 }
 ```
 
 ---
@@ -3147,6 +3876,7 @@
 | Accept | application/json |
 
 **Request Body:**
+
 ```json
 {
   "child_email": "johndoe@email.com"
@@ -3160,11 +3890,18 @@
 | validation error | none |
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Child request sent successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Child request sent successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Validation Error (422):**
+
 ```json
 {
   "success": false,
@@ -3180,43 +3917,86 @@
 ```
 
 **Email Does Not Exist Error (400):**
+
 ```json
-{"success": false, "message": "Child email does not exist on our record!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Child email does not exist on our record!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **User Not A Guardian Error (400):**
+
 ```json
-{"success": false, "message": "Only guardians can make this request!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Only guardians can make this request!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **User Not A Student Error (400):**
+
 ```json
-{"success": false, "message": "The email you entered does not belong to a student, try again!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "The email you entered does not belong to a student, try again!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Pending Request Error (400):**
+
 ```json
-{"success": false, "message": "This child request is still pending!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "This child request is still pending!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Accepted Request Error (400):**
+
 ```json
-{"success": false, "message": "This child request was accepted and assigned to you as child!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "This child request was accepted and assigned to you as child!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Mail Sending Error (400):**
+
 ```json
-{"success": false, "message": "An error occurred while sending request mail to your child, but your request has been sent successfully!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "An error occurred while sending request mail to your child, but your request has been sent successfully!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -3239,28 +4019,53 @@
 | success | request-history |
 
 **Success Response (200):**
+
 ```json
-{"success": true, "message": "Child request cancelled successfully!", "content": null, "code": 200}
+{
+  "success": true,
+  "message": "Child request cancelled successfully!",
+  "content": null,
+  "code": 200
+}
 ```
 
 **Request Not Found Error (404):**
+
 ```json
-{"success": false, "message": "This child request was not found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "This child request was not found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Cancel Error (400):**
+
 ```json
-{"success": false, "message": "Sorry, you can only cancel a pending request!", "errors": null, "code": 400}
+{
+  "success": false,
+  "message": "Sorry, you can only cancel a pending request!",
+  "errors": null,
+  "code": 400
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
@@ -3278,6 +4083,7 @@
 | Accept | application/json |
 
 **Success Response (200):**
+
 ```json
 {
   "success": true,
@@ -3316,7 +4122,7 @@
         "prev": null,
         "next": null
       },
-      "meta": {"current_page": 1, "last_page": 1, "per_page": 20, "total": 3}
+      "meta": { "current_page": 1, "last_page": 1, "per_page": 20, "total": 3 }
     }
   },
   "code": 200
@@ -3324,20 +4130,33 @@
 ```
 
 **Not Found Error (404):**
+
 ```json
-{"success": false, "message": "No history found!", "errors": null, "code": 404}
+{
+  "success": false,
+  "message": "No history found!",
+  "errors": null,
+  "code": 404
+}
 ```
 
 **Unauthorized Access (401):**
+
 ```json
-{"success": false, "message": "Unauthorized", "errors": null, "code": 401}
+{ "success": false, "message": "Unauthorized", "errors": null, "code": 401 }
 ```
 
 **Server Error (500):**
+
 ```json
-{"success": false, "message": "Server error", "errors": ["error message"], "code": 500}
+{
+  "success": false,
+  "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
 ```
 
 ---
 
-*© Copyright FastLearners App. All Rights Reserved.*
+_© Copyright FastLearners App. All Rights Reserved._

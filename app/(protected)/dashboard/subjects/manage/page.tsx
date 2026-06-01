@@ -36,11 +36,15 @@ export default function ManageSubjectsPage() {
 
   // Data state
   const [isLoading, setIsLoading] = useState(true);
-  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(null);
+  const [subjectsData, setSubjectsData] = useState<SubjectsContent | null>(
+    null,
+  );
   const [error, setError] = useState<string | null>(null);
 
   // Selection state
-  const [selectedCompulsory, setSelectedCompulsory] = useState<number | null>(null);
+  const [selectedCompulsory, setSelectedCompulsory] = useState<number | null>(
+    null,
+  );
   const [selectedSelective, setSelectedSelective] = useState<number[]>([]);
 
   // UI state
@@ -51,7 +55,9 @@ export default function ManageSubjectsPage() {
   const requiredSelectiveCount = 4;
 
   // Determine if compulsory selective exists (JSS classes only have this)
-  const hasCompulsorySelective = subjectsData?.compulsory_selective && subjectsData.compulsory_selective.length > 0;
+  const hasCompulsorySelective =
+    subjectsData?.compulsory_selective &&
+    subjectsData.compulsory_selective.length > 0;
 
   // Fetch subjects data
   useEffect(() => {
@@ -62,10 +68,13 @@ export default function ManageSubjectsPage() {
   useEffect(() => {
     if (subjectsData) {
       // For compulsory selective: find which one is currently selected
-      if (hasCompulsorySelective && subjectsData.compulsory_selective_status === "selected") {
+      if (
+        hasCompulsorySelective &&
+        subjectsData.compulsory_selective_status === "selected"
+      ) {
         // The selected compulsory subject is the one that appears in both subjects and compulsory_selective
-        const selectedId = subjectsData.subjects.find(s =>
-          subjectsData.compulsory_selective.some(cs => cs.id === s.id)
+        const selectedId = subjectsData.subjects.find((s) =>
+          subjectsData.compulsory_selective.some((cs) => cs.id === s.id),
         )?.id;
         if (selectedId) setSelectedCompulsory(selectedId);
       }
@@ -74,8 +83,8 @@ export default function ManageSubjectsPage() {
       if (subjectsData.selective_status === "selected") {
         // Selected selective subjects are those that appear in both subjects and selective
         const selectedIds = subjectsData.subjects
-          .filter(s => subjectsData.selective.some(sel => sel.id === s.id))
-          .map(s => s.id);
+          .filter((s) => subjectsData.selective.some((sel) => sel.id === s.id))
+          .map((s) => s.id);
         setSelectedSelective(selectedIds);
       }
     }
@@ -138,20 +147,25 @@ export default function ManageSubjectsPage() {
     setShowCompulsoryConfirm(false);
 
     try {
-      const response = await fetch("/api/subjects/update-compulsory-selective", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "/api/subjects/update-compulsory-selective",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ subject: selectedCompulsory }),
         },
-        credentials: "include",
-        body: JSON.stringify({ subject: selectedCompulsory }),
-      });
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Failed to update compulsory selective subject");
+        throw new Error(
+          data.message || "Failed to update compulsory selective subject",
+        );
       }
 
       toast.success("Compulsory selective subject updated successfully!");
@@ -245,14 +259,19 @@ export default function ManageSubjectsPage() {
     );
   }
 
-  const compulsoryComplete = subjectsData.compulsory_selective_status === "selected";
+  const compulsoryComplete =
+    subjectsData.compulsory_selective_status === "selected";
   const selectiveComplete = subjectsData.selective_status === "selected";
 
   return (
     <div className="container max-w-4xl space-y-6 pb-20">
       {/* Header */}
       <div className="flex items-center gap-3 pt-4">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/dashboard/subjects")}>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push("/dashboard/subjects")}
+        >
           <ArrowLeft className="size-5" />
         </Button>
         <h1 className="text-xl font-semibold">Subject Selection</h1>
@@ -269,7 +288,10 @@ export default function ManageSubjectsPage() {
 
       {/* Current Class Display */}
       <div className="text-sm text-muted-foreground">
-        Current Class: <span className="font-semibold text-foreground">{user?.class || "N/A"}</span>
+        Current Class:{" "}
+        <span className="font-semibold text-foreground">
+          {user?.class || "N/A"}
+        </span>
       </div>
 
       {/* Current Subjects Section */}
@@ -303,7 +325,9 @@ export default function ManageSubjectsPage() {
         <>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Compulsory Selective (Choose 1)</h2>
+              <h2 className="text-lg font-semibold">
+                Compulsory Selective (Choose 1)
+              </h2>
               {compulsoryComplete && (
                 <span className="flex items-center gap-1 text-sm text-green-600">
                   <CheckCircle2 className="size-4" />
@@ -327,7 +351,9 @@ export default function ManageSubjectsPage() {
                   >
                     <div>
                       <p className="font-medium">{subject.name}</p>
-                      <p className="text-sm text-muted-foreground">No description available.</p>
+                      <p className="text-sm text-muted-foreground">
+                        No description available.
+                      </p>
                     </div>
                     <div
                       className={`flex size-6 items-center justify-center rounded border-2 ${
@@ -370,7 +396,9 @@ export default function ManageSubjectsPage() {
       {subjectsData.selective && subjectsData.selective.length > 0 && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold">Selective Subjects (Choose {requiredSelectiveCount})</h2>
+            <h2 className="text-lg font-semibold">
+              Selective Subjects (Choose {requiredSelectiveCount})
+            </h2>
             {selectiveComplete && (
               <span className="flex items-center gap-1 text-sm text-green-600">
                 <CheckCircle2 className="size-4" />
@@ -381,28 +409,40 @@ export default function ManageSubjectsPage() {
 
           {selectedSelective.length < requiredSelectiveCount && (
             <p className="text-sm text-muted-foreground">
-              Select {requiredSelectiveCount - selectedSelective.length} more subject{requiredSelectiveCount - selectedSelective.length !== 1 ? "s" : ""}
+              Select {requiredSelectiveCount - selectedSelective.length} more
+              subject
+              {requiredSelectiveCount - selectedSelective.length !== 1
+                ? "s"
+                : ""}
             </p>
           )}
 
           <div className="space-y-2">
             {subjectsData.selective.map((subject) => {
               const isSelected = selectedSelective.includes(subject.id);
-              const isDisabled = !isSelected && selectedSelective.length >= requiredSelectiveCount;
+              const isDisabled =
+                !isSelected &&
+                selectedSelective.length >= requiredSelectiveCount;
 
               return (
                 <button
                   key={subject.id}
                   type="button"
-                  onClick={() => !isDisabled && handleSelectiveToggle(subject.id)}
+                  onClick={() =>
+                    !isDisabled && handleSelectiveToggle(subject.id)
+                  }
                   disabled={isDisabled}
                   className={`flex w-full items-center justify-between rounded-lg border bg-card p-4 text-left transition-colors ${
-                    isDisabled ? "cursor-not-allowed opacity-50" : "hover:bg-muted/50"
+                    isDisabled
+                      ? "cursor-not-allowed opacity-50"
+                      : "hover:bg-muted/50"
                   }`}
                 >
                   <div>
                     <p className="font-medium">{subject.name}</p>
-                    <p className="text-sm text-muted-foreground">No description available.</p>
+                    <p className="text-sm text-muted-foreground">
+                      No description available.
+                    </p>
                   </div>
                   <div
                     className={`flex size-6 items-center justify-center rounded border-2 ${
@@ -420,7 +460,10 @@ export default function ManageSubjectsPage() {
 
           <Button
             onClick={handleSaveSelective}
-            disabled={selectedSelective.length !== requiredSelectiveCount || isSubmitting}
+            disabled={
+              selectedSelective.length !== requiredSelectiveCount ||
+              isSubmitting
+            }
             className="w-full"
           >
             {isSubmitting ? (
@@ -443,7 +486,9 @@ export default function ManageSubjectsPage() {
         (!hasCompulsorySelective && selectiveComplete)) && (
         <Alert className="border-green-200 bg-green-50 dark:border-green-800 dark:bg-green-950/30">
           <CheckCircle2 className="size-4 text-green-600" />
-          <AlertTitle className="text-green-900 dark:text-green-100">All Set!</AlertTitle>
+          <AlertTitle className="text-green-900 dark:text-green-100">
+            All Set!
+          </AlertTitle>
           <AlertDescription className="text-green-800 dark:text-green-200">
             Your subject selections are complete. You can update them anytime.
           </AlertDescription>
@@ -451,7 +496,10 @@ export default function ManageSubjectsPage() {
       )}
 
       {/* Confirmation Dialogs */}
-      <AlertDialog open={showCompulsoryConfirm} onOpenChange={setShowCompulsoryConfirm}>
+      <AlertDialog
+        open={showCompulsoryConfirm}
+        onOpenChange={setShowCompulsoryConfirm}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -459,18 +507,24 @@ export default function ManageSubjectsPage() {
               Confirm Change
             </AlertDialogTitle>
             <AlertDialogDescription>
-              You are about to change your compulsory selective subject. This will update your current selection.
-              Are you sure you want to proceed?
+              You are about to change your compulsory selective subject. This
+              will update your current selection. Are you sure you want to
+              proceed?
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={saveCompulsory}>Confirm Change</AlertDialogAction>
+            <AlertDialogAction onClick={saveCompulsory}>
+              Confirm Change
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
 
-      <AlertDialog open={showSelectiveConfirm} onOpenChange={setShowSelectiveConfirm}>
+      <AlertDialog
+        open={showSelectiveConfirm}
+        onOpenChange={setShowSelectiveConfirm}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle className="flex items-center gap-2">
@@ -478,15 +532,25 @@ export default function ManageSubjectsPage() {
               Confirm Changes
             </AlertDialogTitle>
             <AlertDialogDescription className="space-y-2">
-              <p>You are about to update your selective subjects. This will replace your current selections.</p>
+              <p>
+                You are about to update your selective subjects. This will
+                replace your current selections.
+              </p>
               {selectedSelective.length > 0 && subjectsData && (
                 <div className="mt-3 rounded-lg bg-muted p-3">
-                  <p className="mb-2 text-sm font-medium text-foreground">New selections:</p>
+                  <p className="mb-2 text-sm font-medium text-foreground">
+                    New selections:
+                  </p>
                   <ul className="space-y-1">
                     {selectedSelective.map((id) => {
-                      const subject = subjectsData.selective.find((s) => s.id === id);
+                      const subject = subjectsData.selective.find(
+                        (s) => s.id === id,
+                      );
                       return subject ? (
-                        <li key={id} className="flex items-center gap-2 text-xs">
+                        <li
+                          key={id}
+                          className="flex items-center gap-2 text-xs"
+                        >
                           <Check className="size-3 text-green-600" />
                           {subject.name}
                         </li>
@@ -499,7 +563,9 @@ export default function ManageSubjectsPage() {
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={saveSelective}>Confirm Changes</AlertDialogAction>
+            <AlertDialogAction onClick={saveSelective}>
+              Confirm Changes
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

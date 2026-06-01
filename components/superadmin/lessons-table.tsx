@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useCallback, startTransition } from "react";
+import React, { startTransition, useCallback } from "react";
 import {
   AlertCircle,
   BookOpen,
@@ -15,14 +15,15 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { trashLesson } from "@/lib/api/superadmin-lessons";
 import { useLessonsStore } from "@/lib/store/lessons";
 import { Lesson } from "@/lib/types/lessons";
-import { trashLesson } from "@/lib/api/superadmin-lessons";
 import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -39,7 +40,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 
 interface LessonsTableProps {
   onLessonSelect?: (lessonId: number) => void;
@@ -144,14 +144,30 @@ function TableSkeleton() {
         <TableBody>
           {Array.from({ length: 5 }).map((_, index) => (
             <TableRow key={index}>
-              <TableCell><Skeleton className="h-5 w-48" /></TableCell>
-              <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-              <TableCell><Skeleton className="h-5 w-32" /></TableCell>
-              <TableCell><Skeleton className="h-5 w-16" /></TableCell>
-              <TableCell><Skeleton className="h-5 w-12" /></TableCell>
-              <TableCell><Skeleton className="h-5 w-20" /></TableCell>
-              <TableCell><Skeleton className="h-5 w-24" /></TableCell>
-              <TableCell><Skeleton className="size-8" /></TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-48" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-16" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-32" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-16" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-12" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-20" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="h-5 w-24" />
+              </TableCell>
+              <TableCell>
+                <Skeleton className="size-8" />
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -184,7 +200,7 @@ export function LessonsTable({
         onLessonSelect?.(lessonId);
       });
     },
-    [onLessonSelect]
+    [onLessonSelect],
   );
 
   const handlePageChange = useCallback(
@@ -193,7 +209,7 @@ export function LessonsTable({
         fetchLessons(page);
       });
     },
-    [fetchLessons]
+    [fetchLessons],
   );
 
   const getStatusBadge = (status?: string) => {
@@ -217,11 +233,7 @@ export function LessonsTable({
           </Badge>
         );
       default:
-        return (
-          <Badge variant="secondary">
-            {status}
-          </Badge>
-        );
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
@@ -252,7 +264,12 @@ export function LessonsTable({
         <AlertCircle className="size-4" />
         <AlertDescription className="flex items-center justify-between">
           <span>{error}</span>
-          <Button variant="outline" size="sm" onClick={clearError} className="ml-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearError}
+            className="ml-2"
+          >
             Dismiss
           </Button>
         </AlertDescription>

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -43,7 +48,7 @@ export async function POST(req: NextRequest) {
               errors: data.errors,
               requestId,
             },
-            { status: r.status }
+            { status: r.status },
           );
         }
         return handleUpstreamError(r, data, requestId);
@@ -54,12 +59,15 @@ export async function POST(req: NextRequest) {
           success: true,
           message: data?.message || "Password changed successfully",
         },
-        { status: 200 }
+        { status: 200 },
       );
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryR = await fetch(`${UPSTREAM_BASE}/profile/edit/password`, {
             method: "POST",
@@ -73,7 +81,7 @@ export async function POST(req: NextRequest) {
           });
 
           const retryData = await retryR.json();
-          
+
           if (!retryR.ok) {
             if (retryData?.errors) {
               return NextResponse.json(
@@ -83,7 +91,7 @@ export async function POST(req: NextRequest) {
                   errors: retryData.errors,
                   requestId,
                 },
-                { status: retryR.status }
+                { status: retryR.status },
               );
             }
             return handleUpstreamError(retryR, retryData, requestId);
@@ -94,13 +102,17 @@ export async function POST(req: NextRequest) {
               success: true,
               message: retryData?.message || "Password changed successfully",
             },
-            { status: 200 }
+            { status: 200 },
           );
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to change password after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to change password after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (e: any) {

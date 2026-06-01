@@ -4,16 +4,19 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   BookOpen,
-  Trash2,
-  Loader2,
-  GraduationCap,
   FileText,
+  GraduationCap,
+  Loader2,
+  Trash2,
 } from "lucide-react";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import {
+  getLessonsMetadata,
+  getTrashedLessons,
+} from "@/lib/api/superadmin-lessons";
 import { Badge } from "@/components/ui/badge";
-import { getLessonsMetadata, getTrashedLessons } from "@/lib/api/superadmin-lessons";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface StatsData {
   totalClasses: number;
@@ -51,9 +54,10 @@ export function StatsCards() {
             totalSubjects: metadataResponse.content.subjects?.length || 0,
             totalTerms: metadataResponse.content.terms?.length || 0,
             totalWeeks: metadataResponse.content.weeks?.length || 0,
-            trashedLessons: trashedResponse.success && trashedResponse.content
-              ? trashedResponse.content.meta?.total || 0
-              : 0,
+            trashedLessons:
+              trashedResponse.success && trashedResponse.content
+                ? trashedResponse.content.meta?.total || 0
+                : 0,
             isLoading: false,
             error: null,
           });
@@ -112,9 +116,7 @@ export function StatsCards() {
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">{stats.totalSubjects}</div>
-          <p className="text-xs text-muted-foreground">
-            Subject categories
-          </p>
+          <p className="text-xs text-muted-foreground">Subject categories</p>
         </CardContent>
       </Card>
 
@@ -140,14 +142,15 @@ export function StatsCards() {
           <div className="flex items-center gap-2">
             <span className="text-2xl font-bold">{stats.trashedLessons}</span>
             {stats.trashedLessons > 0 && (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+              <Badge
+                variant="secondary"
+                className="bg-amber-100 text-amber-800"
+              >
                 Items
               </Badge>
             )}
           </div>
-          <p className="text-xs text-muted-foreground">
-            Lessons in trash
-          </p>
+          <p className="text-xs text-muted-foreground">Lessons in trash</p>
           {stats.trashedLessons > 0 && (
             <Link href="/dashboard/superadmin/manage/trash">
               <Button className="mt-3 w-full" variant="outline" size="sm">

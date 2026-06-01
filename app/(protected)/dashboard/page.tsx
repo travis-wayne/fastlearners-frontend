@@ -109,8 +109,8 @@ export default function UnifiedDashboardPage() {
 
   const normalizedRoles = Array.isArray(user.role)
     ? user.role
-      .filter((role) => typeof role === "string")
-      .map((role) => role.toLowerCase())
+        .filter((role) => typeof role === "string")
+        .map((role) => role.toLowerCase())
     : [];
 
   const primaryRole = normalizedRoles.find((role) => KNOWN_ROLES.has(role));

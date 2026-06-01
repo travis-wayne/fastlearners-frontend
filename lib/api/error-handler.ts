@@ -19,10 +19,10 @@ export function createErrorResponse(
   message: string,
   code: number = 500,
   errorCode?: string,
-  requestId?: string
+  requestId?: string,
 ): NextResponse<ApiErrorResponse> {
   const id = requestId || crypto.randomUUID();
-  
+
   return NextResponse.json(
     {
       success: false,
@@ -32,7 +32,7 @@ export function createErrorResponse(
       requestId: id,
       ...(errorCode && { errorCode }),
     },
-    { status: code }
+    { status: code },
   );
 }
 
@@ -42,7 +42,7 @@ export function createErrorResponse(
 export function handleUpstreamError(
   upstreamResponse: Response,
   upstreamData: any,
-  requestId?: string
+  requestId?: string,
 ): NextResponse<ApiErrorResponse> {
   // Log detailed error server-side
   if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
@@ -54,8 +54,9 @@ export function handleUpstreamError(
   }
 
   // Extract error message from upstream response
-  const message = upstreamData?.message || 
-    upstreamData?.error || 
+  const message =
+    upstreamData?.message ||
+    upstreamData?.error ||
     `Upstream API error: ${upstreamResponse.statusText}`;
 
   // Extract error code if available
@@ -73,7 +74,7 @@ export function handleUpstreamError(
       ...(errorCode && { errorCode }),
       ...(upstreamData?.errors && { errors: upstreamData.errors }),
     },
-    { status: upstreamResponse.status }
+    { status: upstreamResponse.status },
   );
 }
 
@@ -83,17 +84,14 @@ export function handleUpstreamError(
 export function handleApiError(
   error: unknown,
   defaultMessage: string = "An error occurred",
-  requestId?: string
+  requestId?: string,
 ): NextResponse<ApiErrorResponse> {
   // Log detailed error server-side
   if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
     console.error("API route error:", error);
   }
 
-  const message = error instanceof Error 
-    ? error.message 
-    : defaultMessage;
+  const message = error instanceof Error ? error.message : defaultMessage;
 
   return createErrorResponse(message, 500, undefined, requestId);
 }
-

@@ -11,10 +11,10 @@ import {
   Trophy,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/authStore";
 
-import { useAcademicContext } from "@/components/providers/academic-context";
-import { getAllSubjectsTotalScores } from "@/lib/api/lessons";
 import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
+import { getAllSubjectsTotalScores } from "@/lib/api/lessons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,15 +24,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { AchievementsSection } from "@/components/dashboard/AchievementsSection";
 import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
 import { LeaderBoard } from "@/components/dashboard/LeaderBoard";
 import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
 import { ProgressDonut } from "@/components/dashboard/ProgressDonut";
+import { useAcademicContext } from "@/components/providers/academic-context";
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -59,13 +60,16 @@ const itemVariants = {
 };
 
 export function StudentDashboard() {
-  const { currentTermApiId } = useAcademicContext();
+  const { user } = useAuthStore();
+  const { currentTermApiId, currentClass } = useAcademicContext();
   const [selectedSubject, setSelectedSubject] = useState<string>("");
   const [dashboardData, setDashboardData] = useState<DashboardContent | null>(
     null,
   );
   const [isLoadingDashboard, setIsLoadingDashboard] = useState(true);
-  const [termPerformanceData, setTermPerformanceData] = useState<Array<{ subject: string; percentage: number }>>([]);
+  const [termPerformanceData, setTermPerformanceData] = useState<
+    Array<{ subject: string; percentage: number }>
+  >([]);
   const [isLoadingPerformance, setIsLoadingPerformance] = useState(true);
 
   // Fetch dashboard data
@@ -101,20 +105,26 @@ export function StudentDashboard() {
         setIsLoadingPerformance(false);
         return;
       }
-      
+
       setIsLoadingPerformance(true);
       try {
         const response = await getAllSubjectsTotalScores(currentTermApiId);
         if (response.success && response.content?.total_scores) {
           const scores = response.content.total_scores;
-          const performanceData = Object.entries(scores).map(([subject, scoreArray]) => {
-            if (!scoreArray || scoreArray.length === 0) {
-              return { subject, percentage: 0 };
-            }
-            const avg = scoreArray.reduce((acc, curr) => acc + parseFloat(curr.total_score || "0"), 0) / scoreArray.length;
-            const percentage = Math.min(100, Math.max(0, Math.round(avg)));
-            return { subject, percentage };
-          });
+          const performanceData = Object.entries(scores).map(
+            ([subject, scoreArray]) => {
+              if (!scoreArray || scoreArray.length === 0) {
+                return { subject, percentage: 0 };
+              }
+              const avg =
+                scoreArray.reduce(
+                  (acc, curr) => acc + parseFloat(curr.total_score || "0"),
+                  0,
+                ) / scoreArray.length;
+              const percentage = Math.min(100, Math.max(0, Math.round(avg)));
+              return { subject, percentage };
+            },
+          );
           setTermPerformanceData(performanceData);
         } else {
           setTermPerformanceData([]);
@@ -135,29 +145,34 @@ export function StudentDashboard() {
 
   // Derived data for donut
   const progressPercent =
-    dashboardData?.progress && dashboardData.progress.covered + dashboardData.progress.left > 0
+    dashboardData?.progress &&
+    dashboardData.progress.covered + dashboardData.progress.left > 0
       ? Math.round(
-          (dashboardData.progress.covered / (dashboardData.progress.covered + dashboardData.progress.left)) * 100
+          (dashboardData.progress.covered /
+            (dashboardData.progress.covered + dashboardData.progress.left)) *
+            100,
         )
       : 0;
 
   const donutSubject = dashboardData?.progress?.subject ?? selectedSubject;
 
-  const donutOptions = isLoadingDashboard || !donutSubject
-    ? []
-    : [
-        {
-          label: donutSubject,
-          value: donutSubject,
-          color: "#3b82f6",
-        },
-      ];
+  const donutOptions =
+    isLoadingDashboard || !donutSubject
+      ? []
+      : [
+          {
+            label: donutSubject,
+            value: donutSubject,
+            color: "#3b82f6",
+          },
+        ];
 
-  const donutProgressMap = isLoadingDashboard || !donutSubject
-    ? {}
-    : {
-        [donutSubject]: progressPercent,
-      };
+  const donutProgressMap =
+    isLoadingDashboard || !donutSubject
+      ? {}
+      : {
+          [donutSubject]: progressPercent,
+        };
 
   return (
     <motion.div
@@ -175,9 +190,18 @@ export function StudentDashboard() {
             <div className="space-y-2">
               <p>Here are a few tips to get you started:</p>
               <ul className="list-disc space-y-1 pl-5">
-                <li><strong>Sidebar:</strong> Access it using the menu icon to navigate through the app.</li>
-                <li><strong>Profile Editing:</strong> Click your avatar in the top right to update your details.</li>
-                <li><strong>Subject Selection:</strong> Use the sidebar or quick links to navigate to your registered subjects.</li>
+                <li>
+                  <strong>Sidebar:</strong> Access it using the menu icon to
+                  navigate through the app.
+                </li>
+                <li>
+                  <strong>Profile Editing:</strong> Click your avatar in the top
+                  right to update your details.
+                </li>
+                <li>
+                  <strong>Subject Selection:</strong> Use the sidebar or quick
+                  links to navigate to your registered subjects.
+                </li>
               </ul>
             </div>
           }
@@ -193,6 +217,7 @@ export function StudentDashboard() {
           level={5}
           streak={7}
           lessonsToday={3}
+          currentClass={user?.class ? (currentClass?.name ?? null) : null}
         />
       </motion.div>
 
@@ -209,10 +234,16 @@ export function StudentDashboard() {
           <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
             <CardContent className="responsive-padding">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Lessons Completed</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Lessons Completed
+                </p>
                 <div className="flex items-baseline gap-2">
                   <h3 className="text-xl font-bold sm:text-2xl">
-                    {isLoadingDashboard ? <Skeleton className="h-8 w-16" /> : dashboardData?.lessons ?? "—"}
+                    {isLoadingDashboard ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      (dashboardData?.lessons ?? "—")
+                    )}
                   </h3>
                 </div>
               </div>
@@ -231,10 +262,16 @@ export function StudentDashboard() {
           <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
             <CardContent className="responsive-padding">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Subjects</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Subjects
+                </p>
                 <div className="flex items-baseline gap-2">
                   <h3 className="text-xl font-bold sm:text-2xl">
-                    {isLoadingDashboard ? <Skeleton className="h-8 w-16" /> : dashboardData?.subjects ?? "—"}
+                    {isLoadingDashboard ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      (dashboardData?.subjects ?? "—")
+                    )}
                   </h3>
                 </div>
               </div>
@@ -253,10 +290,16 @@ export function StudentDashboard() {
           <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
             <CardContent className="responsive-padding">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Quizzes</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Quizzes
+                </p>
                 <div className="flex items-baseline gap-2">
                   <h3 className="text-xl font-bold sm:text-2xl">
-                    {isLoadingDashboard ? <Skeleton className="h-8 w-16" /> : dashboardData?.quizzes ?? "—"}
+                    {isLoadingDashboard ? (
+                      <Skeleton className="h-8 w-16" />
+                    ) : (
+                      (dashboardData?.quizzes ?? "—")
+                    )}
                   </h3>
                 </div>
               </div>
@@ -275,13 +318,18 @@ export function StudentDashboard() {
           <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
             <CardContent className="responsive-padding">
               <div className="space-y-2">
-                <p className="text-sm font-medium text-muted-foreground">Subscription</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  Subscription
+                </p>
                 <div className="flex items-baseline gap-2">
                   <h3 className="text-xl font-bold sm:text-2xl">
                     {isLoadingDashboard ? (
                       <Skeleton className="h-8 w-16" />
                     ) : dashboardData?.subscription_status ? (
-                      dashboardData.subscription_status.charAt(0).toUpperCase() + dashboardData.subscription_status.slice(1)
+                      dashboardData.subscription_status
+                        .charAt(0)
+                        .toUpperCase() +
+                      dashboardData.subscription_status.slice(1)
                     ) : (
                       "—"
                     )}
@@ -310,7 +358,10 @@ export function StudentDashboard() {
         />
 
         {/* Achievements (3 cards) - extracted */}
-        <AchievementsSection items={[]} description="Achievements coming soon" />
+        <AchievementsSection
+          items={[]}
+          description="Achievements coming soon"
+        />
 
         {/* Overview grid - extracted */}
         <div className="md:col-span-2 lg:col-span-1">
@@ -338,8 +389,10 @@ export function StudentDashboard() {
                 {
                   label: "Subscription Status",
                   value: dashboardData?.subscription_status
-                    ? dashboardData.subscription_status.charAt(0).toUpperCase() +
-                    dashboardData.subscription_status.slice(1)
+                    ? dashboardData.subscription_status
+                        .charAt(0)
+                        .toUpperCase() +
+                      dashboardData.subscription_status.slice(1)
                     : "N/A",
                 },
               ]}
@@ -381,11 +434,11 @@ export function StudentDashboard() {
                       value={
                         dashboardData.progress.covered +
                           dashboardData.progress.left >
-                          0
+                        0
                           ? (dashboardData.progress.covered /
-                            (dashboardData.progress.covered +
-                              dashboardData.progress.left)) *
-                          100
+                              (dashboardData.progress.covered +
+                                dashboardData.progress.left)) *
+                            100
                           : 0
                       }
                       className="h-3"
@@ -441,8 +494,12 @@ export function StudentDashboard() {
               <div className="mb-4 rounded-full bg-primary/10 p-4">
                 <BookOpen className="size-8 text-primary" />
               </div>
-              <h3 className="mb-1 text-lg font-semibold">Your lesson schedule will appear here</h3>
-              <p className="text-sm text-muted-foreground">Lesson scheduling is coming soon.</p>
+              <h3 className="mb-1 text-lg font-semibold">
+                Your lesson schedule will appear here
+              </h3>
+              <p className="text-sm text-muted-foreground">
+                Lesson scheduling is coming soon.
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -450,10 +507,7 @@ export function StudentDashboard() {
 
       {/* Leaderboard Section - extracted */}
       <motion.div variants={itemVariants}>
-        <LeaderBoard
-          entries={[]}
-          subtitle="Leaderboard coming soon"
-        />
+        <LeaderBoard entries={[]} subtitle="Leaderboard coming soon" />
       </motion.div>
 
       {/* Performance (bars) + Achievements - Original */}

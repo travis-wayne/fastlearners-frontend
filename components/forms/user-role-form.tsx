@@ -11,7 +11,6 @@ import { z } from "zod";
 import { profileApi } from "@/lib/api/auth";
 import { User as AuthUser, UserRole as AuthUserRole } from "@/lib/types/auth";
 import { userRoleSchema } from "@/lib/validations/user";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,6 +20,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -126,9 +126,9 @@ export function UserRoleForm({ user }: UserRoleFormProps) {
       if (response.success && response.user) {
         // Convert enum value to auth role string
         const authRoleString = data.role.toLowerCase();
-        updateUserProfile({ 
+        updateUserProfile({
           ...response.user,
-          role: [authRoleString as any] 
+          role: [authRoleString as any],
         });
         setUpdated(false);
         toast.success("Your role has been updated.");

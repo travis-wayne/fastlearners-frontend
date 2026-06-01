@@ -6,7 +6,18 @@ interface PageContainerProps {
   children: React.ReactNode;
   className?: string;
   /** Maximum width constraint. Defaults to "default" (7xl) */
-  maxWidth?: "sm" | "md" | "lg" | "xl" | "2xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full" | "default";
+  maxWidth?:
+    | "sm"
+    | "md"
+    | "lg"
+    | "xl"
+    | "2xl"
+    | "4xl"
+    | "5xl"
+    | "6xl"
+    | "7xl"
+    | "full"
+    | "default";
   /** Whether to add padding. Defaults to true */
   withPadding?: boolean;
   /** Whether to add bottom padding for mobile navigation. Defaults to true */
@@ -58,7 +69,7 @@ export function PageContainer({
         maxWidthClasses[maxWidth],
         withPadding && "px-4 sm:px-6 lg:px-8",
         withBottomPadding && "pb-16 sm:pb-8",
-        className
+        className,
       )}
     >
       {children}
@@ -86,9 +97,13 @@ export function PageHeader({
     <div className={cn("space-y-1 pb-4 pt-2", className)}>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            {title}
+          </h1>
           {description && (
-            <p className="text-sm text-muted-foreground sm:text-base">{description}</p>
+            <p className="text-sm text-muted-foreground sm:text-base">
+              {description}
+            </p>
           )}
         </div>
         {children && <div className="flex items-center gap-2">{children}</div>}

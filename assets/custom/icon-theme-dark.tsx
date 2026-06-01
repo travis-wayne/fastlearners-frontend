@@ -20,4 +20,3 @@ export function IconThemeDark(props: SVGProps<SVGSVGElement>) {
     </svg>
   );
 }
-

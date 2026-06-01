@@ -2,26 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
-import {
-  Users,
-  UserCheck,
-  Clock,
-  Info,
-  Loader2,
-  UserPlus
-} from "lucide-react";
-
-
-import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
-import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
-import { DismissibleCard } from "@/components/ui/dismissible-card";
+import { Clock, Info, Loader2, UserCheck, UserPlus, Users } from "lucide-react";
 
 import { getGuardianDashboard } from "@/lib/api/dashboard";
 import { getGuardianChildrenHistory } from "@/lib/api/guardian";
 import type { ChildRequestItem } from "@/lib/types/guardian";
-import { useAuthStore } from "@/store/authStore";
-
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -31,7 +18,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { DismissibleCard } from "@/components/ui/dismissible-card";
 import { Skeleton } from "@/components/ui/skeleton";
+import { GlassGreetingCard } from "@/components/dashboard/glass-greeting-card";
+import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 
 // Animation variants
 const containerVariants = {
@@ -76,8 +66,13 @@ export function GuardianDashboard() {
   const { user } = useAuthStore();
   const displayName = formatDisplayName(user as any);
 
-  const [dashboardData, setDashboardData] = useState<{ children: number; report: null } | null>(null);
-  const [childrenHistory, setChildrenHistory] = useState<ChildRequestItem[]>([]);
+  const [dashboardData, setDashboardData] = useState<{
+    children: number;
+    report: null;
+  } | null>(null);
+  const [childrenHistory, setChildrenHistory] = useState<ChildRequestItem[]>(
+    [],
+  );
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -93,7 +88,9 @@ export function GuardianDashboard() {
           setDashboardData(dashResponse.content);
         }
         if (historyResponse.success && historyResponse.content) {
-          setChildrenHistory(historyResponse.content.history.request_history ?? []);
+          setChildrenHistory(
+            historyResponse.content.history.request_history ?? [],
+          );
         }
       } catch (error) {
         console.error("Failed to fetch guardian data:", error);
@@ -106,8 +103,12 @@ export function GuardianDashboard() {
   }, []);
 
   const totalChildren = dashboardData?.children ?? 0;
-  const pendingCount = childrenHistory.filter(c => c.status === 'pending').length;
-  const acceptedCount = childrenHistory.filter(c => c.status === 'accepted').length;
+  const pendingCount = childrenHistory.filter(
+    (c) => c.status === "pending",
+  ).length;
+  const acceptedCount = childrenHistory.filter(
+    (c) => c.status === "accepted",
+  ).length;
 
   return (
     <motion.div
@@ -145,13 +146,17 @@ export function GuardianDashboard() {
                   <Users className="size-6 text-blue-600" />
                 </div>
                 <div className="space-y-1">
-                   <p className="text-sm font-medium text-muted-foreground">Total Children</p>
-                   {isLoading ? (
-                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
-                   ) : (
-                     <h3 className="text-2xl font-bold">{totalChildren}</h3>
-                   )}
-                   <p className="text-[10px] text-muted-foreground">Linked Children</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Total Children
+                  </p>
+                  {isLoading ? (
+                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                  ) : (
+                    <h3 className="text-2xl font-bold">{totalChildren}</h3>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Linked Children
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -166,13 +171,17 @@ export function GuardianDashboard() {
                   <Clock className="size-6 text-amber-600" />
                 </div>
                 <div className="space-y-1">
-                   <p className="text-sm font-medium text-muted-foreground">Pending Requests</p>
-                   {isLoading ? (
-                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
-                   ) : (
-                     <h3 className="text-2xl font-bold">{pendingCount}</h3>
-                   )}
-                   <p className="text-[10px] text-muted-foreground">Waiting response</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Pending Requests
+                  </p>
+                  {isLoading ? (
+                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                  ) : (
+                    <h3 className="text-2xl font-bold">{pendingCount}</h3>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Waiting response
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -187,13 +196,17 @@ export function GuardianDashboard() {
                   <UserCheck className="size-6 text-emerald-600" />
                 </div>
                 <div className="space-y-1">
-                   <p className="text-sm font-medium text-muted-foreground">Accepted</p>
-                   {isLoading ? (
-                     <Loader2 className="size-5 animate-spin text-muted-foreground" />
-                   ) : (
-                     <h3 className="text-2xl font-bold">{acceptedCount}</h3>
-                   )}
-                   <p className="text-[10px] text-muted-foreground">Linked students</p>
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Accepted
+                  </p>
+                  {isLoading ? (
+                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                  ) : (
+                    <h3 className="text-2xl font-bold">{acceptedCount}</h3>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Linked students
+                  </p>
                 </div>
               </div>
             </CardContent>
@@ -207,7 +220,9 @@ export function GuardianDashboard() {
             <CardHeader className="flex flex-row items-center justify-between">
               <div>
                 <CardTitle>Linked Children</CardTitle>
-                <CardDescription>Recent child link requests and their status</CardDescription>
+                <CardDescription>
+                  Recent child link requests and their status
+                </CardDescription>
               </div>
               <Button asChild variant="outline" size="sm">
                 <Link href="/dashboard/children">View All</Link>
@@ -229,25 +244,39 @@ export function GuardianDashboard() {
               ) : childrenHistory.length > 0 ? (
                 <div className="space-y-4">
                   {childrenHistory.slice(0, 5).map((item) => (
-                    <div key={item.id} className="flex items-center justify-between rounded-lg border p-3">
+                    <div
+                      key={item.id}
+                      className="flex items-center justify-between rounded-lg border p-3"
+                    >
                       <div className="flex items-center gap-3">
                         <div className="flex size-10 items-center justify-center rounded-full bg-primary/10">
                           <Users className="size-5 text-primary" />
                         </div>
                         <div>
-                          <p className="text-sm font-medium">{item.child_name || "Pending Invitation"}</p>
-                          <p className="text-xs text-muted-foreground">{item.child_email}</p>
+                          <p className="text-sm font-medium">
+                            {item.child_name || "Pending Invitation"}
+                          </p>
+                          <p className="text-xs text-muted-foreground">
+                            {item.child_email}
+                          </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-3">
-                        {item.class && <Badge variant="outline" className="hidden sm:inline-flex">{item.class}</Badge>}
+                        {item.class && (
+                          <Badge
+                            variant="outline"
+                            className="hidden sm:inline-flex"
+                          >
+                            {item.class}
+                          </Badge>
+                        )}
                         <Badge
                           variant={
                             item.status === "accepted"
                               ? "default"
                               : item.status === "pending"
-                              ? "secondary"
-                              : "outline"
+                                ? "secondary"
+                                : "outline"
                           }
                         >
                           {item.status}
@@ -261,8 +290,12 @@ export function GuardianDashboard() {
                   <div className="mb-4 rounded-full bg-muted p-4">
                     <Users className="size-8 text-muted-foreground" />
                   </div>
-                  <h3 className="text-lg font-medium">No children linked yet</h3>
-                  <p className="mb-6 text-sm text-muted-foreground">Invite your children to monitor their learning progress.</p>
+                  <h3 className="text-lg font-medium">
+                    No children linked yet
+                  </h3>
+                  <p className="mb-6 text-sm text-muted-foreground">
+                    Invite your children to monitor their learning progress.
+                  </p>
                   <Button asChild>
                     <Link href="/dashboard/children">
                       <UserPlus className="mr-2 size-4" />
@@ -281,7 +314,11 @@ export function GuardianDashboard() {
               { label: "Total Children", value: totalChildren },
               { label: "Pending Requests", value: pendingCount },
               { label: "Accepted", value: acceptedCount },
-              { label: "Cancelled", value: childrenHistory.filter(c => c.status === 'cancelled').length },
+              {
+                label: "Cancelled",
+                value: childrenHistory.filter((c) => c.status === "cancelled")
+                  .length,
+              },
             ]}
           />
         </motion.div>
@@ -291,7 +328,9 @@ export function GuardianDashboard() {
         <Card>
           <CardHeader>
             <CardTitle>Quick Actions</CardTitle>
-            <CardDescription>Manage your account and linked children</CardDescription>
+            <CardDescription>
+              Manage your account and linked children
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-4">
             <Button asChild>

@@ -1,18 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 async function forward(req: NextRequest, path: string[]) {
   const auth = parseAuthCookiesServer(req);
   const url = `${BASE_API_URL}/${path.join("/")}${req.nextUrl.search}`;
-  
+
   const headers: HeadersInit = {
     Accept: "application/json",
   };
   if (auth?.token) (headers as any)["Authorization"] = `Bearer ${auth.token}`;
 
   try {
-    if (req.method === "POST" || req.method === "PUT" || req.method === "PATCH") {
+    if (
+      req.method === "POST" ||
+      req.method === "PUT" ||
+      req.method === "PATCH"
+    ) {
       const body = await req.json().catch(() => undefined);
       const resp = await fetch(url, {
         method: req.method,
@@ -25,33 +30,56 @@ async function forward(req: NextRequest, path: string[]) {
     }
 
     // Default: GET/DELETE
-    const resp = await fetch(url, { method: req.method, headers, cache: "no-store" });
+    const resp = await fetch(url, {
+      method: req.method,
+      headers,
+      cache: "no-store",
+    });
     const data = await resp.json().catch(() => ({}));
     return NextResponse.json(data, { status: resp.status });
   } catch (e: any) {
     return NextResponse.json(
-      { success: false, message: e?.message || "Proxy request failed", code: 500 },
+      {
+        success: false,
+        message: e?.message || "Proxy request failed",
+        code: 500,
+      },
       { status: 500 },
     );
   }
 }
 
-export async function GET(req: NextRequest, { params }: { params: { path: string[] } }) {
+export async function GET(
+  req: NextRequest,
+  { params }: { params: { path: string[] } },
+) {
   return forward(req, params.path);
 }
 
-export async function POST(req: NextRequest, { params }: { params: { path: string[] } }) {
+export async function POST(
+  req: NextRequest,
+  { params }: { params: { path: string[] } },
+) {
   return forward(req, params.path);
 }
 
-export async function PUT(req: NextRequest, { params }: { params: { path: string[] } }) {
+export async function PUT(
+  req: NextRequest,
+  { params }: { params: { path: string[] } },
+) {
   return forward(req, params.path);
 }
 
-export async function PATCH(req: NextRequest, { params }: { params: { path: string[] } }) {
+export async function PATCH(
+  req: NextRequest,
+  { params }: { params: { path: string[] } },
+) {
   return forward(req, params.path);
 }
 
-export async function DELETE(req: NextRequest, { params }: { params: { path: string[] } }) {
+export async function DELETE(
+  req: NextRequest,
+  { params }: { params: { path: string[] } },
+) {
   return forward(req, params.path);
 }

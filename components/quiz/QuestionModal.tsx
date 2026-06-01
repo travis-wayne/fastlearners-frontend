@@ -1,16 +1,29 @@
 "use client";
 
 import { useState } from "react";
-import { X, CheckCircle2, XCircle, ArrowLeft, ArrowRight, Clock } from "lucide-react";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { Badge } from "@/components/ui/badge";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  Clock,
+  X,
+  XCircle,
+} from "lucide-react";
+
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export interface QuizQuestion {
   id: string;
@@ -79,7 +92,7 @@ export function QuestionModal({
   const isCorrect =
     selectedAnswer !== null &&
     String(selectedAnswer).toLowerCase() ===
-    String(question.correctAnswer).toLowerCase();
+      String(question.correctAnswer).toLowerCase();
 
   const progress = (questionNumber / totalQuestions) * 100;
   const isFirstQuestion = questionNumber === 1;
@@ -183,9 +196,7 @@ export function QuestionModal({
             <div className="space-y-3">
               {question.type === "multiple-choice" && question.options && (
                 <RadioGroup
-                  value={
-                    selectedAnswer !== null ? String(selectedAnswer) : ""
-                  }
+                  value={selectedAnswer !== null ? String(selectedAnswer) : ""}
                   onValueChange={handleAnswerChange}
                   disabled={showFeedback}
                 >
@@ -205,16 +216,16 @@ export function QuestionModal({
                         className={cn(
                           "flex min-h-[44px] items-center space-x-3 rounded-lg border p-3 transition-colors sm:p-4",
                           showFeedback &&
-                          isCorrectOption &&
-                          "border-green-500 bg-green-50",
+                            isCorrectOption &&
+                            "border-green-500 bg-green-50",
                           showFeedback &&
-                          isSelected &&
-                          !isCorrectOption &&
-                          "border-red-500 bg-red-50",
+                            isSelected &&
+                            !isCorrectOption &&
+                            "border-red-500 bg-red-50",
                           !showFeedback &&
-                          isSelected &&
-                          "border-primary bg-primary/5",
-                          !showFeedback && "hover:bg-muted/50"
+                            isSelected &&
+                            "border-primary bg-primary/5",
+                          !showFeedback && "hover:bg-muted/50",
                         )}
                       >
                         <RadioGroupItem
@@ -231,11 +242,9 @@ export function QuestionModal({
                         {showFeedback && isCorrectOption && (
                           <CheckCircle2 className="size-5 text-green-600" />
                         )}
-                        {showFeedback &&
-                          isSelected &&
-                          !isCorrectOption && (
-                            <XCircle className="size-5 text-red-600" />
-                          )}
+                        {showFeedback && isSelected && !isCorrectOption && (
+                          <XCircle className="size-5 text-red-600" />
+                        )}
                       </div>
                     );
                   })}
@@ -244,9 +253,7 @@ export function QuestionModal({
 
               {question.type === "true-false" && (
                 <RadioGroup
-                  value={
-                    selectedAnswer !== null ? String(selectedAnswer) : ""
-                  }
+                  value={selectedAnswer !== null ? String(selectedAnswer) : ""}
                   onValueChange={handleAnswerChange}
                   disabled={showFeedback}
                 >
@@ -255,7 +262,7 @@ export function QuestionModal({
                     const isSelected =
                       selectedAnswer !== null &&
                       String(selectedAnswer).toLowerCase() ===
-                      option.toLowerCase();
+                        option.toLowerCase();
                     const isCorrectOption =
                       String(question.correctAnswer).toLowerCase() ===
                       option.toLowerCase();
@@ -266,16 +273,16 @@ export function QuestionModal({
                         className={cn(
                           "flex min-h-[44px] items-center space-x-3 rounded-lg border p-3 transition-colors sm:p-4",
                           showFeedback &&
-                          isCorrectOption &&
-                          "border-green-500 bg-green-50",
+                            isCorrectOption &&
+                            "border-green-500 bg-green-50",
                           showFeedback &&
-                          isSelected &&
-                          !isCorrectOption &&
-                          "border-red-500 bg-red-50",
+                            isSelected &&
+                            !isCorrectOption &&
+                            "border-red-500 bg-red-50",
                           !showFeedback &&
-                          isSelected &&
-                          "border-primary bg-primary/5",
-                          !showFeedback && "hover:bg-muted/50"
+                            isSelected &&
+                            "border-primary bg-primary/5",
+                          !showFeedback && "hover:bg-muted/50",
                         )}
                       >
                         <RadioGroupItem value={option} id={optionId} />
@@ -288,11 +295,9 @@ export function QuestionModal({
                         {showFeedback && isCorrectOption && (
                           <CheckCircle2 className="size-5 text-green-600" />
                         )}
-                        {showFeedback &&
-                          isSelected &&
-                          !isCorrectOption && (
-                            <XCircle className="size-5 text-red-600" />
-                          )}
+                        {showFeedback && isSelected && !isCorrectOption && (
+                          <XCircle className="size-5 text-red-600" />
+                        )}
                       </div>
                     );
                   })}
@@ -307,12 +312,8 @@ export function QuestionModal({
                   disabled={showFeedback}
                   className={cn(
                     "text-base",
-                    showFeedback &&
-                    isCorrect &&
-                    "border-green-500 bg-green-50",
-                    showFeedback &&
-                    !isCorrect &&
-                    "border-red-500 bg-red-50"
+                    showFeedback && isCorrect && "border-green-500 bg-green-50",
+                    showFeedback && !isCorrect && "border-red-500 bg-red-50",
                   )}
                 />
               )}
@@ -325,7 +326,7 @@ export function QuestionModal({
                   "rounded-lg border p-4",
                   isCorrect
                     ? "border-green-500 bg-green-50"
-                    : "border-red-500 bg-red-50"
+                    : "border-red-500 bg-red-50",
                 )}
               >
                 <div className="flex items-start gap-3">
@@ -338,7 +339,7 @@ export function QuestionModal({
                     <p
                       className={cn(
                         "font-medium",
-                        isCorrect ? "text-green-800" : "text-red-800"
+                        isCorrect ? "text-green-800" : "text-red-800",
                       )}
                     >
                       {isCorrect
@@ -349,7 +350,7 @@ export function QuestionModal({
                       <p
                         className={cn(
                           "mt-2 text-sm",
-                          isCorrect ? "text-green-700" : "text-red-700"
+                          isCorrect ? "text-green-700" : "text-red-700",
                         )}
                       >
                         <strong>Explanation:</strong> {question.explanation}
@@ -386,11 +387,19 @@ export function QuestionModal({
             </div>
 
             {isLastQuestion ? (
-              <Button onClick={onNext} disabled={!selectedAnswer} className="w-full sm:w-auto">
+              <Button
+                onClick={onNext}
+                disabled={!selectedAnswer}
+                className="w-full sm:w-auto"
+              >
                 Submit Quiz
               </Button>
             ) : (
-              <Button onClick={onNext} disabled={!selectedAnswer} className="w-full sm:w-auto">
+              <Button
+                onClick={onNext}
+                disabled={!selectedAnswer}
+                className="w-full sm:w-auto"
+              >
                 Next
                 <ArrowRight className="ml-2 size-4" />
               </Button>

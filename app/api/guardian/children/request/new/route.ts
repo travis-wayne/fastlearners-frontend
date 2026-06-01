@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -16,7 +21,12 @@ export async function POST(req: NextRequest) {
     const { child_email } = body;
 
     if (!child_email) {
-      return createErrorResponse("Invalid request: child_email is required", 400, undefined, requestId);
+      return createErrorResponse(
+        "Invalid request: child_email is required",
+        400,
+        undefined,
+        requestId,
+      );
     }
 
     const payload = JSON.stringify({ child_email });
@@ -29,14 +39,14 @@ export async function POST(req: NextRequest) {
         {
           method: "POST",
           headers: {
-            "Accept": "application/json",
+            Accept: "application/json",
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${auth.token}`,
+            Authorization: `Bearer ${auth.token}`,
           },
           body: payload,
           cache: "no-store",
           signal: controller.signal,
-        }
+        },
       );
 
       clearTimeout(timeoutId);
@@ -59,45 +69,58 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Retry on network errors
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryUpstream = await fetch(
             `${UPSTREAM_BASE}/guardian/children/request/new`,
             {
               method: "POST",
               headers: {
-                "Accept": "application/json",
+                Accept: "application/json",
                 "Content-Type": "application/json",
-                "Authorization": `Bearer ${auth.token}`,
+                Authorization: `Bearer ${auth.token}`,
               },
               body: payload,
               cache: "no-store",
-            }
+            },
           );
 
           // Check if response is JSON
           const retryContentType = retryUpstream.headers.get("content-type");
           let retryData: any = null;
-          if (retryContentType && retryContentType.includes("application/json")) {
+          if (
+            retryContentType &&
+            retryContentType.includes("application/json")
+          ) {
             try {
               retryData = await retryUpstream.json();
             } catch (e) {
-              console.error(`[API] Failed to parse JSON from ${retryUpstream.url}:`, e);
+              console.error(
+                `[API] Failed to parse JSON from ${retryUpstream.url}:`,
+                e,
+              );
             }
           }
-          
+
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to send child request after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to send child request after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (err: any) {

@@ -19,8 +19,6 @@
     "status": "active",
     "email_verified_at": "29-11-2025",
     "created_at": "29-11-2025",
-    "role": [
-      "student"
-    ]
+    "role": ["student"]
   }
 }

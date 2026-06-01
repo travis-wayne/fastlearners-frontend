@@ -1,8 +1,14 @@
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
-import { LessonsListResponse } from '@/lib/api/superadmin-lessons';
-import { getUploadStats, getUploadList, UploadStats, UploadRecord } from '@/lib/api/superadmin-uploads';
-import { type ParsedUploadError } from '@/lib/api/upload-error-handler';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+
+import { LessonsListResponse } from "@/lib/api/superadmin-lessons";
+import {
+  getUploadList,
+  getUploadStats,
+  UploadRecord,
+  UploadStats,
+} from "@/lib/api/superadmin-uploads";
+import { type ParsedUploadError } from "@/lib/api/upload-error-handler";
 
 export type UploadType =
   | "lessons"
@@ -25,7 +31,10 @@ interface UploadState {
 interface SuperadminState {
   // Individual Uploads
   uploadStates: Record<UploadType, UploadState>;
-  setUploadState: (type: UploadType, state: Partial<UploadState> | ((prev: UploadState) => Partial<UploadState>)) => void;
+  setUploadState: (
+    type: UploadType,
+    state: Partial<UploadState> | ((prev: UploadState) => Partial<UploadState>),
+  ) => void;
   resetUploadState: (type: UploadType) => void;
 
   // Bulk Upload
@@ -41,8 +50,27 @@ interface SuperadminState {
   bulkProgress: number;
   bulkError: string | null;
   bulkSuccess: boolean;
-  setBulkFile: (field: keyof SuperadminState['bulkFiles'], file: File | null) => void;
-  setBulkStatus: (status: Partial<{ isBulkUploading: boolean; bulkProgress: number; bulkError: string | null; bulkSuccess: boolean }> | ((prev: SuperadminState) => Partial<{ isBulkUploading: boolean; bulkProgress: number; bulkError: string | null; bulkSuccess: boolean }>)) => void;
+  setBulkFile: (
+    field: keyof SuperadminState["bulkFiles"],
+    file: File | null,
+  ) => void;
+  setBulkStatus: (
+    status:
+      | Partial<{
+          isBulkUploading: boolean;
+          bulkProgress: number;
+          bulkError: string | null;
+          bulkSuccess: boolean;
+        }>
+      | ((
+          prev: SuperadminState,
+        ) => Partial<{
+          isBulkUploading: boolean;
+          bulkProgress: number;
+          bulkError: string | null;
+          bulkSuccess: boolean;
+        }>),
+  ) => void;
   resetBulkState: () => void;
 
   // Upload History (not persisted)
@@ -50,7 +78,10 @@ interface SuperadminState {
   uploadRecords: UploadRecord[];
   uploadHistoryLoading: boolean;
   uploadHistoryError: string | null;
-  setUploadHistory: (stats: UploadStats | null, records: UploadRecord[]) => void;
+  setUploadHistory: (
+    stats: UploadStats | null,
+    records: UploadRecord[],
+  ) => void;
   setUploadHistoryLoading: (loading: boolean) => void;
   setUploadHistoryError: (error: string | null) => void;
   fetchUploadHistory: () => Promise<void>;
@@ -62,7 +93,7 @@ interface SuperadminState {
     term: string;
     week: string;
   };
-  setFilter: (key: keyof SuperadminState['filters'], value: string) => void;
+  setFilter: (key: keyof SuperadminState["filters"], value: string) => void;
   clearFilters: () => void;
 }
 
@@ -91,9 +122,10 @@ export const useSuperadminState = create<SuperadminState>()(
       uploadStates: initialUploadStates,
       setUploadState: (type, state) =>
         set((prev) => {
-          const newState = typeof state === 'function' 
-            ? state(prev.uploadStates[type]) 
-            : state;
+          const newState =
+            typeof state === "function"
+              ? state(prev.uploadStates[type])
+              : state;
           return {
             uploadStates: {
               ...prev.uploadStates,
@@ -129,12 +161,13 @@ export const useSuperadminState = create<SuperadminState>()(
         })),
       setBulkStatus: (status) =>
         set((prev) => {
-          const newStatus = typeof status === 'function' ? status(prev) : status;
+          const newStatus =
+            typeof status === "function" ? status(prev) : status;
           return { ...prev, ...newStatus };
         }),
       resetBulkState: () =>
         set({
-           bulkFiles: {
+          bulkFiles: {
             lessons_file: null,
             concepts_file: null,
             examples_file: null,
@@ -180,7 +213,10 @@ export const useSuperadminState = create<SuperadminState>()(
             });
           } else {
             // Handle 501 or other errors gracefully
-            const errorMsg = statsResponse.message || listResponse.message || "Failed to fetch upload history";
+            const errorMsg =
+              statsResponse.message ||
+              listResponse.message ||
+              "Failed to fetch upload history";
             set({
               uploadHistoryLoading: false,
               uploadHistoryError: errorMsg,
@@ -189,7 +225,9 @@ export const useSuperadminState = create<SuperadminState>()(
         } catch (error: any) {
           set({
             uploadHistoryLoading: false,
-            uploadHistoryError: error.message || "An error occurred while fetching upload history",
+            uploadHistoryError:
+              error.message ||
+              "An error occurred while fetching upload history",
           });
         }
       },
@@ -216,8 +254,8 @@ export const useSuperadminState = create<SuperadminState>()(
         }),
     }),
     {
-      name: 'superadmin-storage',
+      name: "superadmin-storage",
       partialize: (state) => ({ filters: state.filters }), // Only persist filters
-    }
-  )
+    },
+  ),
 );

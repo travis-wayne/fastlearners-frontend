@@ -1,16 +1,20 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+
 import { cn } from "@/lib/utils";
-
-import { Main } from "@/components/settings/layout/main";
-import { DashboardHeader } from "@/components/dashboard/header";
 import { Separator } from "@/components/ui/separator";
+import { DashboardHeader } from "@/components/dashboard/header";
+import { Main } from "@/components/settings/layout/main";
 
-export default function SettingsLayout({ children }: { children: React.ReactNode }) {
+export default function SettingsLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const { user, isAuthenticated, isLoading } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
@@ -42,14 +46,22 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
       title: "Billing",
       href: "/dashboard/settings/billing",
     },
-    ...(user?.role?.includes("student") ? [{
-      title: "Guardians",
-      href: "/dashboard/settings/guardians",
-    }] : []),
-    ...(user?.role?.includes("guardian") ? [{
-      title: "Children",
-      href: "/dashboard/settings/children",
-    }] : []),
+    ...(user?.role?.includes("student")
+      ? [
+          {
+            title: "Guardians",
+            href: "/dashboard/settings/guardians",
+          },
+        ]
+      : []),
+    ...(user?.role?.includes("guardian")
+      ? [
+          {
+            title: "Children",
+            href: "/dashboard/settings/children",
+          },
+        ]
+      : []),
   ];
 
   if (isLoading) {
@@ -72,9 +84,12 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
   return (
     <Main fixed>
       <div className="space-y-6">
-        <DashboardHeader heading="Settings" text="Manage account and website settings." />
+        <DashboardHeader
+          heading="Settings"
+          text="Manage account and website settings."
+        />
         <Separator />
-        
+
         <div className="scrollbar-hide flex overflow-x-auto pb-1">
           <nav className="flex space-x-4">
             {navItems.map((item) => (
@@ -85,7 +100,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
                   "whitespace-nowrap rounded-md px-3 py-2 text-sm font-medium transition-colors",
                   pathname === item.href
                     ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground",
                 )}
               >
                 {item.title}
@@ -94,9 +109,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
           </nav>
         </div>
 
-        <div className="divide-y divide-muted pb-10">
-          {children}
-        </div>
+        <div className="divide-y divide-muted pb-10">{children}</div>
       </div>
     </Main>
   );

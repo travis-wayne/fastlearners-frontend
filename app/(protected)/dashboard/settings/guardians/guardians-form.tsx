@@ -1,22 +1,25 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { 
-  getStudentGuardianRequestHistory, 
-  acceptGuardianRequest, 
-  rejectGuardianRequest 
+import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
+
+import {
+  acceptGuardianRequest,
+  getStudentGuardianRequestHistory,
+  rejectGuardianRequest,
 } from "@/lib/api/guardian";
 import { GuardianRequestItem } from "@/lib/types/guardian";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function GuardiansForm() {
   const [history, setHistory] = useState<GuardianRequestItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [actionLoading, setActionLoading] = useState<Record<number, boolean>>({});
+  const [actionLoading, setActionLoading] = useState<Record<number, boolean>>(
+    {},
+  );
   const [error, setError] = useState<string | null>(null);
 
   const fetchHistory = async () => {
@@ -35,12 +38,13 @@ export function GuardiansForm() {
     fetchHistory();
   }, []);
 
-  const handleAction = async (id: number, action: 'accept' | 'reject') => {
+  const handleAction = async (id: number, action: "accept" | "reject") => {
     setActionLoading((prev) => ({ ...prev, [id]: true }));
-    const result = action === 'accept' 
-      ? await acceptGuardianRequest(id) 
-      : await rejectGuardianRequest(id);
-    
+    const result =
+      action === "accept"
+        ? await acceptGuardianRequest(id)
+        : await rejectGuardianRequest(id);
+
     if (result.success) {
       await fetchHistory();
     } else {
@@ -76,7 +80,8 @@ export function GuardiansForm() {
         <Clock className="mb-4 size-12 text-muted-foreground/50" />
         <h3 className="text-lg font-medium">No guardian requests yet</h3>
         <p className="text-sm text-muted-foreground">
-          When a guardian invites you to monitor your progress, it will appear here.
+          When a guardian invites you to monitor your progress, it will appear
+          here.
         </p>
       </div>
     );
@@ -92,14 +97,16 @@ export function GuardiansForm() {
           <div className="space-y-1">
             <div className="flex items-center gap-2">
               <span className="font-semibold">{item.guardian_name}</span>
-              <Badge 
+              <Badge
                 variant={item.status === "pending" ? "secondary" : "outline"}
                 className="capitalize"
               >
                 {item.status}
               </Badge>
             </div>
-            <p className="text-sm text-muted-foreground">{item.guardian_email}</p>
+            <p className="text-sm text-muted-foreground">
+              {item.guardian_email}
+            </p>
             {item.response_date && (
               <p className="text-xs text-muted-foreground">
                 Date: {new Date(item.response_date).toLocaleDateString()}
@@ -112,7 +119,9 @@ export function GuardiansForm() {
               size="sm"
               variant="outline"
               className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 dark:border-red-900/30 dark:text-red-400 dark:hover:bg-red-900/20"
-              onClick={() => item.status === "pending" && handleAction(item.id, "reject")}
+              onClick={() =>
+                item.status === "pending" && handleAction(item.id, "reject")
+              }
               disabled={item.status !== "pending" || actionLoading[item.id]}
             >
               {actionLoading[item.id] ? "Processing..." : "Reject"}
@@ -120,7 +129,9 @@ export function GuardiansForm() {
             <Button
               size="sm"
               className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
-              onClick={() => item.status === "pending" && handleAction(item.id, "accept")}
+              onClick={() =>
+                item.status === "pending" && handleAction(item.id, "accept")
+              }
               disabled={item.status !== "pending" || actionLoading[item.id]}
             >
               <CheckCircle2 className="mr-2 size-4" />

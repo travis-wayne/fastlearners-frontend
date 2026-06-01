@@ -3,11 +3,12 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { type LucideIcon } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { 
-  getAchievementGradient, 
-  getAchievementRing, 
-  type AchievementTier 
+import {
+  getAchievementGradient,
+  getAchievementRing,
+  type AchievementTier,
 } from "@/lib/utils/achievements";
 
 interface AchievementBadgeProps {
@@ -32,14 +33,14 @@ export function AchievementBadge({
 
   // Animation variants
   const badgeVariants = {
-    hidden: { 
-      opacity: 0, 
-      scale: 0.8, 
+    hidden: {
+      opacity: 0,
+      scale: 0.8,
       rotate: -10,
     },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
+    visible: {
+      opacity: 1,
+      scale: 1,
       rotate: 0,
       transition: {
         type: "spring" as const,
@@ -52,7 +53,7 @@ export function AchievementBadge({
 
   const shimmerVariants = {
     animate: {
-      x: ['-100%', '100%'],
+      x: ["-100%", "100%"],
       transition: {
         duration: 2,
         repeat: Infinity,
@@ -72,7 +73,7 @@ export function AchievementBadge({
         "shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl",
         gradient,
         `ring-4 ${ring}`,
-        "border-white/20"
+        "border-white/20",
       )}
     >
       {/* Shimmer effect */}
@@ -81,7 +82,7 @@ export function AchievementBadge({
           variants={shimmerVariants}
           animate="animate"
           className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-          style={{ width: '50%' }}
+          style={{ width: "50%" }}
         />
       )}
 
@@ -93,24 +94,22 @@ export function AchievementBadge({
         </div>
 
         {/* Title */}
-        <h4 className="text-sm font-bold text-white drop-shadow-md">
-          {title}
-        </h4>
+        <h4 className="text-sm font-bold text-white drop-shadow-md">{title}</h4>
 
         {/* Description */}
-        <p className="text-xs text-white/90 drop-shadow-sm">
-          {description}
-        </p>
+        <p className="text-xs text-white/90 drop-shadow-sm">{description}</p>
       </div>
 
       {/* Glow effect on hover */}
       <div className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-        <div className={cn(
-          "absolute inset-0 rounded-xl blur-xl",
-          tier === 'gold' && "bg-yellow-400/30",
-          tier === 'silver' && "bg-gray-400/30",
-          tier === 'bronze' && "bg-orange-400/30"
-        )} />
+        <div
+          className={cn(
+            "absolute inset-0 rounded-xl blur-xl",
+            tier === "gold" && "bg-yellow-400/30",
+            tier === "silver" && "bg-gray-400/30",
+            tier === "bronze" && "bg-orange-400/30",
+          )}
+        />
       </div>
     </motion.div>
   );

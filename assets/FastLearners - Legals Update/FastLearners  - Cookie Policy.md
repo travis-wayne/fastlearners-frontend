@@ -20,8 +20,8 @@ Cookies are small text files that are placed on your device (computer, tablet, o
 
 We also use other similar technologies, including:
 
-* Local storage and session storage  
-* SDKs and device identifiers (primarily for app functionality and security)
+- Local storage and session storage
+- SDKs and device identifiers (primarily for app functionality and security)
 
 #### **3\. Types of Cookies and Technologies We Use**
 
@@ -31,9 +31,9 @@ These cookies are essential for the Platform to function correctly and cannot be
 
 **Examples include:**
 
-* Authentication and login cookies  
-* Security and fraud-prevention cookies  
-* Session management cookies
+- Authentication and login cookies
+- Security and fraud-prevention cookies
+- Session management cookies
 
 **b. Functional Cookies**
 
@@ -41,8 +41,8 @@ These improve usability and allow the Platform to remember your choices.
 
 **Examples include:**
 
-* Saving your login state across sessions  
-* Remembering preferences (e.g., language, theme, or class level)
+- Saving your login state across sessions
+- Remembering preferences (e.g., language, theme, or class level)
 
 **c. Analytics and Performance Cookies**
 
@@ -50,9 +50,9 @@ These help us understand how users interact with the Platform, measure performan
 
 **Examples include:**
 
-* Usage and engagement analytics  
-* Crash reports and performance metrics  
-* IP addresses (anonymised where possible)
+- Usage and engagement analytics
+- Crash reports and performance metrics
+- IP addresses (anonymised where possible)
 
 **d. Third-Party Cookies**
 
@@ -64,18 +64,18 @@ We ensure that all third parties we work with are bound by appropriate data prot
 
 We use cookies and similar technologies to:
 
-* Keep you signed in securely  
-* Provide a smooth and personalised learning experience  
-* Analyse Platform performance and user behaviour  
-* Detect and prevent fraud or security threats  
-* Improve the overall quality and speed of our services
+- Keep you signed in securely
+- Provide a smooth and personalised learning experience
+- Analyse Platform performance and user behaviour
+- Detect and prevent fraud or security threats
+- Improve the overall quality and speed of our services
 
 #### **5\. Legal Basis for Using Cookies**
 
 Under the Nigeria Data Protection Act 2023 (NDPA), we rely on the following lawful bases:
 
-* **Legitimate interests** — for strictly necessary, functional, security, and performance cookies.  
-* **Consent** — for non-essential cookies, particularly analytics and tracking cookies.
+- **Legitimate interests** — for strictly necessary, functional, security, and performance cookies.
+- **Consent** — for non-essential cookies, particularly analytics and tracking cookies.
 
 You can withdraw your consent for optional cookies at any time (see Section 6 below).
 
@@ -83,9 +83,9 @@ You can withdraw your consent for optional cookies at any time (see Section 6 be
 
 You have control over cookies and can manage them in the following ways:
 
-* Through your browser or device settings (most browsers allow you to block or delete cookies).  
-* Via in-app privacy/settings options (where available).  
-* By clearing your browser cache or app data.
+- Through your browser or device settings (most browsers allow you to block or delete cookies).
+- Via in-app privacy/settings options (where available).
+- By clearing your browser cache or app data.
 
 **Important Note:** Disabling strictly necessary cookies may prevent the Platform from functioning properly or limit your ability to use certain features.
 
@@ -100,7 +100,7 @@ We may update this Cookie Policy from time to time to reflect changes in our pra
 If you have any questions about this Cookie Policy or our use of cookies, please contact us:
 
 **Data Protection Officer (DPO):** Oladele Joshua O.  
-**Email:** 
+**Email:**
 
 FastLearners Limited  
 Email: [support@fastlearnersapp.com](mailto:support@fastlearnersapp.com)  
@@ -108,4 +108,3 @@ Telephone: \+234 706 544 7436
 Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria
 
 You may also contact the Nigeria Data Protection Commission (NDPC) if needed.
-

@@ -39,7 +39,7 @@ export interface UploadListResponse {
 
 /**
  * Fetch upload statistics
- * 
+ *
  * NOTE: This function will return a 501 error until the backend
  * endpoint /superadmin/uploads/stats is implemented.
  */
@@ -57,10 +57,10 @@ export const getUploadStats = async (): Promise<ApiResponse<UploadStats>> => {
 
 /**
  * Fetch upload history list with optional filters
- * 
+ *
  * NOTE: This function will return a 501 error until the backend
  * endpoint /superadmin/uploads/list is implemented.
- * 
+ *
  * @param filters Optional query parameters for filtering
  */
 export const getUploadList = async (filters?: {
@@ -70,14 +70,14 @@ export const getUploadList = async (filters?: {
   fileType?: string;
 }): Promise<ApiResponse<UploadListResponse>> => {
   const params = new URLSearchParams();
-  
+
   if (filters?.page) params.append("page", filters.page.toString());
   if (filters?.perPage) params.append("perPage", filters.perPage.toString());
   if (filters?.status) params.append("status", filters.status);
   if (filters?.fileType) params.append("fileType", filters.fileType);
 
   const queryString = params.toString();
-  const url = queryString 
+  const url = queryString
     ? `/api/superadmin/uploads/list?${queryString}`
     : `/api/superadmin/uploads/list`;
 

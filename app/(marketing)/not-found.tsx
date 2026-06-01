@@ -4,7 +4,9 @@ import Link from "next/link";
 export default function NotFound() {
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center px-4 py-12">
-      <h1 className="text-gradient_indigo-purple font-heading text-7xl font-bold sm:text-8xl md:text-9xl">404</h1>
+      <h1 className="text-gradient_indigo-purple font-heading text-7xl font-bold sm:text-8xl md:text-9xl">
+        404
+      </h1>
       <div className="relative mb-8 mt-4 size-48 sm:size-64 md:size-80">
         <Image
           src="/_static/illustrations/rocket-crashed.svg"

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { MoreHorizontal, Eye, Trash2, Loader2 } from "lucide-react";
+import { Eye, Loader2, MoreHorizontal, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 
+import { trashLesson } from "@/lib/api/superadmin-lessons";
 import { Button } from "@/components/ui/button";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -12,8 +14,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
-import { trashLesson } from "@/lib/api/superadmin-lessons";
 
 interface LessonActionsDropdownProps {
   lessonId: number;

@@ -1,17 +1,19 @@
 "use client";
 
-import { useState, useRef, useCallback } from "react";
+import { useCallback, useRef, useState } from "react";
 import ReactCrop, {
-  type Crop,
   centerCrop,
   makeAspectCrop,
   PixelCrop,
+  type Crop,
 } from "react-image-crop";
+
 import "react-image-crop/dist/ReactCrop.css";
+
+import { RotateCcw, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
-import { RotateCcw, RotateCw, ZoomIn, ZoomOut } from "lucide-react";
 
 interface ImageCropperProps {
   imageSrc: string;
@@ -24,7 +26,7 @@ interface ImageCropperProps {
 function centerAspectCrop(
   mediaWidth: number,
   mediaHeight: number,
-  aspect: number
+  aspect: number,
 ): Crop {
   return centerCrop(
     makeAspectCrop(
@@ -34,10 +36,10 @@ function centerAspectCrop(
       },
       aspect,
       mediaWidth,
-      mediaHeight
+      mediaHeight,
     ),
     mediaWidth,
-    mediaHeight
+    mediaHeight,
   );
 }
 
@@ -59,7 +61,7 @@ export function ImageCropper({
       const { width, height } = e.currentTarget;
       setCrop(centerAspectCrop(width, height, aspectRatio));
     },
-    [aspectRatio]
+    [aspectRatio],
   );
 
   const handleCropComplete = useCallback(async () => {
@@ -109,7 +111,7 @@ export function ImageCropper({
       0,
       0,
       outputSize,
-      outputSize
+      outputSize,
     );
 
     // Restore the context state
@@ -123,7 +125,7 @@ export function ImageCropper({
         }
       },
       "image/jpeg",
-      0.95
+      0.95,
     );
   }, [completedCrop, rotate, scale, onCropComplete]);
 
@@ -234,7 +236,12 @@ export function ImageCropper({
 
       {/* Action Buttons */}
       <div className="flex gap-3">
-        <Button type="button" variant="outline" className="flex-1" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outline"
+          className="flex-1"
+          onClick={onCancel}
+        >
           Cancel
         </Button>
         <Button type="button" className="flex-1" onClick={handleCropComplete}>

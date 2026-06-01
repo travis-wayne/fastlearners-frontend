@@ -11,11 +11,11 @@ import { marketingConfig } from "@/config/marketing";
 import { siteConfig } from "@/config/site";
 import { Z_INDEX } from "@/config/z-index";
 import { cn } from "@/lib/utils";
+import { useLockBody } from "@/hooks/use-lock-body";
 import { DocsSidebarNav } from "@/components/docs/sidebar-nav";
 import { ClientOnly } from "@/components/shared/client-only";
 import { Icons } from "@/components/shared/icons";
 
-import { useLockBody } from "@/hooks/use-lock-body";
 import { ModeToggle } from "./mode-toggle";
 
 export function NavMobile() {

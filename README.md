@@ -119,6 +119,7 @@ Use the scripts defined in `package.json` with `pnpm <script>`:
 This project uses Contentlayer for content (see `contentlayer.config.ts`). When running the dev server, Contentlayer will generate the necessary content types automatically.
 
 **Windows Compatibility Note:** Contentlayer may show warnings on Windows systems. These warnings are typically harmless and can be ignored. If you encounter build issues on Windows, try:
+
 1. Running the dev server with administrator privileges
 2. Ensuring your file paths don't contain special characters
 3. Checking that `contentlayer.config.ts` uses forward slashes in path patterns
@@ -288,6 +289,7 @@ Use the scripts defined in `package.json` with `pnpm <script>`:
 This project uses Contentlayer for content (see `contentlayer.config.ts`). When running the dev server, Contentlayer will generate the necessary content types automatically.
 
 **Windows Compatibility Note:** Contentlayer may show warnings on Windows systems. These warnings are typically harmless and can be ignored. If you encounter build issues on Windows, try:
+
 1. Running the dev server with administrator privileges
 2. Ensuring your file paths don't contain special characters
 3. Checking that `contentlayer.config.ts` uses forward slashes in path patterns
@@ -683,6 +685,7 @@ Use the scripts defined in `package.json` with `pnpm <script>`:
 This project uses Contentlayer for content (see `contentlayer.config.ts`). When running the dev server, Contentlayer will generate the necessary content types automatically.
 
 **Windows Compatibility Note:** Contentlayer may show warnings on Windows systems. These warnings are typically harmless and can be ignored. If you encounter build issues on Windows, try:
+
 1. Running the dev server with administrator privileges
 2. Ensuring your file paths don't contain special characters
 3. Checking that `contentlayer.config.ts` uses forward slashes in path patterns

@@ -162,7 +162,10 @@ export function VerifyOtpForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-component-md sm:gap-component-lg", className)}
+      className={cn(
+        "flex flex-col gap-component-md sm:gap-component-lg",
+        className,
+      )}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
@@ -170,7 +173,9 @@ export function VerifyOtpForm({
         <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
           <Mail className="size-6 text-primary" />
         </div>
-        <h1 className="text-heading-xl font-bold sm:text-2xl">Check your email</h1>
+        <h1 className="text-heading-xl font-bold sm:text-2xl">
+          Check your email
+        </h1>
         <p className="text-balance text-sm text-muted-foreground sm:text-base">
           We sent a verification code to
           <br />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
 import {
   ArrowRight,
   CheckCircle2,
@@ -12,6 +13,7 @@ import {
 import type { Exercise } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -20,8 +22,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
+
 import { AudioPlayer } from "./AudioPlayer";
 
 interface ExerciseModalProps {
@@ -86,7 +87,11 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
               </p>
             </div>
             <DialogTrigger asChild>
-              <Button size="sm" variant="outline" className="h-9 shrink-0 px-4 font-semibold">
+              <Button
+                size="sm"
+                variant="outline"
+                className="h-9 shrink-0 px-4 font-semibold"
+              >
                 Go
                 <ArrowRight className="ml-1.5 size-3.5" />
               </Button>
@@ -94,26 +99,30 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
           </div>
 
           {exercise.problem && (
-            <p className="text-sm text-muted-foreground">
-              {exercise.problem}
-            </p>
+            <p className="text-sm text-muted-foreground">{exercise.problem}</p>
           )}
 
-          {exercise.image_path && (exercise.image_path.startsWith('/') || exercise.image_path.startsWith('http')) && (
-            <div className="my-2">
-              <Image
-                src={exercise.image_path}
-                alt={exercise.title || "Exercise illustration"}
-                width={800}
-                height={450}
-                className="h-auto max-w-full rounded-lg"
-                style={{ width: "100%", height: "auto" }}
-                unoptimized
-              />
-            </div>
-          )}
+          {exercise.image_path &&
+            (exercise.image_path.startsWith("/") ||
+              exercise.image_path.startsWith("http")) && (
+              <div className="my-2">
+                <Image
+                  src={exercise.image_path}
+                  alt={exercise.title || "Exercise illustration"}
+                  width={800}
+                  height={450}
+                  className="h-auto max-w-full rounded-lg"
+                  style={{ width: "100%", height: "auto" }}
+                  unoptimized
+                />
+              </div>
+            )}
           {exercise.audio_path && (
-            <AudioPlayer src={exercise.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+            <AudioPlayer
+              src={exercise.audio_path}
+              title="Pronunciation / Audio"
+              className="my-3 border-2"
+            />
           )}
         </CardContent>
       </Card>
@@ -131,21 +140,27 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
           )}
         </DialogHeader>
 
-        {exercise.image_path && (exercise.image_path.startsWith('/') || exercise.image_path.startsWith('http')) && (
-          <div className="my-2">
-            <Image
-              src={exercise.image_path}
-              alt={exercise.title || "Exercise illustration"}
-              width={800}
-              height={450}
-              className="h-auto max-w-full rounded-lg"
-              style={{ width: "100%", height: "auto" }}
-              unoptimized
-            />
-          </div>
-        )}
+        {exercise.image_path &&
+          (exercise.image_path.startsWith("/") ||
+            exercise.image_path.startsWith("http")) && (
+            <div className="my-2">
+              <Image
+                src={exercise.image_path}
+                alt={exercise.title || "Exercise illustration"}
+                width={800}
+                height={450}
+                className="h-auto max-w-full rounded-lg"
+                style={{ width: "100%", height: "auto" }}
+                unoptimized
+              />
+            </div>
+          )}
         {exercise.audio_path && (
-          <AudioPlayer src={exercise.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+          <AudioPlayer
+            src={exercise.audio_path}
+            title="Pronunciation / Audio"
+            className="my-3 border-2"
+          />
         )}
 
         <div className="space-y-4">
@@ -213,4 +228,3 @@ export function ExerciseModal({ exercise, index }: ExerciseModalProps) {
     </Dialog>
   );
 }
-

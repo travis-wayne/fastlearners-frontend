@@ -15,7 +15,9 @@ export function ClientPricingPage() {
   if (user?.role.includes("admin")) {
     return (
       <div className="flex min-h-[400px] flex-col items-center justify-center p-6 text-center">
-        <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">Seriously?</h1>
+        <h1 className="text-3xl font-bold sm:text-4xl md:text-5xl">
+          Seriously?
+        </h1>
         <Image
           src="/_static/illustrations/call-waiting.svg"
           alt="403"

@@ -3,19 +3,22 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
-  FileText,
-  Upload,
   AlertCircle,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Info,
-  Trash2,
-  RotateCcw,
   ArrowRight,
+  CheckCircle,
+  Clock,
+  FileText,
+  Info,
   Loader2,
+  RotateCcw,
+  Trash2,
+  Upload,
+  XCircle,
 } from "lucide-react";
 
+import { getTrashedLessons } from "@/lib/api/superadmin-lessons";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -24,8 +27,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -35,7 +36,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useSuperadminState } from "@/components/superadmin/use-superadmin-state";
-import { getTrashedLessons } from "@/lib/api/superadmin-lessons";
 
 export default function SuperadminManagePage() {
   const {
@@ -102,11 +102,17 @@ export default function SuperadminManagePage() {
             {trashedLoading ? (
               <Loader2 className="size-5 animate-spin text-muted-foreground" />
             ) : trashedCount > 0 ? (
-              <Badge variant="secondary" className="bg-amber-100 text-amber-800">
+              <Badge
+                variant="secondary"
+                className="bg-amber-100 text-amber-800"
+              >
                 {trashedCount} item{trashedCount !== 1 ? "s" : ""} in trash
               </Badge>
             ) : (
-              <Badge variant="secondary" className="bg-emerald-100 text-emerald-800">
+              <Badge
+                variant="secondary"
+                className="bg-emerald-100 text-emerald-800"
+              >
                 Trash empty
               </Badge>
             )}
@@ -117,13 +123,17 @@ export default function SuperadminManagePage() {
             <div className="space-y-1">
               {trashedCount > 0 ? (
                 <p className="text-sm text-muted-foreground">
-                  You have <span className="font-medium text-foreground">{trashedCount}</span>{" "}
-                  lesson{trashedCount !== 1 ? "s" : ""} in the trash. Restore them or delete
-                  permanently.
+                  You have{" "}
+                  <span className="font-medium text-foreground">
+                    {trashedCount}
+                  </span>{" "}
+                  lesson{trashedCount !== 1 ? "s" : ""} in the trash. Restore
+                  them or delete permanently.
                 </p>
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  No lessons in trash. Deleted lessons will appear here for recovery.
+                  No lessons in trash. Deleted lessons will appear here for
+                  recovery.
                 </p>
               )}
             </div>
@@ -146,12 +156,18 @@ export default function SuperadminManagePage() {
           <Info className="size-4" />
           <AlertTitle>Upload History Feature Status</AlertTitle>
           <AlertDescription>
-            Upload history tracking requires backend API endpoints that are not yet
-            available.
+            Upload history tracking requires backend API endpoints that are not
+            yet available.
             <ul className="mt-2 list-inside list-disc text-sm">
-              <li className="text-emerald-600">✓ Trash management (available)</li>
-              <li className="text-amber-600">⚠ Upload statistics API (pending backend)</li>
-              <li className="text-amber-600">⚠ Upload history listing (pending backend)</li>
+              <li className="text-emerald-600">
+                ✓ Trash management (available)
+              </li>
+              <li className="text-amber-600">
+                ⚠ Upload statistics API (pending backend)
+              </li>
+              <li className="text-amber-600">
+                ⚠ Upload history listing (pending backend)
+              </li>
             </ul>
           </AlertDescription>
         </Alert>
@@ -235,7 +251,8 @@ export default function SuperadminManagePage() {
             Recent file uploads and their status
             {uploadStats?.lastUploadAt && (
               <span className="ml-2 text-xs">
-                • Last upload: {new Date(uploadStats.lastUploadAt).toLocaleString()}
+                • Last upload:{" "}
+                {new Date(uploadStats.lastUploadAt).toLocaleString()}
               </span>
             )}
           </CardDescription>
@@ -248,7 +265,9 @@ export default function SuperadminManagePage() {
           ) : uploadRecords.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-center">
               <FileText className="size-12 text-muted-foreground/50" />
-              <p className="mt-4 text-sm font-medium">No upload history available</p>
+              <p className="mt-4 text-sm font-medium">
+                No upload history available
+              </p>
               <p className="mt-1 text-xs text-muted-foreground">
                 {isBackendPending
                   ? "Upload history will appear here once the backend API is integrated"
@@ -273,7 +292,9 @@ export default function SuperadminManagePage() {
               <TableBody>
                 {uploadRecords.map((record) => (
                   <TableRow key={record.id}>
-                    <TableCell className="font-medium">{record.fileName}</TableCell>
+                    <TableCell className="font-medium">
+                      {record.fileName}
+                    </TableCell>
                     <TableCell>
                       <Badge variant="outline">{record.fileType}</Badge>
                     </TableCell>

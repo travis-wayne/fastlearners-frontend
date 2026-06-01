@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { BASE_API_URL } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -28,7 +33,7 @@ export async function POST(req: NextRequest) {
           },
           requestId,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -38,7 +43,8 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: "Invalid file type. Only PNG, JPG, JPEG, and WEBP are allowed.",
+          message:
+            "Invalid file type. Only PNG, JPG, JPEG, and WEBP are allowed.",
           content: null,
           code: 422,
           errors: {
@@ -48,7 +54,7 @@ export async function POST(req: NextRequest) {
           },
           requestId,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -61,11 +67,13 @@ export async function POST(req: NextRequest) {
           content: null,
           code: 422,
           errors: {
-            profile_picture: ["Profile picture size must not be larger than 1MB."],
+            profile_picture: [
+              "Profile picture size must not be larger than 1MB.",
+            ],
           },
           requestId,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -77,17 +85,20 @@ export async function POST(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout for file upload
 
     try {
-      const response = await fetch(`${BASE_API_URL}/profile/edit/profile-picture`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          Authorization: `Bearer ${auth.token}`,
-          // Don't set Content-Type - let fetch set it with boundary for multipart/form-data
+      const response = await fetch(
+        `${BASE_API_URL}/profile/edit/profile-picture`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${auth.token}`,
+            // Don't set Content-Type - let fetch set it with boundary for multipart/form-data
+          },
+          body: upstreamFormData,
+          cache: "no-store",
+          signal: controller.signal,
         },
-        body: upstreamFormData,
-        cache: "no-store",
-        signal: controller.signal,
-      });
+      );
 
       clearTimeout(timeoutId);
       const data = await response.json();
@@ -103,7 +114,7 @@ export async function POST(req: NextRequest) {
           content: data.content,
           code: data.code || 200,
         },
-        { status: 200 }
+        { status: 200 },
       );
     } catch (fetchError: any) {
       clearTimeout(timeoutId);

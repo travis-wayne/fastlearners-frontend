@@ -22,9 +22,7 @@ export function SectionWrapper({
       id={id}
       className={cn(
         "container mx-auto w-full px-4 sm:px-6 lg:px-8",
-        disableVerticalPadding
-          ? "py-0"
-          : "py-10 sm:py-14 lg:py-20 xl:py-24",
+        disableVerticalPadding ? "py-0" : "py-10 sm:py-14 lg:py-20 xl:py-24",
         className,
       )}
     >
@@ -32,4 +30,3 @@ export function SectionWrapper({
     </Component>
   );
 }
-

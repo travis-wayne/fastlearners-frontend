@@ -2,30 +2,25 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import mockQuizData from "@/data/mock-quizzes.json";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
   CheckCircle2,
-  XCircle,
   Clock,
-  Trophy,
   TrendingUp,
+  Trophy,
+  XCircle,
 } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { ScoreDisplay } from "@/components/quiz/ScoreDisplay";
-import { Leaderboard } from "@/components/quiz/Leaderboard";
 import { FeedbackMessage } from "@/components/quiz/FeedbackMessage";
-import mockQuizData from "@/data/mock-quizzes.json";
+import { Leaderboard } from "@/components/quiz/Leaderboard";
 import { QuizQuestion } from "@/components/quiz/QuestionModal";
+import { ScoreDisplay } from "@/components/quiz/ScoreDisplay";
 
 interface QuizResult {
   quizId: string;
@@ -111,8 +106,7 @@ export default function QuizResultsPage() {
     const userAnswer = result.answers[q.id];
     return (
       userAnswer !== null &&
-      String(userAnswer).toLowerCase() ===
-        String(q.correctAnswer).toLowerCase()
+      String(userAnswer).toLowerCase() === String(q.correctAnswer).toLowerCase()
     );
   }).length;
 
@@ -190,7 +184,9 @@ export default function QuizResultsPage() {
                       Time Taken
                     </span>
                   </div>
-                  <p className="text-2xl font-bold">{formatTime(result.timeTaken)}</p>
+                  <p className="text-2xl font-bold">
+                    {formatTime(result.timeTaken)}
+                  </p>
                 </div>
 
                 <div className="rounded-lg border p-4">
@@ -247,9 +243,7 @@ export default function QuizResultsPage() {
                           <div className="mb-2 flex items-center gap-2">
                             <Badge variant="outline">Question {idx + 1}</Badge>
                             {isCorrect ? (
-                              <Badge className="bg-green-600">
-                                Correct
-                              </Badge>
+                              <Badge className="bg-green-600">Correct</Badge>
                             ) : (
                               <Badge variant="destructive">Incorrect</Badge>
                             )}
@@ -317,4 +311,3 @@ export default function QuizResultsPage() {
     </motion.div>
   );
 }
-

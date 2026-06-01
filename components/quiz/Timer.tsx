@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 interface TimerProps {
@@ -11,7 +12,12 @@ interface TimerProps {
   className?: string;
 }
 
-export function Timer({ timeLeft, totalTime, onTimeUp, className }: TimerProps) {
+export function Timer({
+  timeLeft,
+  totalTime,
+  onTimeUp,
+  className,
+}: TimerProps) {
   const [isWarning, setIsWarning] = useState(false);
 
   useEffect(() => {
@@ -40,14 +46,14 @@ export function Timer({ timeLeft, totalTime, onTimeUp, className }: TimerProps) 
       <Clock
         className={cn(
           "size-4 transition-colors sm:size-5",
-          isWarning ? "text-red-500" : "text-muted-foreground"
+          isWarning ? "text-red-500" : "text-muted-foreground",
         )}
       />
       <div className="flex flex-col">
         <span
           className={cn(
             "font-mono text-base font-semibold transition-colors sm:text-lg",
-            isWarning && "animate-pulse text-red-600"
+            isWarning && "animate-pulse text-red-600",
           )}
         >
           {formatTime(timeLeft)}
@@ -56,7 +62,7 @@ export function Timer({ timeLeft, totalTime, onTimeUp, className }: TimerProps) 
           <div
             className={cn(
               "h-full transition-all duration-1000",
-              isWarning ? "bg-red-500" : "bg-primary"
+              isWarning ? "bg-red-500" : "bg-primary",
             )}
             style={{ width: `${percentage}%` }}
           />
@@ -65,4 +71,3 @@ export function Timer({ timeLeft, totalTime, onTimeUp, className }: TimerProps) 
     </div>
   );
 }
-

@@ -60,59 +60,67 @@ export interface StudentSubjectsData {
   selective: Subject[];
 }
 
-export const getStudentDashboard = async (): Promise<ApiResponse<StudentDashboardData>> => {
-  const response = await fetch('/api/proxy/dashboard', {
-    method: 'GET',
-    credentials: 'include',
+export const getStudentDashboard = async (): Promise<
+  ApiResponse<StudentDashboardData>
+> => {
+  const response = await fetch("/api/proxy/dashboard", {
+    method: "GET",
+    credentials: "include",
     headers: {
-      'Accept': 'application/json',
+      Accept: "application/json",
     },
   });
   return await response.json();
 };
 
-export const getGuardianDashboard = async (): Promise<ApiResponse<GuardianDashboardData>> => {
-  const response = await fetch('/api/proxy/guardian', {
-    method: 'GET',
-    credentials: 'include',
+export const getGuardianDashboard = async (): Promise<
+  ApiResponse<GuardianDashboardData>
+> => {
+  const response = await fetch("/api/proxy/guardian", {
+    method: "GET",
+    credentials: "include",
     headers: {
-      'Accept': 'application/json',
+      Accept: "application/json",
     },
   });
   return await response.json();
 };
 
-export const getGuestDashboard = async (): Promise<ApiResponse<GuestDashboardData>> => {
-  const response = await fetch('/api/proxy/guest', {
-    method: 'GET',
-    credentials: 'include',
+export const getGuestDashboard = async (): Promise<
+  ApiResponse<GuestDashboardData>
+> => {
+  const response = await fetch("/api/proxy/guest", {
+    method: "GET",
+    credentials: "include",
     headers: {
-      'Accept': 'application/json',
+      Accept: "application/json",
     },
   });
   return await response.json();
 };
 
-export const getStudentSubjects = async (): Promise<ApiResponse<StudentSubjectsData>> => {
-  const response = await fetch('/api/subjects', {
-    method: 'GET',
-    credentials: 'include',
+export const getStudentSubjects = async (): Promise<
+  ApiResponse<StudentSubjectsData>
+> => {
+  const response = await fetch("/api/subjects", {
+    method: "GET",
+    credentials: "include",
     headers: {
-      'Accept': 'application/json',
+      Accept: "application/json",
     },
   });
   return await response.json();
 };
 
 export const updateCompulsorySelectiveSubject = async (
-  subjectId: number
+  subjectId: number,
 ): Promise<ApiResponse<null>> => {
-  const response = await fetch('/api/subjects/update-compulsory-selective', {
-    method: 'POST',
-    credentials: 'include',
+  const response = await fetch("/api/subjects/update-compulsory-selective", {
+    method: "POST",
+    credentials: "include",
     headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify({ subject: subjectId }),
   });
@@ -120,33 +128,35 @@ export const updateCompulsorySelectiveSubject = async (
 };
 
 export const updateSelectiveSubjects = async (
-  subjectIds: number[]
+  subjectIds: number[],
 ): Promise<ApiResponse<null>> => {
   // Format subjects as array for API
   const formData = new FormData();
-  subjectIds.forEach(id => {
-    formData.append('subjects[]', id.toString());
+  subjectIds.forEach((id) => {
+    formData.append("subjects[]", id.toString());
   });
 
-  const response = await fetch('/api/subjects/update-selective', {
-    method: 'POST',
-    credentials: 'include',
+  const response = await fetch("/api/subjects/update-selective", {
+    method: "POST",
+    credentials: "include",
     body: formData,
   });
   return await response.json();
 };
 
 // Error handling helper
-export const isApiError = (error: any): error is { response: { data: ApiResponse } } => {
+export const isApiError = (
+  error: any,
+): error is { response: { data: ApiResponse } } => {
   return error?.response?.data?.success === false;
 };
 
 export const getErrorMessage = (error: any): string => {
   if (isApiError(error)) {
-    return error.response.data.message || 'An error occurred';
+    return error.response.data.message || "An error occurred";
   }
   if (error?.message) {
     return error.message;
   }
-  return 'An unexpected error occurred';
+  return "An unexpected error occurred";
 };

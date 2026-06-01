@@ -1,16 +1,16 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useRef, useState } from "react";
+import Image from "next/image";
+import { useAuthStore } from "@/store/authStore";
 import { Camera, Loader2, Upload, X } from "lucide-react";
 import { toast } from "sonner";
-import Image from "next/image";
 
+import { uploadProfilePicture } from "@/lib/api/profile";
+import { Button } from "@/components/ui/button";
 import { DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Modal } from "@/components/ui/modal";
-import { Button } from "@/components/ui/button";
 import { ImageCropper } from "@/components/profile/image-cropper";
-import { uploadProfilePicture } from "@/lib/api/profile";
-import { useAuthStore } from "@/store/authStore";
 import { invalidateAvatarCache } from "@/components/shared/user-avatar";
 
 interface ProfilePictureModalProps {
@@ -32,7 +32,9 @@ export function ProfilePictureModal({
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [croppedBlob, setCroppedBlob] = useState<Blob | null>(null);
-  const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(null);
+  const [croppedPreviewUrl, setCroppedPreviewUrl] = useState<string | null>(
+    null,
+  );
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { updateUserProfile } = useAuthStore();
@@ -44,7 +46,9 @@ export function ProfilePictureModal({
     // Validate file type
     const allowedTypes = ["image/png", "image/jpeg", "image/jpg", "image/webp"];
     if (!allowedTypes.includes(file.type)) {
-      toast.error("Invalid file type. Please select a PNG, JPG, JPEG, or WEBP image.");
+      toast.error(
+        "Invalid file type. Please select a PNG, JPG, JPEG, or WEBP image.",
+      );
       return;
     }
 

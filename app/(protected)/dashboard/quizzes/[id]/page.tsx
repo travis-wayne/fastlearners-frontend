@@ -2,19 +2,22 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import mockQuizData from "@/data/mock-quizzes.json";
 import { motion } from "framer-motion";
 import {
+  AlertCircle,
   ArrowLeft,
+  Award,
+  BookOpen,
+  CheckCircle2,
   Clock,
   HelpCircle,
   Play,
   Target,
-  Award,
-  BookOpen,
-  AlertCircle,
-  CheckCircle2,
 } from "lucide-react";
 
+import { getSubjectById } from "@/config/education";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,10 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import mockQuizData from "@/data/mock-quizzes.json";
-import { getSubjectById } from "@/config/education";
 
 interface Quiz {
   id: string;
@@ -258,15 +258,16 @@ export default function QuizDetailPage() {
                         starting
                       </li>
                       <li>
-                        You cannot pause the quiz once started (unless time limit
-                        is unlimited)
+                        You cannot pause the quiz once started (unless time
+                        limit is unlimited)
                       </li>
                       <li>
                         Answers are saved automatically as you progress through
                         questions
                       </li>
                       <li>
-                        You have {quiz.maxAttempts === 0
+                        You have{" "}
+                        {quiz.maxAttempts === 0
                           ? "unlimited"
                           : quiz.maxAttempts}{" "}
                         attempt{quiz.maxAttempts !== 1 ? "s" : ""} for this quiz

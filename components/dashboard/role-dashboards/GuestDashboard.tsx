@@ -89,11 +89,17 @@ export function GuestDashboard() {
               Good Morning, {displayName}
             </h1>
             <div className="flex items-center gap-2">
-              <Badge variant="secondary" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
+              <Badge
+                variant="secondary"
+                className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs"
+              >
                 Role: {roleLabel}
               </Badge>
               {user?.email ? (
-                <Badge variant="outline" className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs">
+                <Badge
+                  variant="outline"
+                  className="h-4 px-1.5 text-[10px] sm:h-5 sm:px-2 sm:text-xs"
+                >
                   {user.email}
                 </Badge>
               ) : null}

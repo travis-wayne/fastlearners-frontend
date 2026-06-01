@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
@@ -7,7 +8,7 @@ export async function POST(req: NextRequest) {
   if (!auth) {
     return NextResponse.json(
       { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
           },
           code: 422,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -41,19 +42,16 @@ export async function POST(req: NextRequest) {
       week_id: week,
     };
 
-    const response = await fetch(
-      `${BASE_API_URL}/superadmin/lessons/lessons`,
-      {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${auth.token}`,
-        },
-        body: JSON.stringify(backendPayload),
-        cache: "no-store",
-      }
-    );
+    const response = await fetch(`${BASE_API_URL}/superadmin/lessons/lessons`, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth.token}`,
+      },
+      body: JSON.stringify(backendPayload),
+      cache: "no-store",
+    });
 
     const data = await response.json();
     return NextResponse.json(data, { status: response.status });
@@ -68,7 +66,7 @@ export async function POST(req: NextRequest) {
         content: null,
         code: 500,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

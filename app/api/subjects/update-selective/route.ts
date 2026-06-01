@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -17,23 +22,30 @@ export async function POST(req: NextRequest) {
     let subjectIds: number[] = [];
     let validationErrors: Record<string, string> = {};
 
-    if (contentType.includes("multipart/form-data") || contentType.includes("application/x-www-form-urlencoded")) {
+    if (
+      contentType.includes("multipart/form-data") ||
+      contentType.includes("application/x-www-form-urlencoded")
+    ) {
       // Handle FormData format
       const incomingFormData = await req.formData();
       const subjectsArray = incomingFormData.getAll("subjects[]");
-      
+
       if (subjectsArray.length === 0) {
         validationErrors.subjects = "subjects array is required";
       } else {
         subjectIds = subjectsArray
           .map((id) => {
-            const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+            const numId =
+              typeof id === "string" ? parseInt(id, 10) : Number(id);
             return Number.isNaN(numId) ? null : numId;
           })
-          .filter((id): id is number => id !== null && id > 0 && Number.isInteger(id));
-        
+          .filter(
+            (id): id is number => id !== null && id > 0 && Number.isInteger(id),
+          );
+
         if (subjectIds.length === 0) {
-          validationErrors.subjects = "subjects array must contain at least one valid positive integer";
+          validationErrors.subjects =
+            "subjects array must contain at least one valid positive integer";
         }
       }
     } else {
@@ -41,7 +53,7 @@ export async function POST(req: NextRequest) {
       try {
         const body = await req.json();
         const { subjects } = body;
-        
+
         if (!subjects) {
           validationErrors.subjects = "subjects field is required";
         } else if (!Array.isArray(subjects)) {
@@ -52,13 +64,18 @@ export async function POST(req: NextRequest) {
           subjectIds = subjects
             .map((id: any) => {
               if (id == null || id === undefined) return null;
-              const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
+              const numId =
+                typeof id === "string" ? parseInt(id, 10) : Number(id);
               return Number.isNaN(numId) ? null : numId;
             })
-            .filter((id): id is number => id !== null && id > 0 && Number.isInteger(id));
-          
+            .filter(
+              (id): id is number =>
+                id !== null && id > 0 && Number.isInteger(id),
+            );
+
           if (subjectIds.length === 0) {
-            validationErrors.subjects = "subjects array must contain at least one valid positive integer";
+            validationErrors.subjects =
+              "subjects array must contain at least one valid positive integer";
           } else if (subjectIds.length !== subjects.length) {
             validationErrors.subjects = `subjects array contains invalid values. ${subjects.length - subjectIds.length} invalid value(s) filtered out`;
           }
@@ -69,26 +86,33 @@ export async function POST(req: NextRequest) {
     }
 
     // Return 422 Unprocessable Entity for validation errors
-    if (Object.keys(validationErrors).length > 0 || !Array.isArray(subjectIds) || subjectIds.length === 0) {
+    if (
+      Object.keys(validationErrors).length > 0 ||
+      !Array.isArray(subjectIds) ||
+      subjectIds.length === 0
+    ) {
       if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
         console.error("[update-selective] Validation failed:", {
           validationErrors,
           subjectIds,
-          receivedSubjects: contentType.includes("multipart") 
-            ? "FormData" 
+          receivedSubjects: contentType.includes("multipart")
+            ? "FormData"
             : "JSON (check body)",
         });
       }
       return NextResponse.json(
         {
           success: false,
-          message: "Validation failed: " + (Object.values(validationErrors)[0] || "subjects array is required"),
+          message:
+            "Validation failed: " +
+            (Object.values(validationErrors)[0] ||
+              "subjects array is required"),
           content: null,
           code: 422,
           requestId,
           errors: validationErrors,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
@@ -111,17 +135,20 @@ export async function POST(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
     try {
-      const upstream = await fetch(`${UPSTREAM_BASE}/subjects/update-selective`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Bearer ${auth.token}`,
+      const upstream = await fetch(
+        `${UPSTREAM_BASE}/subjects/update-selective`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/x-www-form-urlencoded",
+            Authorization: `Bearer ${auth.token}`,
+          },
+          body: formData.toString(),
+          cache: "no-store",
+          signal: controller.signal,
         },
-        body: formData.toString(),
-        cache: "no-store",
-        signal: controller.signal,
-      });
+      );
 
       clearTimeout(timeoutId);
       const data = await upstream.json();
@@ -144,37 +171,50 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Retry on network errors (idempotent POST)
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
-          const retryUpstream = await fetch(`${UPSTREAM_BASE}/subjects/update-selective`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/x-www-form-urlencoded",
-              Authorization: `Bearer ${auth.token}`,
+          const retryUpstream = await fetch(
+            `${UPSTREAM_BASE}/subjects/update-selective`,
+            {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/x-www-form-urlencoded",
+                Authorization: `Bearer ${auth.token}`,
+              },
+              body: formData.toString(),
+              cache: "no-store",
             },
-            body: formData.toString(),
-            cache: "no-store",
-          });
+          );
 
           const retryData = await retryUpstream.json();
-          
+
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to update selective subjects after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to update selective subjects after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (err: any) {
-    return handleApiError(err, "An error occurred while updating selective subjects", requestId);
+    return handleApiError(
+      err,
+      "An error occurred while updating selective subjects",
+      requestId,
+    );
   }
 }
-

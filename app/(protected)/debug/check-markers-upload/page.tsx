@@ -130,9 +130,16 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
       const { previewCSVFile } = await import("@/lib/utils/csv-upload-helper");
       const preview = await previewCSVFile(file, 10);
 
-      addLog("info", `File analysis - Total lines: ${preview.totalRowCount + 1}`);
+      addLog(
+        "info",
+        `File analysis - Total lines: ${preview.totalRowCount + 1}`,
+      );
       addLog("info", `Format detected: ${preview.format}-delimited`);
-      addLog("info", `Headers found (${preview.headers.length}):`, preview.headers);
+      addLog(
+        "info",
+        `Headers found (${preview.headers.length}):`,
+        preview.headers,
+      );
 
       const expectedHeaders = [
         "lesson",
@@ -158,7 +165,11 @@ The Alphabet,10,15,30,30,0,0,0,0,0,15`;
       }
 
       if (preview.sampleRows.length > 0) {
-        addLog("info", `Sample rows (${preview.sampleRows.length}):`, preview.sampleRows);
+        addLog(
+          "info",
+          `Sample rows (${preview.sampleRows.length}):`,
+          preview.sampleRows,
+        );
       }
     } catch (error) {
       addLog(
@@ -548,7 +559,12 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
-                  <p className="mt-1 text-sm text-muted-foreground">Endpoint: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}/superadmin/lessons/uploads/check-markers</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Endpoint:{" "}
+                    {process.env.NEXT_PUBLIC_API_URL ||
+                      "https://api.fastlearnersapp.com/api/v1"}
+                    /superadmin/lessons/uploads/check-markers
+                  </p>
                 </div>
 
                 <div>
@@ -578,7 +594,12 @@ Number Bases System,5,5,20,25,25,0,0,0,0,20`;
               <div className="space-y-3">
                 <div>
                   <h5 className="font-medium">Endpoint:</h5>
-                  <p className="mt-1 text-sm text-muted-foreground">Endpoint: {process.env.NEXT_PUBLIC_API_URL || 'https://api.fastlearnersapp.com/api/v1'}/superadmin/lessons/uploads/all-lesson-files</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Endpoint:{" "}
+                    {process.env.NEXT_PUBLIC_API_URL ||
+                      "https://api.fastlearnersapp.com/api/v1"}
+                    /superadmin/lessons/uploads/all-lesson-files
+                  </p>
                 </div>
 
                 <div>

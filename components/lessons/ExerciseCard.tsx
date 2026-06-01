@@ -1,15 +1,17 @@
-import { useState, useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { AlertTriangle, CheckCircle2, Clock, RotateCcw, X } from "lucide-react";
+
+import { useLessonsStore } from "@/lib/store/lessons";
+import { Exercise, GeneralExercise } from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 // import { useInView } from "framer-motion"; // Removed to fix infinite loop
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle2, X, Clock, RotateCcw, AlertTriangle } from "lucide-react";
-import { cn } from "@/lib/utils";
-import { Exercise, GeneralExercise } from "@/lib/types/lessons";
-import { useLessonsStore } from "@/lib/store/lessons";
-import Image from "next/image";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { AudioPlayer } from "./AudioPlayer";
 
 interface ExerciseCardProps {
@@ -19,27 +21,29 @@ interface ExerciseCardProps {
 }
 
 export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
-  const exerciseProgress = useLessonsStore(state => state.exerciseProgress);
-  const selectedLesson = useLessonsStore(state => state.selectedLesson);
-  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
-  const startSectionTimer = useLessonsStore(state => state.startSectionTimer);
-  const endSectionTimer = useLessonsStore(state => state.endSectionTimer);
-  const updateAnalytics = useLessonsStore(state => state.updateAnalytics);
+  const exerciseProgress = useLessonsStore((state) => state.exerciseProgress);
+  const selectedLesson = useLessonsStore((state) => state.selectedLesson);
+  const currentStepIndex = useLessonsStore((state) => state.currentStepIndex);
+  const startSectionTimer = useLessonsStore((state) => state.startSectionTimer);
+  const endSectionTimer = useLessonsStore((state) => state.endSectionTimer);
+  const updateAnalytics = useLessonsStore((state) => state.updateAnalytics);
   const [selectedOptionKey, setSelectedOptionKey] = useState<string>("");
   const [isRevealed, setIsRevealed] = useState(false);
   const [isCorrect, setIsCorrect] = useState(false);
   const [feedbackMessage, setFeedbackMessage] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
+
   const attemptCount = exerciseProgress[exercise.id]?.attempts || 0;
   const canShowSolution = attemptCount >= 4;
   const attemptsRemaining = Math.max(0, 4 - attemptCount);
-  
+
   const [showSolutionDetails, setShowSolutionDetails] = useState(false);
   const [shake, setShake] = useState(false);
   const [success, setSuccess] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [isOnline, setIsOnline] = useState(typeof window !== 'undefined' ? navigator.onLine : true);
+  const [isOnline, setIsOnline] = useState(
+    typeof window !== "undefined" ? navigator.onLine : true,
+  );
   const [retryCount, setRetryCount] = useState(0);
   const [startTime] = useState<Date>(new Date());
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -49,14 +53,18 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
   // Check if exercise is already completed
   const exerciseData = exerciseProgress[exercise.id];
-  const isAlreadyCompleted = !!(exerciseData?.isCompleted && exerciseData?.isCorrect);
+  const isAlreadyCompleted = !!(
+    exerciseData?.isCompleted && exerciseData?.isCorrect
+  );
   const attempts = exerciseData?.attempts || 0;
   const isFirstTry = attempts === 1 && isCorrect;
 
   // Timer effect
   useEffect(() => {
     timerRef.current = setInterval(() => {
-      setElapsedTime(Math.floor((new Date().getTime() - startTime.getTime()) / 1000));
+      setElapsedTime(
+        Math.floor((new Date().getTime() - startTime.getTime()) / 1000),
+      );
     }, 1000);
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
@@ -65,14 +73,14 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
 
   // Online status
   useEffect(() => {
-    if (typeof window === 'undefined') return;
+    if (typeof window === "undefined") return;
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("offline", handleOffline);
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("offline", handleOffline);
     };
   }, []);
 
@@ -80,14 +88,14 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   useEffect(() => {
     if (selectedLesson && !sectionTimerStartedRef.current) {
       const conceptsCount = selectedLesson.concepts?.length || 0;
-      let sectionId = '';
+      let sectionId = "";
 
       if (currentStepIndex <= conceptsCount && currentStepIndex > 0) {
         const conceptIndex = currentStepIndex - 1;
         const concept = selectedLesson.concepts?.[conceptIndex];
         if (concept) sectionId = `concept_${concept.id}`;
       } else if (currentStepIndex === conceptsCount + 2) {
-        sectionId = 'general_exercises';
+        sectionId = "general_exercises";
       }
 
       if (sectionId) {
@@ -99,14 +107,14 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
     return () => {
       if (selectedLesson && sectionTimerStartedRef.current) {
         const conceptsCount = selectedLesson.concepts?.length || 0;
-        let sectionId = '';
+        let sectionId = "";
 
         if (currentStepIndex <= conceptsCount && currentStepIndex > 0) {
           const conceptIndex = currentStepIndex - 1;
           const concept = selectedLesson.concepts?.[conceptIndex];
           if (concept) sectionId = `concept_${concept.id}`;
         } else if (currentStepIndex === conceptsCount + 2) {
-          sectionId = 'general_exercises';
+          sectionId = "general_exercises";
         }
 
         if (sectionId) {
@@ -129,7 +137,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   // Helper function to get answer text from option key
   const getAnswerText = (key: string): string => {
     const index = getOptionIndex(key);
-    return exercise.answers[index] || '';
+    return exercise.answers[index] || "";
   };
 
   // Keyboard shortcuts
@@ -139,12 +147,17 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       const num = parseInt(e.key);
       if (num >= 1 && num <= exercise.answers.length) {
         setSelectedOptionKey(getOptionKey(num - 1));
-      } else if (e.key === 'Enter' && selectedOptionKey && !isRevealed && !isSubmitting) {
+      } else if (
+        e.key === "Enter" &&
+        selectedOptionKey &&
+        !isRevealed &&
+        !isSubmitting
+      ) {
         handleSubmit();
       }
     };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedOptionKey, isRevealed, isSubmitting, exercise.answers]);
 
@@ -157,7 +170,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       let answerKey = exerciseData.userAnswer;
       if (answerKey.length > 1) {
         // It's full text, find the index and convert to letter code
-        const index = exercise.answers.findIndex(a => a === answerKey);
+        const index = exercise.answers.findIndex((a) => a === answerKey);
         if (index >= 0) {
           answerKey = getOptionKey(index);
         }
@@ -166,7 +179,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       setIsRevealed(true);
       setIsCorrect(true);
       setFeedbackMessage("Already answered correctly!");
-      
+
       // Initialize lastResult with score data if available in exerciseData
       // Derive a result object from cached/stored data to display scores
       if (exerciseData.cachedResponse) {
@@ -205,7 +218,9 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   const handleSubmit = async () => {
     if (!onAnswer) return;
     if (!isOnline) {
-      setFeedbackMessage("You are offline. Answer will be submitted when online.");
+      setFeedbackMessage(
+        "You are offline. Answer will be submitted when online.",
+      );
       return;
     }
 
@@ -220,16 +235,18 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
       }
 
       // Validate exercise ID
-      if (!exercise.id || typeof exercise.id !== 'number') {
-        console.error('[ExerciseCard] Invalid exercise ID:', exercise.id);
-        setFeedbackMessage("Error: Invalid exercise ID. Please refresh the page.");
+      if (!exercise.id || typeof exercise.id !== "number") {
+        console.error("[ExerciseCard] Invalid exercise ID:", exercise.id);
+        setFeedbackMessage(
+          "Error: Invalid exercise ID. Please refresh the page.",
+        );
         setIsSubmitting(false);
         return;
       }
 
       // Debug logging
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[ExerciseCard] Submitting answer:', {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[ExerciseCard] Submitting answer:", {
           exerciseId: exercise.id,
           answer: selectedOptionKey,
           answerType: typeof selectedOptionKey,
@@ -243,23 +260,27 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
         const correct = selectedAnswerText === exercise.correct_answer;
         result = {
           success: true,
-          message: correct ? "Correct! (Practice Attempt)" : "Incorrect. Try again (Practice Attempt).",
+          message: correct
+            ? "Correct! (Practice Attempt)"
+            : "Incorrect. Try again (Practice Attempt).",
           isCorrect: correct,
           code: correct ? 200 : 400,
-          content: null
+          content: null,
         };
-        await new Promise(resolve => setTimeout(resolve, 300)); // simulate delay
+        await new Promise((resolve) => setTimeout(resolve, 300)); // simulate delay
       } else {
         result = await onAnswer(exercise.id, selectedOptionKey);
       }
       setLastResult(result); // Store result
       setIsRevealed(true);
 
-      if (result && typeof result === 'object') {
+      if (result && typeof result === "object") {
         // Determine if answer is correct
-        const isAnswerCorrect = result.isCorrect === true ||
+        const isAnswerCorrect =
+          result.isCorrect === true ||
           result.success === true ||
-          (result.code === 200 && result.message?.toLowerCase().includes('already answered'));
+          (result.code === 200 &&
+            result.message?.toLowerCase().includes("already answered"));
 
         setIsCorrect(isAnswerCorrect);
 
@@ -291,16 +312,16 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
             const errorMessages = Object.entries(result.errors)
               .flatMap(([field, errors]) =>
                 Array.isArray(errors)
-                  ? errors.map(err => `${field}: ${err}`)
-                  : [`${field}: ${errors}`]
+                  ? errors.map((err) => `${field}: ${err}`)
+                  : [`${field}: ${errors}`],
               )
-              .join(', ');
+              .join(", ");
             message = errorMessages || message;
           }
           message = `Validation Error: ${message}`;
         } else if (code >= 500) {
           message = "We could not check your answer. Please try again.";
-          setRetryCount(prev => prev + 1);
+          setRetryCount((prev) => prev + 1);
         }
 
         setFeedbackMessage(message);
@@ -326,7 +347,7 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
     } catch (error) {
       console.error("Failed to submit answer:", error);
       setFeedbackMessage("An error occurred. Please try again.");
-      setRetryCount(prev => prev + 1);
+      setRetryCount((prev) => prev + 1);
     } finally {
       setIsSubmitting(false);
     }
@@ -352,20 +373,38 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
   };
 
   return (
-    <Card className={cn("border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10", success && "animate-pulse")}>
+    <Card
+      className={cn(
+        "border-blue-200 bg-blue-50 dark:border-blue-800/30 dark:bg-blue-900/10",
+        success && "animate-pulse",
+      )}
+    >
       <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
         <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-blue-900 dark:text-blue-100 sm:text-base">
-            <Badge variant="secondary" className="h-5 px-1.5 text-[10px] sm:text-xs">Q{index + 1}</Badge>
+            <Badge
+              variant="secondary"
+              className="h-5 px-1.5 text-[10px] sm:text-xs"
+            >
+              Q{index + 1}
+            </Badge>
             Exercise Content
           </CardTitle>
           <div className="flex items-center gap-2">
-            {isFirstTry && <Badge variant="secondary" className="text-xs">First Try!</Badge>}
-            {attempts > 0 && <Badge variant="outline" className="text-xs">Attempts: {attempts}</Badge>}
+            {isFirstTry && (
+              <Badge variant="secondary" className="text-xs">
+                First Try!
+              </Badge>
+            )}
+            {attempts > 0 && (
+              <Badge variant="outline" className="text-xs">
+                Attempts: {attempts}
+              </Badge>
+            )}
             <div className="flex items-center text-xs text-slate-500">
               <Clock className="mr-1 size-3" />
               {formatTime(elapsedTime)}
@@ -380,21 +419,30 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
           </p>
         </div>
 
-        {exercise.image_path && (exercise.image_path.startsWith('/') || exercise.image_path.startsWith('http')) && (
-          <div className="my-2">
-            <Image
-              src={exercise.image_path}
-              alt={('title' in exercise ? exercise.title : null) || "Exercise illustration"}
-              width={800}
-              height={450}
-              className="h-auto max-w-full rounded-lg"
-              style={{ width: "100%", height: "auto" }}
-              unoptimized
-            />
-          </div>
-        )}
+        {exercise.image_path &&
+          (exercise.image_path.startsWith("/") ||
+            exercise.image_path.startsWith("http")) && (
+            <div className="my-2">
+              <Image
+                src={exercise.image_path}
+                alt={
+                  ("title" in exercise ? exercise.title : null) ||
+                  "Exercise illustration"
+                }
+                width={800}
+                height={450}
+                className="h-auto max-w-full rounded-lg"
+                style={{ width: "100%", height: "auto" }}
+                unoptimized
+              />
+            </div>
+          )}
         {exercise.audio_path && (
-          <AudioPlayer src={exercise.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+          <AudioPlayer
+            src={exercise.audio_path}
+            title="Pronunciation / Audio"
+            className="my-3 border-2"
+          />
         )}
 
         <RadioGroup
@@ -416,32 +464,47 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                   !isRevealed && isSelected
                     ? "scale-[1.02] border-blue-500 bg-blue-50 shadow-sm dark:border-blue-400 dark:bg-blue-900/20"
                     : !isRevealed
-                    ? "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900"
-                    : "",
+                      ? "border-transparent bg-white hover:bg-slate-50 dark:bg-slate-950 dark:hover:bg-slate-900"
+                      : "",
                   // For selected answer: use API response (isCorrect state)
                   isRevealed && isSelected && isCorrect
                     ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20"
                     : isRevealed && isSelected && !isCorrect
-                    ? "border-red-500 bg-red-50 dark:border-red-400 dark:bg-red-900/20"
-                    : isRevealed && !isSelected && isCorrectAnswer
-                    ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20"
-                    : isRevealed && !isSelected
-                    ? "border-transparent bg-white dark:bg-slate-950"
-                    : "",
-                  shake && isSelected && "animate-shake"
+                      ? "border-red-500 bg-red-50 dark:border-red-400 dark:bg-red-900/20"
+                      : isRevealed && !isSelected && isCorrectAnswer
+                        ? "border-green-500 bg-green-50 dark:border-green-400 dark:bg-green-900/20"
+                        : isRevealed && !isSelected
+                          ? "border-transparent bg-white dark:bg-slate-950"
+                          : "",
+                  shake && isSelected && "animate-shake",
                 )}
-                title={isRevealed ? (isCorrectAnswer ? "Correct answer" : "Incorrect answer") : ""}
+                title={
+                  isRevealed
+                    ? isCorrectAnswer
+                      ? "Correct answer"
+                      : "Incorrect answer"
+                    : ""
+                }
               >
-                <RadioGroupItem value={optionKey} id={`ex-${exercise.id}-opt-${i}`} />
+                <RadioGroupItem
+                  value={optionKey}
+                  id={`ex-${exercise.id}-opt-${i}`}
+                />
                 <Label
                   htmlFor={`ex-${exercise.id}-opt-${i}`}
                   className="flex-1 cursor-pointer py-1 text-sm sm:text-base"
                 >
                   {answer}
                 </Label>
-                {isRevealed && isSelected && isCorrect && <CheckCircle2 className="size-4 text-green-600" />}
-                {isRevealed && isSelected && !isCorrect && <X className="size-4 text-red-600" />}
-                {isRevealed && !isSelected && isCorrectAnswer && <CheckCircle2 className="size-4 text-green-600" />}
+                {isRevealed && isSelected && isCorrect && (
+                  <CheckCircle2 className="size-4 text-green-600" />
+                )}
+                {isRevealed && isSelected && !isCorrect && (
+                  <X className="size-4 text-red-600" />
+                )}
+                {isRevealed && !isSelected && isCorrectAnswer && (
+                  <CheckCircle2 className="size-4 text-green-600" />
+                )}
               </div>
             );
           })}
@@ -480,24 +543,40 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                 <div className="mt-3 space-y-1 text-sm">
                   {lastResult.content.score && (
                     <p className="font-medium">
-                      Score: {lastResult.content.score}% on {lastResult.content.attempt} attempt
+                      Score: {lastResult.content.score}% on{" "}
+                      {lastResult.content.attempt} attempt
                     </p>
                   )}
-                  {lastResult.content.concept_total_score && lastResult.content.concept_weight && (
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Concept Total: {lastResult.content.concept_total_score}/{lastResult.content.concept_weight}
-                    </p>
-                  )}
-                  {lastResult.content.general_exercise_total_score && lastResult.content.general_exercise_weight && (
-                    <p className="text-xs text-slate-600 dark:text-slate-400">
-                      Exercise Total: {lastResult.content.general_exercise_total_score}/{lastResult.content.general_exercise_weight}
-                    </p>
-                  )}
+                  {lastResult.content.concept_total_score &&
+                    lastResult.content.concept_weight && (
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        Concept Total: {lastResult.content.concept_total_score}/
+                        {lastResult.content.concept_weight}
+                      </p>
+                    )}
+                  {lastResult.content.general_exercise_total_score &&
+                    lastResult.content.general_exercise_weight && (
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
+                        Exercise Total:{" "}
+                        {lastResult.content.general_exercise_total_score}/
+                        {lastResult.content.general_exercise_weight}
+                      </p>
+                    )}
                 </div>
               )}
-              {!isOnline && <p className="text-sm text-orange-600"><AlertTriangle className="mr-1 inline size-4" />Offline mode</p>}
+              {!isOnline && (
+                <p className="text-sm text-orange-600">
+                  <AlertTriangle className="mr-1 inline size-4" />
+                  Offline mode
+                </p>
+              )}
               {retryCount > 0 && (
-                <Button variant="outline" size="sm" onClick={handleRetry} className="mt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRetry}
+                  className="mt-2"
+                >
                   <RotateCcw className="mr-1 size-4" /> Retry ({retryCount})
                 </Button>
               )}
@@ -518,17 +597,20 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                 <div className="mt-3 space-y-2">
                   {!canShowSolution ? (
                     <div className="flex flex-col gap-2">
-                      <p className={cn(
-                        "text-sm font-medium",
-                        attemptsRemaining === 1 
-                          ? "flex items-center text-amber-600 dark:text-amber-500" 
-                          : "text-slate-600 dark:text-slate-400"
-                      )}>
-                        {attemptsRemaining === 1 && <AlertTriangle className="mr-1.5 size-4" />}
-                        {attemptsRemaining === 1 
+                      <p
+                        className={cn(
+                          "text-sm font-medium",
+                          attemptsRemaining === 1
+                            ? "flex items-center text-amber-600 dark:text-amber-500"
+                            : "text-slate-600 dark:text-slate-400",
+                        )}
+                      >
+                        {attemptsRemaining === 1 && (
+                          <AlertTriangle className="mr-1.5 size-4" />
+                        )}
+                        {attemptsRemaining === 1
                           ? "Complete 4 attempts before viewing solution"
-                          : `${attemptsRemaining} more attempt${attemptsRemaining !== 1 ? 's' : ''} before the solution is revealed`
-                        }
+                          : `${attemptsRemaining} more attempt${attemptsRemaining !== 1 ? "s" : ""} before the solution is revealed`}
                       </p>
                       <div className="flex flex-col gap-2 sm:flex-row">
                         <Button
@@ -545,27 +627,32 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
                   ) : (
                     <>
                       <p className="text-sm text-slate-600 dark:text-slate-400">
-                        The correct answer is: <strong>{exercise.correct_answer}</strong>
+                        The correct answer is:{" "}
+                        <strong>{exercise.correct_answer}</strong>
                       </p>
-                      {exercise.solution_steps && exercise.solution_steps.length > 0 && (
-                        <div className="mt-2">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowSolutionDetails(!showSolutionDetails)}
-                            className="h-8 text-xs"
-                          >
-                            {showSolutionDetails ? "Hide" : "Show"} Solution Steps
-                          </Button>
-                          {showSolutionDetails && (
-                            <ol className="mt-2 list-inside list-decimal space-y-1 text-sm text-slate-600 dark:text-slate-400">
-                              {exercise.solution_steps.map((step, idx) => (
-                                <li key={idx}>{step}</li>
-                              ))}
-                            </ol>
-                          )}
-                        </div>
-                      )}
+                      {exercise.solution_steps &&
+                        exercise.solution_steps.length > 0 && (
+                          <div className="mt-2">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() =>
+                                setShowSolutionDetails(!showSolutionDetails)
+                              }
+                              className="h-8 text-xs"
+                            >
+                              {showSolutionDetails ? "Hide" : "Show"} Solution
+                              Steps
+                            </Button>
+                            {showSolutionDetails && (
+                              <ol className="mt-2 list-inside list-decimal space-y-1 text-sm text-slate-600 dark:text-slate-400">
+                                {exercise.solution_steps.map((step, idx) => (
+                                  <li key={idx}>{step}</li>
+                                ))}
+                              </ol>
+                            )}
+                          </div>
+                        )}
                       <Button
                         variant="default"
                         size="sm"
@@ -586,13 +673,21 @@ export function ExerciseCard({ exercise, index, onAnswer }: ExerciseCardProps) {
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             <div className="mx-4 max-w-sm rounded-md bg-white p-4 dark:bg-slate-800">
               <p className="mb-4 text-sm">
-                {isAlreadyCompleted 
+                {isAlreadyCompleted
                   ? "Are you sure you want to try again? This will just be for practice and won't affect your previously recorded score."
                   : "Are you sure you want to try again? This will clear your current selection."}
               </p>
               <div className="flex gap-2">
-                <Button size="sm" onClick={confirmTryAgain}>Yes</Button>
-                <Button size="sm" variant="outline" onClick={() => setShowConfirmDialog(false)}>Cancel</Button>
+                <Button size="sm" onClick={confirmTryAgain}>
+                  Yes
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowConfirmDialog(false)}
+                >
+                  Cancel
+                </Button>
               </div>
             </div>
           </div>

@@ -7,7 +7,11 @@ import {
   User,
   UserRole,
 } from "@/lib/types/auth";
-import { calculateProfileCompletion, isProfileComplete, getMissingFields } from "@/lib/utils/profile-completion";
+import {
+  calculateProfileCompletion,
+  getMissingFields,
+  isProfileComplete,
+} from "@/lib/utils/profile-completion";
 
 interface AuthState {
   // State
@@ -72,7 +76,11 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   hydrate: () => {
     // Prevent duplicate hydration if already hydrated or currently hydrating
     const state = get();
-    if (state.isHydrated || state.isHydrating || typeof window === "undefined") {
+    if (
+      state.isHydrated ||
+      state.isHydrating ||
+      typeof window === "undefined"
+    ) {
       return;
     }
 
@@ -97,8 +105,17 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           if (!response.ok) {
             const data = await response.json().catch(() => ({}));
             // Handle specific error codes
-            if (data.code === "NO_AUTH_COOKIES" || data.code === "TOKEN_EXPIRED") {
-              set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true, isHydrating: false });
+            if (
+              data.code === "NO_AUTH_COOKIES" ||
+              data.code === "TOKEN_EXPIRED"
+            ) {
+              set({
+                user: null,
+                isAuthenticated: false,
+                isLoading: false,
+                isHydrated: true,
+                isHydrating: false,
+              });
               return;
             }
             throw new Error(data.message || "No session");
@@ -119,7 +136,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           if (attempt < maxAttempts && !controller.signal.aborted) {
             const delay = backoffDelays[attempt] || 900;
             if (process.env.NODE_ENV !== "production") {
-              console.warn(`Auth hydration attempt ${attempt + 1} failed, retrying in ${delay}ms:`, error);
+              console.warn(
+                `Auth hydration attempt ${attempt + 1} failed, retrying in ${delay}ms:`,
+                error,
+              );
             }
             setTimeout(() => attemptFetch(attempt + 1), delay);
             return;
@@ -128,11 +148,17 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
           // Final failure - set hydrated state to prevent blocking
           if (process.env.NODE_ENV !== "production") {
             // Ignore AbortError if it was caused by us or React strict mode unmounting
-            if (error.name !== 'AbortError') {
+            if (error.name !== "AbortError") {
               console.warn("Auth hydration failed after retries:", error);
             }
           }
-          set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true, isHydrating: false });
+          set({
+            user: null,
+            isAuthenticated: false,
+            isLoading: false,
+            isHydrated: true,
+            isHydrating: false,
+          });
         }
       };
 
@@ -142,7 +168,13 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       if (process.env.NODE_ENV !== "production") {
         console.warn("HttpOnly auth is disabled. This is a dev-only fallback.");
       }
-      set({ user: null, isAuthenticated: false, isLoading: false, isHydrated: true, isHydrating: false });
+      set({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        isHydrated: true,
+        isHydrating: false,
+      });
     }
   },
 
@@ -157,21 +189,21 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
         body: JSON.stringify(credentials),
       });
       const data = await r.json();
-      
+
       if (r.ok && data?.user) {
         set({ user: data.user, isAuthenticated: true, error: null });
         return;
       }
-      
+
       // Handle error responses
       const errorMessage = data?.message || "Login failed";
       set({ error: errorMessage, isAuthenticated: false, user: null });
-      
+
       // Throw error with redirect info if present (for unverified users)
       if (data?.redirect) {
         throw { message: errorMessage, redirect: data.redirect };
       }
-      
+
       throw new Error(errorMessage);
     } catch (error: any) {
       let errorMessage = "An error occurred during login";
@@ -207,7 +239,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       const r = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email_phone: data.user.email, password: "google-oauth" }),
+        body: JSON.stringify({
+          email_phone: data.user.email,
+          password: "google-oauth",
+        }),
       });
       if (!r.ok) throw new Error("Google auth (server) failed");
       const payload = await r.json();
@@ -258,8 +293,10 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
       const updatedUser = { ...currentUser, ...updates };
       get().setUser(updatedUser);
       // Clear banner dismissal to ensure banner reappears if profile becomes incomplete
-      if (typeof window !== 'undefined' && updatedUser.id) {
-        localStorage.removeItem(`profile-completion-banner-dismissed-${updatedUser.id}`);
+      if (typeof window !== "undefined" && updatedUser.id) {
+        localStorage.removeItem(
+          `profile-completion-banner-dismissed-${updatedUser.id}`,
+        );
       }
     }
   },
@@ -347,7 +384,7 @@ export const useAuthStore = create<AuthState>()((set, get) => ({
   hasAcademicFieldsChanged: (updates: Partial<User>): boolean => {
     const user = get().user;
     if (!user) return false;
-    
+
     return (
       Boolean(updates.class && updates.class !== user.class) ||
       Boolean(updates.discipline && updates.discipline !== user.discipline) ||

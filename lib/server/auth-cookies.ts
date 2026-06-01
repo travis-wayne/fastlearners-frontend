@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { defaultCookieOptions, AUTH_TOKEN_COOKIE, AUTH_EXPIRES_COOKIE, REG_TOKEN_COOKIE } from "./cookie-constants";
+
+import {
+  AUTH_EXPIRES_COOKIE,
+  AUTH_TOKEN_COOKIE,
+  defaultCookieOptions,
+  REG_TOKEN_COOKIE,
+} from "./cookie-constants";
 
 export interface AuthCookieData {
   token: string;
@@ -22,12 +28,25 @@ export function setAuthCookiesServer(
 }
 
 export function clearAuthCookiesServer(res: NextResponse): void {
-  res.cookies.set(AUTH_TOKEN_COOKIE, "", { ...defaultCookieOptions, maxAge: 0 });
-  res.cookies.set(AUTH_EXPIRES_COOKIE, "", { ...defaultCookieOptions, maxAge: 0 });
+  res.cookies.set(AUTH_TOKEN_COOKIE, "", {
+    ...defaultCookieOptions,
+    maxAge: 0,
+  });
+  res.cookies.set(AUTH_EXPIRES_COOKIE, "", {
+    ...defaultCookieOptions,
+    maxAge: 0,
+  });
 }
 
-export function setRegTokenServer(res: NextResponse, token: string, maxAgeSeconds: number): void {
-  res.cookies.set(REG_TOKEN_COOKIE, token, { ...defaultCookieOptions, maxAge: maxAgeSeconds });
+export function setRegTokenServer(
+  res: NextResponse,
+  token: string,
+  maxAgeSeconds: number,
+): void {
+  res.cookies.set(REG_TOKEN_COOKIE, token, {
+    ...defaultCookieOptions,
+    maxAge: maxAgeSeconds,
+  });
 }
 
 export function clearRegTokenServer(res: NextResponse): void {

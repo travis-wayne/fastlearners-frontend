@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, startTransition } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import { Bell, Check, Trash2, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -170,7 +170,11 @@ export function NotificationCenter({ className }: NotificationCenterProps) {
           </span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-[calc(100vw-2rem)] sm:w-80" align="end" forceMount>
+      <DropdownMenuContent
+        className="w-[calc(100vw-2rem)] sm:w-80"
+        align="end"
+        forceMount
+      >
         <DropdownMenuLabel className="flex items-center justify-between">
           <span>Notifications</span>
           {unreadCount > 0 && (

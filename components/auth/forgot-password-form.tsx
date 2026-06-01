@@ -98,7 +98,9 @@ export function ForgotPasswordForm({
             <div className="mx-auto mb-2 flex size-10 items-center justify-center rounded-full bg-green-100 sm:mb-4 sm:size-12">
               <Mail className="size-5 text-green-600 sm:size-6" />
             </div>
-            <CardTitle className="text-lg sm:text-xl">Check your email</CardTitle>
+            <CardTitle className="text-lg sm:text-xl">
+              Check your email
+            </CardTitle>
             <CardDescription className="text-sm sm:text-base">
               We sent a password reset code to
               <br />
@@ -138,7 +140,9 @@ export function ForgotPasswordForm({
     <div className={cn("flex flex-col gap-4 sm:gap-6", className)} {...props}>
       <Card>
         <CardHeader className="space-y-1 sm:space-y-1.5">
-          <CardTitle className="text-lg sm:text-xl">Reset your password</CardTitle>
+          <CardTitle className="text-lg sm:text-xl">
+            Reset your password
+          </CardTitle>
           <CardDescription className="text-sm sm:text-base">
             Enter your email address and we&apos;ll send you a code to reset
             your password
@@ -192,7 +196,10 @@ export function ForgotPasswordForm({
 
             <div className="mt-4 text-center text-sm">
               Remember your password?{" "}
-              <Link href="/auth/login" className="px-1 py-2 underline underline-offset-4">
+              <Link
+                href="/auth/login"
+                className="px-1 py-2 underline underline-offset-4"
+              >
                 Sign in
               </Link>
             </div>

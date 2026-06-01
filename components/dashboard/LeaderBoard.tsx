@@ -54,12 +54,15 @@ export function LeaderBoard({
             {entries.map((student) => (
               <div
                 key={student.rank}
-                className={`flex items-center gap-component-md rounded-lg border p-component-sm transition-colors sm:p-component-md ${student.isCurrentUser
+                className={`flex items-center gap-component-md rounded-lg border p-component-sm transition-colors sm:p-component-md ${
+                  student.isCurrentUser
                     ? "border-primary/30 bg-primary/10"
                     : "hover:bg-muted"
-                  }`}
+                }`}
               >
-                <div className="w-5 text-sm font-bold sm:w-6">#{student.rank}</div>
+                <div className="w-5 text-sm font-bold sm:w-6">
+                  #{student.rank}
+                </div>
                 <Avatar className="size-7 sm:size-8">
                   {student.avatar ? (
                     <AvatarImage src={student.avatar} alt={student.name} />

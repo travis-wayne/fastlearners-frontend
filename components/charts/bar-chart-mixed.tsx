@@ -60,7 +60,10 @@ export function BarChartMixed() {
         <CardDescription>January - June 2024</CardDescription> */}
       </CardHeader>
       <CardContent className="flex-1 p-component-sm sm:p-component-md">
-        <ChartContainer config={chartConfig} className="h-[200px] w-full sm:h-[250px] lg:h-[300px]">
+        <ChartContainer
+          config={chartConfig}
+          className="h-[200px] w-full sm:h-[250px] lg:h-[300px]"
+        >
           <BarChart
             accessibilityLayer
             data={chartData}
@@ -91,7 +94,8 @@ export function BarChartMixed() {
       </CardContent>
       <CardFooter className="flex-col gap-component-xs text-pretty p-component-sm text-center sm:p-component-md">
         <div className="flex items-center justify-center gap-2 text-xs font-medium leading-none sm:text-sm">
-          Trending up by 5.2% this month <TrendingUp className="size-3 sm:size-4" />
+          Trending up by 5.2% this month{" "}
+          <TrendingUp className="size-3 sm:size-4" />
         </div>
         <div className="text-xs leading-none text-muted-foreground sm:text-sm">
           Results for the top 5 browsers

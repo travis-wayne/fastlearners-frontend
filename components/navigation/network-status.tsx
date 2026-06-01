@@ -275,7 +275,12 @@ export function NetworkStatus({
             </div>
 
             {showPing && ping !== null && quality !== "offline" && (
-              <span className={cn("xs:inline-flex hidden font-mono text-xs", config.color)}>
+              <span
+                className={cn(
+                  "xs:inline-flex hidden font-mono text-xs",
+                  config.color,
+                )}
+              >
                 {ping}ms
               </span>
             )}
@@ -287,7 +292,10 @@ export function NetworkStatus({
             )}
           </div>
         </TooltipTrigger>
-        <TooltipContent side="bottom" className="max-w-[calc(100vw-2rem)] sm:max-w-xs">
+        <TooltipContent
+          side="bottom"
+          className="max-w-[calc(100vw-2rem)] sm:max-w-xs"
+        >
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-2">

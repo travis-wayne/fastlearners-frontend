@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -18,7 +23,12 @@ export async function GET(
     const { id } = params;
 
     if (!id) {
-      return createErrorResponse("Invalid request: id is required", 400, undefined, requestId);
+      return createErrorResponse(
+        "Invalid request: id is required",
+        400,
+        undefined,
+        requestId,
+      );
     }
 
     const controller = new AbortController();
@@ -35,7 +45,7 @@ export async function GET(
           },
           cache: "no-store",
           signal: controller.signal,
-        }
+        },
       );
 
       clearTimeout(timeoutId);
@@ -58,9 +68,12 @@ export async function GET(
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Retry on network errors
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryUpstream = await fetch(
             `${UPSTREAM_BASE}/guardian/children/request/cancel/${id}`,
@@ -71,30 +84,40 @@ export async function GET(
                 Authorization: `Bearer ${auth.token}`,
               },
               cache: "no-store",
-            }
+            },
           );
 
           // Check if response is JSON
           const retryContentType = retryUpstream.headers.get("content-type");
           let retryData: any = null;
-          if (retryContentType && retryContentType.includes("application/json")) {
+          if (
+            retryContentType &&
+            retryContentType.includes("application/json")
+          ) {
             try {
               retryData = await retryUpstream.json();
             } catch (e) {
-              console.error(`[API] Failed to parse JSON from ${retryUpstream.url}:`, e);
+              console.error(
+                `[API] Failed to parse JSON from ${retryUpstream.url}:`,
+                e,
+              );
             }
           }
-          
+
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to cancel child request after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to cancel child request after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (err: any) {

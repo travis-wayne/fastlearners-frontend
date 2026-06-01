@@ -1,11 +1,11 @@
 import Link from "next/link";
 import {
-  Upload,
+  ArrowRight,
   BookOpen,
+  FolderCog,
   Layers,
   Trash2,
-  FolderCog,
-  ArrowRight,
+  Upload,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -41,7 +41,9 @@ export default function SuperadminOverviewPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Upload Content</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Upload Content
+            </CardTitle>
             <Upload className="size-4 text-muted-foreground group-hover:text-primary" />
           </CardHeader>
           <CardContent>
@@ -59,7 +61,9 @@ export default function SuperadminOverviewPage() {
 
         <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Browse Lessons</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Browse Lessons
+            </CardTitle>
             <BookOpen className="size-4 text-muted-foreground group-hover:text-primary" />
           </CardHeader>
           <CardContent>

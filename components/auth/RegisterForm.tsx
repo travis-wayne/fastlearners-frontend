@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -111,7 +111,9 @@ export function RegisterForm({
       setReferralStatus("checking");
       const response = await authApi.verifyReferralCode(code);
       setReferralStatus("verified");
-      setReferralMessage(response.message ?? "Referral code verified successfully!");
+      setReferralMessage(
+        response.message ?? "Referral code verified successfully!",
+      );
     } catch (err: any) {
       setReferralStatus("invalid");
       setReferralMessage(
@@ -155,12 +157,17 @@ export function RegisterForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-component-md sm:gap-component-lg", className)}
+      className={cn(
+        "flex flex-col gap-component-md sm:gap-component-lg",
+        className,
+      )}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
       <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
-        <h1 className="text-heading-xl font-bold sm:text-2xl">Create your account</h1>
+        <h1 className="text-heading-xl font-bold sm:text-2xl">
+          Create your account
+        </h1>
         <p className="text-balance text-sm text-muted-foreground sm:text-base">
           Enter your email to get started with Fast Learners
         </p>
@@ -302,7 +309,10 @@ export function RegisterForm({
 
       <div className="text-center text-sm">
         Already have an account?{" "}
-        <Link href="/auth/login" className="px-1 py-2 underline underline-offset-4">
+        <Link
+          href="/auth/login"
+          className="px-1 py-2 underline underline-offset-4"
+        >
           Sign in
         </Link>
       </div>

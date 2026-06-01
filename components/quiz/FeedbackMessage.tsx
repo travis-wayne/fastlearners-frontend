@@ -1,6 +1,7 @@
 "use client";
 
-import { CheckCircle2, XCircle, AlertCircle, Info } from "lucide-react";
+import { AlertCircle, CheckCircle2, Info, XCircle } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 export type FeedbackType = "success" | "error" | "warning" | "info";
@@ -37,7 +38,7 @@ export function FeedbackMessage({
       className={cn(
         "flex items-start gap-2 rounded-lg border p-3 sm:gap-3 sm:p-4",
         styles[type],
-        className
+        className,
       )}
     >
       <Icon className="mt-0.5 size-4 shrink-0 sm:size-5" />
@@ -45,4 +46,3 @@ export function FeedbackMessage({
     </div>
   );
 }
-

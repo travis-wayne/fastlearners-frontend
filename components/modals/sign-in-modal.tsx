@@ -8,12 +8,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
 import { Button } from "@/components/ui/button";
-import { Modal } from "@/components/ui/modal";
 import { DialogTitle } from "@/components/ui/dialog";
+import { Modal } from "@/components/ui/modal";
 import { Icons } from "@/components/shared/icons";
 
 export function SignInModal({
@@ -40,7 +40,9 @@ export function SignInModal({
           <a href={siteConfig.url}>
             <Icons.logo className="size-10 sm:size-12" />
           </a>
-          <h3 className="font-urban text-heading-lg font-bold sm:text-heading-xl">Sign In</h3>
+          <h3 className="font-urban text-heading-lg font-bold sm:text-heading-xl">
+            Sign In
+          </h3>
           <p className="responsive-text text-muted-foreground">
             This is strictly for demo purposes - only your email and profile
             picture will be stored.

@@ -11,10 +11,8 @@ export const MAX_UPLOAD_SIZE_BYTES = 10 * 1024 * 1024; // 10MB
 export function isValidUploadFile(file: File): boolean {
   const lowerName = file.name.toLowerCase();
   const hasValidExtension = VALID_UPLOAD_EXTENSIONS.some((ext) =>
-    lowerName.endsWith(ext)
+    lowerName.endsWith(ext),
   );
   const hasValidType = VALID_UPLOAD_MIME_TYPES.includes(file.type);
   return hasValidExtension || hasValidType;
 }
-
-

@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Volume2 } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface AudioPlayerProps {
@@ -10,7 +11,11 @@ interface AudioPlayerProps {
   className?: string;
 }
 
-export function AudioPlayer({ src, title = "Audio", className }: AudioPlayerProps) {
+export function AudioPlayer({
+  src,
+  title = "Audio",
+  className,
+}: AudioPlayerProps) {
   return (
     <Card className={cn("border", className)}>
       <CardHeader className="p-3 pb-2 sm:p-4 sm:pb-3">

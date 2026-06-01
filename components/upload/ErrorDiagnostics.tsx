@@ -201,7 +201,9 @@ export function ErrorDiagnostics({
                   ) : (
                     <FileText className="size-4" />
                   )}
-                  <span className="text-xs font-medium sm:text-sm">{diagnostic.message}</span>
+                  <span className="text-xs font-medium sm:text-sm">
+                    {diagnostic.message}
+                  </span>
                 </div>
                 {diagnostic.solution && (
                   <AlertDescription className="mt-2 text-xs sm:text-sm">
@@ -221,7 +223,11 @@ export function ErrorDiagnostics({
             </h4>
             <div className="flex flex-wrap gap-1">
               {requiredColumns.map((column) => (
-                <Badge key={column} variant="outline" className="text-[10px] sm:text-xs">
+                <Badge
+                  key={column}
+                  variant="outline"
+                  className="text-[10px] sm:text-xs"
+                >
                   {column}
                 </Badge>
               ))}

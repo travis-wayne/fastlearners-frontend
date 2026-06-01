@@ -39,7 +39,10 @@ function getRequiredFieldsForStudent(user: User): string[] {
   const userClass = user.class;
 
   // Only include discipline if class starts with SS or SSS
-  if (userClass && (userClass.startsWith("SS") || userClass.startsWith("SSS"))) {
+  if (
+    userClass &&
+    (userClass.startsWith("SS") || userClass.startsWith("SSS"))
+  ) {
     return [...baseFields, "discipline"];
   }
 
@@ -98,7 +101,9 @@ export function calculateProfileCompletion(user: User): number {
     }
   }
 
-  return required.length > 0 ? Math.round((filled / required.length) * 100) : 100;
+  return required.length > 0
+    ? Math.round((filled / required.length) * 100)
+    : 100;
 }
 
 /**

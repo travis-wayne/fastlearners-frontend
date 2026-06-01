@@ -2,12 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { 
-  Loader2, 
-  AlertCircle, 
-  User, 
+import {
+  AlertCircle,
+  ArrowLeft,
+  Loader2,
   ShieldAlert,
-  ArrowLeft
+  User,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -28,7 +28,9 @@ interface RejectConsentFormProps {
 
 export function RejectConsentForm({ token }: RejectConsentFormProps) {
   const [name, setName] = useState("");
-  const [status, setStatus] = useState<"idle" | "submitting" | "success" | "error">("idle");
+  const [status, setStatus] = useState<
+    "idle" | "submitting" | "success" | "error"
+  >("idle");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleReject = async () => {
@@ -49,7 +51,10 @@ export function RejectConsentForm({ token }: RejectConsentFormProps) {
         toast.success("Consent rejected.");
       } else {
         setStatus("error");
-        setErrorMessage(data.message || "Failed to reject consent. The link may be expired or invalid.");
+        setErrorMessage(
+          data.message ||
+            "Failed to reject consent. The link may be expired or invalid.",
+        );
         toast.error(data.message || "Failed to reject consent.");
       }
     } catch (error: any) {
@@ -67,16 +72,18 @@ export function RejectConsentForm({ token }: RejectConsentFormProps) {
             <div className="flex size-16 items-center justify-center rounded-full bg-amber-100 text-amber-600">
               <AlertCircle className="size-10" />
             </div>
-            <CardTitle className="text-2xl font-bold">Consent Rejected</CardTitle>
+            <CardTitle className="text-2xl font-bold">
+              Consent Rejected
+            </CardTitle>
             <CardDescription className="text-base">
               Consent rejected. Your child has been notified.
             </CardDescription>
             <div className="mt-6 flex w-full flex-col gap-3">
-              <p className="text-sm text-muted-foreground">Changed your mind?</p>
+              <p className="text-sm text-muted-foreground">
+                Changed your mind?
+              </p>
               <Button asChild variant="outline">
-                <Link href={`/${token}/accept`}>
-                  Accept consent here
-                </Link>
+                <Link href={`/${token}/accept`}>Accept consent here</Link>
               </Button>
             </div>
           </CardContent>
@@ -92,9 +99,12 @@ export function RejectConsentForm({ token }: RejectConsentFormProps) {
           <div className="mx-auto mb-4 flex size-12 items-center justify-center rounded-full bg-destructive/10 text-destructive">
             <ShieldAlert className="size-8" />
           </div>
-          <CardTitle className="text-2xl font-bold text-foreground">Reject Parental Consent</CardTitle>
+          <CardTitle className="text-2xl font-bold text-foreground">
+            Reject Parental Consent
+          </CardTitle>
           <CardDescription className="text-muted-foreground">
-            You are about to reject consent for your child to participate in FastLearners.
+            You are about to reject consent for your child to participate in
+            FastLearners.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-6 pt-2">
@@ -140,11 +150,18 @@ export function RejectConsentForm({ token }: RejectConsentFormProps) {
               )}
             </Button>
 
-            <Button asChild variant="ghost" className="w-full text-muted-foreground">
-                <Link href={`/${token}/accept`} className="flex items-center gap-2">
-                    <ArrowLeft className="size-4" />
-                    Back to Accept
-                </Link>
+            <Button
+              asChild
+              variant="ghost"
+              className="w-full text-muted-foreground"
+            >
+              <Link
+                href={`/${token}/accept`}
+                className="flex items-center gap-2"
+              >
+                <ArrowLeft className="size-4" />
+                Back to Accept
+              </Link>
             </Button>
           </div>
         </CardContent>

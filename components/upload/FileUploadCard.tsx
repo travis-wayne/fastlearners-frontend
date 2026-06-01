@@ -144,7 +144,9 @@ export function FileUploadCard({
           {success && <Check className="size-4 text-green-600" />}
           {disabled && <AlertCircle className="size-4 text-yellow-600" />}
         </CardTitle>
-        <CardDescription className="text-xs sm:text-sm">{description}</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">
+          {description}
+        </CardDescription>
       </CardHeader>
 
       <CardContent className="space-y-component-sm p-component-sm sm:space-y-component-md sm:p-component-md">
@@ -193,7 +195,10 @@ export function FileUploadCard({
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <Badge variant={error ? "destructive" : "secondary"} className="text-[10px] sm:text-xs">
+                <Badge
+                  variant={error ? "destructive" : "secondary"}
+                  className="text-[10px] sm:text-xs"
+                >
                   {error ? "Error" : "Ready"}
                 </Badge>
                 {!isUploading && (

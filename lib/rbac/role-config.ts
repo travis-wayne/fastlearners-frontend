@@ -1,4 +1,4 @@
-import { UserRole, User } from "@/lib/types/auth";
+import { User, UserRole } from "@/lib/types/auth";
 import { isProfileComplete } from "@/lib/utils/profile-completion";
 
 /**
@@ -49,11 +49,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       "/onboarding",
       "/onboarding/complete-profile",
     ],
-    restrictedRoutes: [
-      "/superadmin",
-      "/admin",
-      "/teacher",
-    ],
+    restrictedRoutes: ["/superadmin", "/admin", "/teacher"],
     requiresOnboarding: false,
     canSwitchRoles: false, // Permanent choice - can only switch from Guest → Student once
   },
@@ -71,11 +67,7 @@ export const ROLE_CONFIGURATIONS: Record<UserRole, RoleConfig> = {
       "/onboarding",
       "/onboarding/complete-profile",
     ],
-    restrictedRoutes: [
-      "/superadmin",
-      "/admin",
-      "/teacher",
-    ],
+    restrictedRoutes: ["/superadmin", "/admin", "/teacher"],
     requiresOnboarding: false,
     canSwitchRoles: false, // Permanent choice - can only switch from Guest → Guardian once
   },
@@ -165,10 +157,20 @@ export const PROTECTED_ROUTE_PATTERNS = {
   ],
 
   // Admin and above
-  ADMIN: ["/admin/users", "/admin/classes", "/admin/reports", "/dashboard/admin/lessons"],
+  ADMIN: [
+    "/admin/users",
+    "/admin/classes",
+    "/admin/reports",
+    "/dashboard/admin/lessons",
+  ],
 
   // Teacher and above
-  TEACHER: ["/admin/lessons", "/teacher/create", "/teacher/evaluate", "/dashboard/lessons"],
+  TEACHER: [
+    "/admin/lessons",
+    "/teacher/create",
+    "/teacher/evaluate",
+    "/dashboard/lessons",
+  ],
 
   // Student/Guardian specific
   STUDENT: ["/dashboard/exercises", "/dashboard/progress"],
@@ -227,7 +229,11 @@ export class RBACUtils {
     // Special handling for onboarding routes
     if (route.startsWith("/onboarding")) {
       // Only allow guest, student, and guardian (when incomplete) to access onboarding
-      if (userRole === "guest" || userRole === "student" || userRole === "guardian") {
+      if (
+        userRole === "guest" ||
+        userRole === "student" ||
+        userRole === "guardian"
+      ) {
         if (userRole === "guest") return true;
         return !isProfileComplete(user);
       }
@@ -309,17 +315,21 @@ export class RBACUtils {
   static getHomeRoute(userRole: UserRole | undefined | null): string {
     // Default to guest if role is undefined or null (fallback for when role fetch fails in middleware)
     if (!userRole) {
-      console.log(`Role fetch failed or undefined, falling back to guest home route: ${ROLE_CONFIGURATIONS.guest.homeRoute}`);
+      console.log(
+        `Role fetch failed or undefined, falling back to guest home route: ${ROLE_CONFIGURATIONS.guest.homeRoute}`,
+      );
       return ROLE_CONFIGURATIONS.guest.homeRoute;
     }
-    
+
     // Check if the role exists in configurations
     if (!ROLE_CONFIGURATIONS[userRole]) {
       console.warn(`Unknown role "${userRole}", defaulting to guest route`);
-      console.log(`Invalid role encountered: ${userRole}, falling back to guest home route`);
+      console.log(
+        `Invalid role encountered: ${userRole}, falling back to guest home route`,
+      );
       return ROLE_CONFIGURATIONS.guest.homeRoute;
     }
-    
+
     return ROLE_CONFIGURATIONS[userRole].homeRoute;
   }
 

@@ -1,14 +1,13 @@
 "use client";
 
-import { useState, useEffect, startTransition } from "react";
+import { startTransition, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
+import { GraduationCap, LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
 import { Drawer } from "vaul";
 
 import { Z_INDEX } from "@/config/z-index";
-
 import { useMediaQuery } from "@/hooks/use-media-query";
 import {
   DropdownMenu,
@@ -45,7 +44,11 @@ export function UserAccountNav() {
       <Drawer.Root open={open} onOpenChange={setOpen}>
         <Drawer.Trigger onClick={() => setOpen(true)}>
           <UserAvatar
-            user={{ name: user.name || null, image: user.image || null, avatar: user.avatar || null }}
+            user={{
+              name: user.name || null,
+              image: user.image || null,
+              avatar: user.avatar || null,
+            }}
             className="mobile-touch-target size-9 border"
           />
         </Drawer.Trigger>
@@ -71,10 +74,19 @@ export function UserAccountNav() {
                     {user?.email}
                   </p>
                 )}
+                {user.class && (
+                  <div className="mt-1 flex items-center gap-1">
+                    <GraduationCap className="size-3 text-primary" />
+                    <span className="text-xs font-medium text-primary">{user.class}</span>
+                  </div>
+                )}
               </div>
             </div>
 
-            <ul role="list" className="mb-control-lg mt-1 flex w-full flex-col gap-1 text-muted-foreground">
+            <ul
+              role="list"
+              className="mb-control-lg mt-1 flex w-full flex-col gap-1 text-muted-foreground"
+            >
               {user.role && user.role.includes("admin") ? (
                 <li className="mobile-touch-target rounded-lg text-foreground hover:bg-muted">
                   <Link
@@ -137,7 +149,11 @@ export function UserAccountNav() {
     <DropdownMenu open={open} onOpenChange={setOpen}>
       <DropdownMenuTrigger>
         <UserAvatar
-          user={{ name: user.name || null, image: user.image || null, avatar: user.avatar || null }}
+          user={{
+            name: user.name || null,
+            image: user.image || null,
+            avatar: user.avatar || null,
+          }}
           className="mobile-touch-target size-8 border"
         />
       </DropdownMenuTrigger>
@@ -150,13 +166,22 @@ export function UserAccountNav() {
                 {user?.email}
               </p>
             )}
+            {user.class && (
+              <div className="mt-1 flex items-center gap-1">
+                <GraduationCap className="size-3 text-primary" />
+                <span className="text-xs font-medium text-primary">{user.class}</span>
+              </div>
+            )}
           </div>
         </div>
         <DropdownMenuSeparator />
 
         {user.role && user.role.includes("admin") ? (
           <DropdownMenuItem asChild>
-            <Link href="/admin" className="flex items-center space-x-component-sm">
+            <Link
+              href="/admin"
+              className="flex items-center space-x-component-sm"
+            >
               <Lock className="size-4" />
               <p className="text-sm">Admin</p>
             </Link>
@@ -164,7 +189,10 @@ export function UserAccountNav() {
         ) : null}
 
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="flex items-center space-x-component-sm">
+          <Link
+            href="/dashboard"
+            className="flex items-center space-x-component-sm"
+          >
             <LayoutDashboard className="size-4" />
             <p className="text-sm">Dashboard</p>
           </Link>

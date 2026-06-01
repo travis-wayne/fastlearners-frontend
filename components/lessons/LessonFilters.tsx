@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { selectCanFetchLessons, useLessonsStore } from "@/lib/store/lessons";
+import { cn } from "@/lib/utils";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -23,7 +24,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
-import { cn } from "@/lib/utils";
 
 interface LessonFiltersProps {
   onFiltersChange?: () => void;
@@ -200,22 +200,24 @@ export function LessonFilters({
     return (
       <div className="flex flex-col gap-4 rounded-lg border bg-card p-4 shadow-sm md:flex-row md:items-center md:gap-2">
         {showTitle && (
-            <div className="flex items-center gap-2 pr-2 md:mr-2 md:border-r">
-                <Filter className="size-4 text-primary" />
-                <span className="whitespace-nowrap font-semibold">Filter Lessons</span>
-            </div>
+          <div className="flex items-center gap-2 pr-2 md:mr-2 md:border-r">
+            <Filter className="size-4 text-primary" />
+            <span className="whitespace-nowrap font-semibold">
+              Filter Lessons
+            </span>
+          </div>
         )}
 
         {isLoadingMetadata ? (
           <div className="grid grid-cols-2 gap-2 md:flex md:flex-1">
-             <Skeleton className="h-10 w-full md:w-32" />
-             <Skeleton className="h-10 w-full md:w-32" />
-             <Skeleton className="h-10 w-full md:w-32" />
-             <Skeleton className="h-10 w-full md:w-24" />
+            <Skeleton className="h-10 w-full md:w-32" />
+            <Skeleton className="h-10 w-full md:w-32" />
+            <Skeleton className="h-10 w-full md:w-32" />
+            <Skeleton className="h-10 w-full md:w-24" />
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-2 md:flex md:flex-1 md:items-center">
-             <Select
+            <Select
               value={filters.class}
               onValueChange={(value) => handleFilterChange("class", value)}
             >
@@ -280,26 +282,26 @@ export function LessonFilters({
             </Select>
 
             <div className="col-span-2 flex items-center gap-2 md:col-span-1 md:ml-auto">
-                {hasAnyFilter && (
+              {hasAnyFilter && (
                 <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleClearFilters}
-                    className="h-10 px-3 text-muted-foreground hover:text-foreground"
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearFilters}
+                  className="h-10 px-3 text-muted-foreground hover:text-foreground"
                 >
-                    Clear
+                  Clear
                 </Button>
-                )}
+              )}
 
-                <Button
+              <Button
                 onClick={handleFetchLessons}
                 disabled={!canFetchLessons}
                 size="sm"
                 className="h-10 flex-1 bg-primary font-medium hover:bg-primary/90 md:flex-none md:px-6"
-                >
+              >
                 <Search className="mr-2 size-4" />
                 Find
-                </Button>
+              </Button>
             </div>
           </div>
         )}
@@ -308,7 +310,12 @@ export function LessonFilters({
   }
 
   return (
-    <Card className={cn("border-2 shadow-lg", sidebar && "border-0 bg-transparent shadow-none")}>
+    <Card
+      className={cn(
+        "border-2 shadow-lg",
+        sidebar && "border-0 bg-transparent shadow-none",
+      )}
+    >
       {showTitle && (
         <CardHeader className={cn("pb-4", sidebar && "px-0")}>
           <div className="flex items-center justify-between">
@@ -317,7 +324,9 @@ export function LessonFilters({
                 <Filter className="size-4 text-primary sm:size-5" />
               </div>
               <div>
-                <CardTitle className="text-lg font-bold sm:text-xl">Filter Lessons</CardTitle>
+                <CardTitle className="text-lg font-bold sm:text-xl">
+                  Filter Lessons
+                </CardTitle>
                 <p className="mt-0.5 text-xs text-muted-foreground sm:text-sm">
                   Select filters to find your lessons
                 </p>
@@ -333,7 +342,9 @@ export function LessonFilters({
         </CardHeader>
       )}
 
-      <CardContent className={cn("responsive-padding space-y-6", sidebar && "px-0")}>
+      <CardContent
+        className={cn("responsive-padding space-y-6", sidebar && "px-0")}
+      >
         {error && (
           <Alert variant="destructive" className="border-2">
             <AlertCircle className="size-4" />
@@ -342,10 +353,12 @@ export function LessonFilters({
         )}
 
         {isLoadingMetadata ? (
-          <div className={cn(
-            "grid grid-cols-1 gap-4",
-            !sidebar && "sm:grid-cols-2 lg:grid-cols-4"
-          )}>
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-4",
+              !sidebar && "sm:grid-cols-2 lg:grid-cols-4",
+            )}
+          >
             {Array.from({ length: 4 }).map((_, i) => (
               <div key={i} className="space-y-2">
                 <Skeleton className="h-4 w-20" />
@@ -354,10 +367,12 @@ export function LessonFilters({
             ))}
           </div>
         ) : (
-          <div className={cn(
-            "grid grid-cols-1 gap-4",
-            !sidebar && "md:grid-cols-2 lg:grid-cols-4"
-          )}>
+          <div
+            className={cn(
+              "grid grid-cols-1 gap-4",
+              !sidebar && "md:grid-cols-2 lg:grid-cols-4",
+            )}
+          >
             <div className="space-y-2">
               <label className="flex items-center gap-2 text-sm font-semibold text-foreground">
                 <span>Class</span>
@@ -468,13 +483,19 @@ export function LessonFilters({
         <div className="flex flex-col gap-4 border-t pt-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex flex-wrap items-center gap-2">
             {isFiltersSelected && (
-              <Badge variant="default" className="text-xs font-medium sm:text-sm">
+              <Badge
+                variant="default"
+                className="text-xs font-medium sm:text-sm"
+              >
                 <Filter className="mr-1.5 size-3" />
                 All Filters Applied
               </Badge>
             )}
             {hasAnyFilter && !isFiltersSelected && (
-              <Badge variant="outline" className="text-xs font-medium sm:text-sm">
+              <Badge
+                variant="outline"
+                className="text-xs font-medium sm:text-sm"
+              >
                 <AlertCircle className="mr-1.5 size-3" />
                 Incomplete Selection
               </Badge>

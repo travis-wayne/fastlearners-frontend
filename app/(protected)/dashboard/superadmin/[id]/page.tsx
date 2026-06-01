@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import {
-  getLessonById,
   getErrorMessage,
+  getLessonById,
   type LessonDetail,
 } from "@/lib/api/superadmin-lessons";
 import { Button } from "@/components/ui/button";
@@ -132,7 +132,9 @@ export default function LessonDetailPage() {
                   {lesson.objectives.map((obj, idx) => (
                     <div key={idx} className="space-y-1">
                       {obj.description && (
-                        <p className="text-sm leading-relaxed">{obj.description}</p>
+                        <p className="text-sm leading-relaxed">
+                          {obj.description}
+                        </p>
                       )}
                       {obj.points && obj.points.length > 0 && (
                         <ul className="list-disc pl-5 text-sm">
@@ -145,19 +147,24 @@ export default function LessonDetailPage() {
                   ))}
                 </div>
               )}
-              {lesson.key_concepts && Object.keys(lesson.key_concepts).length > 0 && (
-                <div className="space-y-2">
-                  <div className="text-sm font-medium">Key Concepts</div>
+              {lesson.key_concepts &&
+                Object.keys(lesson.key_concepts).length > 0 && (
                   <div className="space-y-2">
-                    {Object.entries(lesson.key_concepts).map(([key, value]) => (
-                      <div key={key} className="rounded-lg border p-3">
-                        <div className="text-sm font-medium">{key}</div>
-                        <p className="text-sm text-muted-foreground">{value}</p>
-                      </div>
-                    ))}
+                    <div className="text-sm font-medium">Key Concepts</div>
+                    <div className="space-y-2">
+                      {Object.entries(lesson.key_concepts).map(
+                        ([key, value]) => (
+                          <div key={key} className="rounded-lg border p-3">
+                            <div className="text-sm font-medium">{key}</div>
+                            <p className="text-sm text-muted-foreground">
+                              {value}
+                            </p>
+                          </div>
+                        ),
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               <div className="space-y-2">
                 <div className="text-sm font-medium">Summary</div>
                 <p className="text-sm leading-relaxed">{lesson.summary}</p>

@@ -1,7 +1,8 @@
 "use client";
 
-import { cn } from "@/lib/utils";
 import { Check, Circle } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 
 interface SubjectSelectionCardProps {
   id: number;
@@ -31,7 +32,7 @@ export function SubjectSelectionCard({
         isSelected
           ? "border-primary bg-primary/10 shadow-sm"
           : "border-border hover:border-primary/50 hover:bg-muted/50",
-        isDisabled && "cursor-not-allowed opacity-50"
+        isDisabled && "cursor-not-allowed opacity-50",
       )}
     >
       {/* Selection Indicator */}
@@ -41,7 +42,7 @@ export function SubjectSelectionCard({
           selectionType === "checkbox" && "rounded",
           isSelected
             ? "border-primary bg-primary text-primary-foreground"
-            : "border-muted-foreground/40 group-hover:border-primary/50"
+            : "border-muted-foreground/40 group-hover:border-primary/50",
         )}
       >
         {isSelected && <Check className="size-3" strokeWidth={3} />}
@@ -51,7 +52,9 @@ export function SubjectSelectionCard({
       <span
         className={cn(
           "text-sm font-medium transition-colors sm:text-base",
-          isSelected ? "text-primary" : "text-foreground group-hover:text-primary"
+          isSelected
+            ? "text-primary"
+            : "text-foreground group-hover:text-primary",
         )}
       >
         {name}

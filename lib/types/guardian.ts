@@ -2,7 +2,7 @@ export interface GuardianRequestItem {
   id: number;
   guardian_name: string;
   guardian_email: string;
-  status: 'pending' | 'accepted' | 'rejected';
+  status: "pending" | "accepted" | "rejected";
   response_date: string;
 }
 
@@ -11,7 +11,7 @@ export interface ChildRequestItem {
   child_name: string;
   child_email: string;
   class: string;
-  status: 'pending' | 'accepted' | 'cancelled';
+  status: "pending" | "accepted" | "cancelled";
   response_date: string;
 }
 

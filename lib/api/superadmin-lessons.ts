@@ -1,3 +1,7 @@
+// Trash Management Functions
+
+import { TrashedLessonsResponse } from "@/lib/types/superadmin";
+
 // Superadmin lessons API client - uses internal API routes
 
 export interface Class {
@@ -164,7 +168,9 @@ export interface ApiResponse<T = any> {
 }
 
 // Get metadata (classes, subjects, terms, weeks)
-export async function getLessonsMetadata(): Promise<ApiResponse<MetadataResponse>> {
+export async function getLessonsMetadata(): Promise<
+  ApiResponse<MetadataResponse>
+> {
   try {
     const response = await fetch("/api/superadmin/lessons/metadata", {
       method: "GET",
@@ -219,7 +225,9 @@ export async function getLessons(filters: {
 }
 
 // Get specific lesson
-export async function getLessonById(id: number): Promise<ApiResponse<LessonDetail>> {
+export async function getLessonById(
+  id: number,
+): Promise<ApiResponse<LessonDetail>> {
   try {
     const response = await fetch(`/api/v1/superadmin/lessons/lesson/${id}`, {
       method: "GET",
@@ -242,7 +250,9 @@ export async function getLessonById(id: number): Promise<ApiResponse<LessonDetai
 }
 
 // Get lesson content (with concepts, examples, exercises, etc.)
-export async function getLessonContent(id: number): Promise<ApiResponse<LessonContent>> {
+export async function getLessonContent(
+  id: number,
+): Promise<ApiResponse<LessonContent>> {
   try {
     const response = await fetch(`/api/superadmin/lessons/${id}/content`, {
       method: "GET",
@@ -270,12 +280,6 @@ export function getErrorMessage(error: any): string {
   if (typeof error === "string") return error;
   return "An unexpected error occurred";
 }
-
-// Trash Management Functions
-
-import { TrashedLessonsResponse } from "@/lib/types/superadmin";
-
-
 
 // Get trashed lessons with filters
 export async function getTrashedLessons(filters?: {
@@ -310,7 +314,9 @@ export async function getTrashedLessons(filters?: {
 }
 
 // Move lesson to trash
-export async function trashLesson(lessonId: number): Promise<ApiResponse<null>> {
+export async function trashLesson(
+  lessonId: number,
+): Promise<ApiResponse<null>> {
   try {
     const response = await fetch(`/api/superadmin/lessons/${lessonId}/trash`, {
       method: "DELETE",
@@ -333,15 +339,20 @@ export async function trashLesson(lessonId: number): Promise<ApiResponse<null>> 
 }
 
 // Restore lesson from trash
-export async function restoreLesson(lessonId: number): Promise<ApiResponse<null>> {
+export async function restoreLesson(
+  lessonId: number,
+): Promise<ApiResponse<null>> {
   try {
-    const response = await fetch(`/api/superadmin/lessons/${lessonId}/restore`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        Accept: "application/json",
+    const response = await fetch(
+      `/api/superadmin/lessons/${lessonId}/restore`,
+      {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          Accept: "application/json",
+        },
       },
-    });
+    );
 
     const data = await response.json();
     return data;
@@ -356,7 +367,9 @@ export async function restoreLesson(lessonId: number): Promise<ApiResponse<null>
 }
 
 // Permanently delete lesson
-export async function permanentlyDeleteLesson(lessonId: number): Promise<ApiResponse<null>> {
+export async function permanentlyDeleteLesson(
+  lessonId: number,
+): Promise<ApiResponse<null>> {
   try {
     const response = await fetch(`/api/superadmin/lessons/${lessonId}/delete`, {
       method: "DELETE",
@@ -377,4 +390,3 @@ export async function permanentlyDeleteLesson(lessonId: number): Promise<ApiResp
     };
   }
 }
-

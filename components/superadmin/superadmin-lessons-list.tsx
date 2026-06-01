@@ -1,18 +1,18 @@
 "use client";
 
-import React, { useCallback, startTransition } from "react";
+import React, { startTransition, useCallback } from "react";
 import {
   AlertCircle,
+  Award,
   BookOpen,
   Calendar,
+  CheckCircle2,
   Clock,
   FileText,
-  Users,
   PlayCircle,
-  CheckCircle2,
-  TrendingUp,
-  Award,
   Sparkles,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 
 import { useLessonsStore } from "@/lib/store/lessons";
@@ -23,6 +23,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
+
 import { LessonActionsDropdown } from "./lesson-actions-dropdown";
 
 interface SuperadminLessonsListProps {
@@ -59,7 +60,7 @@ function SuperadminLessonCard({
     <Card
       className={cn(
         "group relative cursor-pointer border-2 bg-gradient-to-br from-card via-card to-muted/20 transition-all duration-300 hover:scale-[1.02] hover:border-primary hover:shadow-xl",
-        isCompleted && "ring-2 ring-emerald-500/20"
+        isCompleted && "ring-2 ring-emerald-500/20",
       )}
       onClick={handleClick}
     >
@@ -71,7 +72,7 @@ function SuperadminLessonCard({
             ? "bg-emerald-500"
             : lesson.status === "in_progress"
               ? "bg-primary"
-              : "bg-muted"
+              : "bg-muted",
         )}
       />
 
@@ -84,7 +85,7 @@ function SuperadminLessonCard({
                   "flex size-8 items-center justify-center rounded-xl transition-colors sm:size-10",
                   isCompleted
                     ? "bg-emerald-100 dark:bg-emerald-900/30"
-                    : "bg-primary/10 group-hover:bg-primary/20"
+                    : "bg-primary/10 group-hover:bg-primary/20",
                 )}
               >
                 {isCompleted ? (
@@ -140,11 +141,17 @@ function SuperadminLessonCard({
 
         {/* Term and Week Info */}
         <div className="flex items-center gap-1.5 sm:gap-2">
-          <Badge variant="outline" className="text-[10px] font-medium sm:text-xs">
+          <Badge
+            variant="outline"
+            className="text-[10px] font-medium sm:text-xs"
+          >
             <Calendar className="mr-1 size-3 sm:mr-1.5" />
             {lesson.term} Term
           </Badge>
-          <Badge variant="outline" className="text-[10px] font-medium sm:text-xs">
+          <Badge
+            variant="outline"
+            className="text-[10px] font-medium sm:text-xs"
+          >
             <Clock className="mr-1 size-3 sm:mr-1.5" />
             Week {lesson.week}
           </Badge>
@@ -222,7 +229,7 @@ export function SuperadminLessonsList({
         onLessonSelect?.(lessonId);
       });
     },
-    [onLessonSelect]
+    [onLessonSelect],
   );
 
   const handlePageChange = useCallback(
@@ -231,7 +238,7 @@ export function SuperadminLessonsList({
         fetchLessons(page);
       });
     },
-    [fetchLessons]
+    [fetchLessons],
   );
 
   // Show loading skeleton
@@ -252,7 +259,12 @@ export function SuperadminLessonsList({
         <AlertCircle className="size-4" />
         <AlertDescription className="flex items-center justify-between">
           <span>{error}</span>
-          <Button variant="outline" size="sm" onClick={clearError} className="ml-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={clearError}
+            className="ml-2"
+          >
             Dismiss
           </Button>
         </AlertDescription>
@@ -293,14 +305,18 @@ export function SuperadminLessonsList({
               Lessons
             </h3>
             <p className="text-xs text-muted-foreground sm:text-sm">
-              {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"} available
+              {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}{" "}
+              available
             </p>
           </div>
         </div>
 
         {showPagination && totalPages > 1 && (
           <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
-            <Badge variant="secondary" className="text-xs font-medium sm:text-sm">
+            <Badge
+              variant="secondary"
+              className="text-xs font-medium sm:text-sm"
+            >
               Page {currentPage} of {totalPages}
             </Badge>
           </div>
@@ -354,7 +370,7 @@ export function SuperadminLessonsList({
                     className={cn(
                       "min-w-9 font-medium sm:h-11 sm:min-w-10",
                       currentPage === page &&
-                        "bg-primary shadow-md hover:bg-primary/90"
+                        "bg-primary shadow-md hover:bg-primary/90",
                     )}
                   >
                     {page}

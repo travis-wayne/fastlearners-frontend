@@ -53,9 +53,7 @@ export default function TeacherPerformancePage() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">124</div>
-            <p className="text-xs text-muted-foreground">
-              Across 4 classes
-            </p>
+            <p className="text-xs text-muted-foreground">Across 4 classes</p>
           </CardContent>
         </Card>
         <Card>
@@ -126,30 +124,34 @@ export default function TeacherPerformancePage() {
         <Card className="col-span-3">
           <CardHeader>
             <CardTitle>Recent Assessments</CardTitle>
-            <CardDescription>
-              Average scores on latest quizzes
-            </CardDescription>
+            <CardDescription>Average scores on latest quizzes</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
               <div className="flex items-center justify-between border-b pb-2">
                 <div>
                   <p className="font-medium">Algebra Mid-term</p>
-                  <p className="text-xs text-muted-foreground">Grade 8 Mathematics</p>
+                  <p className="text-xs text-muted-foreground">
+                    Grade 8 Mathematics
+                  </p>
                 </div>
                 <div className="font-semibold text-emerald-600">82% Avg</div>
               </div>
               <div className="flex items-center justify-between border-b pb-2">
                 <div>
                   <p className="font-medium">Cell Structure Quiz</p>
-                  <p className="text-xs text-muted-foreground">Grade 7 Science</p>
+                  <p className="text-xs text-muted-foreground">
+                    Grade 7 Science
+                  </p>
                 </div>
                 <div className="font-semibold text-emerald-600">79% Avg</div>
               </div>
               <div className="flex items-center justify-between">
                 <div>
                   <p className="font-medium">Newton&apos;s Laws Test</p>
-                  <p className="text-xs text-muted-foreground">Grade 9 Physics</p>
+                  <p className="text-xs text-muted-foreground">
+                    Grade 9 Physics
+                  </p>
                 </div>
                 <div className="font-semibold text-amber-600">68% Avg</div>
               </div>

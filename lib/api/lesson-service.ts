@@ -1,5 +1,9 @@
 // Client-side lesson service - uses internal API routes for security
 import {
+  parseUploadError,
+  type ParsedUploadError,
+} from "@/lib/api/upload-error-handler";
+import {
   CHECK_MARKER_REQUIRED_COLUMNS,
   CONCEPT_REQUIRED_COLUMNS,
   convertToAPIFormat,
@@ -14,7 +18,6 @@ import {
   validateCSVFile,
   type CSVValidationResult,
 } from "@/lib/utils/csv-upload-helper";
-import { parseUploadError, type ParsedUploadError } from "@/lib/api/upload-error-handler";
 
 // Types based on API documentation
 
@@ -146,7 +149,6 @@ export interface GetLessonsResponse {
   lessons?: Lesson[];
 }
 
-
 // Upload functions
 export const uploadLessonsFile = async (file: File): Promise<ApiResponse> => {
   const formData = new FormData();
@@ -161,7 +163,9 @@ export const uploadLessonsFile = async (file: File): Promise<ApiResponse> => {
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -183,7 +187,9 @@ export const uploadConceptsFile = async (file: File): Promise<ApiResponse> => {
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -205,7 +211,9 @@ export const uploadExamplesFile = async (file: File): Promise<ApiResponse> => {
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -227,7 +235,9 @@ export const uploadExercisesFile = async (file: File): Promise<ApiResponse> => {
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -251,7 +261,9 @@ export const uploadGeneralExercisesFile = async (
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -286,7 +298,9 @@ export const uploadCheckMarkersFile = async (
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -310,7 +324,9 @@ export const uploadSchemeOfWorkFile = async (
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -344,7 +360,9 @@ export const uploadAllLessonFiles = async (files: {
   const data = await response.json();
 
   if (!response.ok) {
-    const error: any = new Error(data?.message || data?.error || 'Upload failed');
+    const error: any = new Error(
+      data?.message || data?.error || "Upload failed",
+    );
     error.response = response;
     error.data = data;
     throw error;
@@ -497,7 +515,12 @@ export const uploadLessonsFileWithValidation = async (
 // Helper function to try uploading a file
 const tryUploadLessonsFile = async (
   file: File,
-): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string; parsedError?: ParsedUploadError }> => {
+): Promise<{
+  success: boolean;
+  apiResponse?: ApiResponse;
+  error?: string;
+  parsedError?: ParsedUploadError;
+}> => {
   try {
     const apiResponse = await uploadLessonsFile(file);
 
@@ -506,7 +529,7 @@ const tryUploadLessonsFile = async (
       // Create a mock response object for error parsing
       const mockResponse = new Response(JSON.stringify(apiResponse), {
         status: apiResponse.code || 400,
-        statusText: 'Bad Request',
+        statusText: "Bad Request",
       });
 
       const parsedError = parseUploadError(mockResponse, apiResponse);
@@ -661,7 +684,10 @@ const smartUploadWithValidation = async (
     const uploadResult = await tryUpload(file, uploadFunction);
 
     if (debugUploads) {
-      console.log(`Upload result for ${fileType}:`, uploadResult.success ? "SUCCESS" : "FAILED");
+      console.log(
+        `Upload result for ${fileType}:`,
+        uploadResult.success ? "SUCCESS" : "FAILED",
+      );
       if (!uploadResult.success) {
         console.log("Upload error:", uploadResult.error);
       }
@@ -690,7 +716,12 @@ const smartUploadWithValidation = async (
 const tryUpload = async (
   file: File,
   uploadFunction: (file: File) => Promise<ApiResponse>,
-): Promise<{ success: boolean; apiResponse?: ApiResponse; error?: string; parsedError?: ParsedUploadError }> => {
+): Promise<{
+  success: boolean;
+  apiResponse?: ApiResponse;
+  error?: string;
+  parsedError?: ParsedUploadError;
+}> => {
   try {
     if (debugUploads) {
       console.log("Attempting upload with file:", {
@@ -722,7 +753,7 @@ const tryUpload = async (
       // Create a mock response object for error parsing
       const mockResponse = new Response(JSON.stringify(apiResponse), {
         status: apiResponse.code || 400,
-        statusText: 'Bad Request',
+        statusText: "Bad Request",
       });
 
       const parsedError = parseUploadError(mockResponse, apiResponse);

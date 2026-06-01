@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useCallback, useState, useMemo } from "react";
-import { useLessonsStore } from "@/lib/store/lessons";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { AlertCircle, BookOpen, Wifi, WifiOff } from "lucide-react";
+
 import { getLessonScore } from "@/lib/api/lessons";
+import { useLessonsStore } from "@/lib/store/lessons";
 import { LessonContent } from "@/lib/types/lessons";
-import { BookOpen, Wifi, WifiOff, AlertCircle } from "lucide-react";
 
 // Enhanced error types for better error handling
-export type ErrorType = 'network' | 'not_found' | 'unauthorized' | 'server' | 'unknown';
+export type ErrorType =
+  | "network"
+  | "not_found"
+  | "unauthorized"
+  | "server"
+  | "unknown";
 
 export interface EnhancedError {
   type: ErrorType;
@@ -53,48 +59,57 @@ export function useLessonData({
   const [lessonScore, setLessonScore] = useState<string | null>(null);
 
   // Parse error into enhanced format
-  const parseError = useCallback((error: string | null): EnhancedError | null => {
-    if (!error) return null;
+  const parseError = useCallback(
+    (error: string | null): EnhancedError | null => {
+      if (!error) return null;
 
-    if (error.includes('Network Error') || error.includes('offline') || error.includes('fetch')) {
+      if (
+        error.includes("Network Error") ||
+        error.includes("offline") ||
+        error.includes("fetch")
+      ) {
+        return {
+          type: "network",
+          message: "Connection Error",
+          details:
+            "Unable to connect to the server. Please check your internet connection.",
+          canRetry: true,
+        };
+      }
+      if (error.includes("404") || error.includes("not found")) {
+        return {
+          type: "not_found",
+          message: "Lesson Not Found",
+          details:
+            "The requested lesson could not be found. It may have been moved or deleted.",
+          canRetry: false,
+        };
+      }
+      if (error.includes("401") || error.includes("unauthorized")) {
+        return {
+          type: "unauthorized",
+          message: "Access Denied",
+          details: "You do not have permission to access this lesson.",
+          canRetry: false,
+        };
+      }
+      if (error.includes("500") || error.includes("server")) {
+        return {
+          type: "server",
+          message: "Server Error",
+          details: "The server encountered an error. Please try again later.",
+          canRetry: true,
+        };
+      }
       return {
-        type: 'network',
-        message: 'Connection Error',
-        details: 'Unable to connect to the server. Please check your internet connection.',
+        type: "unknown",
+        message: "Unknown Error",
+        details: error,
         canRetry: true,
       };
-    }
-    if (error.includes('404') || error.includes('not found')) {
-      return {
-        type: 'not_found',
-        message: 'Lesson Not Found',
-        details: 'The requested lesson could not be found. It may have been moved or deleted.',
-        canRetry: false,
-      };
-    }
-    if (error.includes('401') || error.includes('unauthorized')) {
-      return {
-        type: 'unauthorized',
-        message: 'Access Denied',
-        details: 'You do not have permission to access this lesson.',
-        canRetry: false,
-      };
-    }
-    if (error.includes('500') || error.includes('server')) {
-      return {
-        type: 'server',
-        message: 'Server Error',
-        details: 'The server encountered an error. Please try again later.',
-        canRetry: true,
-      };
-    }
-    return {
-      type: 'unknown',
-      message: 'Unknown Error',
-      details: error,
-      canRetry: true,
-    };
-  }, []);
+    },
+    [],
+  );
 
   const enhancedError = useMemo(() => parseError(error), [error, parseError]);
 
@@ -112,7 +127,10 @@ export function useLessonData({
     return estimatedMinutes;
   }, [selectedLesson, progress]);
 
-  const estimatedTimeRemaining = useMemo(() => calculateEstimatedTimeRemaining(), [calculateEstimatedTimeRemaining]);
+  const estimatedTimeRemaining = useMemo(
+    () => calculateEstimatedTimeRemaining(),
+    [calculateEstimatedTimeRemaining],
+  );
 
   // Fetch lesson score
   useEffect(() => {
@@ -173,8 +191,8 @@ export function useLessonData({
       clearError();
       await fetchLessonContentBySlug(subjectSlug, topicSlug);
     } else if (lessonId) {
-        clearError();
-        await fetchLessonContentById(lessonId);
+      clearError();
+      await fetchLessonContentById(lessonId);
     }
   };
 

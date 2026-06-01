@@ -1,29 +1,29 @@
 // lib/api/subjects.ts - Client-side service for subjects API
 
-import { 
-  type SubjectsResponse, 
-  type UpdateResponse, 
+import {
   type ApiSubjectsResponse,
-  type ProfileData,
   type DashboardData,
+  type ProfileData,
   type SubjectItem,
   type SubjectsContent,
+  type SubjectsResponse,
+  type UpdateResponse,
 } from "@/lib/types/subjects";
 
-import { BASE_API_URL as API_BASE } from './client';
+import { BASE_API_URL as API_BASE } from "./client";
 
 // Get user profile (direct backend call with token)
 export async function getUserProfile(token: string): Promise<ProfileData> {
   const response = await fetch(`${API_BASE}/profile`, {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
     },
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch profile');
+    throw new Error("Failed to fetch profile");
   }
 
   const data = await response.json();
@@ -39,7 +39,7 @@ export async function updateProfile(
     discipline?: string;
     term?: string;
     [key: string]: any;
-  }
+  },
 ): Promise<ProfileData> {
   // Fetch current profile to merge with updates
   // This ensures we send a complete payload that passes backend validation
@@ -47,16 +47,18 @@ export async function updateProfile(
 
   // Validate discipline if provided (must be one of the allowed values for SSS classes)
   if (updates.discipline) {
-    const validDisciplines = ['Art', 'Commercial', 'Science'];
+    const validDisciplines = ["Art", "Commercial", "Science"];
     if (!validDisciplines.includes(updates.discipline)) {
-      throw new Error(`Invalid discipline. Must be one of: ${validDisciplines.join(', ')}`);
+      throw new Error(
+        `Invalid discipline. Must be one of: ${validDisciplines.join(", ")}`,
+      );
     }
   }
 
   // Build complete payload by merging current profile with updates
   const payload: Partial<ProfileData> = {
-    ...currentProfile,  // Preserve existing fields
-    ...updates,         // Overlay academic changes
+    ...currentProfile, // Preserve existing fields
+    ...updates, // Overlay academic changes
   };
 
   // Ensure role is set (default to 'student' if not present)
@@ -64,44 +66,47 @@ export async function updateProfile(
   // We'll keep it as array for the payload but ensure it has a value
   if (!currentProfile.role || currentProfile.role.length === 0) {
     // If no role, set to student
-    payload.role = ['student'];
-  } else if (Array.isArray(currentProfile.role) && currentProfile.role.includes('guest')) {
+    payload.role = ["student"];
+  } else if (
+    Array.isArray(currentProfile.role) &&
+    currentProfile.role.includes("guest")
+  ) {
     // If user is guest, update to student
-    payload.role = ['student'];
+    payload.role = ["student"];
   }
   // Otherwise keep existing role array
 
   // Remove discipline for non-SSS classes
-  const classCategory = updates.class?.startsWith('SSS') ? 'sss' : 'jss';
-  if (classCategory !== 'sss' && 'discipline' in payload) {
+  const classCategory = updates.class?.startsWith("SSS") ? "sss" : "jss";
+  if (classCategory !== "sss" && "discipline" in payload) {
     delete payload.discipline;
   }
 
   const response = await fetch(`${API_BASE}/api/v1/profile/edit`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     const error = await response.json();
-    
+
     // Extract validation errors if present
     if (error.errors) {
       const errorMessages = Object.entries(error.errors)
         .map(([field, messages]) => {
           const msgArray = Array.isArray(messages) ? messages : [messages];
-          return `${field}: ${msgArray.join(', ')}`;
+          return `${field}: ${msgArray.join(", ")}`;
         })
-        .join('; ');
-      throw new Error(errorMessages || error.message || 'Validation failed');
+        .join("; ");
+      throw new Error(errorMessages || error.message || "Validation failed");
     }
-    
-    throw new Error(error.message || 'Failed to update profile');
+
+    throw new Error(error.message || "Failed to update profile");
   }
 
   const result = await response.json();
@@ -109,17 +114,19 @@ export async function updateProfile(
 }
 
 // Get available subjects for user (direct backend call with token)
-export async function getSubjects(token: string): Promise<ApiSubjectsResponse['content']> {
+export async function getSubjects(
+  token: string,
+): Promise<ApiSubjectsResponse["content"]> {
   const response = await fetch(`${API_BASE}/subjects`, {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
     },
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch subjects');
+    throw new Error("Failed to fetch subjects");
   }
 
   const data = await response.json();
@@ -127,17 +134,19 @@ export async function getSubjects(token: string): Promise<ApiSubjectsResponse['c
 }
 
 // Get subjects via lessons endpoint (preferred source for student's offered subjects)
-export async function getLessonSubjects(token: string): Promise<SubjectsContent> {
+export async function getLessonSubjects(
+  token: string,
+): Promise<SubjectsContent> {
   const response = await fetch(`${API_BASE}/lessons/`, {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
     },
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch subjects');
+    throw new Error("Failed to fetch subjects");
   }
 
   const data = await response.json();
@@ -146,9 +155,9 @@ export async function getLessonSubjects(token: string): Promise<SubjectsContent>
   // Normalize to SubjectsContent shape
   return {
     subjects,
-    compulsory_selective_status: 'selected',
+    compulsory_selective_status: "selected",
     compulsory_selective: [],
-    selective_status: 'selected',
+    selective_status: "selected",
     selective: [],
   };
 }
@@ -156,65 +165,73 @@ export async function getLessonSubjects(token: string): Promise<SubjectsContent>
 // Update compulsory selective subject (1 religious study)
 export async function updateCompulsorySelective(
   token: string,
-  subjectId: number
+  subjectId: number,
 ): Promise<{ success: boolean; message: string }> {
-  const response = await fetch(`${API_BASE}/subjects/update-compulsory-selective`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
-      'Content-Type': 'application/json',
+  const response = await fetch(
+    `${API_BASE}/subjects/update-compulsory-selective`,
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ subject: subjectId }),
     },
-    body: JSON.stringify({ subject: subjectId }),
-  });
+  );
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to update compulsory selective');
+    throw new Error(error.message || "Failed to update compulsory selective");
   }
 
-  return { success: true, message: 'Compulsory selective updated successfully' };
+  return {
+    success: true,
+    message: "Compulsory selective updated successfully",
+  };
 }
 
 // Update selective subjects (JSS: 4, SSS: 5) - using FormData
 export async function updateSelectiveSubjects(
   token: string,
-  subjectIds: number[]
+  subjectIds: number[],
 ): Promise<{ success: boolean; message: string }> {
   const formData = new FormData();
-  subjectIds.forEach(id => {
-    formData.append('subjects[]', id.toString());
+  subjectIds.forEach((id) => {
+    formData.append("subjects[]", id.toString());
   });
 
   const response = await fetch(`${API_BASE}/subjects/update-selective`, {
-    method: 'POST',
+    method: "POST",
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
     },
     body: formData,
   });
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || 'Failed to update selective subjects');
+    throw new Error(error.message || "Failed to update selective subjects");
   }
 
-  return { success: true, message: 'Selective subjects updated successfully' };
+  return { success: true, message: "Selective subjects updated successfully" };
 }
 
 // Get dashboard data
-export async function getDashboard(token: string): Promise<DashboardData['content']> {
+export async function getDashboard(
+  token: string,
+): Promise<DashboardData["content"]> {
   const response = await fetch(`${API_BASE}/dashboard`, {
     headers: {
-      'Authorization': `Bearer ${token}`,
-      'Accept': 'application/json',
+      Authorization: `Bearer ${token}`,
+      Accept: "application/json",
     },
-    cache: 'no-store',
+    cache: "no-store",
   });
 
   if (!response.ok) {
-    throw new Error('Failed to fetch dashboard');
+    throw new Error("Failed to fetch dashboard");
   }
 
   const data = await response.json();
@@ -254,9 +271,10 @@ export async function getStudentSubjects(): Promise<SubjectsResponse> {
     // The API returns the correct SubjectsContent structure directly
     const content: SubjectsContent = {
       subjects: data.content.subjects || [],
-      compulsory_selective_status: data.content.compulsory_selective_status || 'not_selected',
+      compulsory_selective_status:
+        data.content.compulsory_selective_status || "not_selected",
       compulsory_selective: data.content.compulsory_selective || [],
-      selective_status: data.content.selective_status || 'not_selected',
+      selective_status: data.content.selective_status || "not_selected",
       selective: data.content.selective || [],
     };
 
@@ -280,7 +298,7 @@ export async function getStudentSubjects(): Promise<SubjectsResponse> {
 }
 
 export async function updateCompulsorySelectiveClient(
-  subjectId: number
+  subjectId: number,
 ): Promise<UpdateResponse> {
   try {
     const res = await fetch("/api/subjects/update-compulsory-selective", {
@@ -320,7 +338,7 @@ export async function updateCompulsorySelectiveClient(
 }
 
 export async function updateSelectiveSubjectsClient(
-  subjectIds: number[]
+  subjectIds: number[],
 ): Promise<UpdateResponse> {
   try {
     // Clean and validate subject IDs before sending
@@ -332,7 +350,9 @@ export async function updateSelectiveSubjectsClient(
         const numId = typeof id === "string" ? parseInt(id, 10) : Number(id);
         return Number.isNaN(numId) ? null : numId;
       })
-      .filter((id): id is number => id !== null && id > 0 && Number.isInteger(id))
+      .filter(
+        (id): id is number => id !== null && id > 0 && Number.isInteger(id),
+      )
       .filter((id, index, array) => array.indexOf(id) === index); // Remove duplicates
 
     // Validate that we have at least one valid subject ID
@@ -343,7 +363,9 @@ export async function updateSelectiveSubjectsClient(
         content: null,
         code: 400,
         errors: {
-          subjects: ["Subject IDs array is empty or contains only invalid values"],
+          subjects: [
+            "Subject IDs array is empty or contains only invalid values",
+          ],
         },
       };
     }

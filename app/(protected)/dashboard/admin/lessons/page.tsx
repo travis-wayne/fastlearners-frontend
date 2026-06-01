@@ -13,11 +13,11 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { HorizontalScroll } from "@/components/shared/horizontal-scroll";
 import { DashboardHeader } from "@/components/dashboard/header";
 import { LessonFilters } from "@/components/lessons/LessonFilters";
 import { LessonsList } from "@/components/lessons/LessonsList";
 import { LessonViewer } from "@/components/lessons/LessonViewer";
+import { HorizontalScroll } from "@/components/shared/horizontal-scroll";
 
 export default function AdminLessonsPage() {
   const { hasPermission } = usePermissionCheck();

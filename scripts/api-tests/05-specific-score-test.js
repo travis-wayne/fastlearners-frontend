@@ -1,5 +1,4 @@
-
-const { getApiClient } = require('./api-client');
+const { getApiClient } = require("./api-client");
 
 async function testLessonScore() {
   const { client } = getApiClient();
@@ -12,11 +11,11 @@ async function testLessonScore() {
   // UPSTREAM_BASE usually maps to /api/v1
   // 0. Baseline Check
   try {
-    console.log('Fetching Profile (Baseline)...');
-    await client.get('/api/v1/profile');
-    console.log('✅ Baseline Profile fetch success.');
+    console.log("Fetching Profile (Baseline)...");
+    await client.get("/api/v1/profile");
+    console.log("✅ Baseline Profile fetch success.");
   } catch (e) {
-    console.log('❌ Baseline Profile fetch failed.');
+    console.log("❌ Baseline Profile fetch failed.");
   }
 
   const pathsToTry = [
@@ -26,21 +25,21 @@ async function testLessonScore() {
     `/api/v1/scores/lesson/${lessonId}`,
   ];
 
-  console.log('Testing variations:');
+  console.log("Testing variations:");
   for (const path of pathsToTry) {
-        process.stdout.write(`Trying ${path} ... `);
-        try {
-            const res = await client.get(path);
-            console.log(`✅ SUCCESS! Status: ${res.status}`);
-            console.log('Data:', JSON.stringify(res.data, null, 2));
-            break; 
-        } catch (err) {
-            if (err.response) {
-                console.log(`❌ ${err.response.status} ${err.response.data.message}`);
-            } else {
-                console.log(`❌ Error: ${err.message}`);
-            }
-        }
+    process.stdout.write(`Trying ${path} ... `);
+    try {
+      const res = await client.get(path);
+      console.log(`✅ SUCCESS! Status: ${res.status}`);
+      console.log("Data:", JSON.stringify(res.data, null, 2));
+      break;
+    } catch (err) {
+      if (err.response) {
+        console.log(`❌ ${err.response.status} ${err.response.data.message}`);
+      } else {
+        console.log(`❌ Error: ${err.message}`);
+      }
+    }
   }
 }
 

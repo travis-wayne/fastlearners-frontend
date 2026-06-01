@@ -2,10 +2,10 @@
 
 import { useContext, useState } from "react";
 import Link from "next/link";
-import { siteConfig } from "@/config/site";
 import { UserSubscriptionPlan } from "@/types";
 
 import { SubscriptionPlan } from "@/types/index";
+import { siteConfig } from "@/config/site";
 import { pricingData } from "@/config/subscriptions";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";

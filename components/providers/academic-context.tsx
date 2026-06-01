@@ -71,9 +71,11 @@ export function AcademicProvider({
   const [apiClasses, setApiClasses] = useState<any[]>([]);
   const [apiTerms, setApiTerms] = useState<any[]>([]);
   const [apiWeeks, setApiWeeks] = useState<WeekItem[]>([]);
-  const [currentClassApiId, setCurrentClassApiId] = useState<number | null>(null);
+  const [currentClassApiId, setCurrentClassApiId] = useState<number | null>(
+    null,
+  );
   const [currentTermApiId, setCurrentTermApiId] = useState<number | null>(null);
-  
+
   // Live metadata state
   const [liveClasses, setLiveClasses] = useState<ClassLevel[]>([]);
   const [liveTerms, setLiveTerms] = useState<Term[]>([]);
@@ -129,13 +131,18 @@ export function AcademicProvider({
       // EXTENSION: Fetch live API data for all metadata (Step 3 of migration)
       const fetchLiveApiData = async () => {
         try {
-          const { getStudentClass, getStudentClasses, getStudentTerms, getStudentWeeks } = await import("@/lib/api/student");
-          
+          const {
+            getStudentClass,
+            getStudentClasses,
+            getStudentTerms,
+            getStudentWeeks,
+          } = await import("@/lib/api/student");
+
           const [classRes, classesRes, termsRes, weeksRes] = await Promise.all([
             getStudentClass(),
             getStudentClasses(),
             getStudentTerms(),
-            getStudentWeeks()
+            getStudentWeeks(),
           ]);
 
           if (classRes.success && classRes.content) {
@@ -146,15 +153,19 @@ export function AcademicProvider({
           if (classesRes.success && classesRes.content) {
             const apiClassesList = classesRes.content.classes;
             setApiClasses(apiClassesList);
-            
+
             // Verbatim mapping logic: API ClassItem -> Context ClassLevel
-            mappedClasses = apiClassesList.map(c => ({
+            mappedClasses = apiClassesList.map((c) => ({
               id: c.id.toString(),
               name: c.name,
-              stage: c.name.toLowerCase().startsWith('j') ? 'jss' as const : c.name.toLowerCase().startsWith('s') ? 'sss' as const : 'primary' as const,
-              level: parseInt(c.name.match(/\d+/)?.at(0) || '1'),
-              description: '',
-              track: null
+              stage: c.name.toLowerCase().startsWith("j")
+                ? ("jss" as const)
+                : c.name.toLowerCase().startsWith("s")
+                  ? ("sss" as const)
+                  : ("primary" as const),
+              level: parseInt(c.name.match(/\d+/)?.at(0) || "1"),
+              description: "",
+              track: null,
             }));
             setLiveClasses(mappedClasses);
           }
@@ -163,25 +174,29 @@ export function AcademicProvider({
           if (termsRes.success && termsRes.content) {
             const apiTermsList = termsRes.content.terms;
             setApiTerms(apiTermsList);
-            
+
             // Verbatim mapping logic: API TermItem -> Context Term
-            mappedTerms = apiTermsList.map(t => ({
+            mappedTerms = apiTermsList.map((t) => ({
               id: `term${t.id}`,
               name: `${t.name} Term`,
-              shortName: `${t.id}${t.id === 1 ? 'st' : t.id === 2 ? 'nd' : 'rd'} Term`,
+              shortName: `${t.id}${t.id === 1 ? "st" : t.id === 2 ? "nd" : "rd"} Term`,
               order: t.id,
-              description: '',
-              typicalDuration: ''
+              description: "",
+              typicalDuration: "",
             }));
             setLiveTerms(mappedTerms);
-            
+
             // Map the already resolved currentTerm (from config) to API id
-            const resolvedTerm = useAuthStore.getState().user ? 
-              (getTermById(localStorage.getItem("fastlearner-current-term") || defaultTermId) || defaultTerm) : defaultTerm;
+            const resolvedTerm = useAuthStore.getState().user
+              ? getTermById(
+                  localStorage.getItem("fastlearner-current-term") ||
+                    defaultTermId,
+                ) || defaultTerm
+              : defaultTerm;
 
             if (resolvedTerm) {
               const apiName = resolvedTerm.name.split(" ")[0]; // "First Term" -> "First"
-              const apiTerm = apiTermsList.find(t => t.name === apiName);
+              const apiTerm = apiTermsList.find((t) => t.name === apiName);
               if (apiTerm) {
                 setCurrentTermApiId(apiTerm.id);
               }
@@ -198,19 +213,22 @@ export function AcademicProvider({
             if (user?.class) {
               const normalizedClass = normalizeClassString(user.class);
               const targetName = normalizedClass || user.class;
-              const liveClass = mappedClasses.find(c => c.name === targetName);
+              const liveClass = mappedClasses.find(
+                (c) => c.name === targetName,
+              );
               if (liveClass) setCurrentClassState(liveClass);
             }
           }
-          
+
           if (mappedTerms.length > 0) {
-            const savedTermId = localStorage.getItem("fastlearner-current-term");
+            const savedTermId = localStorage.getItem(
+              "fastlearner-current-term",
+            );
             if (savedTermId) {
-              const liveTerm = mappedTerms.find(t => t.id === savedTermId);
+              const liveTerm = mappedTerms.find((t) => t.id === savedTermId);
               if (liveTerm) setCurrentTermState(liveTerm);
             }
           }
-
         } catch (err) {
           console.error("Failed to fetch live academic metadata:", err);
         }
@@ -259,10 +277,10 @@ export function AcademicProvider({
 
   const setCurrentTerm = (term: Term) => {
     setCurrentTermState(term);
-    
+
     // Sync currentTermApiId
     const apiName = term.name.split(" ")[0]; // "First Term" -> "First"
-    const apiTerm = apiTerms.find(t => t.name === apiName);
+    const apiTerm = apiTerms.find((t) => t.name === apiName);
     if (apiTerm) {
       setCurrentTermApiId(apiTerm.id);
     } else {

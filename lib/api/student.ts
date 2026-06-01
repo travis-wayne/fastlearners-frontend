@@ -1,8 +1,8 @@
-import { 
-  StudentClassResponse, 
-  ClassesResponse, 
-  TermsResponse, 
-  WeeksResponse 
+import {
+  ClassesResponse,
+  StudentClassResponse,
+  TermsResponse,
+  WeeksResponse,
 } from "@/lib/types/subjects";
 
 /**

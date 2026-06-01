@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 

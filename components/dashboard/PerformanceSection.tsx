@@ -46,7 +46,9 @@ export function PerformanceSection({
             <div key={`${perf.subject}-${index}`} className="space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-component-md">
-                  <div className="rounded-lg bg-muted p-component-xs sm:p-component-sm">{perf.icon}</div>
+                  <div className="rounded-lg bg-muted p-component-xs sm:p-component-sm">
+                    {perf.icon}
+                  </div>
                   <span className="font-medium text-slate-900 dark:text-slate-100">
                     {perf.subject}
                   </span>

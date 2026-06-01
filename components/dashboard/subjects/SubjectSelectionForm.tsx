@@ -9,7 +9,6 @@ import {
 import { useAuthStore } from "@/store/authStore";
 import { CheckCircle2, Circle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 import {
   getSubjects,
@@ -17,6 +16,7 @@ import {
   updateSelectiveSubjects,
 } from "@/lib/api/subjects";
 import type { SubjectItem } from "@/lib/types/subjects";
+import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -108,8 +108,6 @@ export function SubjectSelectionForm({
       fetchSubjects();
     }
   }, [user?.class, classLevel, fetchSubjects]);
-
-
 
   const handleSubmitCompulsory = async () => {
     if (!selectedCompulsory) {
@@ -235,13 +233,18 @@ export function SubjectSelectionForm({
         <CardHeader className="responsive-padding pb-2 sm:pb-3">
           <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
             <div>
-              <CardTitle className="text-lg font-bold sm:text-xl">Core Subject (Religious Studies)</CardTitle>
+              <CardTitle className="text-lg font-bold sm:text-xl">
+                Core Subject (Religious Studies)
+              </CardTitle>
               <CardDescription className="text-xs sm:text-sm">
                 Select ONE religious study subject
               </CardDescription>
             </div>
             {compulsoryComplete && (
-              <Badge variant="default" className="self-start bg-green-600 sm:self-center">
+              <Badge
+                variant="default"
+                className="self-start bg-green-600 sm:self-center"
+              >
                 <CheckCircle2 className="mr-1.5 size-3.5 sm:size-4" />
                 Complete
               </Badge>
@@ -262,7 +265,7 @@ export function SubjectSelectionForm({
                   selectedCompulsory === subject.id
                     ? "border-primary bg-primary/5 shadow-sm"
                     : "border-border hover:border-primary/50",
-                  compulsoryComplete && "cursor-not-allowed opacity-50"
+                  compulsoryComplete && "cursor-not-allowed opacity-50",
                 )}
               >
                 <div className="flex items-center justify-between">
@@ -270,7 +273,9 @@ export function SubjectSelectionForm({
                     <span className="text-2xl transition-transform group-hover:scale-110 sm:text-3xl">
                       {getSubjectIcon(subject.name)}
                     </span>
-                    <span className="text-sm font-bold sm:text-base">{subject.name}</span>
+                    <span className="text-sm font-bold sm:text-base">
+                      {subject.name}
+                    </span>
                   </div>
                   {selectedCompulsory === subject.id && (
                     <CheckCircle2 className="size-5 text-primary" />
@@ -305,12 +310,17 @@ export function SubjectSelectionForm({
           <CardHeader className="responsive-padding pb-2 sm:pb-3">
             <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
               <div>
-                <CardTitle className="text-lg font-bold sm:text-xl">Elective Subjects</CardTitle>
+                <CardTitle className="text-lg font-bold sm:text-xl">
+                  Elective Subjects
+                </CardTitle>
                 <CardDescription className="text-xs sm:text-sm">
                   Select {requiredElectives} subjects from the list
                 </CardDescription>
               </div>
-              <Badge variant="secondary" className="self-start px-3 py-1 text-base font-bold sm:self-center sm:px-4 sm:text-lg">
+              <Badge
+                variant="secondary"
+                className="self-start px-3 py-1 text-base font-bold sm:self-center sm:px-4 sm:text-lg"
+              >
                 {selectedElectives.length}/{requiredElectives}
               </Badge>
             </div>
@@ -337,7 +347,7 @@ export function SubjectSelectionForm({
                         ? "border-primary bg-primary/5 shadow-sm"
                         : isDisabled
                           ? "cursor-not-allowed border-border opacity-50"
-                          : "border-border hover:border-primary/50"
+                          : "border-border hover:border-primary/50",
                     )}
                   >
                     <div className="flex items-center justify-between">
@@ -345,7 +355,9 @@ export function SubjectSelectionForm({
                         <span className="text-2xl transition-transform group-hover:scale-110 sm:text-3xl">
                           {getSubjectIcon(subject.name)}
                         </span>
-                        <span className="text-sm font-bold sm:text-base">{subject.name}</span>
+                        <span className="text-sm font-bold sm:text-base">
+                          {subject.name}
+                        </span>
                       </div>
                       {isSelected ? (
                         <CheckCircle2 className="size-5 text-primary" />

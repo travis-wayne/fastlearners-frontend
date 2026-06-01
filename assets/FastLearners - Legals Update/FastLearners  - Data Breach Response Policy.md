@@ -20,13 +20,13 @@ A personal data breach means any breach of security leading to the accidental or
 
 This includes, but is not limited to:
 
-* Unauthorised access to our systems by hackers or insiders  
-* Loss or theft of devices, laptops, or storage media containing user data  
-* Accidental deletion, modification, or disclosure of personal data  
-* Malware, ransomware, or other cyber-attacks  
-* Human error leading to unintended data exposure  
-* Unauthorised sharing or leakage of data to third parties  
-* Any incident that exposes students’ educational records, parental information, or children’s personal data
+- Unauthorised access to our systems by hackers or insiders
+- Loss or theft of devices, laptops, or storage media containing user data
+- Accidental deletion, modification, or disclosure of personal data
+- Malware, ransomware, or other cyber-attacks
+- Human error leading to unintended data exposure
+- Unauthorised sharing or leakage of data to third parties
+- Any incident that exposes students’ educational records, parental information, or children’s personal data
 
 Even suspected or near-miss incidents must be reported internally for assessment.
 
@@ -64,11 +64,11 @@ Upon confirmation or strong suspicion of a breach, the IT team will take immedia
 
 The response team will assess the breach in detail. Key factors to determine include:
 
-* The nature and categories of personal data involved (e.g., names, emails, academic records, payment references, or children’s data)  
-* The approximate number of affected data subjects  
-* Whether the data was encrypted or otherwise protected  
-* The likely consequences and risk level to individuals (low, medium, or high risk to rights and freedoms)  
-* Whether the breach involves children’s data, which automatically elevates the risk level
+- The nature and categories of personal data involved (e.g., names, emails, academic records, payment references, or children’s data)
+- The approximate number of affected data subjects
+- Whether the data was encrypted or otherwise protected
+- The likely consequences and risk level to individuals (low, medium, or high risk to rights and freedoms)
+- Whether the breach involves children’s data, which automatically elevates the risk level
 
 This assessment informs notification obligations and remediation priorities.
 
@@ -76,9 +76,9 @@ This assessment informs notification obligations and remediation priorities.
 
 Notification requirements are strictly time-bound under the NDPA:
 
-* **To the NDPC**: We will notify the Nigeria Data Protection Commission within **72 hours** of becoming aware of a breach that is likely to result in a risk to the rights and freedoms of data subjects. The notification will include a description of the breach, categories and approximate numbers of affected individuals and records, likely consequences, and measures taken or proposed to address it. If full details are not available within 72 hours, we will provide them in phases without further delay.  
-    
-* **To Affected Data Subjects**: If the breach is likely to result in a **high risk** to individuals, we will communicate the breach to affected users **immediately** in clear and plain language. The communication will explain the nature of the breach, possible consequences, recommended protective steps the user can take, measures we are taking, and contact details for further assistance. For high-risk breaches involving children’s data, parents or legal guardians will be notified as a priority.
+- **To the NDPC**: We will notify the Nigeria Data Protection Commission within **72 hours** of becoming aware of a breach that is likely to result in a risk to the rights and freedoms of data subjects. The notification will include a description of the breach, categories and approximate numbers of affected individuals and records, likely consequences, and measures taken or proposed to address it. If full details are not available within 72 hours, we will provide them in phases without further delay.  
+
+- **To Affected Data Subjects**: If the breach is likely to result in a **high risk** to individuals, we will communicate the breach to affected users **immediately** in clear and plain language. The communication will explain the nature of the breach, possible consequences, recommended protective steps the user can take, measures we are taking, and contact details for further assistance. For high-risk breaches involving children’s data, parents or legal guardians will be notified as a priority.
 
 Where direct notification would involve disproportionate effort, we may use public announcements through widely used media channels.
 
@@ -94,21 +94,21 @@ After containment and notification, we will focus on full recovery and strengthe
 
 Breaches involving personal data of children under 18 years of age receive heightened priority. In such cases:
 
-* Parents or legal guardians will be notified **immediately** upon confirmation of high risk.  
-* A rapid senior-level review will be conducted.  
-* Additional support, such as guidance on protecting the child from potential harm (e.g., identity-related risks), will be provided.  
-* We will consider the heightened vulnerability of minors and the educational context when assessing risk and determining remediation steps.
+- Parents or legal guardians will be notified **immediately** upon confirmation of high risk.
+- A rapid senior-level review will be conducted.
+- Additional support, such as guidance on protecting the child from potential harm (e.g., identity-related risks), will be provided.
+- We will consider the heightened vulnerability of minors and the educational context when assessing risk and determining remediation steps.
 
 #### **6\. Preventive Security Measures**
 
 To reduce the likelihood and impact of breaches, we maintain robust technical and organisational safeguards, including:
 
-* Encryption of data in transit and at rest where feasible  
-* Hashed and salted passwords  
-* Firewalls, intrusion detection systems, and secure cloud infrastructure  
-* Role-based access controls and the principle of least privilege  
-* Regular security audits, vulnerability scanning, and penetration testing  
-* Staff training on data protection and security awareness
+- Encryption of data in transit and at rest where feasible
+- Hashed and salted passwords
+- Firewalls, intrusion detection systems, and secure cloud infrastructure
+- Role-based access controls and the principle of least privilege
+- Regular security audits, vulnerability scanning, and penetration testing
+- Staff training on data protection and security awareness
 
 These measures are reviewed regularly and improved based on emerging threats.
 
@@ -129,4 +129,3 @@ Telephone: \+234 706 544 7436
 Address: 3 Chief Aaron Nteubong Street, Okorombokho, Eastern Obolo, Akwa Ibom State, Nigeria
 
 Users may also contact the Nigeria Data Protection Commission (NDPC) directly if they have concerns about our handling of a breach.
-

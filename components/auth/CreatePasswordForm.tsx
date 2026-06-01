@@ -101,7 +101,11 @@ export function CreatePasswordForm() {
         </div>
 
         <div className="space-y-component-sm">
-          <Button onClick={handleManualRedirect} size="responsive" className="w-full">
+          <Button
+            onClick={handleManualRedirect}
+            size="responsive"
+            className="w-full"
+          >
             Continue to Role Selection
           </Button>
 
@@ -114,9 +118,14 @@ export function CreatePasswordForm() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-component-md sm:gap-component-lg">
+    <form
+      onSubmit={handleSubmit}
+      className="flex flex-col gap-component-md sm:gap-component-lg"
+    >
       <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
-        <h1 className="text-heading-xl font-bold sm:text-2xl">Create your password</h1>
+        <h1 className="text-heading-xl font-bold sm:text-2xl">
+          Create your password
+        </h1>
         <p className="text-balance text-sm text-muted-foreground sm:text-base">
           Choose a strong password to secure your account
         </p>
@@ -206,7 +215,11 @@ export function CreatePasswordForm() {
               size="sm"
               className="absolute right-0 top-0 h-full w-control-sm px-3 py-2 hover:bg-transparent sm:w-control-md"
               onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-              aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+              aria-label={
+                showConfirmPassword
+                  ? "Hide confirm password"
+                  : "Show confirm password"
+              }
             >
               {showConfirmPassword ? (
                 <EyeOff className="size-4" />

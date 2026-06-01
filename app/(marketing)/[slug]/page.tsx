@@ -60,7 +60,9 @@ export default async function PagePage({
           {page.title}
         </h1>
         {page.description && (
-          <p className="text-lg text-muted-foreground sm:text-xl">{page.description}</p>
+          <p className="text-lg text-muted-foreground sm:text-xl">
+            {page.description}
+          </p>
         )}
       </div>
       <hr className="my-4" />

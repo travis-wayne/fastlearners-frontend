@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
-import { parseAuthCookiesServer, parseRegTokenServer } from "@/lib/server/auth-cookies";
+import {
+  parseAuthCookiesServer,
+  parseRegTokenServer,
+} from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   try {
@@ -35,7 +39,11 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(data, { status: r.status });
   } catch (e: any) {
     return NextResponse.json(
-      { success: false, message: e?.message || "Create password failed", code: 500 },
+      {
+        success: false,
+        message: e?.message || "Create password failed",
+        code: 500,
+      },
       { status: 500 },
     );
   }

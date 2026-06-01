@@ -117,7 +117,10 @@ export function TeacherDashboard() {
                     {classItem.avgProgress}%
                   </span>
                 </div>
-                <Progress value={classItem.avgProgress} className="h-1.5 sm:h-2" />
+                <Progress
+                  value={classItem.avgProgress}
+                  className="h-1.5 sm:h-2"
+                />
               </div>
 
               <div className="flex items-center justify-between text-xs sm:text-sm">
@@ -230,19 +233,25 @@ export function TeacherDashboard() {
           </CardHeader>
           <CardContent className="responsive-padding space-y-component-md">
             <div className="text-center">
-              <div className="text-2xl font-bold text-primary sm:text-3xl">52</div>
+              <div className="text-2xl font-bold text-primary sm:text-3xl">
+                52
+              </div>
               <div className="text-sm text-muted-foreground">
                 Total Students
               </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600 sm:text-3xl">12</div>
+              <div className="text-2xl font-bold text-green-600 sm:text-3xl">
+                12
+              </div>
               <div className="text-sm text-muted-foreground">
                 Lessons Created
               </div>
             </div>
             <div className="text-center">
-              <div className="text-2xl font-bold text-orange-500 sm:text-3xl">8</div>
+              <div className="text-2xl font-bold text-orange-500 sm:text-3xl">
+                8
+              </div>
               <div className="text-sm text-muted-foreground">
                 Pending Reviews
               </div>

@@ -1,6 +1,12 @@
 "use client";
 
-import { createContext, Dispatch, ReactNode, SetStateAction, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useState,
+} from "react";
 
 import { SignInModal } from "@/components/modals/sign-in-modal";
 

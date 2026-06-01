@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function DELETE(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -16,7 +21,7 @@ export async function DELETE(req: NextRequest) {
     const timeoutId = setTimeout(() => controller.abort(), 15000);
 
     const url = new URL(req.url);
-    const useDeleteNow = url.searchParams.get("instant") !== "false"; 
+    const useDeleteNow = url.searchParams.get("instant") !== "false";
     const endpoint = useDeleteNow ? "/profile/delete-now" : "/profile/delete";
 
     try {

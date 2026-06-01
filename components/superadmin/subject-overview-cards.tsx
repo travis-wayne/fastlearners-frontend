@@ -2,10 +2,11 @@
 
 import React, { useCallback } from "react";
 import { BookOpen, ChevronRight, GraduationCap, Layers } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Subject {
   id: number;
@@ -27,14 +28,54 @@ interface SubjectCardProps {
 
 // Color palette for subjects - cycles through these colors
 const subjectColors = [
-  { bg: "bg-blue-50 dark:bg-blue-950/30", border: "border-blue-200 dark:border-blue-800", icon: "text-blue-600 dark:text-blue-400", hover: "hover:border-blue-400" },
-  { bg: "bg-emerald-50 dark:bg-emerald-950/30", border: "border-emerald-200 dark:border-emerald-800", icon: "text-emerald-600 dark:text-emerald-400", hover: "hover:border-emerald-400" },
-  { bg: "bg-purple-50 dark:bg-purple-950/30", border: "border-purple-200 dark:border-purple-800", icon: "text-purple-600 dark:text-purple-400", hover: "hover:border-purple-400" },
-  { bg: "bg-amber-50 dark:bg-amber-950/30", border: "border-amber-200 dark:border-amber-800", icon: "text-amber-600 dark:text-amber-400", hover: "hover:border-amber-400" },
-  { bg: "bg-rose-50 dark:bg-rose-950/30", border: "border-rose-200 dark:border-rose-800", icon: "text-rose-600 dark:text-rose-400", hover: "hover:border-rose-400" },
-  { bg: "bg-cyan-50 dark:bg-cyan-950/30", border: "border-cyan-200 dark:border-cyan-800", icon: "text-cyan-600 dark:text-cyan-400", hover: "hover:border-cyan-400" },
-  { bg: "bg-indigo-50 dark:bg-indigo-950/30", border: "border-indigo-200 dark:border-indigo-800", icon: "text-indigo-600 dark:text-indigo-400", hover: "hover:border-indigo-400" },
-  { bg: "bg-teal-50 dark:bg-teal-950/30", border: "border-teal-200 dark:border-teal-800", icon: "text-teal-600 dark:text-teal-400", hover: "hover:border-teal-400" },
+  {
+    bg: "bg-blue-50 dark:bg-blue-950/30",
+    border: "border-blue-200 dark:border-blue-800",
+    icon: "text-blue-600 dark:text-blue-400",
+    hover: "hover:border-blue-400",
+  },
+  {
+    bg: "bg-emerald-50 dark:bg-emerald-950/30",
+    border: "border-emerald-200 dark:border-emerald-800",
+    icon: "text-emerald-600 dark:text-emerald-400",
+    hover: "hover:border-emerald-400",
+  },
+  {
+    bg: "bg-purple-50 dark:bg-purple-950/30",
+    border: "border-purple-200 dark:border-purple-800",
+    icon: "text-purple-600 dark:text-purple-400",
+    hover: "hover:border-purple-400",
+  },
+  {
+    bg: "bg-amber-50 dark:bg-amber-950/30",
+    border: "border-amber-200 dark:border-amber-800",
+    icon: "text-amber-600 dark:text-amber-400",
+    hover: "hover:border-amber-400",
+  },
+  {
+    bg: "bg-rose-50 dark:bg-rose-950/30",
+    border: "border-rose-200 dark:border-rose-800",
+    icon: "text-rose-600 dark:text-rose-400",
+    hover: "hover:border-rose-400",
+  },
+  {
+    bg: "bg-cyan-50 dark:bg-cyan-950/30",
+    border: "border-cyan-200 dark:border-cyan-800",
+    icon: "text-cyan-600 dark:text-cyan-400",
+    hover: "hover:border-cyan-400",
+  },
+  {
+    bg: "bg-indigo-50 dark:bg-indigo-950/30",
+    border: "border-indigo-200 dark:border-indigo-800",
+    icon: "text-indigo-600 dark:text-indigo-400",
+    hover: "hover:border-indigo-400",
+  },
+  {
+    bg: "bg-teal-50 dark:bg-teal-950/30",
+    border: "border-teal-200 dark:border-teal-800",
+    icon: "text-teal-600 dark:text-teal-400",
+    hover: "hover:border-teal-400",
+  },
 ];
 
 function SubjectCard({ subject, onSelect, isSelected }: SubjectCardProps) {
@@ -54,7 +95,7 @@ function SubjectCard({ subject, onSelect, isSelected }: SubjectCardProps) {
         colors.border,
         colors.hover,
         "hover:scale-[1.02] hover:shadow-lg",
-        isSelected && "ring-2 ring-primary ring-offset-2"
+        isSelected && "ring-2 ring-primary ring-offset-2",
       )}
     >
       <CardContent className="flex items-center gap-4 p-4">
@@ -62,7 +103,7 @@ function SubjectCard({ subject, onSelect, isSelected }: SubjectCardProps) {
           className={cn(
             "flex size-12 shrink-0 items-center justify-center rounded-xl",
             "bg-white/80 dark:bg-gray-900/50",
-            "transition-transform group-hover:scale-110"
+            "transition-transform group-hover:scale-110",
           )}
         >
           <BookOpen className={cn("size-6", colors.icon)} />
@@ -71,14 +112,12 @@ function SubjectCard({ subject, onSelect, isSelected }: SubjectCardProps) {
           <h3 className="truncate font-semibold text-foreground">
             {subject.name}
           </h3>
-          <p className="text-xs text-muted-foreground">
-            Click to view lessons
-          </p>
+          <p className="text-xs text-muted-foreground">Click to view lessons</p>
         </div>
         <ChevronRight
           className={cn(
             "size-5 text-muted-foreground transition-transform",
-            "group-hover:translate-x-1 group-hover:text-foreground"
+            "group-hover:translate-x-1 group-hover:text-foreground",
           )}
         />
       </CardContent>
@@ -137,7 +176,8 @@ export function SubjectOverviewCards({
           </div>
           <h3 className="mb-2 text-lg font-bold">No Subjects Available</h3>
           <p className="text-center text-sm text-muted-foreground">
-            No subjects have been uploaded yet. Upload lesson files to get started.
+            No subjects have been uploaded yet. Upload lesson files to get
+            started.
           </p>
         </CardContent>
       </Card>

@@ -4,12 +4,12 @@ import Image from "next/image";
 import { BookOpen, CheckCircle, PlayCircle, Target } from "lucide-react";
 
 import type { LessonContent as LessonContentType } from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { ExerciseModal } from "@/components/lessons/ExerciseModal";
 import { AudioPlayer } from "@/components/lessons/AudioPlayer";
-import { cn } from "@/lib/utils";
+import { ExerciseModal } from "@/components/lessons/ExerciseModal";
 import { YouTubeEmbed } from "@/components/lessons/YouTubeEmbed";
 
 interface LessonContentProps {
@@ -33,10 +33,10 @@ export function LessonContent({
 }: LessonContentProps) {
   const completionPercentage = content.check_markers
     ? Math.round(
-      (content.check_markers.filter((m: any) => m.completed).length /
-        content.check_markers.length) *
-      100,
-    )
+        (content.check_markers.filter((m: any) => m.completed).length /
+          content.check_markers.length) *
+          100,
+      )
     : 0;
 
   return (
@@ -46,12 +46,21 @@ export function LessonContent({
         <CardContent className="responsive-padding">
           <div className="flex items-center justify-between">
             <div className="max-w-[150px] flex-1 space-y-1.5 sm:max-w-none">
-              <p className="text-xs font-medium text-muted-foreground sm:text-sm">Lesson Progress</p>
-              <Progress value={completionPercentage} className="h-1.5 w-full sm:h-2 sm:w-48" />
+              <p className="text-xs font-medium text-muted-foreground sm:text-sm">
+                Lesson Progress
+              </p>
+              <Progress
+                value={completionPercentage}
+                className="h-1.5 w-full sm:h-2 sm:w-48"
+              />
             </div>
             <div className="shrink-0 text-right">
-              <p className="text-lg font-bold leading-none text-primary sm:text-xl">{completionPercentage}%</p>
-              <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">Complete</p>
+              <p className="text-lg font-bold leading-none text-primary sm:text-xl">
+                {completionPercentage}%
+              </p>
+              <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground sm:text-xs">
+                Complete
+              </p>
             </div>
           </div>
         </CardContent>
@@ -61,14 +70,21 @@ export function LessonContent({
       {content.video_path && (
         <Card className="overflow-hidden border-2">
           <CardContent className="p-0">
-            <YouTubeEmbed src={content.video_path} title={content.topic ?? content.title} />
+            <YouTubeEmbed
+              src={content.video_path}
+              title={content.topic ?? content.title}
+            />
           </CardContent>
         </Card>
       )}
 
       {/* Audio Player */}
       {content.audio_path && (
-        <AudioPlayer src={content.audio_path} title="Pronunciation / Audio" className="border-2" />
+        <AudioPlayer
+          src={content.audio_path}
+          title="Pronunciation / Audio"
+          className="border-2"
+        />
       )}
 
       {/* Overview */}
@@ -159,7 +175,9 @@ export function LessonContent({
           {content.concepts.map((concept) => (
             <Card className="border-2">
               <CardHeader className="responsive-padding pb-2 sm:pb-3">
-                <CardTitle className="text-lg font-bold transition-colors group-hover:text-primary sm:text-xl">{concept.title}</CardTitle>
+                <CardTitle className="text-lg font-bold transition-colors group-hover:text-primary sm:text-xl">
+                  {concept.title}
+                </CardTitle>
               </CardHeader>
               <CardContent className="responsive-padding space-y-4 pt-0 sm:space-y-6 sm:pt-0">
                 {/* Description - array of ConceptDescription objects */}
@@ -179,21 +197,27 @@ export function LessonContent({
                               {desc.description}
                             </p>
                           )}
-                          {desc.image_path && (desc.image_path.startsWith('/') || desc.image_path.startsWith('http')) && (
-                            <div className="my-2">
-                              <Image
-                                src={desc.image_path}
-                                alt={desc.heading || "Concept illustration"}
-                                width={800}
-                                height={450}
-                                className="h-auto max-w-full rounded-lg"
-                                style={{ width: "100%", height: "auto" }}
-                                unoptimized
-                              />
-                            </div>
-                          )}
+                          {desc.image_path &&
+                            (desc.image_path.startsWith("/") ||
+                              desc.image_path.startsWith("http")) && (
+                              <div className="my-2">
+                                <Image
+                                  src={desc.image_path}
+                                  alt={desc.heading || "Concept illustration"}
+                                  width={800}
+                                  height={450}
+                                  className="h-auto max-w-full rounded-lg"
+                                  style={{ width: "100%", height: "auto" }}
+                                  unoptimized
+                                />
+                              </div>
+                            )}
                           {desc.audio_path && (
-                            <AudioPlayer src={desc.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+                            <AudioPlayer
+                              src={desc.audio_path}
+                              title="Pronunciation / Audio"
+                              className="my-3 border-2"
+                            />
                           )}
                           {desc.points &&
                             Array.isArray(desc.points) &&
@@ -249,21 +273,27 @@ export function LessonContent({
                             </span>
                           </p>
                         )}
-                        {example.image_path && (example.image_path.startsWith('/') || example.image_path.startsWith('http')) && (
-                          <div className="my-2">
-                            <Image
-                              src={example.image_path}
-                              alt={example.title || "Example illustration"}
-                              width={800}
-                              height={450}
-                              className="h-auto max-w-full rounded-lg"
-                              style={{ width: "100%", height: "auto" }}
-                              unoptimized
-                            />
-                          </div>
-                        )}
+                        {example.image_path &&
+                          (example.image_path.startsWith("/") ||
+                            example.image_path.startsWith("http")) && (
+                            <div className="my-2">
+                              <Image
+                                src={example.image_path}
+                                alt={example.title || "Example illustration"}
+                                width={800}
+                                height={450}
+                                className="h-auto max-w-full rounded-lg"
+                                style={{ width: "100%", height: "auto" }}
+                                unoptimized
+                              />
+                            </div>
+                          )}
                         {example.audio_path && (
-                          <AudioPlayer src={example.audio_path} title="Pronunciation / Audio" className="my-3 border-2" />
+                          <AudioPlayer
+                            src={example.audio_path}
+                            title="Pronunciation / Audio"
+                            className="my-3 border-2"
+                          />
                         )}
                       </div>
                     ))}
@@ -313,7 +343,7 @@ export function LessonContent({
                 variant={isCompleted ? "outline" : "default"}
                 className={cn(
                   "w-full min-w-[160px] font-semibold transition-all sm:w-auto",
-                  !isCompleted && "shadow-lg hover:shadow-primary/20"
+                  !isCompleted && "shadow-lg hover:shadow-primary/20",
                 )}
               >
                 {isCompleted ? (

@@ -1,9 +1,10 @@
 "use client";
 
-import { Trophy, Target, TrendingUp } from "lucide-react";
+import { Target, TrendingUp, Trophy } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { cn } from "@/lib/utils";
 
 interface ScoreDisplayProps {
   score: number;
@@ -34,13 +35,15 @@ export function ScoreDisplay({
                   "flex size-10 items-center justify-center rounded-full sm:size-12",
                   passed
                     ? "bg-green-100 text-green-600"
-                    : "bg-orange-100 text-orange-600"
+                    : "bg-orange-100 text-orange-600",
                 )}
               >
                 <Trophy className="size-5 sm:size-6" />
               </div>
               <div>
-                <p className="text-xs text-muted-foreground sm:text-sm">Your Score</p>
+                <p className="text-xs text-muted-foreground sm:text-sm">
+                  Your Score
+                </p>
                 <p className="text-xl font-bold sm:text-2xl">
                   {score} / {totalPoints}
                 </p>
@@ -50,7 +53,7 @@ export function ScoreDisplay({
               <div
                 className={cn(
                   "text-2xl font-bold sm:text-3xl",
-                  passed ? "text-green-600" : "text-orange-600"
+                  passed ? "text-green-600" : "text-orange-600",
                 )}
               >
                 {percentage}%
@@ -71,7 +74,7 @@ export function ScoreDisplay({
               value={percentage}
               className={cn(
                 "h-2 sm:h-3",
-                passed ? "[&>div]:bg-green-500" : "[&>div]:bg-orange-500"
+                passed ? "[&>div]:bg-green-500" : "[&>div]:bg-orange-500",
               )}
             />
           </div>
@@ -84,7 +87,9 @@ export function ScoreDisplay({
                 Passing Score
               </span>
             </div>
-            <span className="text-sm font-semibold sm:text-base">{passingScore}%</span>
+            <span className="text-sm font-semibold sm:text-base">
+              {passingScore}%
+            </span>
           </div>
 
           {/* Points Difference */}
@@ -94,7 +99,7 @@ export function ScoreDisplay({
                 "flex items-center gap-2 rounded-lg p-2 sm:p-3",
                 passed
                   ? "bg-green-50 text-green-700"
-                  : "bg-orange-50 text-orange-700"
+                  : "bg-orange-50 text-orange-700",
               )}
             >
               <TrendingUp className="size-4" />
@@ -110,4 +115,3 @@ export function ScoreDisplay({
     </Card>
   );
 }
-

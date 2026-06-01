@@ -73,7 +73,9 @@ export const uploadAllLessonFilesBulk = async (
     if (debugUploads) {
       console.log("📁 Files to upload:");
       Object.entries(files).forEach(([key, file]) => {
-        console.log(`  ${key}: ${file.name} (${file.size} bytes, ${file.type})`);
+        console.log(
+          `  ${key}: ${file.name} (${file.size} bytes, ${file.type})`,
+        );
       });
     }
 
@@ -139,7 +141,8 @@ export const uploadAllLessonFilesBulk = async (
 
         // Handle specific error codes from documentation
         else if (response.status === 400) {
-          errorMessage = data.message || "Invalid CSV format or missing columns";
+          errorMessage =
+            data.message || "Invalid CSV format or missing columns";
         } else if (response.status === 404) {
           errorMessage =
             data.message ||

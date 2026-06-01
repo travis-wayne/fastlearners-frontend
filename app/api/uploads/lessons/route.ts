@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import { handleApiError, handleUpstreamError } from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import {
   isValidUploadFile,
   MAX_UPLOAD_SIZE_BYTES,
@@ -12,7 +13,7 @@ export async function POST(req: NextRequest) {
   if (!auth) {
     return NextResponse.json(
       { success: false, message: "Unauthorized", code: 401, content: null },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -34,11 +35,14 @@ export async function POST(req: NextRequest) {
           content: null,
           code: 422,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
-    if (!isValidUploadFile(lessonsFile) || lessonsFile.size > MAX_UPLOAD_SIZE_BYTES) {
+    if (
+      !isValidUploadFile(lessonsFile) ||
+      lessonsFile.size > MAX_UPLOAD_SIZE_BYTES
+    ) {
       const errors: Record<string, string[]> = {};
       const messages: string[] = [];
 
@@ -59,18 +63,21 @@ export async function POST(req: NextRequest) {
           content: null,
           code: 422,
         },
-        { status: 422 }
+        { status: 422 },
       );
     }
 
     // Log upload attempt
-    console.log("[UPLOAD_ATTEMPT]", JSON.stringify({
-      requestId,
-      uploadType: "lessons",
-      fileSize: lessonsFile.size,
-      fileName: lessonsFile.name,
-      timestamp: new Date().toISOString(),
-    }));
+    console.log(
+      "[UPLOAD_ATTEMPT]",
+      JSON.stringify({
+        requestId,
+        uploadType: "lessons",
+        fileSize: lessonsFile.size,
+        fileName: lessonsFile.name,
+        timestamp: new Date().toISOString(),
+      }),
+    );
 
     // Create new FormData for upstream
     const upstreamFormData = new FormData();
@@ -87,22 +94,25 @@ export async function POST(req: NextRequest) {
         },
         body: upstreamFormData,
         cache: "no-store",
-      }
+      },
     );
 
     const data = await upstream.json();
 
     // Log upload completion
-    console.log("[UPLOAD_COMPLETE]", JSON.stringify({
-      requestId,
-      uploadType: "lessons",
-      statusCode: upstream.status,
-      success: upstream.ok,
-      hasErrors: !!data.errors,
-      hasConflicts: !!data.conflicts,
-      conflictCount: data.conflicts?.length || 0,
-      timestamp: new Date().toISOString(),
-    }));
+    console.log(
+      "[UPLOAD_COMPLETE]",
+      JSON.stringify({
+        requestId,
+        uploadType: "lessons",
+        statusCode: upstream.status,
+        success: upstream.ok,
+        hasErrors: !!data.errors,
+        hasConflicts: !!data.conflicts,
+        conflictCount: data.conflicts?.length || 0,
+        timestamp: new Date().toISOString(),
+      }),
+    );
 
     if (!upstream.ok) {
       return handleUpstreamError(upstream, data);

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -46,8 +51,11 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(data, { status: 200 });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryR = await fetch(`${UPSTREAM_BASE}/guardian`, {
             method: "GET",
@@ -61,24 +69,34 @@ export async function GET(req: NextRequest) {
           // Check if response is JSON
           const retryContentType = retryR.headers.get("content-type");
           let retryData: any = null;
-          if (retryContentType && retryContentType.includes("application/json")) {
+          if (
+            retryContentType &&
+            retryContentType.includes("application/json")
+          ) {
             try {
               retryData = await retryR.json();
             } catch (e) {
-              console.error(`[API] Failed to parse JSON from ${retryR.url}:`, e);
+              console.error(
+                `[API] Failed to parse JSON from ${retryR.url}:`,
+                e,
+              );
             }
           }
-          
+
           if (!retryR.ok) {
             return handleUpstreamError(retryR, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: 200 });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch guardian dashboard after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to fetch guardian dashboard after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (e: any) {

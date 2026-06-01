@@ -1,4 +1,7 @@
-import type { LessonCompletionData, ConceptScoreBreakdown } from "@/lib/types/lessons";
+import type {
+  ConceptScoreBreakdown,
+  LessonCompletionData,
+} from "@/lib/types/lessons";
 
 /**
  * Comprehensive performance insights structure
@@ -52,7 +55,7 @@ interface AccuracyMetrics {
  * Calculate detailed accuracy metrics from exercise progress
  */
 export function calculateAccuracyMetrics(
-  exerciseProgress: Record<number, any>
+  exerciseProgress: Record<number, any>,
 ): AccuracyMetrics {
   let firstAttemptCorrect = 0;
   let totalExercises = 0;
@@ -65,32 +68,29 @@ export function calculateAccuracyMetrics(
       totalExercises++;
       const attempts = progress.attempts || 1;
       totalAttempts += attempts;
-      
+
       if (progress.isCorrect) {
         successfulAttempts++;
         if (attempts === 1) {
           firstAttemptCorrect++;
         }
       }
-      
+
       // Track error distribution
       const errorCount = attempts - 1;
       if (errorCount > 0) {
-        errorDistribution.set(
-          Number(exerciseId),
-          errorCount
-        );
+        errorDistribution.set(Number(exerciseId), errorCount);
       }
     }
   });
 
-  const firstAttemptAccuracy = totalExercises > 0
-    ? (firstAttemptCorrect / totalExercises) * 100
-    : 0;
-  
-  const retryRate = totalExercises > 0
-    ? ((totalAttempts - totalExercises) / totalExercises) * 100
-    : 0;
+  const firstAttemptAccuracy =
+    totalExercises > 0 ? (firstAttemptCorrect / totalExercises) * 100 : 0;
+
+  const retryRate =
+    totalExercises > 0
+      ? ((totalAttempts - totalExercises) / totalExercises) * 100
+      : 0;
 
   return {
     firstAttemptAccuracy,
@@ -106,10 +106,10 @@ export function calculateAccuracyMetrics(
  */
 export function identifyStrongestConcepts(
   conceptScores: ConceptScoreBreakdown[],
-  threshold: number = 80
+  threshold: number = 80,
 ): ConceptScoreBreakdown[] {
   return conceptScores
-    .filter(concept => concept.score >= threshold)
+    .filter((concept) => concept.score >= threshold)
     .sort((a, b) => b.score - a.score);
 }
 
@@ -118,10 +118,10 @@ export function identifyStrongestConcepts(
  */
 export function identifyWeakestConcepts(
   conceptScores: ConceptScoreBreakdown[],
-  threshold: number = 70
+  threshold: number = 70,
 ): ConceptScoreBreakdown[] {
   return conceptScores
-    .filter(concept => concept.score < threshold)
+    .filter((concept) => concept.score < threshold)
     .sort((a, b) => a.score - b.score);
 }
 
@@ -131,26 +131,24 @@ export function identifyWeakestConcepts(
 export function calculateTimeEfficiency(
   timeSpent: number,
   totalExercises: number,
-  conceptCount: number
+  conceptCount: number,
 ): {
   averageTimePerExercise: number;
   averageTimePerConcept: number;
   efficiencyRating: number;
 } {
-  const averageTimePerExercise = totalExercises > 0
-    ? timeSpent / totalExercises
-    : 0;
-  
-  const averageTimePerConcept = conceptCount > 0
-    ? timeSpent / conceptCount
-    : 0;
-  
+  const averageTimePerExercise =
+    totalExercises > 0 ? timeSpent / totalExercises : 0;
+
+  const averageTimePerConcept = conceptCount > 0 ? timeSpent / conceptCount : 0;
+
   // Efficiency rating: lower time per exercise = higher efficiency
   // Assuming optimal time is 30 seconds per exercise
   const optimalTimePerExercise = 30;
-  const efficiencyRating = averageTimePerExercise > 0
-    ? Math.min(100, (optimalTimePerExercise / averageTimePerExercise) * 100)
-    : 0;
+  const efficiencyRating =
+    averageTimePerExercise > 0
+      ? Math.min(100, (optimalTimePerExercise / averageTimePerExercise) * 100)
+      : 0;
 
   return {
     averageTimePerExercise,
@@ -164,7 +162,7 @@ export function calculateTimeEfficiency(
  */
 export function compareWithAveragePerformance(
   completionData: LessonCompletionData,
-  historicalData?: { score: number; time: number; accuracy: number }
+  historicalData?: { score: number; time: number; accuracy: number },
 ): {
   scoreDifference: number;
   timeDifference: number;
@@ -186,7 +184,7 @@ export function compareWithAveragePerformance(
  */
 export function generatePerformanceInsights(
   completionData: LessonCompletionData,
-  exerciseProgress: Record<number, any>
+  exerciseProgress: Record<number, any>,
 ): string[] {
   const insights: string[] = [];
   const { lessonScore, conceptScores, accuracyRate } = completionData;
@@ -195,24 +193,34 @@ export function generatePerformanceInsights(
 
   // Overall performance insight
   if (lessonScore >= 90) {
-    insights.push("Outstanding performance! You've demonstrated excellent mastery of the material.");
+    insights.push(
+      "Outstanding performance! You've demonstrated excellent mastery of the material.",
+    );
   } else if (lessonScore >= 75) {
-    insights.push("Great work! You have a solid understanding of most concepts.");
+    insights.push(
+      "Great work! You have a solid understanding of most concepts.",
+    );
   } else if (lessonScore >= 60) {
     insights.push("Good effort! There's room for improvement in some areas.");
   } else {
-    insights.push("Keep practicing! Focus on reviewing the fundamental concepts.");
+    insights.push(
+      "Keep practicing! Focus on reviewing the fundamental concepts.",
+    );
   }
 
   // Concept-specific insights
   if (strongConcepts.length > 0) {
     const topConcept = strongConcepts[0];
-    insights.push(`You excelled at "${topConcept.title}" with ${Math.round(topConcept.score)}% mastery.`);
+    insights.push(
+      `You excelled at "${topConcept.title}" with ${Math.round(topConcept.score)}% mastery.`,
+    );
   }
 
   if (weakConcepts.length > 0) {
     const weakestConcept = weakConcepts[0];
-    insights.push(`Consider reviewing "${weakestConcept.title}" to strengthen your understanding.`);
+    insights.push(
+      `Consider reviewing "${weakestConcept.title}" to strengthen your understanding.`,
+    );
   }
 
   // Accuracy insights
@@ -230,7 +238,7 @@ export function generatePerformanceInsights(
  */
 export function generateTimeInsights(
   timeSpent: number,
-  averageTime?: number
+  averageTime?: number,
 ): string[] {
   const insights: string[] = [];
   const minutes = Math.floor(timeSpent / 60);
@@ -240,9 +248,13 @@ export function generateTimeInsights(
     const percentDifference = Math.abs((difference / averageTime) * 100);
 
     if (difference < -60) {
-      insights.push(`Completed ${Math.round(percentDifference)}% faster than your average!`);
+      insights.push(
+        `Completed ${Math.round(percentDifference)}% faster than your average!`,
+      );
     } else if (difference > 60) {
-      insights.push(`Took ${Math.round(percentDifference)}% more time than usual. Consider focusing on time management.`);
+      insights.push(
+        `Took ${Math.round(percentDifference)}% more time than usual. Consider focusing on time management.`,
+      );
     } else {
       insights.push("Completion time was consistent with your average pace.");
     }
@@ -258,18 +270,24 @@ export function generateTimeInsights(
  */
 export function generateAccuracyInsights(
   accuracyRate: number,
-  firstAttemptAccuracy: number
+  firstAttemptAccuracy: number,
 ): string[] {
   const insights: string[] = [];
 
   const retryImprovement = accuracyRate - firstAttemptAccuracy;
 
   if (firstAttemptAccuracy >= 90) {
-    insights.push("Excellent first-attempt accuracy! You're demonstrating strong initial understanding.");
+    insights.push(
+      "Excellent first-attempt accuracy! You're demonstrating strong initial understanding.",
+    );
   } else if (firstAttemptAccuracy < 70 && retryImprovement > 20) {
-    insights.push("Good problem-solving! You significantly improved with practice.");
+    insights.push(
+      "Good problem-solving! You significantly improved with practice.",
+    );
   } else if (retryImprovement < 5) {
-    insights.push("Consider reviewing concepts before attempting exercises for better first-attempt results.");
+    insights.push(
+      "Consider reviewing concepts before attempting exercises for better first-attempt results.",
+    );
   }
 
   return insights;
@@ -280,7 +298,7 @@ export function generateAccuracyInsights(
  */
 export function generatePersonalizedRecommendations(
   completionData: LessonCompletionData,
-  exerciseProgress: Record<number, any>
+  exerciseProgress: Record<number, any>,
 ): PersonalizedRecommendations {
   const { lessonScore, conceptScores, accuracyRate } = completionData;
   const weakConcepts = identifyWeakestConcepts(conceptScores);
@@ -293,8 +311,10 @@ export function generatePersonalizedRecommendations(
 
   // Immediate actions
   if (weakConcepts.length > 0) {
-    weakConcepts.slice(0, 2).forEach(concept => {
-      immediate.push(`Review exercises for "${concept.title}" to strengthen understanding`);
+    weakConcepts.slice(0, 2).forEach((concept) => {
+      immediate.push(
+        `Review exercises for "${concept.title}" to strengthen understanding`,
+      );
     });
   }
 
@@ -312,12 +332,16 @@ export function generatePersonalizedRecommendations(
   }
 
   if (weakConcepts.length > 2) {
-    shortTerm.push("Focus on mastering 2-3 weak concepts at a time rather than all at once");
+    shortTerm.push(
+      "Focus on mastering 2-3 weak concepts at a time rather than all at once",
+    );
   }
 
   // Long-term recommendations
   if (accuracyMetrics.firstAttemptAccuracy < 70) {
-    longTerm.push("Develop a habit of reviewing concepts before attempting exercises");
+    longTerm.push(
+      "Develop a habit of reviewing concepts before attempting exercises",
+    );
   }
 
   if (lessonScore >= 90) {
@@ -328,16 +352,24 @@ export function generatePersonalizedRecommendations(
 
   // Study strategies
   if (accuracyMetrics.retryRate > 50) {
-    studyStrategies.push("Take more time to understand each concept before moving to exercises");
+    studyStrategies.push(
+      "Take more time to understand each concept before moving to exercises",
+    );
   }
 
   if (accuracyMetrics.firstAttemptAccuracy >= 80) {
-    studyStrategies.push("Your preparation strategy is working well - continue with your current approach");
+    studyStrategies.push(
+      "Your preparation strategy is working well - continue with your current approach",
+    );
   } else {
-    studyStrategies.push("Try active recall: explain concepts in your own words before practicing");
+    studyStrategies.push(
+      "Try active recall: explain concepts in your own words before practicing",
+    );
   }
 
-  studyStrategies.push("Use spaced repetition: review weak concepts multiple times over several days");
+  studyStrategies.push(
+    "Use spaced repetition: review weak concepts multiple times over several days",
+  );
 
   return {
     immediate,
@@ -352,7 +384,7 @@ export function generatePersonalizedRecommendations(
  */
 export function getNextStepsRecommendations(
   overallScore: number,
-  weakConcepts: ConceptScoreBreakdown[]
+  weakConcepts: ConceptScoreBreakdown[],
 ): string[] {
   const recommendations: string[] = [];
 
@@ -360,14 +392,22 @@ export function getNextStepsRecommendations(
     recommendations.push("Proceed to the next lesson with confidence");
     recommendations.push("Consider exploring advanced topics in this subject");
   } else if (overallScore >= 70) {
-    recommendations.push("Review weak concepts, then proceed to the next lesson");
+    recommendations.push(
+      "Review weak concepts, then proceed to the next lesson",
+    );
     if (weakConcepts.length > 0) {
-      recommendations.push(`Focus particularly on: ${weakConcepts.map(c => c.title).join(", ")}`);
+      recommendations.push(
+        `Focus particularly on: ${weakConcepts.map((c) => c.title).join(", ")}`,
+      );
     }
   } else {
     recommendations.push("Retake this lesson after thorough review");
-    recommendations.push("Spend extra time on the concepts you found challenging");
-    recommendations.push("Consider seeking additional resources or help for difficult topics");
+    recommendations.push(
+      "Spend extra time on the concepts you found challenging",
+    );
+    recommendations.push(
+      "Consider seeking additional resources or help for difficult topics",
+    );
   }
 
   return recommendations;
@@ -378,24 +418,34 @@ export function getNextStepsRecommendations(
  */
 export function getStudyStrategyRecommendations(
   timeEfficiency: number,
-  accuracyRate: number
+  accuracyRate: number,
 ): string[] {
   const strategies: string[] = [];
 
   // Time-based strategies
   if (timeEfficiency < 50) {
-    strategies.push("Take breaks between concepts to maintain focus and efficiency");
-    strategies.push("Try the Pomodoro technique: 25 minutes of focused study, 5-minute breaks");
+    strategies.push(
+      "Take breaks between concepts to maintain focus and efficiency",
+    );
+    strategies.push(
+      "Try the Pomodoro technique: 25 minutes of focused study, 5-minute breaks",
+    );
   } else if (timeEfficiency > 80) {
-    strategies.push("Your pace is excellent - maintain this efficient study rhythm");
+    strategies.push(
+      "Your pace is excellent - maintain this efficient study rhythm",
+    );
   }
 
   // Accuracy-based strategies
   if (accuracyRate < 70) {
-    strategies.push("Before exercises, summarize key points from each concept in your own words");
+    strategies.push(
+      "Before exercises, summarize key points from each concept in your own words",
+    );
     strategies.push("Create flashcards for concepts you find challenging");
   } else if (accuracyRate >= 90) {
-    strategies.push("Your accuracy is excellent - this indicates strong understanding");
+    strategies.push(
+      "Your accuracy is excellent - this indicates strong understanding",
+    );
   }
 
   // General strategies
@@ -411,7 +461,7 @@ export function getStudyStrategyRecommendations(
 export function calculatePerformanceInsights(
   completionData: LessonCompletionData,
   exerciseProgress: Record<number, any>,
-  historicalData?: { score: number; time: number; accuracy: number }
+  historicalData?: { score: number; time: number; accuracy: number },
 ): AnalyticsResult {
   try {
     // Calculate metrics
@@ -419,37 +469,45 @@ export function calculatePerformanceInsights(
     const timeEfficiency = calculateTimeEfficiency(
       completionData.timeSpent,
       completionData.completedExercises,
-      completionData.conceptScores.length
+      completionData.conceptScores.length,
     );
 
     // Calculate comparison
-    const comparison = compareWithAveragePerformance(completionData, historicalData);
+    const comparison = compareWithAveragePerformance(
+      completionData,
+      historicalData,
+    );
 
     // Generate insights
-    const performanceInsights = generatePerformanceInsights(completionData, exerciseProgress);
+    const performanceInsights = generatePerformanceInsights(
+      completionData,
+      exerciseProgress,
+    );
     const timeInsights = generateTimeInsights(
       completionData.timeSpent,
-      historicalData?.time
+      historicalData?.time,
     );
     const accuracyInsights = generateAccuracyInsights(
       completionData.accuracyRate,
-      accuracyMetrics.firstAttemptAccuracy
+      accuracyMetrics.firstAttemptAccuracy,
     );
 
-    const strongConcepts = identifyStrongestConcepts(completionData.conceptScores);
+    const strongConcepts = identifyStrongestConcepts(
+      completionData.conceptScores,
+    );
     const weakConcepts = identifyWeakestConcepts(completionData.conceptScores);
 
     const strengths = strongConcepts.map(
-      c => `${c.title} (${Math.round(c.score)}%)`
+      (c) => `${c.title} (${Math.round(c.score)}%)`,
     );
     const areasForImprovement = weakConcepts.map(
-      c => `${c.title} (${Math.round(c.score)}%)`
+      (c) => `${c.title} (${Math.round(c.score)}%)`,
     );
 
     // Generate recommendations
     const recommendations = generatePersonalizedRecommendations(
       completionData,
-      exerciseProgress
+      exerciseProgress,
     );
 
     // Compile insights
@@ -475,7 +533,7 @@ export function calculatePerformanceInsights(
     };
   } catch (error) {
     console.error("Error calculating performance insights:", error);
-    
+
     // Return fallback analytics
     return {
       insights: {

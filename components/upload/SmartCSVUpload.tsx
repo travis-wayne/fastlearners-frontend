@@ -324,14 +324,19 @@ function FileUploadSection({
                 <div className="flex items-center gap-3">
                   <FileText className="size-6 text-primary sm:size-8" />
                   <div>
-                    <p className="text-sm font-medium sm:text-base">{file.name}</p>
+                    <p className="text-sm font-medium sm:text-base">
+                      {file.name}
+                    </p>
                     <p className="text-xs text-muted-foreground sm:text-sm">
                       {formatFileSize(file.size)}
                     </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-3">
-                  <Badge variant={error ? "destructive" : "secondary"} className="text-[10px] sm:text-xs">
+                  <Badge
+                    variant={error ? "destructive" : "secondary"}
+                    className="text-[10px] sm:text-xs"
+                  >
                     {error ? "Error" : "Ready"}
                   </Badge>
                   {!isUploading && (

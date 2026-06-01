@@ -79,7 +79,9 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
         <ScrollArea className="h-full overflow-y-auto border-r">
           <aside
             className={cn(
-              isSidebarExpanded ? "w-sidebar-expanded-sm lg:w-sidebar-expanded-lg xl:w-sidebar-expanded-xl" : "w-sidebar-collapsed",
+              isSidebarExpanded
+                ? "w-sidebar-expanded-sm lg:w-sidebar-expanded-lg xl:w-sidebar-expanded-xl"
+                : "w-sidebar-collapsed",
               "hidden h-screen md:block",
             )}
           >
@@ -110,10 +112,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
 
               <nav className="flex flex-1 flex-col gap-component-lg px-component-md pt-component-md">
                 {links.map((section) => (
-                  <section
-                    key={section.title}
-                    className="flex flex-col gap-1"
-                  >
+                  <section key={section.title} className="flex flex-col gap-1">
                     {isSidebarExpanded ? (
                       <p className="text-xs text-muted-foreground">
                         {section.title}
@@ -140,7 +139,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
                                   item.disabled &&
-                                  "cursor-not-allowed opacity-80 hover:bg-transparent",
+                                    "cursor-not-allowed opacity-80 hover:bg-transparent",
                                 )}
                               >
                                 <Icon className="size-5" aria-hidden="true" />
@@ -170,7 +169,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
                                       item.disabled &&
-                                      "cursor-not-allowed opacity-80 hover:bg-transparent",
+                                        "cursor-not-allowed opacity-80 hover:bg-transparent",
                                     )}
                                   >
                                     <span
@@ -314,10 +313,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                 <ProjectSwitcher />
 
                 {links.map((section) => (
-                  <section
-                    key={section.title}
-                    className="flex flex-col gap-1"
-                  >
+                  <section key={section.title} className="flex flex-col gap-1">
                     <p className="text-xs text-muted-foreground">
                       {section.title}
                     </p>
@@ -343,7 +339,7 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",
                                 item.disabled &&
-                                "cursor-not-allowed opacity-80 hover:bg-transparent",
+                                  "cursor-not-allowed opacity-80 hover:bg-transparent",
                               )}
                             >
                               <Icon className="size-5" aria-hidden="true" />

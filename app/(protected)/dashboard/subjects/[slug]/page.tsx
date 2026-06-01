@@ -11,8 +11,7 @@ import {
   Loader2,
 } from "lucide-react";
 
-import { getSubjectsWithSlugs } from "@/lib/api/lessons";
-import { getSubjectScore } from "@/lib/api/lessons";
+import { getSubjectScore, getSubjectsWithSlugs } from "@/lib/api/lessons";
 import type { TopicItem, TopicsByTerm } from "@/lib/types/lessons";
 import {
   Accordion,
@@ -61,19 +60,19 @@ export default function SubjectDetailPage() {
   useEffect(() => {
     const fetchSubjectId = async () => {
       if (!subjectSlug) return;
-      
+
       try {
         const subjectsResponse = await getSubjectsWithSlugs();
         if (subjectsResponse.success && subjectsResponse.content?.subjects) {
           const subject = subjectsResponse.content.subjects.find(
-            (s) => s.slug === subjectSlug
+            (s) => s.slug === subjectSlug,
           );
           if (subject) {
             setSubjectId(subject.id);
           }
         }
       } catch (error) {
-        console.error('Failed to fetch subject ID:', error);
+        console.error("Failed to fetch subject ID:", error);
       }
     };
 

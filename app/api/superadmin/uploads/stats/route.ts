@@ -1,22 +1,23 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 import { handleApiError } from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 /**
  * GET /api/superadmin/uploads/stats
- * 
+ *
  * Proxy endpoint for fetching upload statistics.
- * 
+ *
  * BACKEND ACTIVATION INSTRUCTIONS:
  * ================================
  * When the backend endpoint is ready at ${BASE_API_URL}/superadmin/uploads/stats:
- * 
+ *
  * 1. Comment out or remove the "TODO: Remove this" block below (lines 28-37)
  * 2. Uncomment the "Uncomment when backend is ready" block (lines 39-54)
  * 3. Test by navigating to /dashboard/superadmin/manage as a superadmin user
  * 4. Verify that upload stats appear in the summary cards
- * 
+ *
  * Expected backend response format:
  * {
  *   "success": true,
@@ -36,7 +37,7 @@ export async function GET(req: NextRequest) {
   if (!auth) {
     return NextResponse.json(
       { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -49,7 +50,7 @@ export async function GET(req: NextRequest) {
         content: null,
         code: 501,
       },
-      { status: 501 }
+      { status: 501 },
     );
 
     /* Uncomment when backend is ready:

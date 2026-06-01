@@ -244,7 +244,6 @@ const createOnboardingSchema = (
             path: ["city"],
           });
         }
-
       }
     });
 };
@@ -766,14 +765,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Enter your username"
                       disabled={Boolean(
                         profile?.username &&
-                          typeof profile.username === "string" &&
-                          profile.username.trim() !== "",
+                        typeof profile.username === "string" &&
+                        profile.username.trim() !== "",
                       )}
                     />
                     {Boolean(
                       profile?.username &&
-                        typeof profile.username === "string" &&
-                        profile.username.trim() !== "",
+                      typeof profile.username === "string" &&
+                      profile.username.trim() !== "",
                     ) && (
                       <p className="text-xs text-muted-foreground">
                         Username cannot be changed once set.
@@ -837,8 +836,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                         if (
                           !Boolean(
                             profile?.date_of_birth &&
-                              typeof profile.date_of_birth === "string" &&
-                              profile.date_of_birth.trim() !== "",
+                            typeof profile.date_of_birth === "string" &&
+                            profile.date_of_birth.trim() !== "",
                           )
                         ) {
                           setValue("date_of_birth", date);
@@ -847,14 +846,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       placeholder="Select your date of birth"
                       disabled={Boolean(
                         profile?.date_of_birth &&
-                          typeof profile.date_of_birth === "string" &&
-                          profile.date_of_birth.trim() !== "",
+                        typeof profile.date_of_birth === "string" &&
+                        profile.date_of_birth.trim() !== "",
                       )}
                     />
                     {Boolean(
                       profile?.date_of_birth &&
-                        typeof profile.date_of_birth === "string" &&
-                        profile.date_of_birth.trim() !== "",
+                      typeof profile.date_of_birth === "string" &&
+                      profile.date_of_birth.trim() !== "",
                     ) && (
                       <p className="text-xs text-muted-foreground">
                         Date of birth cannot be changed once set.
@@ -878,8 +877,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                       }}
                       disabled={Boolean(
                         profile?.gender &&
-                          typeof profile.gender === "string" &&
-                          profile.gender.trim() !== "",
+                        typeof profile.gender === "string" &&
+                        profile.gender.trim() !== "",
                       )}
                     >
                       <SelectTrigger>
@@ -892,8 +891,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     </Select>
                     {Boolean(
                       profile?.gender &&
-                        typeof profile.gender === "string" &&
-                        profile.gender.trim() !== "",
+                      typeof profile.gender === "string" &&
+                      profile.gender.trim() !== "",
                     ) && (
                       <p className="text-xs text-muted-foreground">
                         Gender cannot be changed once set.
@@ -984,8 +983,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                           onValueChange={(value) => setValue("class", value)}
                           disabled={Boolean(
                             profile?.class &&
-                              typeof profile.class === "string" &&
-                              profile.class.trim() !== "",
+                            typeof profile.class === "string" &&
+                            profile.class.trim() !== "",
                           )}
                         >
                           <SelectTrigger>
@@ -1001,8 +1000,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                         </Select>
                         {Boolean(
                           profile?.class &&
-                            typeof profile.class === "string" &&
-                            profile.class.trim() !== "",
+                          typeof profile.class === "string" &&
+                          profile.class.trim() !== "",
                         ) && (
                           <p className="text-xs text-muted-foreground">
                             Class cannot be changed once set.
@@ -1026,8 +1025,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                             }
                             disabled={Boolean(
                               profile?.discipline &&
-                                typeof profile.discipline === "string" &&
-                                profile.discipline.trim() !== "",
+                              typeof profile.discipline === "string" &&
+                              profile.discipline.trim() !== "",
                             )}
                           >
                             <SelectTrigger>
@@ -1056,8 +1055,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                           </Select>
                           {Boolean(
                             profile?.discipline &&
-                              typeof profile.discipline === "string" &&
-                              profile.discipline.trim() !== "",
+                            typeof profile.discipline === "string" &&
+                            profile.discipline.trim() !== "",
                           ) && (
                             <p className="text-xs text-muted-foreground">
                               Discipline cannot be changed once set.

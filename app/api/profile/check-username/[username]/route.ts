@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { BASE_API_URL } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { username: string } }
+  { params }: { params: { username: string } },
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -25,7 +30,7 @@ export async function GET(
         code: 422,
         requestId,
       },
-      { status: 422 }
+      { status: 422 },
     );
   }
 
@@ -39,45 +44,52 @@ export async function GET(
           Authorization: `Bearer ${auth.token}`,
         },
         cache: "no-store",
-      }
+      },
     );
 
     const data = await response.json();
 
     // Backend returns 200 for available, 400 for not available or error
     // We want to pass this status code through, but ensure our frontend can parse it.
-    
+
     // Available: 200 OK, success: true, content: { is_available: true, username: "..." }
     // Not Available: 400 Bad Request, success: false, errors: { is_available: false, username: "Taken" }
 
     if (response.ok && data.success) {
-        return NextResponse.json({
-            success: true,
-            content: {
-                is_available: true, 
-                username: data.content?.username || "Username is available!"
-            }
-        });
+      return NextResponse.json({
+        success: true,
+        content: {
+          is_available: true,
+          username: data.content?.username || "Username is available!",
+        },
+      });
     } else {
-        // Handle "Not Available" / 400 case or other errors
-        // Normalize the error response for our frontend helper
-        const isAvailable = false;
-        const message = data.errors?.username || data.message || "Username is not available";
-        
-        return NextResponse.json({
-             success: false,
-             message: message,
-             content: {
-                 is_available: false,
-                 username: message
-             },
-             // Use 200 status so frontend fetch doesn't throw, but indicate logic failure in body
-             // OR keep it 400 if client handles it. 
-             // Let's stick to returning 200 with success:false so client logic is simpler
-        }, { status: 200 }); 
-    }
+      // Handle "Not Available" / 400 case or other errors
+      // Normalize the error response for our frontend helper
+      const isAvailable = false;
+      const message =
+        data.errors?.username || data.message || "Username is not available";
 
+      return NextResponse.json(
+        {
+          success: false,
+          message: message,
+          content: {
+            is_available: false,
+            username: message,
+          },
+          // Use 200 status so frontend fetch doesn't throw, but indicate logic failure in body
+          // OR keep it 400 if client handles it.
+          // Let's stick to returning 200 with success:false so client logic is simpler
+        },
+        { status: 200 },
+      );
+    }
   } catch (error: any) {
-    return handleApiError(error, "Failed to check username availability", requestId);
+    return handleApiError(
+      error,
+      "Failed to check username availability",
+      requestId,
+    );
   }
 }

@@ -1,16 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
     return NextResponse.json(
       { success: false, message: "Unauthorized", content: null, code: 401 },
-      { status: 401 }
+      { status: 401 },
     );
   }
 
@@ -24,7 +25,7 @@ export async function GET(
           content: null,
           code: 400,
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -37,7 +38,7 @@ export async function GET(
           Authorization: `Bearer ${auth.token}`,
         },
         cache: "no-store",
-      }
+      },
     );
 
     const data = await response.json();
@@ -53,7 +54,7 @@ export async function GET(
         content: null,
         code: 500,
       },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

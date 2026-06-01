@@ -1,13 +1,15 @@
-import { 
-  GuardianActionResponse, 
-  StudentGuardianHistoryResponse, 
-  GuardianChildrenHistoryResponse 
+import {
+  GuardianActionResponse,
+  GuardianChildrenHistoryResponse,
+  StudentGuardianHistoryResponse,
 } from "@/lib/types/guardian";
 
 /**
  * Accept a guardian request (Student side)
  */
-export async function acceptGuardianRequest(id: number): Promise<GuardianActionResponse> {
+export async function acceptGuardianRequest(
+  id: number,
+): Promise<GuardianActionResponse> {
   try {
     const response = await fetch(`/api/student/guardian/request/accept/${id}`, {
       method: "GET",
@@ -43,7 +45,9 @@ export async function acceptGuardianRequest(id: number): Promise<GuardianActionR
 /**
  * Reject a guardian request (Student side)
  */
-export async function rejectGuardianRequest(id: number): Promise<GuardianActionResponse> {
+export async function rejectGuardianRequest(
+  id: number,
+): Promise<GuardianActionResponse> {
   try {
     const response = await fetch(`/api/student/guardian/request/reject/${id}`, {
       method: "GET",
@@ -115,12 +119,14 @@ export async function getStudentGuardianRequestHistory(): Promise<StudentGuardia
 /**
  * Send a new child request (Guardian side)
  */
-export async function sendChildRequest(childEmail: string): Promise<GuardianActionResponse> {
+export async function sendChildRequest(
+  childEmail: string,
+): Promise<GuardianActionResponse> {
   try {
     const response = await fetch("/api/guardian/children/request/new", {
       method: "POST",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify({ child_email: childEmail }),
@@ -153,16 +159,21 @@ export async function sendChildRequest(childEmail: string): Promise<GuardianActi
 /**
  * Cancel a child request (Guardian side)
  */
-export async function cancelChildRequest(id: number): Promise<GuardianActionResponse> {
+export async function cancelChildRequest(
+  id: number,
+): Promise<GuardianActionResponse> {
   try {
-    const response = await fetch(`/api/guardian/children/request/cancel/${id}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const response = await fetch(
+      `/api/guardian/children/request/cancel/${id}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+        cache: "no-store",
       },
-      credentials: "include",
-      cache: "no-store",
-    });
+    );
 
     const data = await response.json();
 

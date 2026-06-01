@@ -1,9 +1,27 @@
 "use client";
 
 import { useState } from "react";
-import { Share2, Download, Copy, FileText, Settings, Info, Link } from "lucide-react";
+import {
+  Copy,
+  Download,
+  FileText,
+  Info,
+  Link,
+  Settings,
+  Share2,
+} from "lucide-react";
 import { toast } from "sonner";
 
+import {
+  copyImageToClipboard,
+  downloadImage,
+  downloadPDF,
+  generatePDFReport,
+  generateShareableImage,
+} from "@/lib/utils/lesson-export";
+import { useSharingPreferences } from "@/hooks/use-sharing-preferences";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -12,8 +30,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import {
@@ -22,14 +38,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useSharingPreferences } from "@/hooks/use-sharing-preferences";
-import {
-  generateShareableImage,
-  downloadImage,
-  copyImageToClipboard,
-  generatePDFReport,
-  downloadPDF,
-} from "@/lib/utils/lesson-export";
 
 interface ShareDialogProps {
   open: boolean;
@@ -84,7 +92,7 @@ export function ShareDialog({
       const blob = await generateShareableImage(
         lessonData,
         userInfo,
-        preferences.includePersonalInfo
+        preferences.includePersonalInfo,
       );
 
       downloadImage(blob, lessonData.lessonId);
@@ -110,7 +118,7 @@ export function ShareDialog({
       const blob = await generateShareableImage(
         lessonData,
         userInfo,
-        preferences.includePersonalInfo
+        preferences.includePersonalInfo,
       );
 
       await copyImageToClipboard(blob);
@@ -137,7 +145,7 @@ export function ShareDialog({
         lessonData,
         userInfo,
         preferences.includePersonalInfo,
-        preferences.includeDetailedStats
+        preferences.includeDetailedStats,
       );
 
       downloadPDF(pdf, lessonData.lessonId);

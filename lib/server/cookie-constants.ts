@@ -10,4 +10,3 @@ export const defaultCookieOptions = {
   sameSite: (isProd ? "strict" : "lax") as "strict" | "lax",
   path: "/",
 } as const;
-

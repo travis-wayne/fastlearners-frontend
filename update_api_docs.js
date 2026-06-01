@@ -1,12 +1,12 @@
-const fs = require('fs');
-const path = require('path');
+const fs = require("fs");
+const path = require("path");
 
 function main() {
-    const filePath = path.join(__dirname, 'fastlearners-api-docs.md');
-    let content = fs.readFileSync(filePath, 'utf8');
+  const filePath = path.join(__dirname, "fastlearners-api-docs.md");
+  let content = fs.readFileSync(filePath, "utf8");
 
-    // 1. Insert Delete Account endpoints
-    const deleteAccountDocs = `
+  // 1. Insert Delete Account endpoints
+  const deleteAccountDocs = `
 ---
 
 ### 7. Delete Account Request
@@ -106,17 +106,20 @@ function main() {
 \`\`\`
 `;
 
-    if (!content.includes('Delete Account Request')) {
-        content = content.replace('## Guest Management', deleteAccountDocs + '\\n## Guest Management');
-    }
-
-    // 2. Update Answering System Exercise Content & Error block
+  if (!content.includes("Delete Account Request")) {
     content = content.replace(
-        '"message": "Great job! You scored 50% on your 1st attempt.",\\n  "content": null,',
-        '"message": "Great job! You scored 50% on your 1st attempt.",\\n  "content": {\\n    "score": "50",\\n    "attempt": "1st",\\n    "concept_total_score": "5.00",\\n    "concept_weight": "10.00"\\n  },'
+      "## Guest Management",
+      deleteAccountDocs + "\\n## Guest Management",
     );
+  }
 
-    const exerciseErrorOld = `**Exercise Already Answered Error (400):**
+  // 2. Update Answering System Exercise Content & Error block
+  content = content.replace(
+    '"message": "Great job! You scored 50% on your 1st attempt.",\\n  "content": null,',
+    '"message": "Great job! You scored 50% on your 1st attempt.",\\n  "content": {\\n    "score": "50",\\n    "attempt": "1st",\\n    "concept_total_score": "5.00",\\n    "concept_weight": "10.00"\\n  },',
+  );
+
+  const exerciseErrorOld = `**Exercise Already Answered Error (400):**
 \`\`\`json
 {
   "success": false,
@@ -125,7 +128,7 @@ function main() {
   "code": 400
 }
 \`\`\``;
-    const exerciseErrorNew = `**Exercise Already Answered Error (200):**
+  const exerciseErrorNew = `**Exercise Already Answered Error (200):**
 \`\`\`json
 {
   "success": true,
@@ -137,14 +140,14 @@ function main() {
   "code": 200
 }
 \`\`\``;
-    content = content.replace(exerciseErrorOld, exerciseErrorNew);
+  content = content.replace(exerciseErrorOld, exerciseErrorNew);
 
-    content = content.replace(
-        '"message": "Great job! You scored 5% on your 1st attempt.",\\n  "content": null,',
-        '"message": "Great job! You scored 5% on your 1st attempt.",\\n  "content": {\\n    "score": "5",\\n    "attempt": "1st",\\n    "general_exercise_total_score": "1.50",\\n    "general_exercise_weight": "30.00"\\n  },'
-    );
+  content = content.replace(
+    '"message": "Great job! You scored 5% on your 1st attempt.",\\n  "content": null,',
+    '"message": "Great job! You scored 5% on your 1st attempt.",\\n  "content": {\\n    "score": "5",\\n    "attempt": "1st",\\n    "general_exercise_total_score": "1.50",\\n    "general_exercise_weight": "30.00"\\n  },',
+  );
 
-    const generalErrorOld = `**Exercise Already Answered Error (400):**
+  const generalErrorOld = `**Exercise Already Answered Error (400):**
 \`\`\`json
 {
   "success": false,
@@ -153,7 +156,7 @@ function main() {
   "code": 400
 }
 \`\`\``;
-    const generalErrorNew = `**General Exercise Already Answered Error (200):**
+  const generalErrorNew = `**General Exercise Already Answered Error (200):**
 \`\`\`json
 {
   "success": true,
@@ -165,28 +168,28 @@ function main() {
   "code": 200
 }
 \`\`\``;
-    content = content.replace(generalErrorOld, generalErrorNew);
+  content = content.replace(generalErrorOld, generalErrorNew);
 
-    // 3. Update Lesson Completion Check System Endpoint text
-    content = content.replace(
-        "**Endpoint:** `GET /api/v1/lessons/check/overview/{lesson_id}`",
-        "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/overview/2`"
-    );
-    content = content.replace(
-        "**Endpoint:** `GET /api/v1/lessons/check/concept/{lesson_id}/{concept_id}`",
-        "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}/{concept_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/2/1`"
-    );
-    content = content.replace(
-        "**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/{lesson_id}`",
-        "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/2`"
-    );
-    content = content.replace(
-        "**Endpoint:** `GET /api/v1/lessons/check/general-exercises/{lesson_id}`",
-        "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/general-exercises/2`"
-    );
+  // 3. Update Lesson Completion Check System Endpoint text
+  content = content.replace(
+    "**Endpoint:** `GET /api/v1/lessons/check/overview/{lesson_id}`",
+    "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/overview/2`",
+  );
+  content = content.replace(
+    "**Endpoint:** `GET /api/v1/lessons/check/concept/{lesson_id}/{concept_id}`",
+    "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}/{concept_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/2/1`",
+  );
+  content = content.replace(
+    "**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/{lesson_id}`",
+    "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/summary-and-application/2`",
+  );
+  content = content.replace(
+    "**Endpoint:** `GET /api/v1/lessons/check/general-exercises/{lesson_id}`",
+    "**Endpoint Format:** `GET /api/v1/lessons/check/{type}/{lesson_id}`\\n\\n**Endpoint:** `GET /api/v1/lessons/check/general-exercises/2`",
+  );
 
-    // 4. Insert Total Scores API Request
-    const totalScoresDocs = `
+  // 4. Insert Total Scores API Request
+  const totalScoresDocs = `
 ## Total Scores API Request
 
 ### 1. Concepts Total Scores API Request
@@ -555,24 +558,27 @@ function main() {
 ---
 `;
 
-    if (!content.includes('Total Scores API Request')) {
-        content = content.replace('## Guardian Management', totalScoresDocs + '\\n## Guardian Management');
-    }
+  if (!content.includes("Total Scores API Request")) {
+    content = content.replace(
+      "## Guardian Management",
+      totalScoresDocs + "\\n## Guardian Management",
+    );
+  }
 
-    if (!content.includes('[Total Scores API Request]')) {
-        content = content.replace(
-            '8. [Lesson Completion Check System](#lesson-completion-check-system)\\n9. [Admin & SuperAdmin Endpoints](#admin--superadmin-endpoints)',
-            '8. [Lesson Completion Check System](#lesson-completion-check-system)\\n9. [Total Scores API Request](#total-scores-api-request)\\n10. [Admin & SuperAdmin Endpoints](#admin--superadmin-endpoints)'
-        );
-    }
+  if (!content.includes("[Total Scores API Request]")) {
+    content = content.replace(
+      "8. [Lesson Completion Check System](#lesson-completion-check-system)\\n9. [Admin & SuperAdmin Endpoints](#admin--superadmin-endpoints)",
+      "8. [Lesson Completion Check System](#lesson-completion-check-system)\\n9. [Total Scores API Request](#total-scores-api-request)\\n10. [Admin & SuperAdmin Endpoints](#admin--superadmin-endpoints)",
+    );
+  }
 
-    // Replace the newline representation `\\n` carefully from strings into actual newlines if JS string conversion issues occur
-    try {
-        fs.writeFileSync(filePath, content, 'utf8');
-        console.log("Successfully updated fastlearners-api-docs.md!");
-    } catch(err) {
-        console.error(err);
-    }
+  // Replace the newline representation `\\n` carefully from strings into actual newlines if JS string conversion issues occur
+  try {
+    fs.writeFileSync(filePath, content, "utf8");
+    console.log("Successfully updated fastlearners-api-docs.md!");
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 main();

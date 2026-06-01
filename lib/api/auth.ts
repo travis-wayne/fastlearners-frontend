@@ -17,22 +17,22 @@ async function postJson<T>(path: string, body?: any): Promise<T> {
   try {
     const r = await fetch(path, {
       method: "POST",
-      headers: { 
-        "Accept": "application/json",
-        "Content-Type": "application/json" 
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
       body: body ? JSON.stringify(body) : undefined,
       credentials: "include",
       cache: "no-store",
     });
-    
+
     const data = await r.json();
-    
+
     // If response is not ok, throw the error data for proper handling
     if (!r.ok) {
       throw data;
     }
-    
+
     return data as T;
   } catch (error: any) {
     // Re-throw if it's already our API error format
@@ -55,7 +55,9 @@ export const authApi = {
   },
 
   verifyReferralCode: async (code: string): Promise<ApiResponse> =>
-    postJson<ApiResponse>("/api/auth/verify-referral-code", { referral_code: code }),
+    postJson<ApiResponse>("/api/auth/verify-referral-code", {
+      referral_code: code,
+    }),
 
   verifyEmail: async (
     data: VerifyEmailData,
@@ -71,7 +73,9 @@ export const authApi = {
   },
 
   resendVerificationCode: async (email: string): Promise<ApiResponse> => {
-    return postJson<ApiResponse>("/api/auth/resend-verification-code", { email });
+    return postJson<ApiResponse>("/api/auth/resend-verification-code", {
+      email,
+    });
   },
 
   // Login/Logout → map to server routes

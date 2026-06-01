@@ -14,9 +14,9 @@ import { toast } from "sonner";
 
 import { type ParsedUploadError } from "@/lib/api/upload-error-handler";
 import {
+  CSV_COLUMNS,
   previewCSVFile,
   type CSVPreviewResult,
-  CSV_COLUMNS,
 } from "@/lib/utils/csv-upload-helper";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -426,7 +426,9 @@ export default function FileUpload({
               ))}
             </div>
             <p className="border-t pt-2 text-xs text-muted-foreground">
-              💡 Use pipe (|) as column delimiter. The parser also supports comma-delimited files, but pipe is recommended for consistency. Ensure all required columns are present.
+              💡 Use pipe (|) as column delimiter. The parser also supports
+              comma-delimited files, but pipe is recommended for consistency.
+              Ensure all required columns are present.
             </p>
           </div>
         </details>

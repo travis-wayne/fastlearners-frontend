@@ -10,7 +10,9 @@ export default function RoleSelectionPage() {
           <div className="relative flex h-full flex-col items-center justify-center p-6 text-white sm:p-8 md:p-10">
             <div className="space-y-3 text-center sm:space-y-4">
               <div className="flex justify-center">
-                <h2 className="text-2xl font-bold sm:text-3xl">Fast Learners</h2>
+                <h2 className="text-2xl font-bold sm:text-3xl">
+                  Fast Learners
+                </h2>
               </div>
               <p className="text-base opacity-90 sm:text-lg">
                 Complete your registration by selecting your role
@@ -32,7 +34,9 @@ export default function RoleSelectionPage() {
           <div className="w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
             {/* Logo for mobile */}
             <div className="mb-6 flex justify-center sm:mb-8 lg:hidden">
-              <h2 className="text-xl font-bold text-primary sm:text-2xl">Fast Learners</h2>
+              <h2 className="text-xl font-bold text-primary sm:text-2xl">
+                Fast Learners
+              </h2>
             </div>
 
             <RoleSelectionForm />

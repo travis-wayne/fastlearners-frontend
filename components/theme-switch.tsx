@@ -1,4 +1,4 @@
-import { useEffect, useCallback, startTransition } from "react";
+import { startTransition, useCallback, useEffect } from "react";
 import { useTheme } from "@/context/theme-provider";
 import { Check, Moon, Sun } from "lucide-react";
 
@@ -25,12 +25,15 @@ export function ThemeSwitch() {
     });
   }, [theme]);
 
-  const handleThemeChange = useCallback((newTheme: "light" | "dark" | "system") => {
-    // Use startTransition to mark theme change as non-urgent
-    startTransition(() => {
-      setTheme(newTheme);
-    });
-  }, [setTheme]);
+  const handleThemeChange = useCallback(
+    (newTheme: "light" | "dark" | "system") => {
+      // Use startTransition to mark theme change as non-urgent
+      startTransition(() => {
+        setTheme(newTheme);
+      });
+    },
+    [setTheme],
+  );
 
   return (
     <DropdownMenu modal={false}>

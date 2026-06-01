@@ -48,7 +48,10 @@ export const footerLinks: SidebarNavItem[] = [
       { title: "Cookie Policy", href: "/cookie-policy" },
       { title: "Data Breach Policy", href: "/data-breach-policy" },
       { title: "Data Processing Addendum", href: "/data-processing-addendum" },
-      { title: "Children's Data Protection Policy", href: "/childrens-data-protection-policy" },
+      {
+        title: "Children's Data Protection Policy",
+        href: "/childrens-data-protection-policy",
+      },
     ],
   },
 ];

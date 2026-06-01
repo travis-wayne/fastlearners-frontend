@@ -22,20 +22,20 @@ The Processor will process personal data solely on behalf of the Controller and 
 
 The personal data processed under this DPA relates to the following categories of data subjects:
 
-* Students (including minors under 18 years of age)  
-* Teachers and educators  
-* Parents or legal guardians  
-* School administrators and other authorised staff of the Controller
+- Students (including minors under 18 years of age)
+- Teachers and educators
+- Parents or legal guardians
+- School administrators and other authorised staff of the Controller
 
 #### **3\. Types of Personal Data**
 
 The Processor may process the following categories of personal data as instructed by the Controller:
 
-* Identification data (full names, usernames)  
-* Contact information (email addresses, phone numbers)  
-* Educational data (class/grade level, subjects, academic performance, quiz/test results, progress analytics, and learning activity logs)  
-* Login and usage data (IP addresses, device information, timestamps, and session data)  
-* Any other personal data that the Controller uploads or instructs the Processor to process in connection with the services
+- Identification data (full names, usernames)
+- Contact information (email addresses, phone numbers)
+- Educational data (class/grade level, subjects, academic performance, quiz/test results, progress analytics, and learning activity logs)
+- Login and usage data (IP addresses, device information, timestamps, and session data)
+- Any other personal data that the Controller uploads or instructs the Processor to process in connection with the services
 
 The Processor does not process sensitive personal data (such as health, biometric, or religious data) unless explicitly instructed in writing by the Controller and in full compliance with NDPA requirements for special categories of data.
 
@@ -43,12 +43,12 @@ The Processor does not process sensitive personal data (such as health, biometri
 
 The Processor will process the personal data only for the following documented purposes:
 
-* Creating and managing student and staff accounts on the FastLearners Platform  
-* Delivering personalised educational content and digital learning experiences  
-* Tracking and analysing academic progress and learning outcomes  
-* Generating reports and analytics for the Controller (e.g., class performance dashboards)  
-* Providing technical support and maintaining the functionality of the Platform  
-* Complying with legal obligations or as otherwise instructed in writing by the Controller
+- Creating and managing student and staff accounts on the FastLearners Platform
+- Delivering personalised educational content and digital learning experiences
+- Tracking and analysing academic progress and learning outcomes
+- Generating reports and analytics for the Controller (e.g., class performance dashboards)
+- Providing technical support and maintaining the functionality of the Platform
+- Complying with legal obligations or as otherwise instructed in writing by the Controller
 
 Processing shall continue for the duration of the main service agreement between the Parties, unless otherwise terminated earlier in accordance with this DPA or the main agreement.
 
@@ -76,9 +76,9 @@ The Processor may engage sub-processors (such as cloud hosting providers, analyt
 
 The Processor shall:
 
-* Maintain an up-to-date list of sub-processors and make it available to the Controller upon request.  
-* Ensure that each sub-processor is bound by a written agreement that imposes the same data protection obligations as set out in this DPA.  
-* Remain fully liable to the Controller for the performance of each sub-processor’s obligations.
+- Maintain an up-to-date list of sub-processors and make it available to the Controller upon request.
+- Ensure that each sub-processor is bound by a written agreement that imposes the same data protection obligations as set out in this DPA.
+- Remain fully liable to the Controller for the performance of each sub-processor’s obligations.
 
 The Controller may object to the appointment or replacement of any sub-processor within 14 days of being notified. If the Controller objects, the Parties shall discuss in good faith to find a mutually acceptable solution.
 
@@ -86,10 +86,10 @@ The Controller may object to the appointment or replacement of any sub-processor
 
 The Processor may transfer personal data outside Nigeria only where appropriate safeguards are in place in accordance with the NDPA and GAID 2025\. Such safeguards may include:
 
-* Standard Contractual Clauses (SCCs) approved by the NDPC or equivalent mechanisms  
-* Binding Corporate Rules (where applicable)  
-* Adequacy decisions issued by the NDPC  
-* Other appropriate safeguards approved by the NDPC
+- Standard Contractual Clauses (SCCs) approved by the NDPC or equivalent mechanisms
+- Binding Corporate Rules (where applicable)
+- Adequacy decisions issued by the NDPC
+- Other appropriate safeguards approved by the NDPC
 
 The Processor shall inform the Controller of any intended international transfers and provide details of the safeguards in place.
 
@@ -106,4 +106,3 @@ This DPA shall terminate automatically upon termination or expiry of the main se
 This DPA shall be governed by and construed in accordance with the laws of the Federal Republic of Nigeria. Any disputes arising out of or in connection with this DPA shall be subject to the exclusive jurisdiction of the competent courts in Nigeria.
 
 The Parties acknowledge that this DPA supplements and does not replace any obligations under the NDPA or other applicable laws.
-

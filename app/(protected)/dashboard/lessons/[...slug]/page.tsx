@@ -1,25 +1,37 @@
-import { Metadata } from 'next';
-import { LessonViewer } from '@/components/lessons/LessonViewer';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '@/components/ui/breadcrumb';
+import { Metadata } from "next";
+
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { LessonViewer } from "@/components/lessons/LessonViewer";
 
 // Helper function to format slugs into readable titles
 function formatSlug(slug: string): string {
   return slug
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 }
 
-
-export async function generateMetadata({ params }: { params: { slug: string[] } }): Promise<Metadata> {
+export async function generateMetadata({
+  params,
+}: {
+  params: { slug: string[] };
+}): Promise<Metadata> {
   const { slug } = params;
 
   if (!slug || slug.length !== 2) {
     return {
-      title: 'Invalid Lesson | Fast Learner',
-      description: 'The lesson URL is invalid. Please check the link and try again.',
+      title: "Invalid Lesson | Fast Learner",
+      description:
+        "The lesson URL is invalid. Please check the link and try again.",
     };
   }
 
@@ -33,7 +45,11 @@ export async function generateMetadata({ params }: { params: { slug: string[] } 
   };
 }
 
-export default async function LessonPage({ params }: { params: { slug: string[] } }) {
+export default async function LessonPage({
+  params,
+}: {
+  params: { slug: string[] };
+}) {
   const { slug } = params;
 
   if (!slug || slug.length !== 2) {

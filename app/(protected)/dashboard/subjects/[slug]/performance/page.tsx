@@ -2,25 +2,29 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { ArrowLeft, BookOpen, AlertCircle } from "lucide-react";
-
-import { getSubjectsWithSlugs, getSubjectScore, getTopicsBySubjectSlug, getLessonScore, getLessonSummary } from "@/lib/api/lessons";
 import { useAuthStore } from "@/store/authStore";
-import { useAcademicContext } from "@/components/providers/academic-context";
-import { getGrade } from "@/lib/utils/grading";
-import type { TopicItem, TopicsByTerm, LessonSummaryResponse } from "@/lib/types/lessons";
-import { LessonSummaryCard } from "@/components/dashboard/student/LessonSummaryCard";
+import { AlertCircle, ArrowLeft, BookOpen } from "lucide-react";
 
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
+  getLessonScore,
+  getLessonSummary,
+  getSubjectScore,
+  getSubjectsWithSlugs,
+  getTopicsBySubjectSlug,
+} from "@/lib/api/lessons";
+import type {
+  LessonSummaryResponse,
+  TopicItem,
+  TopicsByTerm,
+} from "@/lib/types/lessons";
+import { getGrade } from "@/lib/utils/grading";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LessonSummaryCard } from "@/components/dashboard/student/LessonSummaryCard";
+import { useAcademicContext } from "@/components/providers/academic-context";
 
 export default function SubjectPerformancePage() {
   const params = useParams();
@@ -32,13 +36,17 @@ export default function SubjectPerformancePage() {
   const [subjectName, setSubjectName] = useState<string>("");
   const [subjectScore, setSubjectScore] = useState<number>(0);
   const [topics, setTopics] = useState<TopicsByTerm | null>(null);
-  const [lessonScores, setLessonScores] = useState<Map<number, number>>(new Map());
-  
+  const [lessonScores, setLessonScores] = useState<Map<number, number>>(
+    new Map(),
+  );
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   const [expandedTopicId, setExpandedTopicId] = useState<number | null>(null);
-  const [summaryCache, setSummaryCache] = useState<Map<number, LessonSummaryResponse>>(new Map());
+  const [summaryCache, setSummaryCache] = useState<
+    Map<number, LessonSummaryResponse>
+  >(new Map());
   const [loadingSummaryId, setLoadingSummaryId] = useState<number | null>(null);
 
   const handleTopicClick = async (topicId: number) => {
@@ -61,7 +69,7 @@ export default function SubjectPerformancePage() {
       } catch (err) {
         console.error("Failed to fetch lesson summary:", err);
       } finally {
-        setLoadingSummaryId(prev => prev === topicId ? null : prev);
+        setLoadingSummaryId((prev) => (prev === topicId ? null : prev));
       }
     }
   };
@@ -81,12 +89,14 @@ export default function SubjectPerformancePage() {
       try {
         // 1. Get subject details from slugs
         const slugsRes = await getSubjectsWithSlugs();
-        const subject = slugsRes.content?.subjects?.find(s => s.slug === subjectSlug);
-        
+        const subject = slugsRes.content?.subjects?.find(
+          (s) => s.slug === subjectSlug,
+        );
+
         if (!subject) {
           throw new Error("Subject not found");
         }
-        
+
         if (isMounted) setSubjectName(subject.name);
         const subjectId = subject.id;
 
@@ -94,17 +104,20 @@ export default function SubjectPerformancePage() {
         if (currentClassApiId) {
           const scoreRes = await getSubjectScore(subjectId, currentClassApiId);
           if (scoreRes.success && scoreRes.content) {
-            if (isMounted) setSubjectScore(parseFloat(scoreRes.content.subject_total_score) || 0);
+            if (isMounted)
+              setSubjectScore(
+                parseFloat(scoreRes.content.subject_total_score) || 0,
+              );
           }
         }
 
         // 4. Get topics
         const topicsRes = await getTopicsBySubjectSlug(subjectSlug);
         let allTopicsList: TopicItem[] = [];
-        
+
         if (topicsRes.success && topicsRes.content?.topics) {
           if (isMounted) setTopics(topicsRes.content.topics);
-          
+
           const t = topicsRes.content.topics;
           if (t.first_term) allTopicsList.push(...t.first_term);
           if (t.second_term) allTopicsList.push(...t.second_term);
@@ -117,7 +130,8 @@ export default function SubjectPerformancePage() {
             const res = await getLessonScore(topic.id);
             let score = 0;
             if (res.success && res.content) {
-              score = parseFloat((res.content as any).lesson_total_score || "0") || 0;
+              score =
+                parseFloat((res.content as any).lesson_total_score || "0") || 0;
             }
             return { id: topic.id, score };
           });
@@ -125,11 +139,10 @@ export default function SubjectPerformancePage() {
           const results = await Promise.all(lessonPromises);
           if (isMounted) {
             const scoresMap = new Map<number, number>();
-            results.forEach(r => scoresMap.set(r.id, r.score));
+            results.forEach((r) => scoresMap.set(r.id, r.score));
             setLessonScores(scoresMap);
           }
         }
-
       } catch (err: any) {
         console.error("Failed to fetch subject performance:", err);
         if (isMounted) setError(err.message || "Failed to load data");
@@ -140,7 +153,9 @@ export default function SubjectPerformancePage() {
 
     fetchData();
 
-    return () => { isMounted = false; };
+    return () => {
+      isMounted = false;
+    };
   }, [subjectSlug, user?.class, currentClassApiId, currentTermApiId]);
 
   const renderTermSection = (title: string, termTopics?: TopicItem[]) => {
@@ -158,37 +173,49 @@ export default function SubjectPerformancePage() {
             const gradeInfo = getGrade(score);
 
             return (
-              <div 
-                key={topic.id} 
+              <div
+                key={topic.id}
                 className="flex cursor-pointer select-none flex-col gap-2 border-b pb-4 last:border-0 last:pb-0"
                 role="button"
                 onClick={() => handleTopicClick(topic.id)}
               >
                 <div className="flex items-center justify-between text-sm sm:text-base">
-                  <span className="font-medium">Week {topic.week} – {topic.topic}</span>
+                  <span className="font-medium">
+                    Week {topic.week} – {topic.topic}
+                  </span>
                   <div className="flex items-center gap-2 sm:gap-4">
                     {isNotStarted ? (
-                      <Badge variant="secondary" className="whitespace-nowrap bg-muted text-muted-foreground">
+                      <Badge
+                        variant="secondary"
+                        className="whitespace-nowrap bg-muted text-muted-foreground"
+                      >
                         Not started
                       </Badge>
                     ) : (
                       <>
                         <span className="font-semibold">{score}%</span>
-                        <Badge 
-                          className={gradeInfo.colorClass}
-                        >
+                        <Badge className={gradeInfo.colorClass}>
                           {gradeInfo.letter}
                         </Badge>
                       </>
                     )}
                   </div>
                 </div>
-                {!isNotStarted && <Progress value={score} className="h-1.5 sm:h-2" />}
-                
+                {!isNotStarted && (
+                  <Progress value={score} className="h-1.5 sm:h-2" />
+                )}
+
                 {expandedTopicId === topic.id && (
                   <LessonSummaryCard
                     isLoading={loadingSummaryId === topic.id}
-                    summary={summaryCache.get(topic.id) ?? { success: false, message: '', content: null, code: 0 }}
+                    summary={
+                      summaryCache.get(topic.id) ?? {
+                        success: false,
+                        message: "",
+                        content: null,
+                        code: 0,
+                      }
+                    }
                   />
                 )}
               </div>
@@ -230,16 +257,23 @@ export default function SubjectPerformancePage() {
       {/* Header section */}
       <div className="mb-8 flex flex-col justify-between gap-4 border-b pb-6 sm:flex-row sm:items-center">
         <div className="flex items-center gap-4">
-          <Button variant="outline" size="icon" onClick={() => router.push("/dashboard/records")} className="shrink-0">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={() => router.push("/dashboard/records")}
+            className="shrink-0"
+          >
             <ArrowLeft className="size-4" />
           </Button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{subjectName || "Subject Details"}</h1>
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+              {subjectName || "Subject Details"}
+            </h1>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-3 self-end sm:self-auto">
-          <Badge 
+          <Badge
             className={`px-3 py-1 text-sm font-semibold ${overallGrade.colorClass}`}
           >
             Grade: {overallGrade.letter}
@@ -251,14 +285,18 @@ export default function SubjectPerformancePage() {
       {/* Overall Progress */}
       <div className="mb-10 space-y-2">
         <div className="flex items-center justify-between text-sm">
-          <span className="font-semibold text-muted-foreground">Overall Progress</span>
+          <span className="font-semibold text-muted-foreground">
+            Overall Progress
+          </span>
           <span className="font-bold">{subjectScore}%</span>
         </div>
         {subjectScore > 0 ? (
           <Progress value={subjectScore} className="h-3" />
         ) : (
           <div className="rounded-lg border border-dashed p-4 text-center text-sm text-muted-foreground">
-            {currentTermApiId ? "No scores yet for this term. Start a lesson to see your progress!" : "Start a lesson to see your progress!"}
+            {currentTermApiId
+              ? "No scores yet for this term. Start a lesson to see your progress!"
+              : "Start a lesson to see your progress!"}
           </div>
         )}
       </div>
@@ -269,13 +307,15 @@ export default function SubjectPerformancePage() {
           {renderTermSection("First Term", topics.first_term)}
           {renderTermSection("Second Term", topics.second_term)}
           {renderTermSection("Third Term", topics.third_term)}
-          
-          {(!topics.first_term?.length && !topics.second_term?.length && !topics.third_term?.length) && (
-            <div className="rounded-lg border border-dashed py-12 text-center text-muted-foreground">
-              <BookOpen className="mx-auto mb-4 size-8 opacity-50" />
-              <p>No lessons available for this subject.</p>
-            </div>
-          )}
+
+          {!topics.first_term?.length &&
+            !topics.second_term?.length &&
+            !topics.third_term?.length && (
+              <div className="rounded-lg border border-dashed py-12 text-center text-muted-foreground">
+                <BookOpen className="mx-auto mb-4 size-8 opacity-50" />
+                <p>No lessons available for this subject.</p>
+              </div>
+            )}
         </div>
       ) : null}
     </div>

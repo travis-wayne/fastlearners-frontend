@@ -98,12 +98,15 @@ export function SuperAdminDashboard() {
             <CardContent className="p-3 sm:p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-muted-foreground sm:text-sm">{stat.label}</p>
+                  <p className="text-xs text-muted-foreground sm:text-sm">
+                    {stat.label}
+                  </p>
                   <p className="text-xl font-bold sm:text-2xl">{stat.value}</p>
                 </div>
                 <div
-                  className={`text-sm font-medium ${stat.trend === "up" ? "text-green-600" : "text-red-600"
-                    }`}
+                  className={`text-sm font-medium ${
+                    stat.trend === "up" ? "text-green-600" : "text-red-600"
+                  }`}
                 >
                   {stat.change}
                 </div>
@@ -139,7 +142,10 @@ export function SuperAdminDashboard() {
                     </span>
                   </div>
                 </div>
-                <Progress value={roleData.percentage} className="h-1.5 sm:h-2" />
+                <Progress
+                  value={roleData.percentage}
+                  className="h-1.5 sm:h-2"
+                />
               </div>
             ))}
 
@@ -303,12 +309,13 @@ export function SuperAdminDashboard() {
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex size-7 items-center justify-center rounded-full sm:size-8 ${action.type === "user"
+                    className={`flex size-7 items-center justify-center rounded-full sm:size-8 ${
+                      action.type === "user"
                         ? "bg-blue-100"
                         : action.type === "system"
                           ? "bg-green-100"
                           : "bg-purple-100"
-                      }`}
+                    }`}
                   >
                     {action.type === "user" ? (
                       <Users className="size-4 text-blue-600" />
@@ -319,7 +326,9 @@ export function SuperAdminDashboard() {
                     )}
                   </div>
                   <div>
-                    <p className="text-xs font-medium sm:text-sm">{action.action}</p>
+                    <p className="text-xs font-medium sm:text-sm">
+                      {action.action}
+                    </p>
                     <p className="text-xs text-muted-foreground sm:text-sm">
                       {action.user}
                     </p>

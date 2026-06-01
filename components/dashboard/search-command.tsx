@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { SidebarNavItem } from "@/types";
 
 import { cn } from "@/lib/utils";

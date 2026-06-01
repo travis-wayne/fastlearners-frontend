@@ -2,12 +2,16 @@
  * @deprecated This file is deprecated. Client-side code should NOT read tokens from cookies.
  * All authentication must be handled server-side via HttpOnly cookies.
  * Use internal API routes (/api/*) which handle authentication server-side using parseAuthCookiesServer().
- * 
+ *
  * This file is kept only for legacy cookie cleanup utilities.
  */
 
 import Cookies from "js-cookie";
-import { AUTH_TOKEN_COOKIE, AUTH_EXPIRES_COOKIE } from "@/lib/server/cookie-constants";
+
+import {
+  AUTH_EXPIRES_COOKIE,
+  AUTH_TOKEN_COOKIE,
+} from "@/lib/server/cookie-constants";
 
 export interface AuthCookieData {
   token: string;
@@ -76,7 +80,9 @@ export function getTokenFromCookies(): string | null {
 /**
  * Parse cookies from a raw cookie header string (legacy support).
  */
-export function parseServerCookies(cookieString?: string): AuthCookieData | null {
+export function parseServerCookies(
+  cookieString?: string,
+): AuthCookieData | null {
   if (!cookieString) return null;
 
   try {

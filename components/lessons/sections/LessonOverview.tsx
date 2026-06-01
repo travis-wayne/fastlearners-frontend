@@ -1,13 +1,32 @@
-import { useState, useMemo, useCallback } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { BookOpen, Target, Lightbulb, Sparkles, CheckCircle2, Play, Clock, Trophy, ChevronDown, ChevronUp, Printer, SkipForward } from "lucide-react";
+import { useCallback, useMemo, useState } from "react";
+import {
+  BookOpen,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  Clock,
+  Lightbulb,
+  Play,
+  Printer,
+  SkipForward,
+  Sparkles,
+  Target,
+  Trophy,
+} from "lucide-react";
+
+import { useLessonsStore } from "@/lib/store/lessons";
 import { LessonContent } from "@/lib/types/lessons";
 import { cn } from "@/lib/utils";
-import { useLessonsStore } from "@/lib/store/lessons";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { YouTubeEmbed } from "@/components/lessons/YouTubeEmbed";
 
 interface LessonOverviewProps {
@@ -16,34 +35,48 @@ interface LessonOverviewProps {
   onResumeLesson?: () => void;
 }
 
-export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: LessonOverviewProps) {
-  const [expandedObjectives, setExpandedObjectives] = useState<Set<number>>(new Set());
-  const [checkedObjectives, setCheckedObjectives] = useState<Set<number>>(new Set());
+export function LessonOverview({
+  lesson,
+  onStartLesson,
+  onResumeLesson,
+}: LessonOverviewProps) {
+  const [expandedObjectives, setExpandedObjectives] = useState<Set<number>>(
+    new Set(),
+  );
+  const [checkedObjectives, setCheckedObjectives] = useState<Set<number>>(
+    new Set(),
+  );
 
-  const lessonMetadata = useLessonsStore(state => state.lessonMetadata);
-  const currentStepIndex = useLessonsStore(state => state.currentStepIndex);
-  const progress = useLessonsStore(state => state.progress);
-  const nextStep = useLessonsStore(state => state.nextStep);
+  const lessonMetadata = useLessonsStore((state) => state.lessonMetadata);
+  const currentStepIndex = useLessonsStore((state) => state.currentStepIndex);
+  const progress = useLessonsStore((state) => state.progress);
+  const nextStep = useLessonsStore((state) => state.nextStep);
   const lessonMeta = lessonMetadata[lesson.id];
 
-  const objectives = useMemo(() => lesson.objectives || [], [lesson.objectives]);
-  const key_concepts = useMemo(() => lesson.key_concepts || {}, [lesson.key_concepts]);
+  const objectives = useMemo(
+    () => lesson.objectives || [],
+    [lesson.objectives],
+  );
+  const key_concepts = useMemo(
+    () => lesson.key_concepts || {},
+    [lesson.key_concepts],
+  );
 
   // Memoize computed values to prevent recalculation on every render
-  const estimatedDuration = useMemo(() => 
-    Math.max(15, (lesson.concepts?.length || 0) * 10 + 20), // 10 min per concept + 20 min for overview/summary
-    [lesson.concepts?.length]
+  const estimatedDuration = useMemo(
+    () => Math.max(15, (lesson.concepts?.length || 0) * 10 + 20), // 10 min per concept + 20 min for overview/summary
+    [lesson.concepts?.length],
   );
 
   // Memoize lesson start status
-  const hasStarted = useMemo(() => 
-    !!(lessonMeta && lessonMeta.lastAccessedAt),
-    [lessonMeta]
+  const hasStarted = useMemo(
+    () => !!(lessonMeta && lessonMeta.lastAccessedAt),
+    [lessonMeta],
   );
-  
-  const completionPercentage = useMemo(() => 
-    lessonMeta?.overallProgress || 0,
-    [lessonMeta?.overallProgress]
+
+  const completionPercentage = useMemo(
+    () => lessonMeta?.overallProgress || 0,
+    [lessonMeta?.overallProgress],
   );
 
   const toggleObjectiveExpansion = (index: number) => {
@@ -82,8 +115,8 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
 
   // Memoized print handler with proper dependencies
   const handlePrintObjectives = useCallback(() => {
-    if (typeof window === 'undefined') return;
-    const printWindow = window.open('', '_blank');
+    if (typeof window === "undefined") return;
+    const printWindow = window.open("", "_blank");
     if (printWindow) {
       const title = lesson.topic || lesson.title;
       printWindow.document.write(`
@@ -99,16 +132,24 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
           </head>
           <body>
             <h1>${title} - Learning Objectives</h1>
-            ${objectives.map((obj, index) => `
+            ${objectives
+              .map(
+                (obj, index) => `
               <div class="objective">
                 <h3>Objective ${index + 1}: ${obj.description}</h3>
-                ${obj.points.length > 0 ? `
+                ${
+                  obj.points.length > 0
+                    ? `
                   <ul class="points">
-                    ${obj.points.map(point => `<li>${point}</li>`).join('')}
+                    ${obj.points.map((point) => `<li>${point}</li>`).join("")}
                   </ul>
-                ` : ''}
+                `
+                    : ""
+                }
               </div>
-            `).join('')}
+            `,
+              )
+              .join("")}
           </body>
         </html>
       `);
@@ -121,9 +162,15 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
     <div className="flex h-full flex-col gap-6 overflow-y-auto p-1">
       {/* Skip Links for Accessibility */}
       <div className="sr-only">
-        <a href="#main-content" className="skip-link">Skip to main content</a>
-        <a href="#objectives" className="skip-link">Skip to learning objectives</a>
-        <a href="#key-concepts" className="skip-link">Skip to key concepts</a>
+        <a href="#main-content" className="skip-link">
+          Skip to main content
+        </a>
+        <a href="#objectives" className="skip-link">
+          Skip to learning objectives
+        </a>
+        <a href="#key-concepts" className="skip-link">
+          Skip to key concepts
+        </a>
       </div>
 
       {/* Hero Section */}
@@ -135,7 +182,9 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
                 <BookOpen className="size-6 text-primary" />
               </div>
               <div>
-                <CardTitle className="text-3xl" id="main-content">Lesson Overview</CardTitle>
+                <CardTitle className="text-3xl" id="main-content">
+                  Lesson Overview
+                </CardTitle>
                 <p className="mt-1 text-sm text-muted-foreground">
                   Get started with this lesson
                 </p>
@@ -165,16 +214,23 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <Trophy className="size-4 text-yellow-600" />
-                  <span className="text-sm font-medium">Progress: {completionPercentage}%</span>
+                  <span className="text-sm font-medium">
+                    Progress: {completionPercentage}%
+                  </span>
                 </div>
-                <Button variant="outline" size="sm" onClick={handleResumeLesson}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleResumeLesson}
+                >
                   <SkipForward className="mr-2 size-4" />
                   Resume Lesson
                 </Button>
               </div>
               {lessonMeta.lastAccessedAt && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  Last accessed: {new Date(lessonMeta.lastAccessedAt).toLocaleDateString()}
+                  Last accessed:{" "}
+                  {new Date(lessonMeta.lastAccessedAt).toLocaleDateString()}
                 </p>
               )}
             </div>
@@ -187,14 +243,17 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
                 <Play className="size-4 text-primary" />
                 <span className="text-sm font-medium">Video Introduction</span>
               </div>
-              <YouTubeEmbed src={lesson.video_path} title={lesson.topic ?? lesson.title} />
+              <YouTubeEmbed
+                src={lesson.video_path}
+                title={lesson.topic ?? lesson.title}
+              />
             </div>
           )}
 
           {/* Start Lesson Button */}
           <div className="flex justify-center pt-4">
             <Button size="lg" onClick={handleStartLesson} className="px-8">
-              {hasStarted ? 'Continue Lesson' : 'Start Lesson'}
+              {hasStarted ? "Continue Lesson" : "Start Lesson"}
               <Sparkles className="ml-2 size-4" />
             </Button>
           </div>
@@ -205,7 +264,9 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
       <Card className="border-2 shadow-lg">
         <CardHeader className="pb-4">
           <CardTitle className="text-xl">Quick Preview</CardTitle>
-          <p className="text-sm text-muted-foreground">Topics covered in this lesson</p>
+          <p className="text-sm text-muted-foreground">
+            Topics covered in this lesson
+          </p>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
@@ -214,9 +275,14 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
               <span className="text-sm">Overview</span>
             </div>
             {lesson.concepts?.map((concept, index) => (
-              <div key={concept.id} className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
+              <div
+                key={concept.id}
+                className="flex items-center gap-2 rounded-lg bg-muted/50 p-3"
+              >
                 <CheckCircle2 className="size-4 text-emerald-600" />
-                <span className="text-sm">{concept.title || `Concept ${index + 1}`}</span>
+                <span className="text-sm">
+                  {concept.title || `Concept ${index + 1}`}
+                </span>
               </div>
             ))}
             <div className="flex items-center gap-2 rounded-lg bg-muted/50 p-3">
@@ -241,13 +307,19 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
                   <Target className="size-6 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <div>
-                  <CardTitle className="text-2xl">Learning Objectives</CardTitle>
+                  <CardTitle className="text-2xl">
+                    Learning Objectives
+                  </CardTitle>
                   <p className="mt-1 text-sm text-muted-foreground">
                     What you&apos;ll learn in this lesson
                   </p>
                 </div>
               </div>
-              <Button variant="outline" size="sm" onClick={handlePrintObjectives}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePrintObjectives}
+              >
                 <Printer className="mr-2 size-4" />
                 Print
               </Button>
@@ -277,7 +349,11 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
                           </Badge>
                           <div className="flex items-center gap-1 text-xs text-muted-foreground">
                             <Clock className="size-3" />
-                            <span>~{Math.ceil(estimatedDuration / objectives.length)} min</span>
+                            <span>
+                              ~
+                              {Math.ceil(estimatedDuration / objectives.length)}{" "}
+                              min
+                            </span>
                           </div>
                         </div>
                         <p className="mb-3 text-base leading-relaxed text-foreground">
@@ -346,45 +422,49 @@ export function LessonOverview({ lesson, onStartLesson, onResumeLesson }: Lesson
           </CardHeader>
           <CardContent>
             <div className="grid gap-4 md:grid-cols-2">
-              {Object.entries(key_concepts).map(([concept, description], index) => (
-                <TooltipProvider key={concept}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <div
-                        className={cn(
-                          "group relative cursor-pointer rounded-xl border-2 bg-gradient-to-br p-5 transition-all hover:scale-105 hover:border-primary hover:shadow-md",
-                          index % 2 === 0
-                            ? "from-blue-50/50 to-background dark:from-blue-950/20"
-                            : "from-purple-50/50 to-background dark:from-purple-950/20",
-                        )}
-                      >
-                        <div className="mb-3 flex items-center gap-2">
-                          <Sparkles className="size-4 text-primary" />
-                          <h4 className="font-bold text-foreground">{concept}</h4>
-                        </div>
-                        <p className="text-sm leading-relaxed text-muted-foreground">
-                          {description as string}
-                        </p>
-                        {/* Link to concept section - placeholder for now */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="absolute bottom-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
-                          onClick={() => {
-                            // TODO: Implement navigation to specific concept section
-                            console.log(`Navigate to concept: ${concept}`);
-                          }}
+              {Object.entries(key_concepts).map(
+                ([concept, description], index) => (
+                  <TooltipProvider key={concept}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className={cn(
+                            "group relative cursor-pointer rounded-xl border-2 bg-gradient-to-br p-5 transition-all hover:scale-105 hover:border-primary hover:shadow-md",
+                            index % 2 === 0
+                              ? "from-blue-50/50 to-background dark:from-blue-950/20"
+                              : "from-purple-50/50 to-background dark:from-purple-950/20",
+                          )}
                         >
-                          View Section
-                        </Button>
-                      </div>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Click to learn more about {concept}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ))}
+                          <div className="mb-3 flex items-center gap-2">
+                            <Sparkles className="size-4 text-primary" />
+                            <h4 className="font-bold text-foreground">
+                              {concept}
+                            </h4>
+                          </div>
+                          <p className="text-sm leading-relaxed text-muted-foreground">
+                            {description as string}
+                          </p>
+                          {/* Link to concept section - placeholder for now */}
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="absolute bottom-2 right-2 opacity-0 transition-opacity group-hover:opacity-100"
+                            onClick={() => {
+                              // TODO: Implement navigation to specific concept section
+                              console.log(`Navigate to concept: ${concept}`);
+                            }}
+                          >
+                            View Section
+                          </Button>
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <p>Click to learn more about {concept}</p>
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ),
+              )}
             </div>
           </CardContent>
         </Card>

@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function DELETE(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -27,7 +32,7 @@ export async function DELETE(req: NextRequest) {
       });
 
       clearTimeout(timeoutId);
-      
+
       let data = {};
       try {
         data = await r.json();
@@ -42,8 +47,11 @@ export async function DELETE(req: NextRequest) {
       return NextResponse.json(data, { status: r.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryR = await fetch(`${UPSTREAM_BASE}/profile/delete`, {
             method: "DELETE",
@@ -60,17 +68,21 @@ export async function DELETE(req: NextRequest) {
           } catch (err) {
             // Fallback if response is not valid JSON
           }
-          
+
           if (!retryR.ok) {
             return handleUpstreamError(retryR, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryR.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to delete account after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to delete account after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (e: any) {

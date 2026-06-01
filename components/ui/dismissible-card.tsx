@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { X } from "lucide-react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface DismissibleCardProps {
   id: string; // Unique ID for localStorage
@@ -14,7 +15,13 @@ interface DismissibleCardProps {
   className?: string;
 }
 
-export function DismissibleCard({ id, title, content, icon, className }: DismissibleCardProps) {
+export function DismissibleCard({
+  id,
+  title,
+  content,
+  icon,
+  className,
+}: DismissibleCardProps) {
   const [isVisible, setIsVisible] = useState(false);
   const [hasMounted, setHasMounted] = useState(false);
 
@@ -36,17 +43,24 @@ export function DismissibleCard({ id, title, content, icon, className }: Dismiss
   }
 
   return (
-    <Card className={cn("relative overflow-hidden border-primary/20 bg-primary/5 shadow-sm dark:bg-primary/10", className)}>
+    <Card
+      className={cn(
+        "relative overflow-hidden border-primary/20 bg-primary/5 shadow-sm dark:bg-primary/10",
+        className,
+      )}
+    >
       <CardContent className="p-4 sm:p-5">
         <div className="flex items-start gap-4">
-          {icon && (
-            <div className="mt-0.5 shrink-0 text-primary">
-              {icon}
-            </div>
-          )}
+          {icon && <div className="mt-0.5 shrink-0 text-primary">{icon}</div>}
           <div className="flex-1 space-y-1.5">
-            {title && <h3 className="font-semibold leading-none tracking-tight text-foreground">{title}</h3>}
-            <div className="text-sm leading-relaxed text-muted-foreground">{content}</div>
+            {title && (
+              <h3 className="font-semibold leading-none tracking-tight text-foreground">
+                {title}
+              </h3>
+            )}
+            <div className="text-sm leading-relaxed text-muted-foreground">
+              {content}
+            </div>
           </div>
           <Button
             variant="ghost"

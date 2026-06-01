@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -23,7 +28,7 @@ export async function POST(req: NextRequest) {
           Authorization: `Bearer ${auth.token}`,
         },
         cache: "no-store",
-      }
+      },
     );
 
     const data = await response.json();

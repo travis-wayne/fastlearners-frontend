@@ -38,7 +38,9 @@ export function Breadcrumb({
     const pathSegments = pathname.split("/").filter(Boolean);
 
     // Start with home
-    const breadcrumbs: BreadcrumbItem[] = [{ title: rootLabel, href: rootHref }];
+    const breadcrumbs: BreadcrumbItem[] = [
+      { title: rootLabel, href: rootHref },
+    ];
 
     // Build breadcrumbs from path segments
     let currentPath = "";
@@ -90,7 +92,9 @@ export function Breadcrumb({
 
         return (
           <React.Fragment key={item.href}>
-            {index >= 0 && <ChevronRight className="size-3.5 shrink-0 sm:size-4" />}
+            {index >= 0 && (
+              <ChevronRight className="size-3.5 shrink-0 sm:size-4" />
+            )}
             {isMiddleItem ? (
               index === 1 ? (
                 <span className="px-0.5">...</span>

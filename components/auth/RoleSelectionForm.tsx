@@ -152,7 +152,9 @@ export function RoleSelectionForm() {
     <div className="flex flex-col gap-component-lg sm:gap-component-xl">
       {/* Header */}
       <div className="flex flex-col items-center gap-component-xs text-center sm:gap-component-sm">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">Select your role</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+          Select your role
+        </h1>
         <p className="text-sm text-muted-foreground sm:text-base">
           Choose how you&apos;ll be using Fast Learners
         </p>
@@ -196,7 +198,9 @@ export function RoleSelectionForm() {
 
                 {/* Title */}
                 <div className="space-y-component-xs sm:space-y-component-sm">
-                  <h3 className="text-heading-lg font-semibold sm:text-heading-xl">{option.title}</h3>
+                  <h3 className="text-heading-lg font-semibold sm:text-heading-xl">
+                    {option.title}
+                  </h3>
                   <p className="text-xs text-muted-foreground sm:text-sm">
                     {option.description}
                   </p>
@@ -217,7 +221,9 @@ export function RoleSelectionForm() {
         <Card className="border-2">
           <CardContent className="p-component-md sm:p-component-lg">
             <div className="mb-component-md">
-              <h3 className="text-heading-sm font-semibold sm:text-heading-lg">Guardian Information</h3>
+              <h3 className="text-heading-sm font-semibold sm:text-heading-lg">
+                Guardian Information
+              </h3>
               <p className="text-xs text-muted-foreground sm:text-sm">
                 Provide details to continue as a guardian.
               </p>

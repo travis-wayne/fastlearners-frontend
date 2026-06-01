@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { subjectSlug: string } }
+  { params }: { params: { subjectSlug: string } },
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -18,25 +23,27 @@ export async function GET(
     const subjectSlug = params.subjectSlug;
 
     if (!subjectSlug) {
-      return createErrorResponse("Invalid request: subject slug is required", 400, undefined, requestId);
+      return createErrorResponse(
+        "Invalid request: subject slug is required",
+        400,
+        undefined,
+        requestId,
+      );
     }
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
     try {
-      const upstream = await fetch(
-        `${UPSTREAM_BASE}/lessons/${subjectSlug}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${auth.token}`,
-          },
-          cache: "no-store",
-          signal: controller.signal,
-        }
-      );
+      const upstream = await fetch(`${UPSTREAM_BASE}/lessons/${subjectSlug}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${auth.token}`,
+        },
+        cache: "no-store",
+        signal: controller.signal,
+      });
 
       clearTimeout(timeoutId);
       const data = await upstream.json();
@@ -48,9 +55,12 @@ export async function GET(
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Retry on network errors
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryUpstream = await fetch(
             `${UPSTREAM_BASE}/lessons/${subjectSlug}`,
@@ -61,21 +71,25 @@ export async function GET(
                 Authorization: `Bearer ${auth.token}`,
               },
               cache: "no-store",
-            }
+            },
           );
 
           const retryData = await retryUpstream.json();
-          
+
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch lesson topics after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to fetch lesson topics after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (err: any) {

@@ -1,4 +1,4 @@
- "use client";
+"use client";
 
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
@@ -103,7 +103,8 @@ function FormLabel({
 }
 
 function FormControl({ ...props }: React.ComponentProps<typeof Slot>) {
-  const { error, formItemId, formDescriptionId, formMessageId } = useFormField();
+  const { error, formItemId, formDescriptionId, formMessageId } =
+    useFormField();
   return (
     <Slot
       data-slot="form-control"

@@ -4,10 +4,12 @@
  * - youtube.com/watch?v=VIDEO_ID
  * - youtu.be/VIDEO_ID
  * - youtube.com/embed/VIDEO_ID (returns as-is)
- * 
+ *
  * Returns null if the URL is not a recognized YouTube format or is empty.
  */
-export function getYouTubeEmbedUrl(url: string | null | undefined): string | null {
+export function getYouTubeEmbedUrl(
+  url: string | null | undefined,
+): string | null {
   if (!url) return null;
 
   // If it's already an embed URL, return as-is

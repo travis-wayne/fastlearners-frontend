@@ -1,7 +1,8 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import mockQuizData from "@/data/mock-quizzes.json";
 import { motion } from "framer-motion";
 import {
   AlertCircle,
@@ -50,7 +51,6 @@ import {
 } from "@/components/providers/academic-context";
 import { CompetitorsList } from "@/components/quiz/CompetitorsList";
 import { Leaderboard } from "@/components/quiz/Leaderboard";
-import mockQuizData from "@/data/mock-quizzes.json";
 
 // Types
 interface Quiz {
@@ -256,7 +256,7 @@ export default function QuizzesPage() {
   useEffect(() => {
     if (className && termName) {
       const filteredQuizzes = mockQuizData.quizzes.filter(
-        (quiz) => quiz.classLevel === className && quiz.term === termName
+        (quiz) => quiz.classLevel === className && quiz.term === termName,
       );
       setQuizzes(filteredQuizzes as Quiz[]);
     } else {
@@ -267,7 +267,7 @@ export default function QuizzesPage() {
   // Get available subjects from quizzes
   const availableSubjects = useMemo(() => {
     const subjectIds = Array.from(
-      new Set(quizzes.map((quiz) => quiz.subjectId))
+      new Set(quizzes.map((quiz) => quiz.subjectId)),
     );
     return getSubjects().filter((subject) => subjectIds.includes(subject.id));
   }, [quizzes]);
@@ -387,9 +387,13 @@ export default function QuizzesPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="mb-1 flex items-center gap-1 sm:mb-2 sm:gap-2">
                 <Circle className="size-3 text-orange-600 sm:size-4" />
-                <span className="text-xs text-muted-foreground sm:text-sm">Available</span>
+                <span className="text-xs text-muted-foreground sm:text-sm">
+                  Available
+                </span>
               </div>
-              <p className="text-xl font-bold sm:text-2xl">{availableQuizzes.length}</p>
+              <p className="text-xl font-bold sm:text-2xl">
+                {availableQuizzes.length}
+              </p>
             </CardContent>
           </Card>
 
@@ -397,7 +401,9 @@ export default function QuizzesPage() {
             <CardContent className="p-3 sm:p-4">
               <div className="mb-1 flex items-center gap-1 sm:mb-2 sm:gap-2">
                 <CheckCircle className="size-3 text-green-600 sm:size-4" />
-                <span className="text-xs text-muted-foreground sm:text-sm">Completed</span>
+                <span className="text-xs text-muted-foreground sm:text-sm">
+                  Completed
+                </span>
               </div>
               <p className="text-xl font-bold sm:text-2xl">{stats.completed}</p>
               <p className="text-[10px] text-muted-foreground sm:text-xs">
@@ -479,7 +485,10 @@ export default function QuizzesPage() {
                       </SelectContent>
                     </Select>
 
-                    <Select value={selectedScope} onValueChange={setSelectedScope}>
+                    <Select
+                      value={selectedScope}
+                      onValueChange={setSelectedScope}
+                    >
                       <SelectTrigger className="w-full sm:w-[150px]">
                         <SelectValue placeholder="Scope" />
                       </SelectTrigger>

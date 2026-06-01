@@ -92,7 +92,9 @@ export default function BentoGrid() {
                 Secure & Private
               </h2>
               <p className="text-pretty text-sm text-muted-foreground sm:text-base">
-                Your data is protected with end-to-end encryption, secure authentication, and role-based access control. We take student privacy seriously.
+                Your data is protected with end-to-end encryption, secure
+                authentication, and role-based access control. We take student
+                privacy seriously.
               </p>
             </div>
           </div>
@@ -188,7 +190,9 @@ export default function BentoGrid() {
                 Performance Analytics
               </h2>
               <p className="text-pretty text-sm text-muted-foreground sm:text-base">
-                Detailed insights into your learning journey with visual progress charts, mastery heatmaps, and performance breakdowns by topic and subject.
+                Detailed insights into your learning journey with visual
+                progress charts, mastery heatmaps, and performance breakdowns by
+                topic and subject.
               </p>
             </div>
           </div>
@@ -219,7 +223,9 @@ export default function BentoGrid() {
                   Real-Time Progress
                 </h2>
                 <p className="text-pretty text-sm text-muted-foreground sm:text-base">
-                  Track your learning in real-time with live updates on completed lessons, quiz scores, and topic mastery across all subjects.
+                  Track your learning in real-time with live updates on
+                  completed lessons, quiz scores, and topic mastery across all
+                  subjects.
                 </p>
               </div>
             </div>
@@ -303,7 +309,8 @@ export default function BentoGrid() {
                   Collaborative Learning
                 </h2>
                 <p className="text-pretty text-sm text-muted-foreground sm:text-base">
-                  Connect with classmates, compete on leaderboards, and learn together in a supportive community of Nigerian students.
+                  Connect with classmates, compete on leaderboards, and learn
+                  together in a supportive community of Nigerian students.
                 </p>
               </div>
             </div>

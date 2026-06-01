@@ -1,20 +1,20 @@
 "use client";
 
-import React, { useCallback, startTransition } from "react";
+import React, { startTransition, useCallback } from "react";
 import Link from "next/link";
 import {
   AlertCircle,
+  Award,
   BookOpen,
   Calendar,
+  CheckCircle2,
   ChevronRight,
   Clock,
   FileText,
-  Users,
   PlayCircle,
-  CheckCircle2,
-  TrendingUp,
-  Award,
   Sparkles,
+  TrendingUp,
+  Users,
 } from "lucide-react";
 
 import { useLessonsStore } from "@/lib/store/lessons";
@@ -78,9 +78,14 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
                 )}
                 <Badge
                   variant="outline"
-                  className={cn("text-[10px] font-medium sm:text-xs", statusColor)}
+                  className={cn(
+                    "text-[10px] font-medium sm:text-xs",
+                    statusColor,
+                  )}
                 >
-                  {lesson.status === "in_progress" ? "In Progress" : lesson.status}
+                  {lesson.status === "in_progress"
+                    ? "In Progress"
+                    : lesson.status}
                 </Badge>
               </div>
               <h3 className="line-clamp-2 text-sm font-semibold text-foreground transition-colors group-hover:text-primary sm:text-base">
@@ -146,12 +151,7 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
                         <PlayCircle className="size-4 text-primary sm:size-5" />
                       )}
                     </div>
-                    <Badge
-                      className={cn(
-                        "text-xs font-medium",
-                        statusColor,
-                      )}
-                    >
+                    <Badge className={cn("text-xs font-medium", statusColor)}>
                       {lesson.status === "in_progress" ? (
                         <span className="flex items-center gap-1">
                           <TrendingUp className="size-3" />
@@ -197,11 +197,17 @@ function LessonCard({ lesson, onSelect, compact = false }: LessonCardProps) {
 
               {/* Term and Week Info */}
               <div className="flex items-center gap-1.5 sm:gap-2">
-                <Badge variant="outline" className="text-[10px] font-medium sm:text-xs">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] font-medium sm:text-xs"
+                >
                   <Calendar className="mr-1 size-3 sm:mr-1.5" />
                   {lesson.term} Term
                 </Badge>
-                <Badge variant="outline" className="text-[10px] font-medium sm:text-xs">
+                <Badge
+                  variant="outline"
+                  className="text-[10px] font-medium sm:text-xs"
+                >
                   <Clock className="mr-1 size-3 sm:mr-1.5" />
                   Week {lesson.week}
                 </Badge>
@@ -307,19 +313,25 @@ export function LessonsList({
     clearError,
   } = useLessonsStore();
 
-  const handleLessonSelect = useCallback((lessonId: number) => {
-    // Use startTransition to avoid blocking UI
-    startTransition(() => {
-      onLessonSelect?.(lessonId);
-    });
-  }, [onLessonSelect]);
+  const handleLessonSelect = useCallback(
+    (lessonId: number) => {
+      // Use startTransition to avoid blocking UI
+      startTransition(() => {
+        onLessonSelect?.(lessonId);
+      });
+    },
+    [onLessonSelect],
+  );
 
-  const handlePageChange = useCallback((page: number) => {
-    // Use startTransition to avoid blocking UI
-    startTransition(() => {
-      fetchLessons(page);
-    });
-  }, [fetchLessons]);
+  const handlePageChange = useCallback(
+    (page: number) => {
+      // Use startTransition to avoid blocking UI
+      startTransition(() => {
+        fetchLessons(page);
+      });
+    },
+    [fetchLessons],
+  );
 
   // Show loading skeleton
   if (isLoadingLessons) {
@@ -389,16 +401,22 @@ export function LessonsList({
             <BookOpen className="size-4 text-primary sm:size-5" />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-foreground sm:text-2xl">Lessons</h3>
+            <h3 className="text-xl font-bold text-foreground sm:text-2xl">
+              Lessons
+            </h3>
             <p className="text-xs text-muted-foreground sm:text-sm">
-              {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"} available
+              {totalLessons} {totalLessons === 1 ? "lesson" : "lessons"}{" "}
+              available
             </p>
           </div>
         </div>
 
         {showPagination && totalPages > 1 && (
           <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-4 py-2">
-            <Badge variant="secondary" className="text-xs font-medium sm:text-sm">
+            <Badge
+              variant="secondary"
+              className="text-xs font-medium sm:text-sm"
+            >
               Page {currentPage} of {totalPages}
             </Badge>
           </div>
@@ -459,7 +477,7 @@ export function LessonsList({
                     className={cn(
                       "min-w-9 font-medium sm:h-11 sm:min-w-10",
                       currentPage === page &&
-                      "bg-primary shadow-md hover:bg-primary/90",
+                        "bg-primary shadow-md hover:bg-primary/90",
                     )}
                   >
                     {page}

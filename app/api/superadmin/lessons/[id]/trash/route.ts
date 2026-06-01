@@ -1,11 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
 import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
 
 export async function DELETE(
   req: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: { id: string } },
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -25,7 +30,7 @@ export async function DELETE(
           Authorization: `Bearer ${auth.token}`,
         },
         cache: "no-store",
-      }
+      },
     );
 
     const data = await response.json();

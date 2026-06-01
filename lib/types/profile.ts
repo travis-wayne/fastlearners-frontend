@@ -26,4 +26,3 @@ export interface ProfilePictureUploadResponse {
   } | null;
   code: number;
 }
-

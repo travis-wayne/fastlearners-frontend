@@ -1,27 +1,26 @@
 // lib/api/lessons.ts - Client-side service for lessons API
 
 import type {
-  LessonContentResponse,
-  SubjectsWithSlugsResponse,
-  TopicsResponse,
-  TopicOverviewResponse,
-  LessonCheckResponse,
-  ExerciseCheckResponse,
-  LessonCompletionData,
-  ConceptScoreBreakdown,
-  LessonContent,
-  LessonSummaryResponse,
   AllLessonsTotalScoresResponse,
   AllSubjectsTotalScoresResponse,
+  ConceptScoreBreakdown,
+  ExerciseCheckResponse,
+  LessonCheckResponse,
+  LessonCompletionData,
+  LessonContent,
+  LessonContentResponse,
+  LessonSummaryResponse,
+  SubjectsWithSlugsResponse,
+  TopicOverviewResponse,
+  TopicsResponse,
 } from "@/lib/types/lessons";
-
 
 // getLessonContent removed - use getLessonContentBySlug instead
 
 // Mark lesson as complete
 // Note: Route moved to /api/lessons/by-id/[id]/complete to avoid conflict with [subjectSlug]
 export async function markLessonComplete(
-  lessonId: number
+  lessonId: number,
 ): Promise<{ success: boolean; message: string; code: number }> {
   try {
     const res = await fetch(`/api/lessons/by-id/${lessonId}/complete`, {
@@ -96,7 +95,9 @@ export async function getSubjectsWithSlugs(): Promise<SubjectsWithSlugsResponse>
   }
 }
 
-export async function getTopicsBySubjectSlug(subjectSlug: string): Promise<TopicsResponse> {
+export async function getTopicsBySubjectSlug(
+  subjectSlug: string,
+): Promise<TopicsResponse> {
   try {
     const res = await fetch(`/api/lessons/${subjectSlug}`, {
       method: "GET",
@@ -131,15 +132,21 @@ export async function getTopicsBySubjectSlug(subjectSlug: string): Promise<Topic
   }
 }
 
-export async function getTopicOverview(subjectSlug: string, topicSlug: string): Promise<TopicOverviewResponse> {
+export async function getTopicOverview(
+  subjectSlug: string,
+  topicSlug: string,
+): Promise<TopicOverviewResponse> {
   try {
-    const res = await fetch(`/api/lessons/${subjectSlug}/${topicSlug}/overview`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/${subjectSlug}/${topicSlug}/overview`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
@@ -166,15 +173,21 @@ export async function getTopicOverview(subjectSlug: string, topicSlug: string): 
   }
 }
 
-export async function getLessonContentBySlug(subjectSlug: string, topicSlug: string): Promise<LessonContentResponse> {
+export async function getLessonContentBySlug(
+  subjectSlug: string,
+  topicSlug: string,
+): Promise<LessonContentResponse> {
   try {
-    const res = await fetch(`/api/lessons/${subjectSlug}/${topicSlug}/content`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/${subjectSlug}/${topicSlug}/content`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
@@ -201,7 +214,9 @@ export async function getLessonContentBySlug(subjectSlug: string, topicSlug: str
   }
 }
 
-export async function getLessonContentById(lessonId: number): Promise<LessonContentResponse> {
+export async function getLessonContentById(
+  lessonId: number,
+): Promise<LessonContentResponse> {
   try {
     const res = await fetch(`/api/lessons/by-id/${lessonId}/content`, {
       method: "GET",
@@ -238,7 +253,9 @@ export async function getLessonContentById(lessonId: number): Promise<LessonCont
 
 // Lesson Completion Check Endpoints
 
-export async function checkLessonOverview(lessonId: number): Promise<LessonCheckResponse> {
+export async function checkLessonOverview(
+  lessonId: number,
+): Promise<LessonCheckResponse> {
   try {
     const res = await fetch(`/api/lessons/check/overview/${lessonId}`, {
       method: "GET",
@@ -270,15 +287,21 @@ export async function checkLessonOverview(lessonId: number): Promise<LessonCheck
   }
 }
 
-export async function checkLessonConcept(lessonId: number, conceptId: number): Promise<LessonCheckResponse> {
+export async function checkLessonConcept(
+  lessonId: number,
+  conceptId: number,
+): Promise<LessonCheckResponse> {
   try {
-    const res = await fetch(`/api/lessons/check/concept/${lessonId}/${conceptId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/check/concept/${lessonId}/${conceptId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
@@ -302,22 +325,28 @@ export async function checkLessonConcept(lessonId: number, conceptId: number): P
   }
 }
 
-export async function checkLessonSummaryAndApplication(lessonId: number): Promise<LessonCheckResponse> {
+export async function checkLessonSummaryAndApplication(
+  lessonId: number,
+): Promise<LessonCheckResponse> {
   try {
-    const res = await fetch(`/api/lessons/check/summary-and-application/${lessonId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/check/summary-and-application/${lessonId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
     if (!res.ok) {
       return {
         success: false,
-        message: data.message || "Failed to verify summary and application completion",
+        message:
+          data.message || "Failed to verify summary and application completion",
         content: null,
         code: res.status,
       };
@@ -334,22 +363,28 @@ export async function checkLessonSummaryAndApplication(lessonId: number): Promis
   }
 }
 
-export async function checkLessonGeneralExercises(lessonId: number): Promise<LessonCheckResponse> {
+export async function checkLessonGeneralExercises(
+  lessonId: number,
+): Promise<LessonCheckResponse> {
   try {
-    const res = await fetch(`/api/lessons/check/general-exercises/${lessonId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/check/general-exercises/${lessonId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
     if (!res.ok) {
       return {
         success: false,
-        message: data.message || "Failed to verify general exercises completion",
+        message:
+          data.message || "Failed to verify general exercises completion",
         content: null,
         code: res.status,
       };
@@ -371,7 +406,7 @@ export async function checkLessonGeneralExercises(lessonId: number): Promise<Les
 export async function checkExerciseAnswer(
   exerciseId: number,
   answer: string,
-  isGeneral: boolean = false
+  isGeneral: boolean = false,
 ): Promise<ExerciseCheckResponse> {
   try {
     // Validate inputs
@@ -382,11 +417,13 @@ export async function checkExerciseAnswer(
         content: null,
         code: 422,
         isCorrect: false,
-        errors: { exercise_id: ["Exercise ID is required and must be greater than 0"] },
+        errors: {
+          exercise_id: ["Exercise ID is required and must be greater than 0"],
+        },
       };
     }
 
-    if (!answer || answer.trim() === '') {
+    if (!answer || answer.trim() === "") {
       return {
         success: false,
         message: "Answer is required",
@@ -420,8 +457,8 @@ export async function checkExerciseAnswer(
       : "/api/lessons/check-exercise-answer";
 
     // Debug logging (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[checkExerciseAnswer] Request:', {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[checkExerciseAnswer] Request:", {
         endpoint,
         body,
         isGeneral,
@@ -441,21 +478,22 @@ export async function checkExerciseAnswer(
     const data = await res.json();
 
     // Debug logging (always log in development to see what we're getting)
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[checkExerciseAnswer] Response:', {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[checkExerciseAnswer] Response:", {
         status: res.status,
         statusText: res.statusText,
         data,
         requestBody: body,
-        headers: Object.fromEntries(res.headers.entries())
+        headers: Object.fromEntries(res.headers.entries()),
       });
     }
 
     if (!res.ok) {
       // Check if it's an "already answered" error - these should be treated as success
-      const isAlreadyAnswered = data.message?.toLowerCase().includes('already answered') || 
-                                data.message?.toLowerCase().includes('already answered correctly');
-      
+      const isAlreadyAnswered =
+        data.message?.toLowerCase().includes("already answered") ||
+        data.message?.toLowerCase().includes("already answered correctly");
+
       if (isAlreadyAnswered) {
         return {
           success: true,
@@ -480,16 +518,19 @@ export async function checkExerciseAnswer(
     // Success response (200) - determine if answer is correct
     // Backend returns 200 with success: true for correct answers
     // Backend returns 200 with message "already answered" for previously answered exercises
-    const isAlreadyAnswered = data.message?.toLowerCase().includes('already answered') || 
-                              data.message?.toLowerCase().includes('already answered correctly');
-    
+    const isAlreadyAnswered =
+      data.message?.toLowerCase().includes("already answered") ||
+      data.message?.toLowerCase().includes("already answered correctly");
+
     // Answer is correct if:
     // 1. success is explicitly true, OR
     // 2. status is 200 and message doesn't say "wrong answer", OR
     // 3. message indicates "already answered" (was previously correct)
-    const isCorrect = data.success === true || 
-                     (res.status === 200 && !data.message?.toLowerCase().includes('wrong answer')) ||
-                     isAlreadyAnswered;
+    const isCorrect =
+      data.success === true ||
+      (res.status === 200 &&
+        !data.message?.toLowerCase().includes("wrong answer")) ||
+      isAlreadyAnswered;
 
     return {
       ...data,
@@ -510,7 +551,9 @@ export async function checkExerciseAnswer(
 
 // Score Fetching Endpoints
 
-export async function getConceptScore(conceptId: number): Promise<import("@/lib/types/lessons").ConceptScoreResponse> {
+export async function getConceptScore(
+  conceptId: number,
+): Promise<import("@/lib/types/lessons").ConceptScoreResponse> {
   try {
     const res = await fetch(`/api/lessons/scores/concepts/${conceptId}`, {
       method: "GET",
@@ -531,7 +574,7 @@ export async function getConceptScore(conceptId: number): Promise<import("@/lib/
           content: {
             total_score: "0.00",
             weight: "0.00",
-            ...((data.content as any) || {})
+            ...((data.content as any) || {}),
           } as any,
           code: 200,
         };
@@ -556,15 +599,20 @@ export async function getConceptScore(conceptId: number): Promise<import("@/lib/
   }
 }
 
-export async function getGeneralExerciseScore(generalExerciseId: number): Promise<import("@/lib/types/lessons").GeneralExerciseScoreResponse> {
+export async function getGeneralExerciseScore(
+  generalExerciseId: number,
+): Promise<import("@/lib/types/lessons").GeneralExerciseScoreResponse> {
   try {
-    const res = await fetch(`/api/lessons/scores/general-exercises/${generalExerciseId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/scores/general-exercises/${generalExerciseId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
@@ -577,7 +625,7 @@ export async function getGeneralExerciseScore(generalExerciseId: number): Promis
           content: {
             total_score: "0.00",
             weight: "0.00",
-            ...((data.content as any) || {})
+            ...((data.content as any) || {}),
           } as any,
           code: 200,
         };
@@ -601,7 +649,9 @@ export async function getGeneralExerciseScore(generalExerciseId: number): Promis
   }
 }
 
-export async function getLessonScore(lessonId: number): Promise<import("@/lib/types/lessons").LessonScoreResponse> {
+export async function getLessonScore(
+  lessonId: number,
+): Promise<import("@/lib/types/lessons").LessonScoreResponse> {
   try {
     const res = await fetch(`/api/lessons/scores/lessons/${lessonId}`, {
       method: "GET",
@@ -621,7 +671,7 @@ export async function getLessonScore(lessonId: number): Promise<import("@/lib/ty
           message: "No score available yet",
           content: {
             lesson_total_score: "0.00",
-            ...((data.content as any) || {})
+            ...((data.content as any) || {}),
           } as any,
           code: 200,
         };
@@ -645,25 +695,31 @@ export async function getLessonScore(lessonId: number): Promise<import("@/lib/ty
   }
 }
 
-export async function getSubjectScore(subjectId: number, classId: number): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
+export async function getSubjectScore(
+  subjectId: number,
+  classId: number,
+): Promise<import("@/lib/types/lessons").SubjectScoreResponse> {
   try {
-    const res = await fetch(`/api/lessons/scores/subjects/${subjectId}/${classId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/scores/subjects/${subjectId}/${classId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        cache: "no-store",
       },
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
     if (!res.ok) {
       if (res.status === 400) {
-        return { 
-          success: true, 
-          message: "No score available yet", 
-          content: { subject_total_score: "0.00", weight: 0 }, 
-          code: 200 
+        return {
+          success: true,
+          message: "No score available yet",
+          content: { subject_total_score: "0.00", weight: 0 },
+          code: 200,
         } as any;
       }
 
@@ -705,8 +761,12 @@ export async function getLessonCompletionData(
   lessonId: number,
   lessonContent: LessonContent,
   sectionTimeTracking: Record<string, any>,
-  exerciseProgress: Record<number, any>
-): Promise<{ success: boolean; data: LessonCompletionData | null; message: string }> {
+  exerciseProgress: Record<number, any>,
+): Promise<{
+  success: boolean;
+  data: LessonCompletionData | null;
+  message: string;
+}> {
   try {
     // Validate inputs
     if (!lessonId || !lessonContent) {
@@ -722,12 +782,14 @@ export async function getLessonCompletionData(
     try {
       const lessonScoreResponse = await getLessonScore(lessonId);
       if (lessonScoreResponse.success && lessonScoreResponse.content) {
-        lessonScore = parseScoreString(lessonScoreResponse.content.lesson_total_score);
+        lessonScore = parseScoreString(
+          lessonScoreResponse.content.lesson_total_score,
+        );
       }
     } catch (err) {
       // Handle 400 error (no score yet) by defaulting to 0
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('Lesson score not available yet, defaulting to 0');
+      if (process.env.NODE_ENV === "development") {
+        console.warn("Lesson score not available yet, defaulting to 0");
       }
     }
 
@@ -736,17 +798,20 @@ export async function getLessonCompletionData(
     const conceptScorePromises = concepts.map(async (concept) => {
       try {
         const conceptScoreResponse = await getConceptScore(concept.id);
-        const score = conceptScoreResponse.success && conceptScoreResponse.content
-          ? parseScoreString(conceptScoreResponse.content.total_score)
-          : 0;
-        const weight = conceptScoreResponse.success && conceptScoreResponse.content
-          ? parseScoreString(conceptScoreResponse.content.weight)
-          : 0;
+        const score =
+          conceptScoreResponse.success && conceptScoreResponse.content
+            ? parseScoreString(conceptScoreResponse.content.total_score)
+            : 0;
+        const weight =
+          conceptScoreResponse.success && conceptScoreResponse.content
+            ? parseScoreString(conceptScoreResponse.content.weight)
+            : 0;
 
         // Count completed exercises for this concept
-        const conceptExerciseIds = concept.exercises?.map((ex: any) => ex.id) || [];
+        const conceptExerciseIds =
+          concept.exercises?.map((ex: any) => ex.id) || [];
         const completedExercises = conceptExerciseIds.filter(
-          (exId: number) => exerciseProgress[exId]?.isCompleted === true
+          (exId: number) => exerciseProgress[exId]?.isCompleted === true,
         ).length;
 
         return {
@@ -759,8 +824,10 @@ export async function getLessonCompletionData(
         } as ConceptScoreBreakdown;
       } catch (err) {
         // Handle error for individual concept by returning 0 score
-        if (process.env.NODE_ENV === 'development') {
-          console.warn(`Concept score not available for concept ${concept.id}, defaulting to 0`);
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            `Concept score not available for concept ${concept.id}, defaulting to 0`,
+          );
         }
         return {
           conceptId: concept.id,
@@ -779,7 +846,7 @@ export async function getLessonCompletionData(
     let generalExercisesScore = 0;
     let generalExercisesWeight = 0;
     const generalExercises = lessonContent.general_exercises || [];
-    
+
     if (generalExercises.length > 0) {
       // Fetch all general exercise scores in parallel
       const generalExercisePromises = generalExercises.map(async (exercise) => {
@@ -793,31 +860,41 @@ export async function getLessonCompletionData(
           }
           return { score: 0, weight: 0 };
         } catch (err) {
-          if (process.env.NODE_ENV === 'development') {
-            console.warn(`General exercise score not available for exercise ${exercise.id}, defaulting to 0`);
+          if (process.env.NODE_ENV === "development") {
+            console.warn(
+              `General exercise score not available for exercise ${exercise.id}, defaulting to 0`,
+            );
           }
           return { score: 0, weight: 0 };
         }
       });
 
       const generalExerciseScores = await Promise.all(generalExercisePromises);
-      
+
       // Aggregate scores using weighted average
-      const totalWeight = generalExerciseScores.reduce((sum, item) => sum + item.weight, 0);
+      const totalWeight = generalExerciseScores.reduce(
+        (sum, item) => sum + item.weight,
+        0,
+      );
       // Aggregate scores using simple average for general exercises as per requirement
       if (generalExercises.length > 0) {
-          const totalScore = generalExerciseScores.reduce((sum, item) => sum + item.score, 0);
-          generalExercisesScore = totalScore / generalExercises.length;
-          // Calculate average weight
-          generalExercisesWeight = generalExerciseScores.reduce((sum, item) => sum + item.weight, 0) / generalExercises.length || 0;
+        const totalScore = generalExerciseScores.reduce(
+          (sum, item) => sum + item.score,
+          0,
+        );
+        generalExercisesScore = totalScore / generalExercises.length;
+        // Calculate average weight
+        generalExercisesWeight =
+          generalExerciseScores.reduce((sum, item) => sum + item.weight, 0) /
+            generalExercises.length || 0;
       }
     }
 
     // 4. Calculate total time spent
     let timeSpent = 0;
-    if (sectionTimeTracking && typeof sectionTimeTracking === 'object') {
+    if (sectionTimeTracking && typeof sectionTimeTracking === "object") {
       Object.values(sectionTimeTracking).forEach((section: any) => {
-        if (section && typeof section.timeSpent === 'number') {
+        if (section && typeof section.timeSpent === "number") {
           timeSpent += section.timeSpent;
         }
       });
@@ -825,28 +902,29 @@ export async function getLessonCompletionData(
 
     // 5. Calculate accuracy rate
     let accuracyRate = 0;
-    if (exerciseProgress && typeof exerciseProgress === 'object') {
+    if (exerciseProgress && typeof exerciseProgress === "object") {
       const completedExercises = Object.values(exerciseProgress).filter(
-        (ex: any) => ex?.isCompleted === true
+        (ex: any) => ex?.isCompleted === true,
       );
       const correctExercises = completedExercises.filter(
-        (ex: any) => ex?.isCorrect === true
+        (ex: any) => ex?.isCorrect === true,
       );
-      
+
       if (completedExercises.length > 0) {
-        accuracyRate = (correctExercises.length / completedExercises.length) * 100;
+        accuracyRate =
+          (correctExercises.length / completedExercises.length) * 100;
       }
     }
 
     // 6. Calculate exercise counts
     const totalConceptExercises = concepts.reduce(
       (sum, concept) => sum + (concept.exercises?.length || 0),
-      0
+      0,
     );
     const totalExercises = totalConceptExercises + generalExercises.length;
-    
+
     const completedExercises = Object.values(exerciseProgress).filter(
-      (ex: any) => ex?.isCompleted === true
+      (ex: any) => ex?.isCompleted === true,
     ).length;
 
     // 7. Assemble LessonCompletionData object
@@ -871,8 +949,8 @@ export async function getLessonCompletionData(
     };
   } catch (err: any) {
     // Global error handling
-    if (process.env.NODE_ENV === 'development') {
-      console.error('getLessonCompletionData error:', err);
+    if (process.env.NODE_ENV === "development") {
+      console.error("getLessonCompletionData error:", err);
     }
     return {
       success: false,
@@ -885,7 +963,9 @@ export async function getLessonCompletionData(
 /**
  * Fetch lesson summary scores and overview
  */
-export async function getLessonSummary(lessonId: number): Promise<LessonSummaryResponse> {
+export async function getLessonSummary(
+  lessonId: number,
+): Promise<LessonSummaryResponse> {
   try {
     const res = await fetch(`/api/lessons/scores/lessons/summary/${lessonId}`, {
       method: "GET",
@@ -932,17 +1012,20 @@ export async function getLessonSummary(lessonId: number): Promise<LessonSummaryR
  */
 export async function getAllLessonsTotalScores(
   subjectId: number,
-  termId: number
+  termId: number,
 ): Promise<AllLessonsTotalScoresResponse> {
   try {
-    const res = await fetch(`/api/lessons/scores/lessons/total/${subjectId}/${termId}`, {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+    const res = await fetch(
+      `/api/lessons/scores/lessons/total/${subjectId}/${termId}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+        cache: "no-store",
       },
-      credentials: "include",
-      cache: "no-store",
-    });
+    );
 
     const data = await res.json();
 
@@ -978,7 +1061,9 @@ export async function getAllLessonsTotalScores(
 /**
  * Fetch all subjects total scores for a term
  */
-export async function getAllSubjectsTotalScores(termId: number): Promise<AllSubjectsTotalScoresResponse> {
+export async function getAllSubjectsTotalScores(
+  termId: number,
+): Promise<AllSubjectsTotalScoresResponse> {
   try {
     const res = await fetch(`/api/lessons/scores/subjects/total/${termId}`, {
       method: "GET",

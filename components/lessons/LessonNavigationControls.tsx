@@ -1,13 +1,9 @@
 import React from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import {
-  ArrowLeft,
-  ChevronRight,
-  Trophy,
-  RefreshCw,
-} from "lucide-react";
+import { ArrowLeft, ChevronRight, RefreshCw, Trophy } from "lucide-react";
+
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface LessonNavigationControlsProps {
   currentStepIndex: number;
@@ -59,15 +55,13 @@ export function LessonNavigationControls({
             <span className="text-xs font-semibold text-foreground sm:text-sm">
               {currentStepIndex + 1} / {totalSteps}
             </span>
-            <span className="hidden sm:block">
-              Swipe or use keys
-            </span>
+            <span className="hidden sm:block">Swipe or use keys</span>
           </div>
           <Button
             size="default"
             className={cn(
               "mobile-touch-target font-medium shadow-sm transition-all sm:h-11 sm:min-w-[120px] sm:px-8",
-              progress >= 100 && "bg-green-600 hover:bg-green-700"
+              progress >= 100 && "bg-green-600 hover:bg-green-700",
             )}
             onClick={onNext}
             disabled={disableNext ?? isRedirecting}

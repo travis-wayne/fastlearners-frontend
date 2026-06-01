@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useParams, usePathname } from "next/navigation";
 import { Check, List } from "lucide-react";
 import { Drawer } from "vaul";
 
 import { BLOG_CATEGORIES } from "@/config/blog";
-import { cn } from "@/lib/utils";
 import { Z_INDEX } from "@/config/z-index";
+import { cn } from "@/lib/utils";
 import MaxWidthWrapper from "@/components/shared/max-width-wrapper";
 
 export function BlogHeaderLayout() {

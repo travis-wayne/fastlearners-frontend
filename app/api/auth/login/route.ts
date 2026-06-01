@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { BASE_API_URL } from "@/lib/api/client";
 import { setAuthCookiesServer } from "@/lib/server/auth-cookies";
 
@@ -8,7 +9,11 @@ export async function POST(req: NextRequest) {
 
     if (!body?.email_phone || !body?.password) {
       return NextResponse.json(
-        { success: false, message: "Email and password are required", code: 422 },
+        {
+          success: false,
+          message: "Email and password are required",
+          code: 422,
+        },
         { status: 422 },
       );
     }
@@ -17,7 +22,7 @@ export async function POST(req: NextRequest) {
     const backendResponse = await fetch(`${BASE_API_URL}/login`, {
       method: "POST",
       headers: {
-        "Accept": "application/json",
+        Accept: "application/json",
         "Content-Type": "application/json",
       },
       body: JSON.stringify(body),
@@ -30,9 +35,11 @@ export async function POST(req: NextRequest) {
       // 401 - Invalid credentials OR inactive user
       if (backendResponse.status === 401) {
         // Check if user needs email verification
-        if (apiRes.message?.toLowerCase().includes("inactive") || 
-            apiRes.message?.toLowerCase().includes("not verified") ||
-            apiRes.message?.toLowerCase().includes("verify")) {
+        if (
+          apiRes.message?.toLowerCase().includes("inactive") ||
+          apiRes.message?.toLowerCase().includes("not verified") ||
+          apiRes.message?.toLowerCase().includes("verify")
+        ) {
           return NextResponse.json(
             {
               success: false,
@@ -40,7 +47,7 @@ export async function POST(req: NextRequest) {
               code: 401,
               redirect: `/auth/verify-email?email=${encodeURIComponent(body.email_phone)}`,
             },
-            { status: 401 }
+            { status: 401 },
           );
         }
         // Regular invalid credentials
@@ -50,7 +57,7 @@ export async function POST(req: NextRequest) {
             message: apiRes.message || "Invalid email or password",
             code: 401,
           },
-          { status: 401 }
+          { status: 401 },
         );
       }
 
@@ -63,7 +70,7 @@ export async function POST(req: NextRequest) {
             code: backendResponse.status,
             redirect: `/auth/verify-email?email=${encodeURIComponent(body.email_phone)}`,
           },
-          { status: backendResponse.status }
+          { status: backendResponse.status },
         );
       }
 
@@ -76,7 +83,7 @@ export async function POST(req: NextRequest) {
             errors: apiRes.errors || {},
             code: 422,
           },
-          { status: 422 }
+          { status: 422 },
         );
       }
 
@@ -87,14 +94,18 @@ export async function POST(req: NextRequest) {
           message: apiRes.message || "Something went wrong, please try again",
           code: backendResponse.status,
         },
-        { status: backendResponse.status }
+        { status: backendResponse.status },
       );
     }
 
     // 200 OK - Success!
     if (!apiRes.success || !apiRes.content) {
       return NextResponse.json(
-        { success: false, message: apiRes.message || "Login failed", code: 500 },
+        {
+          success: false,
+          message: apiRes.message || "Login failed",
+          code: 500,
+        },
         { status: 500 },
       );
     }

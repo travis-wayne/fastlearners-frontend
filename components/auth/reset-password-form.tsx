@@ -200,7 +200,9 @@ export function ResetPasswordForm({
                     className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
                     onClick={() => setShowPassword(!showPassword)}
                     disabled={isLoading}
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="size-4 text-muted-foreground" />
@@ -264,7 +266,11 @@ export function ResetPasswordForm({
                     className="absolute right-0 top-0 h-full w-10 px-3 py-2 hover:bg-transparent sm:w-11"
                     onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                     disabled={isLoading}
-                    aria-label={showConfirmPassword ? "Hide confirm password" : "Show confirm password"}
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide confirm password"
+                        : "Show confirm password"
+                    }
                   >
                     {showConfirmPassword ? (
                       <EyeOff className="size-4 text-muted-foreground" />

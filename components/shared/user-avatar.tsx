@@ -17,7 +17,8 @@ function getAvatarUrlWithCacheBust(url: string | null | undefined): string {
 
   // Get or create cache buster timestamp from sessionStorage
   const cacheKey = "avatar-cache-bust";
-  let cacheBust = typeof window !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
+  let cacheBust =
+    typeof window !== "undefined" ? sessionStorage.getItem(cacheKey) : null;
 
   if (!cacheBust) {
     cacheBust = Date.now().toString();

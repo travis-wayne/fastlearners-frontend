@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function POST(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -13,14 +18,14 @@ export async function POST(req: NextRequest) {
 
   try {
     const body = await req.json();
-    
+
     // Debug logging (only in development)
-    if (process.env.NODE_ENV === 'development') {
-      console.log('[check-exercise-answer] Request:', {
+    if (process.env.NODE_ENV === "development") {
+      console.log("[check-exercise-answer] Request:", {
         body,
         bodyTypes: {
           exercise_id: typeof body.exercise_id,
-          answer: typeof body.answer
+          answer: typeof body.answer,
         },
         requestId,
         upstreamUrl: `${UPSTREAM_BASE}/lessons/check-exercise-answer`,
@@ -29,14 +34,32 @@ export async function POST(req: NextRequest) {
     }
 
     // Validation
-    if (!body.exercise_id || typeof body.exercise_id !== 'number' || body.exercise_id <= 0) {
-      return createErrorResponse("Invalid exercise ID", 422, undefined, requestId);
+    if (
+      !body.exercise_id ||
+      typeof body.exercise_id !== "number" ||
+      body.exercise_id <= 0
+    ) {
+      return createErrorResponse(
+        "Invalid exercise ID",
+        422,
+        undefined,
+        requestId,
+      );
     }
 
-    if (!body.answer || typeof body.answer !== 'string' || !/^[A-Z]$/.test(body.answer)) {
-      return createErrorResponse("Answer must be a single uppercase letter", 422, undefined, requestId);
+    if (
+      !body.answer ||
+      typeof body.answer !== "string" ||
+      !/^[A-Z]$/.test(body.answer)
+    ) {
+      return createErrorResponse(
+        "Answer must be a single uppercase letter",
+        422,
+        undefined,
+        requestId,
+      );
     }
-    
+
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 15000); // 15s timeout
 
@@ -53,15 +76,15 @@ export async function POST(req: NextRequest) {
           body: JSON.stringify(body),
           cache: "no-store",
           signal: controller.signal,
-        }
+        },
       );
 
       clearTimeout(timeoutId);
       const data = await upstream.json();
 
       // Debug logging for upstream response
-      if (process.env.NODE_ENV === 'development') {
-        console.log('[check-exercise-answer] Upstream Response:', {
+      if (process.env.NODE_ENV === "development") {
+        console.log("[check-exercise-answer] Upstream Response:", {
           status: upstream.status,
           statusText: upstream.statusText,
           data,
@@ -69,10 +92,10 @@ export async function POST(req: NextRequest) {
       }
 
       if (!upstream.ok) {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[check-exercise-answer] Returning error to client:', {
+        if (process.env.NODE_ENV === "development") {
+          console.log("[check-exercise-answer] Returning error to client:", {
             status: upstream.status,
-            data
+            data,
           });
         }
         return handleUpstreamError(upstream, data, requestId);
@@ -81,9 +104,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
+
       // Retry on network errors
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryUpstream = await fetch(
             `${UPSTREAM_BASE}/lessons/check-exercise-answer`,
@@ -96,21 +122,25 @@ export async function POST(req: NextRequest) {
               },
               body: JSON.stringify(body),
               cache: "no-store",
-            }
+            },
           );
 
           const retryData = await retryUpstream.json();
-          
+
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to check exercise answer after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to check exercise answer after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (err: any) {

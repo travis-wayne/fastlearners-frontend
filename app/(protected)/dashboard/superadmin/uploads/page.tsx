@@ -2,23 +2,45 @@
 
 import { useState } from "react";
 import {
-  FileUp,
-  CheckCircle,
   AlertCircle,
-  Upload,
-  Eye,
   BookOpen,
-  Download
+  CheckCircle,
+  Download,
+  Eye,
+  FileUp,
+  Upload,
 } from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import {
+  ApiResponse,
+  CSV_COLUMNS,
+  uploadAllLessonFiles,
+  uploadCheckMarkersFileWithValidation,
+  uploadConceptsFileWithValidation,
+  uploadExamplesFileWithValidation,
+  uploadExercisesFileWithValidation,
+  uploadGeneralExercisesFileWithValidation,
+  uploadLessonsFileWithValidation,
+  UploadResult,
+  uploadSchemeOfWorkFileWithValidation,
+} from "@/lib/api/lesson-service";
+import {
+  parseUploadError,
+  type ParsedUploadError,
+} from "@/lib/api/upload-error-handler";
+import {
+  previewCSVFile,
+  validateCSVFile,
+  type CSVPreviewResult,
+} from "@/lib/utils/csv-upload-helper";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
 import { Separator } from "@/components/ui/separator";
-import { Badge } from "@/components/ui/badge";
 import {
   Table,
   TableBody,
@@ -27,27 +49,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
 import FileUpload from "@/components/lessons/file-upload";
 import {
+  UploadType,
   useSuperadminState,
-  UploadType
 } from "@/components/superadmin/use-superadmin-state";
-import {
-  uploadLessonsFileWithValidation,
-  uploadConceptsFileWithValidation,
-  uploadExamplesFileWithValidation,
-  uploadExercisesFileWithValidation,
-  uploadGeneralExercisesFileWithValidation,
-  uploadCheckMarkersFileWithValidation,
-  uploadSchemeOfWorkFileWithValidation,
-  uploadAllLessonFiles,
-  UploadResult,
-  ApiResponse,
-  CSV_COLUMNS,
-} from "@/lib/api/lesson-service";
-import { previewCSVFile, validateCSVFile, type CSVPreviewResult } from "@/lib/utils/csv-upload-helper";
-import { parseUploadError, type ParsedUploadError } from "@/lib/api/upload-error-handler";
 import { UploadErrorDisplay } from "@/components/upload/UploadErrorDisplay";
 
 type BulkFileKey =
@@ -67,13 +73,37 @@ const BULK_FILE_CONFIGS: {
   label: string;
   requiredColumns: string[];
 }[] = [
-    { id: 'lessons_file', label: 'Lessons File', requiredColumns: CSV_COLUMNS.lessons },
-    { id: 'concepts_file', label: 'Concepts File', requiredColumns: CSV_COLUMNS.concepts },
-    { id: 'examples_file', label: 'Examples File', requiredColumns: CSV_COLUMNS.examples },
-    { id: 'exercises_file', label: 'Exercises File', requiredColumns: CSV_COLUMNS.exercises },
-    { id: 'general_exercises_file', label: 'General Exercises File', requiredColumns: CSV_COLUMNS.general_exercises },
-    { id: 'check_markers_file', label: 'Check Markers File', requiredColumns: CSV_COLUMNS.check_markers },
-  ];
+  {
+    id: "lessons_file",
+    label: "Lessons File",
+    requiredColumns: CSV_COLUMNS.lessons,
+  },
+  {
+    id: "concepts_file",
+    label: "Concepts File",
+    requiredColumns: CSV_COLUMNS.concepts,
+  },
+  {
+    id: "examples_file",
+    label: "Examples File",
+    requiredColumns: CSV_COLUMNS.examples,
+  },
+  {
+    id: "exercises_file",
+    label: "Exercises File",
+    requiredColumns: CSV_COLUMNS.exercises,
+  },
+  {
+    id: "general_exercises_file",
+    label: "General Exercises File",
+    requiredColumns: CSV_COLUMNS.general_exercises,
+  },
+  {
+    id: "check_markers_file",
+    label: "Check Markers File",
+    requiredColumns: CSV_COLUMNS.check_markers,
+  },
+];
 
 const UPLOAD_CONFIG: {
   id: UploadType;
@@ -81,49 +111,49 @@ const UPLOAD_CONFIG: {
   description: string;
   uploadFn: (file: File) => Promise<UploadResult>;
 }[] = [
-    {
-      id: "lessons",
-      title: "Lessons",
-      description: "Upload main lessons data (topics, overviews, objectives)",
-      uploadFn: uploadLessonsFileWithValidation,
-    },
-    {
-      id: "concepts",
-      title: "Concepts",
-      description: "Upload lesson concepts and explanations",
-      uploadFn: uploadConceptsFileWithValidation,
-    },
-    {
-      id: "examples",
-      title: "Examples",
-      description: "Upload worked examples for concepts",
-      uploadFn: uploadExamplesFileWithValidation,
-    },
-    {
-      id: "exercises",
-      title: "Exercises",
-      description: "Upload practice exercises for concepts",
-      uploadFn: uploadExercisesFileWithValidation,
-    },
-    {
-      id: "general_exercises",
-      title: "General Exercises",
-      description: "Upload lesson-level general exercises",
-      uploadFn: uploadGeneralExercisesFileWithValidation,
-    },
-    {
-      id: "check_markers",
-      title: "Check Markers",
-      description: "Upload progress check markers",
-      uploadFn: uploadCheckMarkersFileWithValidation,
-    },
-    {
-      id: "scheme_of_work",
-      title: "Scheme of Work",
-      description: "Upload curriculum scheme of work",
-      uploadFn: uploadSchemeOfWorkFileWithValidation,
-    },
-  ];
+  {
+    id: "lessons",
+    title: "Lessons",
+    description: "Upload main lessons data (topics, overviews, objectives)",
+    uploadFn: uploadLessonsFileWithValidation,
+  },
+  {
+    id: "concepts",
+    title: "Concepts",
+    description: "Upload lesson concepts and explanations",
+    uploadFn: uploadConceptsFileWithValidation,
+  },
+  {
+    id: "examples",
+    title: "Examples",
+    description: "Upload worked examples for concepts",
+    uploadFn: uploadExamplesFileWithValidation,
+  },
+  {
+    id: "exercises",
+    title: "Exercises",
+    description: "Upload practice exercises for concepts",
+    uploadFn: uploadExercisesFileWithValidation,
+  },
+  {
+    id: "general_exercises",
+    title: "General Exercises",
+    description: "Upload lesson-level general exercises",
+    uploadFn: uploadGeneralExercisesFileWithValidation,
+  },
+  {
+    id: "check_markers",
+    title: "Check Markers",
+    description: "Upload progress check markers",
+    uploadFn: uploadCheckMarkersFileWithValidation,
+  },
+  {
+    id: "scheme_of_work",
+    title: "Scheme of Work",
+    description: "Upload curriculum scheme of work",
+    uploadFn: uploadSchemeOfWorkFileWithValidation,
+  },
+];
 
 export default function UploadsPage() {
   const {
@@ -137,12 +167,13 @@ export default function UploadsPage() {
     bulkError,
     bulkSuccess,
     setBulkStatus,
-    resetBulkState
+    resetBulkState,
   } = useSuperadminState();
 
   const [bulkPreviews, setBulkPreviews] = useState<BulkPreviewState>({});
   const [loadingPreview, setLoadingPreview] = useState<string | null>(null);
-  const [bulkParsedError, setBulkParsedError] = useState<ParsedUploadError | null>(null);
+  const [bulkParsedError, setBulkParsedError] =
+    useState<ParsedUploadError | null>(null);
 
   // --- Individual Upload Handlers ---
 
@@ -163,12 +194,18 @@ export default function UploadsPage() {
     const state = uploadStates[type];
     if (!state.selectedFile) return;
 
-    setUploadState(type, { isUploading: true, uploadProgress: 0, error: null, parsedError: undefined });
+    setUploadState(type, {
+      isUploading: true,
+      uploadProgress: 0,
+      error: null,
+      parsedError: undefined,
+    });
 
     // Simulate progress using functional update to avoid stale closure
     const progressInterval = setInterval(() => {
       setUploadState(type, (prev) => ({
-        uploadProgress: prev.uploadProgress >= 90 ? 90 : prev.uploadProgress + 10
+        uploadProgress:
+          prev.uploadProgress >= 90 ? 90 : prev.uploadProgress + 10,
       }));
     }, 200);
 
@@ -181,23 +218,36 @@ export default function UploadsPage() {
       clearInterval(progressInterval);
 
       if (result.success) {
-        setUploadState(type, { isUploading: false, uploadProgress: 100, success: true, parsedError: undefined });
+        setUploadState(type, {
+          isUploading: false,
+          uploadProgress: 100,
+          success: true,
+          parsedError: undefined,
+        });
         toast.success(`${config.title} uploaded successfully`);
       } else {
         // Upload failed - use parsed error if available
-        const errorMessage = result.parsedError?.userMessage || result.error || "Upload failed";
+        const errorMessage =
+          result.parsedError?.userMessage || result.error || "Upload failed";
         setUploadState(type, {
           isUploading: false,
           uploadProgress: 0,
           error: errorMessage,
-          parsedError: result.parsedError
+          parsedError: result.parsedError,
         });
-        toast.error(`Failed to upload ${config.title}`, { description: errorMessage });
+        toast.error(`Failed to upload ${config.title}`, {
+          description: errorMessage,
+        });
       }
     } catch (error: any) {
       clearInterval(progressInterval);
       const errorMessage = error.message || "An unexpected error occurred";
-      setUploadState(type, { isUploading: false, uploadProgress: 0, error: errorMessage, parsedError: undefined });
+      setUploadState(type, {
+        isUploading: false,
+        uploadProgress: 0,
+        error: errorMessage,
+        parsedError: undefined,
+      });
       toast.error(`Failed to upload ${type}`, { description: errorMessage });
     }
   };
@@ -211,8 +261,8 @@ export default function UploadsPage() {
     setLoadingPreview(fileKey);
     try {
       const preview = await previewCSVFile(file, 10);
-      setBulkPreviews(prev => ({ ...prev, [fileKey]: preview }));
-      toast.success(`Preview loaded for ${fileKey.replace(/_/g, ' ')}`);
+      setBulkPreviews((prev) => ({ ...prev, [fileKey]: preview }));
+      toast.success(`Preview loaded for ${fileKey.replace(/_/g, " ")}`);
     } catch (error) {
       toast.error("Failed to preview file", {
         description: error instanceof Error ? error.message : "Unknown error",
@@ -228,13 +278,15 @@ export default function UploadsPage() {
 
   const handleBulkUpload = async () => {
     if (!isBulkReady) {
-      toast.error("Missing files", { description: "Please select all 6 required files." });
+      toast.error("Missing files", {
+        description: "Please select all 6 required files.",
+      });
       return;
     }
 
     // Check for missing columns in ALL selected files (even if not previewed)
     const filesWithErrors: string[] = [];
-    
+
     for (const config of BULK_FILE_CONFIGS) {
       const file = bulkFiles[config.id];
       if (!file) continue;
@@ -246,28 +298,35 @@ export default function UploadsPage() {
         });
 
         if (!validation.isValid) {
-          filesWithErrors.push(`${config.label}: ${validation.errors.join(', ')}`);
+          filesWithErrors.push(
+            `${config.label}: ${validation.errors.join(", ")}`,
+          );
         }
       } catch (error) {
         filesWithErrors.push(`${config.label}: Failed to read file`);
       }
     }
-    
+
     if (filesWithErrors.length > 0) {
       toast.error("File Validation Failed", {
-        description: `The following files have errors:\n${filesWithErrors.join('\n')}\n\nPlease fix these files before uploading.`,
+        description: `The following files have errors:\n${filesWithErrors.join("\n")}\n\nPlease fix these files before uploading.`,
         duration: 8000,
       });
       return;
     }
 
-    setBulkStatus({ isBulkUploading: true, bulkProgress: 0, bulkError: null, bulkSuccess: false });
+    setBulkStatus({
+      isBulkUploading: true,
+      bulkProgress: 0,
+      bulkError: null,
+      bulkSuccess: false,
+    });
     setBulkParsedError(null);
 
     // Simulate progress
     const progressInterval = setInterval(() => {
       setBulkStatus((prev) => ({
-        bulkProgress: prev.bulkProgress >= 90 ? 90 : prev.bulkProgress + 5
+        bulkProgress: prev.bulkProgress >= 90 ? 90 : prev.bulkProgress + 5,
       }));
     }, 300);
 
@@ -287,10 +346,14 @@ export default function UploadsPage() {
       clearInterval(progressInterval);
 
       if (result.success) {
-        setBulkStatus({ isBulkUploading: false, bulkProgress: 100, bulkSuccess: true });
+        setBulkStatus({
+          isBulkUploading: false,
+          bulkProgress: 100,
+          bulkSuccess: true,
+        });
         setBulkParsedError(null);
         toast.success("All files uploaded successfully", {
-          description: result.message || "The database has been updated."
+          description: result.message || "The database has been updated.",
         });
       } else {
         throw new Error(result.message || "Bulk upload failed");
@@ -300,7 +363,8 @@ export default function UploadsPage() {
 
       // Parse the error if it has response and data
       let parsedError: ParsedUploadError | null = null;
-      let errorMessage = error.message || "An unexpected error occurred during bulk upload";
+      let errorMessage =
+        error.message || "An unexpected error occurred during bulk upload";
 
       if (error.response && error.data) {
         parsedError = parseUploadError(error.response, error.data);
@@ -310,7 +374,11 @@ export default function UploadsPage() {
         setBulkParsedError(null);
       }
 
-      setBulkStatus({ isBulkUploading: false, bulkProgress: 0, bulkError: errorMessage });
+      setBulkStatus({
+        isBulkUploading: false,
+        bulkProgress: 0,
+        bulkError: errorMessage,
+      });
       toast.error("Bulk Upload Failed", { description: errorMessage });
     }
   };
@@ -324,8 +392,12 @@ export default function UploadsPage() {
             <FileUp className="size-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Content Uploads</h1>
-            <p className="text-muted-foreground">Upload lesson content files to the platform</p>
+            <h1 className="text-3xl font-bold tracking-tight">
+              Content Uploads
+            </h1>
+            <p className="text-muted-foreground">
+              Upload lesson content files to the platform
+            </p>
           </div>
         </div>
         <div className="flex gap-2">
@@ -348,7 +420,22 @@ export default function UploadsPage() {
         <BookOpen className="size-4" />
         <AlertTitle>Upload Guidance</AlertTitle>
         <AlertDescription>
-          For best results, use the <strong>pipe (|)</strong> delimiter. Always ensure your CSV follows the canonical format in the <a href="/docs/superadmin-uploads-csv-contracts" className="font-medium underline underline-offset-4">Upload Contracts Documentation</a> and matches the <a href="/public/lesson-csv-files/lesson-structure.csv" className="font-medium underline underline-offset-4">Template Files</a>.
+          For best results, use the <strong>pipe (|)</strong> delimiter. Always
+          ensure your CSV follows the canonical format in the{" "}
+          <a
+            href="/docs/superadmin-uploads-csv-contracts"
+            className="font-medium underline underline-offset-4"
+          >
+            Upload Contracts Documentation
+          </a>{" "}
+          and matches the{" "}
+          <a
+            href="/public/lesson-csv-files/lesson-structure.csv"
+            className="font-medium underline underline-offset-4"
+          >
+            Template Files
+          </a>
+          .
         </AlertDescription>
       </Alert>
 
@@ -357,8 +444,12 @@ export default function UploadsPage() {
       {/* Individual Uploads Section */}
       <div className="space-y-6">
         <div className="space-y-1">
-          <h2 className="text-2xl font-semibold tracking-tight">Individual Uploads</h2>
-          <p className="text-sm text-muted-foreground">Upload specific content files one by one for granular control</p>
+          <h2 className="text-2xl font-semibold tracking-tight">
+            Individual Uploads
+          </h2>
+          <p className="text-sm text-muted-foreground">
+            Upload specific content files one by one for granular control
+          </p>
         </div>
 
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -378,15 +469,17 @@ export default function UploadsPage() {
                 success={uploadStates[config.id].success}
                 onRetry={() => handleUpload(config.id)}
               />
-              {uploadStates[config.id].selectedFile && !uploadStates[config.id].success && !uploadStates[config.id].isUploading && (
-                <Button
-                  className="w-full"
-                  onClick={() => handleUpload(config.id)}
-                >
-                  <Upload className="mr-2 size-4" />
-                  Upload {config.title}
-                </Button>
-              )}
+              {uploadStates[config.id].selectedFile &&
+                !uploadStates[config.id].success &&
+                !uploadStates[config.id].isUploading && (
+                  <Button
+                    className="w-full"
+                    onClick={() => handleUpload(config.id)}
+                  >
+                    <Upload className="mr-2 size-4" />
+                    Upload {config.title}
+                  </Button>
+                )}
             </div>
           ))}
         </div>
@@ -398,10 +491,16 @@ export default function UploadsPage() {
       <div className="space-y-6">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <h2 className="text-2xl font-semibold tracking-tight">Bulk Upload</h2>
-            <Badge variant="secondary" className="text-xs">All-In-One</Badge>
+            <h2 className="text-2xl font-semibold tracking-tight">
+              Bulk Upload
+            </h2>
+            <Badge variant="secondary" className="text-xs">
+              All-In-One
+            </Badge>
           </div>
-          <p className="text-sm text-muted-foreground">Upload all 6 lesson files at once for faster processing</p>
+          <p className="text-sm text-muted-foreground">
+            Upload all 6 lesson files at once for faster processing
+          </p>
         </div>
 
         <div className="rounded-xl border bg-card text-card-foreground shadow-sm">
@@ -425,7 +524,9 @@ export default function UploadsPage() {
               <Alert className="mb-6 border-green-200 bg-green-50 text-green-800">
                 <CheckCircle className="size-4" />
                 <AlertTitle>Success!</AlertTitle>
-                <AlertDescription>All files have been uploaded and processed successfully.</AlertDescription>
+                <AlertDescription>
+                  All files have been uploaded and processed successfully.
+                </AlertDescription>
               </Alert>
             )}
 
@@ -438,8 +539,11 @@ export default function UploadsPage() {
                 // Check for missing columns
                 const missingColumns = preview
                   ? fileConfig.requiredColumns.filter(
-                    col => !preview.headers.map(h => h.toLowerCase()).includes(col.toLowerCase())
-                  )
+                      (col) =>
+                        !preview.headers
+                          .map((h) => h.toLowerCase())
+                          .includes(col.toLowerCase()),
+                    )
                   : [];
 
                 return (
@@ -452,9 +556,15 @@ export default function UploadsPage() {
                         accept=".csv,.txt"
                         disabled={isBulkUploading || bulkSuccess}
                         onChange={(e) => {
-                          setBulkFile(fileConfig.id, e.target.files?.[0] || null);
+                          setBulkFile(
+                            fileConfig.id,
+                            e.target.files?.[0] || null,
+                          );
                           // Clear preview when file changes
-                          setBulkPreviews(prev => ({ ...prev, [fileConfig.id]: null }));
+                          setBulkPreviews((prev) => ({
+                            ...prev,
+                            [fileConfig.id]: null,
+                          }));
                         }}
                       />
                       <p className="text-xs text-muted-foreground">
@@ -486,10 +596,16 @@ export default function UploadsPage() {
 
                         <div className="space-y-1 text-xs">
                           <p className="text-muted-foreground">
-                            Format: <span className="font-medium">{preview.format}-delimited</span>
+                            Format:{" "}
+                            <span className="font-medium">
+                              {preview.format}-delimited
+                            </span>
                           </p>
                           <p className="text-muted-foreground">
-                            Columns: <span className="font-medium">{preview.headers.length}</span>
+                            Columns:{" "}
+                            <span className="font-medium">
+                              {preview.headers.length}
+                            </span>
                           </p>
                         </div>
 
@@ -512,35 +628,56 @@ export default function UploadsPage() {
                         {preview.sampleRows.length > 0 && (
                           <div className="mt-2">
                             <p className="mb-1 text-xs text-muted-foreground">
-                              Sample (first {Math.min(5, preview.sampleRows.length)} rows):
+                              Sample (first{" "}
+                              {Math.min(5, preview.sampleRows.length)} rows):
                             </p>
                             <div className="max-h-32 overflow-auto rounded border bg-background">
                               <Table>
                                 <TableHeader>
                                   <TableRow>
-                                    {preview.headers.slice(0, 3).map((header, idx) => (
-                                      <TableHead key={idx} className="px-2 py-1 text-xs">
-                                        {header}
-                                      </TableHead>
-                                    ))}
+                                    {preview.headers
+                                      .slice(0, 3)
+                                      .map((header, idx) => (
+                                        <TableHead
+                                          key={idx}
+                                          className="px-2 py-1 text-xs"
+                                        >
+                                          {header}
+                                        </TableHead>
+                                      ))}
                                     {preview.headers.length > 3 && (
-                                      <TableHead className="px-2 py-1 text-xs">...</TableHead>
+                                      <TableHead className="px-2 py-1 text-xs">
+                                        ...
+                                      </TableHead>
                                     )}
                                   </TableRow>
                                 </TableHeader>
                                 <TableBody>
-                                  {preview.sampleRows.slice(0, 5).map((row, rowIdx) => (
-                                    <TableRow key={rowIdx}>
-                                      {row.slice(0, 3).map((cell, cellIdx) => (
-                                        <TableCell key={cellIdx} className="max-w-[100px] truncate px-2 py-1 text-xs">
-                                          {cell || <span className="italic text-muted-foreground">empty</span>}
-                                        </TableCell>
-                                      ))}
-                                      {row.length > 3 && (
-                                        <TableCell className="px-2 py-1 text-xs">...</TableCell>
-                                      )}
-                                    </TableRow>
-                                  ))}
+                                  {preview.sampleRows
+                                    .slice(0, 5)
+                                    .map((row, rowIdx) => (
+                                      <TableRow key={rowIdx}>
+                                        {row
+                                          .slice(0, 3)
+                                          .map((cell, cellIdx) => (
+                                            <TableCell
+                                              key={cellIdx}
+                                              className="max-w-[100px] truncate px-2 py-1 text-xs"
+                                            >
+                                              {cell || (
+                                                <span className="italic text-muted-foreground">
+                                                  empty
+                                                </span>
+                                              )}
+                                            </TableCell>
+                                          ))}
+                                        {row.length > 3 && (
+                                          <TableCell className="px-2 py-1 text-xs">
+                                            ...
+                                          </TableCell>
+                                        )}
+                                      </TableRow>
+                                    ))}
                                 </TableBody>
                               </Table>
                             </div>
@@ -575,11 +712,7 @@ export default function UploadsPage() {
 
             <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               {bulkSuccess && (
-                <Button
-                  onClick={resetBulkState}
-                  variant="outline"
-                  size="lg"
-                >
+                <Button onClick={resetBulkState} variant="outline" size="lg">
                   Reset & Upload New Files
                 </Button>
               )}

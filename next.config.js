@@ -36,11 +36,11 @@ const nextConfig = {
       config.watchOptions = {
         poll: true,
         ignored: [
-          '**/node_modules/**',
-          '**/.git/**',
-          'C:/pagefile.sys',
-          'C:/swapfile.sys',
-          'C:/Windows/**',
+          "**/node_modules/**",
+          "**/.git/**",
+          "C:/pagefile.sys",
+          "C:/swapfile.sys",
+          "C:/Windows/**",
         ],
       };
     }

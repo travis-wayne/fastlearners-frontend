@@ -34,11 +34,7 @@ export function DatePicker({
             !selected && "text-muted-foreground",
           )}
         >
-          {selected ? (
-            format(selected, "PPP")
-          ) : (
-            <span>{placeholder}</span>
-          )}
+          {selected ? format(selected, "PPP") : <span>{placeholder}</span>}
           <CalendarIcon className="ml-auto size-4 opacity-50" />
         </Button>
       </PopoverTrigger>

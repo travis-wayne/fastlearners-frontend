@@ -1,19 +1,24 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { Trash2, RefreshCw, LayoutGrid, Table as TableIcon } from "lucide-react";
+import {
+  LayoutGrid,
+  RefreshCw,
+  Table as TableIcon,
+  Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
 
-import { Button } from "@/components/ui/button";
+import { getTrashedLessons } from "@/lib/api/superadmin-lessons";
+import { useLessonsStore } from "@/lib/store/lessons";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LessonFilters } from "@/components/lessons/LessonFilters";
 import { LessonViewer } from "@/components/lessons/LessonViewer";
-import { useLessonsStore } from "@/lib/store/lessons";
-import { getTrashedLessons } from "@/lib/api/superadmin-lessons";
-import { SubjectOverviewCards } from "@/components/superadmin/subject-overview-cards";
 import { LessonsTable } from "@/components/superadmin/lessons-table";
+import { SubjectOverviewCards } from "@/components/superadmin/subject-overview-cards";
 
 type ViewMode = "subjects" | "filtered";
 
@@ -68,7 +73,7 @@ export default function BrowsePage() {
       fetchLessons();
       fetchTrashedCount();
     },
-    [fetchLessons, fetchTrashedCount]
+    [fetchLessons, fetchTrashedCount],
   );
 
   const handleRefresh = useCallback(() => {
@@ -84,7 +89,7 @@ export default function BrowsePage() {
       setFilters({ subject: subjectId.toString() });
       setViewMode("filtered");
     },
-    [setFilters]
+    [setFilters],
   );
 
   const handleBackToSubjects = useCallback(() => {

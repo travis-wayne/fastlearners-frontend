@@ -73,32 +73,44 @@ export const verifyResetCodeSchema = z.object({
 });
 
 // Profile update schema
-export const profileUpdateSchema = z.object({
-  name: z.string().min(1, "Name is required").optional(),
-  username: z
-    .string()
-    .min(3, "Username must be at least 3 characters")
-    .optional(),
-  phone: z.string().optional(),
-  school: z.string().optional(),
-  class: z.string().optional(),
-  date_of_birth: z.string().optional(),
-  country: z.string().optional(),
-  state: z.string().optional(),
-  city: z.string().optional(),
-  gender: z.enum(["male", "female", "other"]).optional(),
-  role: z.enum(["student", "parent"]).optional(),
-  parent_email: z.string().email("Invalid email").optional().or(z.literal("")),
-  parent_phone: z.string().optional().or(z.literal("")),
-}).refine((data) => {
-  if (data.role === "student" && (!data.parent_email || data.parent_email.trim() === "")) {
-    return false;
-  }
-  return true;
-}, {
-  message: "Parent email is required for students",
-  path: ["parent_email"],
-});
+export const profileUpdateSchema = z
+  .object({
+    name: z.string().min(1, "Name is required").optional(),
+    username: z
+      .string()
+      .min(3, "Username must be at least 3 characters")
+      .optional(),
+    phone: z.string().optional(),
+    school: z.string().optional(),
+    class: z.string().optional(),
+    date_of_birth: z.string().optional(),
+    country: z.string().optional(),
+    state: z.string().optional(),
+    city: z.string().optional(),
+    gender: z.enum(["male", "female", "other"]).optional(),
+    role: z.enum(["student", "parent"]).optional(),
+    parent_email: z
+      .string()
+      .email("Invalid email")
+      .optional()
+      .or(z.literal("")),
+    parent_phone: z.string().optional().or(z.literal("")),
+  })
+  .refine(
+    (data) => {
+      if (
+        data.role === "student" &&
+        (!data.parent_email || data.parent_email.trim() === "")
+      ) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "Parent email is required for students",
+      path: ["parent_email"],
+    },
+  );
 
 // Change password schema
 export const changePasswordSchema = z

@@ -49,17 +49,25 @@ export function BlogCard({
         )}
       >
         <div className="w-full space-y-2">
-          <h2 className={cn(
-            "line-clamp-2 font-heading text-foreground transition-colors group-hover:text-primary",
-            horizontale ? "text-3xl sm:text-4xl md:text-5xl" : "text-xl sm:text-2xl"
-          )}>
+          <h2
+            className={cn(
+              "line-clamp-2 font-heading text-foreground transition-colors group-hover:text-primary",
+              horizontale
+                ? "text-3xl sm:text-4xl md:text-5xl"
+                : "text-xl sm:text-2xl",
+            )}
+          >
             {data.title}
           </h2>
           {data.description && (
-            <p className={cn(
-              "line-clamp-3 text-pretty text-muted-foreground",
-              horizontale ? "text-base sm:text-lg md:text-xl" : "text-sm sm:text-base"
-            )}>
+            <p
+              className={cn(
+                "line-clamp-3 text-pretty text-muted-foreground",
+                horizontale
+                  ? "text-base sm:text-lg md:text-xl"
+                  : "text-sm sm:text-base",
+              )}
+            >
               {data.description}
             </p>
           )}

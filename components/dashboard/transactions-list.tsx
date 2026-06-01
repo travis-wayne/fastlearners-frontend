@@ -40,20 +40,67 @@ export default function TransactionsList() {
         {/* Mobile Card View */}
         <div className="space-y-component-sm sm:hidden">
           {[
-            { id: 1, name: "Liam Johnson", email: "liam@example.com", type: "Sale", status: "Approved", date: "2023-06-23", amount: "$250.00" },
-            { id: 2, name: "Olivia Smith", email: "olivia@example.com", type: "Refund", status: "Declined", date: "2023-06-24", amount: "$150.00" },
-            { id: 3, name: "Noah Williams", email: "noah@example.com", type: "Subscription", status: "Approved", date: "2023-06-25", amount: "$350.00" },
-            { id: 4, name: "Emma Brown", email: "emma@example.com", type: "Sale", status: "Approved", date: "2023-06-26", amount: "$450.00" },
-            { id: 5, name: "Liam Johnson", email: "liam@example.com", type: "Sale", status: "Approved", date: "2023-06-27", amount: "$550.00" },
+            {
+              id: 1,
+              name: "Liam Johnson",
+              email: "liam@example.com",
+              type: "Sale",
+              status: "Approved",
+              date: "2023-06-23",
+              amount: "$250.00",
+            },
+            {
+              id: 2,
+              name: "Olivia Smith",
+              email: "olivia@example.com",
+              type: "Refund",
+              status: "Declined",
+              date: "2023-06-24",
+              amount: "$150.00",
+            },
+            {
+              id: 3,
+              name: "Noah Williams",
+              email: "noah@example.com",
+              type: "Subscription",
+              status: "Approved",
+              date: "2023-06-25",
+              amount: "$350.00",
+            },
+            {
+              id: 4,
+              name: "Emma Brown",
+              email: "emma@example.com",
+              type: "Sale",
+              status: "Approved",
+              date: "2023-06-26",
+              amount: "$450.00",
+            },
+            {
+              id: 5,
+              name: "Liam Johnson",
+              email: "liam@example.com",
+              type: "Sale",
+              status: "Approved",
+              date: "2023-06-27",
+              amount: "$550.00",
+            },
           ].map((tx) => (
-            <div key={tx.id} className="rounded-lg border p-component-sm shadow-sm sm:p-component-md">
+            <div
+              key={tx.id}
+              className="rounded-lg border p-component-sm shadow-sm sm:p-component-md"
+            >
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-foreground">{tx.name}</div>
-                  <div className="text-xs text-muted-foreground">{tx.email}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {tx.email}
+                  </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-foreground">{tx.amount}</div>
+                  <div className="font-semibold text-foreground">
+                    {tx.amount}
+                  </div>
                   <Badge variant="outline" className="mt-1 text-xs">
                     {tx.status}
                   </Badge>
@@ -123,7 +170,9 @@ export default function TransactionsList() {
                     noah@example.com
                   </div>
                 </TableCell>
-                <TableCell className="hidden xl:table-column">Subscription</TableCell>
+                <TableCell className="hidden xl:table-column">
+                  Subscription
+                </TableCell>
                 <TableCell className="hidden xl:table-column">
                   <Badge className="text-xs" variant="outline">
                     Approved

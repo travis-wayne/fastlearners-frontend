@@ -72,7 +72,9 @@ export function LessonTocSidebar({ content }: LessonTocSidebarProps) {
     return (
       <Card>
         <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
-          <CardTitle className="text-base sm:text-lg">Table of Contents</CardTitle>
+          <CardTitle className="text-base sm:text-lg">
+            Table of Contents
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">No headings available</p>
@@ -84,7 +86,9 @@ export function LessonTocSidebar({ content }: LessonTocSidebarProps) {
   return (
     <Card>
       <CardHeader className="p-4 pb-2 sm:p-6 sm:pb-3">
-        <CardTitle className="text-base sm:text-lg">Table of Contents</CardTitle>
+        <CardTitle className="text-base sm:text-lg">
+          Table of Contents
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[calc(100vh-12rem)]">
@@ -98,7 +102,8 @@ export function LessonTocSidebar({ content }: LessonTocSidebarProps) {
                   item.level === 2 && "pl-2 font-semibold",
                   item.level === 3 && "pl-6 text-muted-foreground",
                   item.level === 4 && "pl-10 text-muted-foreground",
-                  activeId === item.id && "bg-primary/10 font-bold text-primary",
+                  activeId === item.id &&
+                    "bg-primary/10 font-bold text-primary",
                 )}
               >
                 {item.title}

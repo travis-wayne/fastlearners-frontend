@@ -13,8 +13,8 @@ import {
   X,
 } from "lucide-react";
 
-import { cn } from "@/lib/utils";
 import { Z_INDEX } from "@/config/z-index";
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -157,14 +157,21 @@ export function SettingsPage() {
   return (
     <div className="min-h-screen bg-background" style={layoutVariables}>
       {/* Mobile menu button */}
-      <div className="fixed left-4 top-4 lg:hidden" style={{ zIndex: Z_INDEX.navbar + 1 }}>
+      <div
+        className="fixed left-4 top-4 lg:hidden"
+        style={{ zIndex: Z_INDEX.navbar + 1 }}
+      >
         <Button
           variant="outline"
           size="icon"
           className="size-11"
           onClick={() => setSidebarOpen(!sidebarOpen)}
         >
-          {sidebarOpen ? <X className="size-4 sm:size-5" /> : <Menu className="size-4 sm:size-5" />}
+          {sidebarOpen ? (
+            <X className="size-4 sm:size-5" />
+          ) : (
+            <Menu className="size-4 sm:size-5" />
+          )}
         </Button>
       </div>
 
@@ -240,11 +247,18 @@ function ProfileSection() {
                 <AvatarFallback>AG</AvatarFallback>
               </Avatar>
               <div className="flex gap-component-xs sm:gap-component-sm">
-                <Button size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+                <Button
+                  size="sm"
+                  className="mobile-touch-target h-control-sm sm:h-control-md"
+                >
                   <Upload className="size-4" />
                   Upload image
                 </Button>
-                <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="mobile-touch-target h-control-sm sm:h-control-md"
+                >
                   Remove
                 </Button>
               </div>
@@ -253,17 +267,31 @@ function ProfileSection() {
             {/* Personal info form */}
             <div className="grid grid-cols-1 gap-component-sm sm:gap-component-md md:grid-cols-2">
               <div className="space-y-component-xs">
-                <Label htmlFor="firstName" className="text-sm sm:text-base">First name</Label>
-                <Input id="firstName" defaultValue="Angelina" className="h-control-sm sm:h-control-md" />
+                <Label htmlFor="firstName" className="text-sm sm:text-base">
+                  First name
+                </Label>
+                <Input
+                  id="firstName"
+                  defaultValue="Angelina"
+                  className="h-control-sm sm:h-control-md"
+                />
               </div>
               <div className="space-y-component-xs">
-                <Label htmlFor="userName" className="text-sm sm:text-base">User name</Label>
-                <Input id="userName" defaultValue="Gotelli" className="h-control-sm sm:h-control-md" />
+                <Label htmlFor="userName" className="text-sm sm:text-base">
+                  User name
+                </Label>
+                <Input
+                  id="userName"
+                  defaultValue="Gotelli"
+                  className="h-control-sm sm:h-control-md"
+                />
               </div>
             </div>
 
             <div className="space-y-component-xs">
-              <Label htmlFor="email" className="text-sm sm:text-base">Email</Label>
+              <Label htmlFor="email" className="text-sm sm:text-base">
+                Email
+              </Label>
               <Input
                 id="email"
                 type="email"
@@ -273,7 +301,9 @@ function ProfileSection() {
             </div>
 
             <div className="space-y-component-xs">
-              <Label htmlFor="phone" className="text-sm sm:text-base">Phone number</Label>
+              <Label htmlFor="phone" className="text-sm sm:text-base">
+                Phone number
+              </Label>
               <div className="flex gap-component-xs sm:gap-component-sm">
                 <Select defaultValue="us">
                   <SelectTrigger className="h-control-sm w-20 sm:h-control-md sm:w-24">
@@ -284,7 +314,10 @@ function ProfileSection() {
                     <SelectItem value="uk">🇬🇧 +44</SelectItem>
                   </SelectContent>
                 </Select>
-                <Input className="h-control-sm flex-1 sm:h-control-md" defaultValue="121231234" />
+                <Input
+                  className="h-control-sm flex-1 sm:h-control-md"
+                  defaultValue="121231234"
+                />
               </div>
             </div>
           </div>
@@ -293,11 +326,15 @@ function ProfileSection() {
 
       <Card>
         <CardHeader className="responsive-padding">
-          <CardTitle className="text-heading-md sm:text-heading-lg">Address information</CardTitle>
+          <CardTitle className="text-heading-md sm:text-heading-lg">
+            Address information
+          </CardTitle>
         </CardHeader>
         <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
           <div className="space-y-component-xs">
-            <Label htmlFor="country" className="text-sm sm:text-base">Country</Label>
+            <Label htmlFor="country" className="text-sm sm:text-base">
+              Country
+            </Label>
             <Select defaultValue="us">
               <SelectTrigger className="h-control-sm sm:h-control-md">
                 <SelectValue />
@@ -310,23 +347,43 @@ function ProfileSection() {
           </div>
 
           <div className="space-y-component-xs">
-            <Label htmlFor="address" className="text-sm sm:text-base">Address</Label>
-            <Input id="address" defaultValue="123 Main St" className="h-control-sm sm:h-control-md" />
+            <Label htmlFor="address" className="text-sm sm:text-base">
+              Address
+            </Label>
+            <Input
+              id="address"
+              defaultValue="123 Main St"
+              className="h-control-sm sm:h-control-md"
+            />
           </div>
 
           <div className="grid grid-cols-1 gap-component-sm sm:gap-component-md md:grid-cols-2">
             <div className="space-y-component-xs">
-              <Label htmlFor="city" className="text-sm sm:text-base">City</Label>
-              <Input id="city" defaultValue="New York" className="h-control-sm sm:h-control-md" />
+              <Label htmlFor="city" className="text-sm sm:text-base">
+                City
+              </Label>
+              <Input
+                id="city"
+                defaultValue="New York"
+                className="h-control-sm sm:h-control-md"
+              />
             </div>
             <div className="space-y-component-xs">
-              <Label htmlFor="postalCode" className="text-sm sm:text-base">Postal Code</Label>
-              <Input id="postalCode" defaultValue="10001" className="h-control-sm sm:h-control-md" />
+              <Label htmlFor="postalCode" className="text-sm sm:text-base">
+                Postal Code
+              </Label>
+              <Input
+                id="postalCode"
+                defaultValue="10001"
+                className="h-control-sm sm:h-control-md"
+              />
             </div>
           </div>
 
           <div className="flex justify-end">
-            <Button className="mobile-touch-target h-control-md sm:h-control-lg">Save</Button>
+            <Button className="mobile-touch-target h-control-md sm:h-control-lg">
+              Save
+            </Button>
           </div>
         </CardContent>
       </Card>
@@ -338,7 +395,9 @@ function SecuritySection() {
   return (
     <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Password</h1>
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">
+          Password
+        </h1>
         <p className="responsive-text mt-component-xs text-muted-foreground">
           Remember, your password is your digital key to your account. Keep it
           safe, keep it secure!
@@ -348,7 +407,9 @@ function SecuritySection() {
       <Card>
         <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
           <div className="space-y-component-xs">
-            <Label htmlFor="currentPassword" className="text-sm sm:text-base">Current password</Label>
+            <Label htmlFor="currentPassword" className="text-sm sm:text-base">
+              Current password
+            </Label>
             <Input
               id="currentPassword"
               type="password"
@@ -358,12 +419,21 @@ function SecuritySection() {
           </div>
 
           <div className="space-y-component-xs">
-            <Label htmlFor="newPassword" className="text-sm sm:text-base">New password</Label>
-            <Input id="newPassword" type="password" defaultValue="••••••••" className="h-control-sm sm:h-control-md" />
+            <Label htmlFor="newPassword" className="text-sm sm:text-base">
+              New password
+            </Label>
+            <Input
+              id="newPassword"
+              type="password"
+              defaultValue="••••••••"
+              className="h-control-sm sm:h-control-md"
+            />
           </div>
 
           <div className="space-y-component-xs">
-            <Label htmlFor="confirmPassword" className="text-sm sm:text-base">Confirm new password</Label>
+            <Label htmlFor="confirmPassword" className="text-sm sm:text-base">
+              Confirm new password
+            </Label>
             <Input
               id="confirmPassword"
               type="password"
@@ -373,14 +443,18 @@ function SecuritySection() {
           </div>
 
           <div className="flex justify-end">
-            <Button className="mobile-touch-target h-control-md sm:h-control-lg">Update</Button>
+            <Button className="mobile-touch-target h-control-md sm:h-control-lg">
+              Update
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="responsive-padding">
-          <CardTitle className="text-heading-md sm:text-heading-lg">2-Step verification</CardTitle>
+          <CardTitle className="text-heading-md sm:text-heading-lg">
+            2-Step verification
+          </CardTitle>
           <CardDescription className="responsive-text">
             Your account holds great value to hackers. Enable two-step
             verification to safeguard your account!
@@ -393,7 +467,9 @@ function SecuritySection() {
                 <span className="text-sm font-semibold text-red-600">G</span>
               </div>
               <div>
-                <h4 className="text-sm font-medium sm:text-base">Google Authenticator</h4>
+                <h4 className="text-sm font-medium sm:text-base">
+                  Google Authenticator
+                </h4>
                 <p className="responsive-text text-muted-foreground">
                   Using Google Authenticator app generates time-sensitive codes
                   for secure logins.
@@ -411,14 +487,20 @@ function SecuritySection() {
                 <span className="text-sm font-semibold text-blue-600">O</span>
               </div>
               <div>
-                <h4 className="text-sm font-medium sm:text-base">Okta Verify</h4>
+                <h4 className="text-sm font-medium sm:text-base">
+                  Okta Verify
+                </h4>
                 <p className="responsive-text text-muted-foreground">
                   Receive push notifications from Okta Verify app on your phone
                   for quick login approval.
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mobile-touch-target h-control-sm sm:h-control-md"
+            >
               Enable
             </Button>
           </div>
@@ -429,13 +511,19 @@ function SecuritySection() {
                 <span className="text-sm font-semibold text-orange-600">@</span>
               </div>
               <div>
-                <h4 className="text-sm font-medium sm:text-base">E Mail verification</h4>
+                <h4 className="text-sm font-medium sm:text-base">
+                  E Mail verification
+                </h4>
                 <p className="responsive-text text-muted-foreground">
                   Unique codes sent to email for confirming logins.
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mobile-touch-target h-control-sm sm:h-control-md"
+            >
               Enable
             </Button>
           </div>
@@ -449,14 +537,18 @@ function NotificationsSection() {
   return (
     <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Notification</h1>
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">
+          Notification
+        </h1>
       </div>
 
       <Card>
         <CardContent className="responsive-padding space-y-component-md sm:space-y-component-lg">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium sm:text-base">Enable desktop notification</h3>
+              <h3 className="text-sm font-medium sm:text-base">
+                Enable desktop notification
+              </h3>
               <p className="responsive-text text-muted-foreground">
                 Decide whether you want to be notified of new message & updates
               </p>
@@ -468,7 +560,9 @@ function NotificationsSection() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium sm:text-base">Enable unread notification badge</h3>
+              <h3 className="text-sm font-medium sm:text-base">
+                Enable unread notification badge
+              </h3>
               <p className="responsive-text text-muted-foreground">
                 Display a red indicator on of the notification icon when you
                 have unread message
@@ -480,13 +574,21 @@ function NotificationsSection() {
           <Separator />
 
           <div className="space-y-component-sm sm:space-y-component-md">
-            <h3 className="text-sm font-medium sm:text-base">Enable unread notification badge</h3>
+            <h3 className="text-sm font-medium sm:text-base">
+              Enable unread notification badge
+            </h3>
 
-            <RadioGroup defaultValue="mentions" className="space-y-component-sm sm:space-y-component-md">
+            <RadioGroup
+              defaultValue="mentions"
+              className="space-y-component-sm sm:space-y-component-md"
+            >
               <div className="flex items-start space-x-3">
                 <RadioGroupItem value="all" id="all" className="mt-1" />
                 <div>
-                  <Label htmlFor="all" className="text-sm font-medium sm:text-base">
+                  <Label
+                    htmlFor="all"
+                    className="text-sm font-medium sm:text-base"
+                  >
                     All new messages
                   </Label>
                   <p className="responsive-text text-muted-foreground">
@@ -502,7 +604,10 @@ function NotificationsSection() {
                   className="mt-1"
                 />
                 <div>
-                  <Label htmlFor="mentions" className="text-sm font-medium sm:text-base">
+                  <Label
+                    htmlFor="mentions"
+                    className="text-sm font-medium sm:text-base"
+                  >
                     Mentions only
                   </Label>
                   <p className="responsive-text text-muted-foreground">
@@ -515,7 +620,10 @@ function NotificationsSection() {
               <div className="flex items-start space-x-3">
                 <RadioGroupItem value="nothing" id="nothing" className="mt-1" />
                 <div>
-                  <Label htmlFor="nothing" className="text-sm font-medium sm:text-base">
+                  <Label
+                    htmlFor="nothing"
+                    className="text-sm font-medium sm:text-base"
+                  >
                     Nothing
                   </Label>
                   <p className="responsive-text text-muted-foreground">
@@ -530,7 +638,9 @@ function NotificationsSection() {
 
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-medium sm:text-base">Email notification</h3>
+              <h3 className="text-sm font-medium sm:text-base">
+                Email notification
+              </h3>
               <p className="responsive-text text-muted-foreground">
                 Substance can send you email notification for any new direct
                 message
@@ -543,7 +653,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="news" defaultChecked />
               <div>
-                <Label htmlFor="news" className="text-sm font-medium sm:text-base">
+                <Label
+                  htmlFor="news"
+                  className="text-sm font-medium sm:text-base"
+                >
                   News & updates
                 </Label>
                 <p className="responsive-text text-muted-foreground">
@@ -555,7 +668,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="tips" defaultChecked />
               <div>
-                <Label htmlFor="tips" className="text-sm font-medium sm:text-base">
+                <Label
+                  htmlFor="tips"
+                  className="text-sm font-medium sm:text-base"
+                >
                   Tips & tutorials
                 </Label>
                 <p className="responsive-text text-muted-foreground">
@@ -567,7 +683,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="offers" />
               <div>
-                <Label htmlFor="offers" className="text-sm font-medium sm:text-base">
+                <Label
+                  htmlFor="offers"
+                  className="text-sm font-medium sm:text-base"
+                >
                   Offer & promotions
                 </Label>
                 <p className="responsive-text text-muted-foreground">
@@ -579,7 +698,10 @@ function NotificationsSection() {
             <div className="flex items-center space-x-3">
               <Checkbox id="reminders" />
               <div>
-                <Label htmlFor="reminders" className="text-sm font-medium sm:text-base">
+                <Label
+                  htmlFor="reminders"
+                  className="text-sm font-medium sm:text-base"
+                >
                   Follow up reminder
                 </Label>
                 <p className="responsive-text text-muted-foreground">
@@ -598,7 +720,9 @@ function BillingSection() {
   return (
     <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Billing</h1>
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">
+          Billing
+        </h1>
       </div>
 
       <Card>
@@ -610,7 +734,9 @@ function BillingSection() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-semibold sm:text-base">Business board basic</h3>
+                  <h3 className="text-sm font-semibold sm:text-base">
+                    Business board basic
+                  </h3>
                   <Badge
                     variant="secondary"
                     className="bg-green-100 text-green-700"
@@ -624,14 +750,18 @@ function BillingSection() {
                 </p>
               </div>
             </div>
-            <Button className="mobile-touch-target h-control-md sm:h-control-lg">Change plan</Button>
+            <Button className="mobile-touch-target h-control-md sm:h-control-lg">
+              Change plan
+            </Button>
           </div>
         </CardContent>
       </Card>
 
       <Card>
         <CardHeader className="responsive-padding">
-          <CardTitle className="text-heading-md sm:text-heading-lg">Payment method</CardTitle>
+          <CardTitle className="text-heading-md sm:text-heading-lg">
+            Payment method
+          </CardTitle>
         </CardHeader>
         <CardContent className="responsive-padding space-y-component-sm sm:space-y-component-md">
           <div className="flex items-center justify-between rounded-lg border p-component-sm sm:p-component-md">
@@ -641,7 +771,9 @@ function BillingSection() {
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium sm:text-base">Carolyn Perkins •••• 0392</span>
+                  <span className="text-sm font-medium sm:text-base">
+                    Carolyn Perkins •••• 0392
+                  </span>
                   <Badge variant="outline" className="text-xs">
                     Primary
                   </Badge>
@@ -651,7 +783,11 @@ function BillingSection() {
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mobile-touch-target h-control-sm sm:h-control-md"
+            >
               Edit
             </Button>
           </div>
@@ -662,18 +798,27 @@ function BillingSection() {
                 <span className="text-xs font-bold text-orange-600">MC</span>
               </div>
               <div>
-                <span className="text-sm font-medium sm:text-base">Carolyn Perkins •••• 8461</span>
+                <span className="text-sm font-medium sm:text-base">
+                  Carolyn Perkins •••• 8461
+                </span>
                 <p className="responsive-text text-muted-foreground">
                   Expired Jun 2025
                 </p>
               </div>
             </div>
-            <Button variant="outline" size="sm" className="mobile-touch-target h-control-sm sm:h-control-md">
+            <Button
+              variant="outline"
+              size="sm"
+              className="mobile-touch-target h-control-sm sm:h-control-md"
+            >
               Edit
             </Button>
           </div>
 
-          <Button variant="outline" className="mobile-touch-target h-control-md w-full bg-transparent sm:h-control-lg">
+          <Button
+            variant="outline"
+            className="mobile-touch-target h-control-md w-full bg-transparent sm:h-control-lg"
+          >
             <Plus className="mr-2 size-4" />
             Add payment method
           </Button>
@@ -682,7 +827,9 @@ function BillingSection() {
 
       <Card>
         <CardHeader className="responsive-padding">
-          <CardTitle className="text-heading-md sm:text-heading-lg">Transaction history</CardTitle>
+          <CardTitle className="text-heading-md sm:text-heading-lg">
+            Transaction history
+          </CardTitle>
         </CardHeader>
         <CardContent className="responsive-padding">
           <div className="space-y-component-sm sm:space-y-component-md">
@@ -732,7 +879,9 @@ function IntegrationsSection() {
   return (
     <div className="space-y-component-md sm:space-y-component-lg">
       <div>
-        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">Integration</h1>
+        <h1 className="sm:text-heading-2xl text-balance text-heading-xl font-semibold">
+          Integration
+        </h1>
         <p className="responsive-text mt-component-xs text-muted-foreground">
           Supercharge your workflow using these integration
         </p>
@@ -746,7 +895,9 @@ function IntegrationsSection() {
                 <div className="flex items-center gap-component-xs sm:gap-component-sm">
                   <div className="text-xl sm:text-2xl">{integration.icon}</div>
                   <div>
-                    <h3 className="text-sm font-semibold sm:text-base">{integration.name}</h3>
+                    <h3 className="text-sm font-semibold sm:text-base">
+                      {integration.name}
+                    </h3>
                     <p className="responsive-text text-muted-foreground">
                       {integration.description}
                     </p>

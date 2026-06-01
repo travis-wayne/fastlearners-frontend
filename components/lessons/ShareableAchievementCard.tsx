@@ -2,7 +2,7 @@
 
 import { forwardRef } from "react";
 import Image from "next/image";
-import { Trophy, Target, Clock, Star } from "lucide-react";
+import { Clock, Star, Target, Trophy } from "lucide-react";
 
 interface ShareableAchievementCardProps {
   lessonTitle: string;
@@ -16,7 +16,10 @@ interface ShareableAchievementCardProps {
   conceptScores?: { name: string; score: number }[];
 }
 
-export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchievementCardProps>(
+export const ShareableAchievementCard = forwardRef<
+  HTMLDivElement,
+  ShareableAchievementCardProps
+>(
   (
     {
       lessonTitle,
@@ -29,7 +32,7 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
       completionDate,
       conceptScores = [],
     },
-    ref
+    ref,
   ) => {
     return (
       <div
@@ -103,15 +106,21 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
                   />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <span className="text-7xl font-bold text-primary">{overallScore}%</span>
-                  <span className="mt-2 text-xl text-muted-foreground">Overall Score</span>
+                  <span className="text-7xl font-bold text-primary">
+                    {overallScore}%
+                  </span>
+                  <span className="mt-2 text-xl text-muted-foreground">
+                    Overall Score
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Right: Stats and Lesson Info */}
             <div className="flex flex-col justify-center space-y-6">
-              <h1 className="line-clamp-2 text-4xl font-bold text-foreground">{lessonTitle}</h1>
+              <h1 className="line-clamp-2 text-4xl font-bold text-foreground">
+                {lessonTitle}
+              </h1>
 
               {/* Stats Grid */}
               <div className="space-y-4">
@@ -119,7 +128,9 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
                   <Target className="size-8 shrink-0 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Accuracy</p>
-                    <p className="text-2xl font-bold text-foreground">{accuracy}%</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {accuracy}%
+                    </p>
                   </div>
                 </div>
 
@@ -127,7 +138,9 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
                   <Clock className="size-8 shrink-0 text-primary" />
                   <div>
                     <p className="text-sm text-muted-foreground">Time Spent</p>
-                    <p className="text-2xl font-bold text-foreground">{timeSpent} min</p>
+                    <p className="text-2xl font-bold text-foreground">
+                      {timeSpent} min
+                    </p>
                   </div>
                 </div>
 
@@ -164,8 +177,8 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
             <div className="text-sm text-muted-foreground">
               {conceptScores.length > 0 && (
                 <span>
-                  Mastered {conceptScores.filter((c) => c.score >= 80).length} of{" "}
-                  {conceptScores.length} concepts
+                  Mastered {conceptScores.filter((c) => c.score >= 80).length}{" "}
+                  of {conceptScores.length} concepts
                 </span>
               )}
             </div>
@@ -173,7 +186,7 @@ export const ShareableAchievementCard = forwardRef<HTMLDivElement, ShareableAchi
         </div>
       </div>
     );
-  }
+  },
 );
 
 ShareableAchievementCard.displayName = "ShareableAchievementCard";

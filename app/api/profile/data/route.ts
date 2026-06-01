@@ -1,7 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
+
 import { UPSTREAM_BASE } from "@/lib/api/client";
-import { handleUpstreamError, handleApiError, createErrorResponse } from "@/lib/api/error-handler";
+import {
+  createErrorResponse,
+  handleApiError,
+  handleUpstreamError,
+} from "@/lib/api/error-handler";
+import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(req: NextRequest) {
   const auth = parseAuthCookiesServer(req);
@@ -37,13 +42,16 @@ export async function GET(req: NextRequest) {
       return NextResponse.json(data, {
         status: 200,
         headers: {
-          'Cache-Control': 'public, max-age=300',
+          "Cache-Control": "public, max-age=300",
         },
       });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
-      
-      if (fetchError.name === 'AbortError' || fetchError.message?.includes('fetch')) {
+
+      if (
+        fetchError.name === "AbortError" ||
+        fetchError.message?.includes("fetch")
+      ) {
         try {
           const retryR = await fetch(`${UPSTREAM_BASE}/profile/data`, {
             method: "GET",
@@ -55,7 +63,7 @@ export async function GET(req: NextRequest) {
           });
 
           const retryData = await retryR.json();
-          
+
           if (!retryR.ok) {
             return handleUpstreamError(retryR, retryData, requestId);
           }
@@ -63,14 +71,18 @@ export async function GET(req: NextRequest) {
           return NextResponse.json(retryData, {
             status: 200,
             headers: {
-              'Cache-Control': 'public, max-age=300',
+              "Cache-Control": "public, max-age=300",
             },
           });
         } catch (retryError) {
-          return handleApiError(retryError, "Network error: Failed to fetch profile data after retry", requestId);
+          return handleApiError(
+            retryError,
+            "Network error: Failed to fetch profile data after retry",
+            requestId,
+          );
         }
       }
-      
+
       throw fetchError;
     }
   } catch (e: any) {

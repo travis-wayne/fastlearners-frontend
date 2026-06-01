@@ -55,7 +55,11 @@ export function ProgressChart({
       <CardContent className="space-y-component-xs p-component-sm sm:space-y-component-sm sm:p-component-md">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-xs font-medium sm:text-sm">{subject}</span>
-          <Button variant="ghost" size="sm" className="h-5 text-[10px] sm:h-6 sm:text-xs">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-5 text-[10px] sm:h-6 sm:text-xs"
+          >
             ▼
           </Button>
         </div>
@@ -111,7 +115,9 @@ export function ProgressChart({
         <div className="mt-3 flex items-center justify-center gap-3 sm:mt-4 sm:gap-4">
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="size-2.5 rounded-full bg-primary sm:size-3"></div>
-            <span className="text-xs text-muted-foreground sm:text-sm">Covered</span>
+            <span className="text-xs text-muted-foreground sm:text-sm">
+              Covered
+            </span>
           </div>
           <div className="flex items-center gap-1.5 sm:gap-2">
             <div className="size-2.5 rounded-full bg-muted sm:size-3"></div>

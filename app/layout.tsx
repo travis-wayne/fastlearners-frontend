@@ -35,7 +35,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
           disableTransitionOnChange
         >
           <ModalProvider>{children}</ModalProvider>
-          {process.env.NEXT_PUBLIC_ENABLE_ANALYTICS === "true" && <Analytics />}
+          <Analytics />
           <Toaster richColors closeButton />
           <TailwindIndicator />
         </ThemeProvider>

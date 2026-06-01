@@ -1,10 +1,11 @@
 "use client";
 
-import { Trophy, Medal, Award, Crown } from "lucide-react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Award, Crown, Medal, Trophy } from "lucide-react";
+
+import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
-import { cn } from "@/lib/utils";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export interface LeaderboardEntry {
   rank: number;
@@ -100,7 +101,7 @@ export function Leaderboard({
                     "flex flex-col items-start gap-3 rounded-lg border p-3 transition-colors sm:flex-row sm:items-center sm:gap-4 sm:p-4",
                     rankColor,
                     isCurrentUser && "ring-2 ring-primary",
-                    !rankColor && "hover:bg-muted/50"
+                    !rankColor && "hover:bg-muted/50",
                   )}
                 >
                   {/* Rank */}
@@ -111,7 +112,9 @@ export function Leaderboard({
                       <span
                         className={cn(
                           "text-base font-bold sm:text-lg",
-                          entry.rank <= 3 ? "text-primary" : "text-muted-foreground"
+                          entry.rank <= 3
+                            ? "text-primary"
+                            : "text-muted-foreground",
                         )}
                       >
                         #{entry.rank}
@@ -122,7 +125,9 @@ export function Leaderboard({
                   {/* Avatar */}
                   <Avatar className="size-8 sm:size-10">
                     <AvatarImage src={entry.avatar} alt={entry.username} />
-                    <AvatarFallback>{getInitials(entry.username)}</AvatarFallback>
+                    <AvatarFallback>
+                      {getInitials(entry.username)}
+                    </AvatarFallback>
                   </Avatar>
 
                   {/* User Info */}
@@ -131,13 +136,16 @@ export function Leaderboard({
                       <span
                         className={cn(
                           "text-sm font-semibold sm:text-base",
-                          isCurrentUser && "text-primary"
+                          isCurrentUser && "text-primary",
                         )}
                       >
                         {entry.username}
                       </span>
                       {isCurrentUser && (
-                        <Badge variant="outline" className="text-[10px] sm:text-xs">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] sm:text-xs"
+                        >
                           You
                         </Badge>
                       )}
@@ -168,4 +176,3 @@ export function Leaderboard({
     </Card>
   );
 }
-

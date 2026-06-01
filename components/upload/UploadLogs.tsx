@@ -170,7 +170,10 @@ export function UploadLogs({ logs, onClearLogs, className }: UploadLogsProps) {
                         {log.type}
                       </Badge>
                       {log.configKey && (
-                        <Badge variant="outline" className="shrink-0 text-[10px] sm:text-xs">
+                        <Badge
+                          variant="outline"
+                          className="shrink-0 text-[10px] sm:text-xs"
+                        >
                           {log.configKey}
                         </Badge>
                       )}

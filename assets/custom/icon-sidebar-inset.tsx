@@ -10,9 +10,22 @@ export function IconSidebarInset(props: SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <rect x="3" y="3" width="6" height="18" stroke="currentColor" strokeWidth="2" />
-      <rect x="11" y="5" width="10" height="14" stroke="currentColor" strokeWidth="2" />
+      <rect
+        x="3"
+        y="3"
+        width="6"
+        height="18"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <rect
+        x="11"
+        y="5"
+        width="10"
+        height="14"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
     </svg>
   );
 }
-

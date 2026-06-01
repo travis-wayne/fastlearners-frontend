@@ -96,7 +96,9 @@ export function PricingFaq() {
       <Accordion type="single" collapsible className="my-12 w-full">
         {pricingFaqData.map((faqItem) => (
           <AccordionItem key={faqItem.id} value={faqItem.id} className="py-2">
-            <AccordionTrigger className="text-left text-base sm:text-lg">{faqItem.question}</AccordionTrigger>
+            <AccordionTrigger className="text-left text-base sm:text-lg">
+              {faqItem.question}
+            </AccordionTrigger>
             <AccordionContent className="text-sm text-muted-foreground sm:text-[15px]">
               {faqItem.answer}
             </AccordionContent>

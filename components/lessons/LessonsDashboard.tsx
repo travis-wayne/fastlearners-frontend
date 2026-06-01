@@ -7,19 +7,17 @@ import {
   AlertCircle,
   BookOpen,
   ChevronRight,
-  Loader2,
-  GraduationCap,
-  PlayCircle,
   Clock,
-  TrendingUp,
+  GraduationCap,
+  Loader2,
+  PlayCircle,
   Sparkles,
+  TrendingUp,
 } from "lucide-react";
 
-import type {
-  TopicItem,
-  TopicsByTerm,
-} from "@/lib/types/lessons";
 import { getSubjectsWithSlugs } from "@/lib/api/lessons";
+import type { TopicItem, TopicsByTerm } from "@/lib/types/lessons";
+import { cn } from "@/lib/utils";
 import {
   Accordion,
   AccordionContent,
@@ -55,7 +53,6 @@ import {
   useAcademicContext,
   useAcademicDisplay,
 } from "@/components/providers/academic-context";
-import { cn } from "@/lib/utils";
 
 export function LessonsDashboard() {
   const router = useRouter();
@@ -218,7 +215,9 @@ export function LessonsDashboard() {
             <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-primary/10 sm:size-20">
               <GraduationCap className="size-8 text-primary sm:size-10" />
             </div>
-            <h3 className="mb-2 text-xl font-bold sm:text-2xl">Select Class and Term</h3>
+            <h3 className="mb-2 text-xl font-bold sm:text-2xl">
+              Select Class and Term
+            </h3>
             <p className="mb-6 text-muted-foreground">
               Please select your class and term to view available lessons.
             </p>
@@ -247,7 +246,9 @@ export function LessonsDashboard() {
             <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-primary/10 sm:size-20">
               <BookOpen className="size-8 text-primary sm:size-10" />
             </div>
-            <h3 className="mb-2 text-xl font-bold sm:text-2xl">No Subjects Registered</h3>
+            <h3 className="mb-2 text-xl font-bold sm:text-2xl">
+              No Subjects Registered
+            </h3>
             <p className="mb-6 text-muted-foreground">
               Please register your subjects to view available lessons.
             </p>
@@ -325,7 +326,9 @@ export function LessonsDashboard() {
         <CardHeader className="pb-4">
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
             <div>
-              <CardTitle className="text-xl sm:text-2xl">Choose Your Subject</CardTitle>
+              <CardTitle className="text-xl sm:text-2xl">
+                Choose Your Subject
+              </CardTitle>
               <CardDescription className="mt-1">
                 Select a subject to explore available lessons
               </CardDescription>
@@ -405,11 +408,19 @@ export function LessonsDashboard() {
                   <TabsList className="no-scrollbar mb-6 flex w-full flex-nowrap overflow-x-auto bg-muted/50 p-1">
                     {selectedSubjectTopics.first_term &&
                       selectedSubjectTopics.first_term.length > 0 && (
-                        <TabsTrigger value="first_term" className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm">
+                        <TabsTrigger
+                          value="first_term"
+                          className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm"
+                        >
                           <span className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
                             <TrendingUp className="size-4 sm:size-5" />
-                            <span className="whitespace-nowrap">First Term</span>
-                            <Badge variant="secondary" className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100">
+                            <span className="whitespace-nowrap">
+                              First Term
+                            </span>
+                            <Badge
+                              variant="secondary"
+                              className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100"
+                            >
                               {selectedSubjectTopics.first_term.length}
                             </Badge>
                           </span>
@@ -417,11 +428,19 @@ export function LessonsDashboard() {
                       )}
                     {selectedSubjectTopics.second_term &&
                       selectedSubjectTopics.second_term.length > 0 && (
-                        <TabsTrigger value="second_term" className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm">
+                        <TabsTrigger
+                          value="second_term"
+                          className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm"
+                        >
                           <span className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
                             <TrendingUp className="size-4 sm:size-5" />
-                            <span className="whitespace-nowrap">Second Term</span>
-                            <Badge variant="secondary" className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100">
+                            <span className="whitespace-nowrap">
+                              Second Term
+                            </span>
+                            <Badge
+                              variant="secondary"
+                              className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100"
+                            >
                               {selectedSubjectTopics.second_term.length}
                             </Badge>
                           </span>
@@ -429,11 +448,19 @@ export function LessonsDashboard() {
                       )}
                     {selectedSubjectTopics.third_term &&
                       selectedSubjectTopics.third_term.length > 0 && (
-                        <TabsTrigger value="third_term" className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm">
+                        <TabsTrigger
+                          value="third_term"
+                          className="flex-1 px-4 py-2 text-xs transition-all duration-200 sm:text-sm"
+                        >
                           <span className="flex flex-col items-center gap-1 sm:flex-row sm:gap-2">
                             <TrendingUp className="size-4 sm:size-5" />
-                            <span className="whitespace-nowrap">Third Term</span>
-                            <Badge variant="secondary" className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100">
+                            <span className="whitespace-nowrap">
+                              Third Term
+                            </span>
+                            <Badge
+                              variant="secondary"
+                              className="ml-0 h-5 scale-75 px-1.5 sm:ml-1 sm:scale-100"
+                            >
                               {selectedSubjectTopics.third_term.length}
                             </Badge>
                           </span>
@@ -643,7 +670,9 @@ export function LessonsDashboard() {
             <div className="mx-auto mb-6 flex size-16 items-center justify-center rounded-full bg-primary/10 sm:size-20">
               <Sparkles className="size-8 text-primary sm:size-10" />
             </div>
-            <h3 className="mb-2 text-xl font-bold sm:text-2xl">Select a Subject</h3>
+            <h3 className="mb-2 text-xl font-bold sm:text-2xl">
+              Select a Subject
+            </h3>
             <p className="mb-6 text-sm text-muted-foreground sm:text-base">
               Choose a subject from the dropdown above to view available topics
               and lessons.

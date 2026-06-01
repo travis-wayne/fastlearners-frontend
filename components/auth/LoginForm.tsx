@@ -137,14 +137,19 @@ export function LoginForm({
 
   return (
     <form
-      className={cn("flex flex-col gap-component-md sm:gap-component-lg", className)}
+      className={cn(
+        "flex flex-col gap-component-md sm:gap-component-lg",
+        className,
+      )}
       {...props}
       onSubmit={handleSubmit(onSubmit)}
     >
       <Card>
         <CardHeader className="text-center">
           <CardTitle>Welcome back</CardTitle>
-          <CardDescription className="text-sm sm:text-base">Login with your Google account</CardDescription>
+          <CardDescription className="text-sm sm:text-base">
+            Login with your Google account
+          </CardDescription>
         </CardHeader>
         <CardContent>
           {error && (
@@ -281,7 +286,10 @@ export function LoginForm({
 
       <div className="text-center text-sm">
         Don&apos;t have an account?{" "}
-        <Link href="/auth/register" className="px-1 py-2 underline underline-offset-4">
+        <Link
+          href="/auth/register"
+          className="px-1 py-2 underline underline-offset-4"
+        >
           Sign up
         </Link>
       </div>

@@ -10,9 +10,9 @@ These Terms form a legally binding agreement between you and **FastLearners Limi
 
 #### **2\. Eligibility and Children’s Use**
 
-* You must be at least 18 years old to use the Platform independently..  
-* Parents or legal guardians are fully responsible for supervising their Child’s use of the Platform, including all activities, communications, and content accessed or created by the Minor.  
-* We strongly encourage parents/guardians to review our **\[Children’s Data Protection Policy\]** and **\[Privacy Policy\]** before granting consent.
+- You must be at least 18 years old to use the Platform independently..
+- Parents or legal guardians are fully responsible for supervising their Child’s use of the Platform, including all activities, communications, and content accessed or created by the Minor.
+- We strongly encourage parents/guardians to review our **\[Children’s Data Protection Policy\]** and **\[Privacy Policy\]** before granting consent.
 
 **Note**: We do not assume that payment alone automatically constitutes parental consent
 
@@ -20,18 +20,18 @@ These Terms form a legally binding agreement between you and **FastLearners Limi
 
 You agree to:
 
-* Provide accurate, complete, and up-to-date information during registration and use.  
-* Keep your login credentials confidential and secure.  
-* Use the Platform only for lawful, legitimate educational purposes.  
-* Comply with all applicable laws, including the Nigeria Data Protection Act 2023\.
+- Provide accurate, complete, and up-to-date information during registration and use.
+- Keep your login credentials confidential and secure.
+- Use the Platform only for lawful, legitimate educational purposes.
+- Comply with all applicable laws, including the Nigeria Data Protection Act 2023\.
 
 You must **not**:
 
-* Copy, reproduce, modify, distribute, or publicly display any of our educational content, materials, or software without prior written permission.  
-* Use the Platform to engage in cheating, academic malpractice, plagiarism, or any form of examination fraud.  
-* Attempt to interfere with, disrupt, or gain unauthorised access to the Platform or its systems.  
-* Upload or transmit any harmful code, viruses, or content that violates these Terms or infringes third-party rights.  
-* Use automated tools (bots, scrapers, etc.) to access or collect data from the Platform without our consent.
+- Copy, reproduce, modify, distribute, or publicly display any of our educational content, materials, or software without prior written permission.
+- Use the Platform to engage in cheating, academic malpractice, plagiarism, or any form of examination fraud.
+- Attempt to interfere with, disrupt, or gain unauthorised access to the Platform or its systems.
+- Upload or transmit any harmful code, viruses, or content that violates these Terms or infringes third-party rights.
+- Use automated tools (bots, scrapers, etc.) to access or collect data from the Platform without our consent.
 
 #### **4\. Intellectual Property**
 
@@ -49,9 +49,9 @@ The Platform may integrate or link to third-party services (e.g., cloud hosting 
 
 We may, at our sole discretion, suspend or terminate your account or access to the Platform immediately and without notice if:
 
-* You breach any provision of these Terms.  
-* We suspect fraudulent, abusive, or unlawful activity.  
-* Your continued use poses a risk to the Platform, other users, or our compliance obligations.
+- You breach any provision of these Terms.
+- We suspect fraudulent, abusive, or unlawful activity.
+- Your continued use poses a risk to the Platform, other users, or our compliance obligations.
 
 Upon termination, your right to use the Platform ceases immediately, but provisions that by their nature should survive (e.g., Intellectual Property, Limitation of Liability, Governing Law) will continue to apply.
 
@@ -76,4 +76,3 @@ We are committed to complying with the **Nigeria Data Protection Act 2023 (NDPA)
 #### **10\. Changes to These Terms**
 
 We may update these Terms from time to time. We will notify you of material changes by posting the new Terms on the Platform and updating the effective date. Your continued use after such changes constitutes acceptance of the revised Terms.
-

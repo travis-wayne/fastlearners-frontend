@@ -110,7 +110,7 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Manage Files",
         authorizeOnly: UserRole.SUPERADMIN,
       },
-  // ACCOUNT SECTION for students
+      // ACCOUNT SECTION for students
       {
         href: "/dashboard/admin/billing",
         icon: "billing",

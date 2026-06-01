@@ -10,7 +10,9 @@ export default function SetRolePage() {
           <div className="relative flex h-full flex-col items-center justify-center p-component-lg text-white sm:p-component-xl">
             <div className="space-y-component-sm text-center sm:space-y-component-md">
               <div className="flex justify-center">
-                <h2 className="text-2xl font-bold sm:text-3xl">Fast Learners</h2>
+                <h2 className="text-2xl font-bold sm:text-3xl">
+                  Fast Learners
+                </h2>
               </div>
               <p className="text-base opacity-90 sm:text-heading-lg">
                 Complete your registration by selecting your role
@@ -32,7 +34,9 @@ export default function SetRolePage() {
           <div className="w-full max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl">
             {/* Logo for mobile */}
             <div className="mb-component-lg flex justify-center sm:mb-component-xl lg:hidden">
-              <h2 className="text-heading-xl font-bold text-primary sm:text-2xl">Fast Learners</h2>
+              <h2 className="text-heading-xl font-bold text-primary sm:text-2xl">
+                Fast Learners
+              </h2>
             </div>
 
             <RoleSelectionForm />

@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
 import { LessonContent } from "@/lib/types/lessons";
 import { SectionProgress } from "@/lib/types/progress";
 
@@ -43,7 +44,7 @@ export function useLessonAutoAdvance({
 
     if (currentStepIndex !== 0) return;
 
-    const currentSectionId = 'overview';
+    const currentSectionId = "overview";
     const currentProgress = sectionProgress[currentSectionId];
 
     if (!currentProgress?.isCompleted) return;
@@ -51,8 +52,8 @@ export function useLessonAutoAdvance({
     const nextSectionId = getNextIncompleteSection();
 
     if (nextSectionId && nextSectionId !== currentSectionId) {
-      toast.info('Resuming where you left off...', {
-        description: 'Skipping completed sections',
+      toast.info("Resuming where you left off...", {
+        description: "Skipping completed sections",
       });
 
       const timer = setTimeout(() => {
@@ -62,8 +63,8 @@ export function useLessonAutoAdvance({
 
       return () => clearTimeout(timer);
     } else if (!nextSectionId) {
-      toast.success('Lesson completed!', {
-        description: 'You\'ve finished all sections. Great work!',
+      toast.success("Lesson completed!", {
+        description: "You've finished all sections. Great work!",
       });
       setHasAutoAdvanced(true);
       setCelebrationShown(true);

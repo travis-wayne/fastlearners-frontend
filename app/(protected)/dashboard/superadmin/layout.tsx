@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect } from "react";
-import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuthStore } from "@/store/authStore";
+import { BookOpen, FolderCog, LayoutDashboard, Upload } from "lucide-react";
+import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { useAuthStore } from "@/store/authStore";
-import { LayoutDashboard, Upload, BookOpen, FolderCog } from "lucide-react";
-import { toast } from "sonner";
 
 interface SuperadminLayoutProps {
   children: React.ReactNode;
@@ -20,13 +21,15 @@ export default function SuperadminLayout({ children }: SuperadminLayoutProps) {
 
   useEffect(() => {
     if (user && !user.role.includes("superadmin")) {
-      toast.error("Access Denied", { description: "You do not have permission to view this page." });
+      toast.error("Access Denied", {
+        description: "You do not have permission to view this page.",
+      });
       router.push("/dashboard");
     }
   }, [user, router]);
 
   if (!user || !user.role.includes("superadmin")) {
-      return null;
+    return null;
   }
 
   const tabs = [
@@ -61,10 +64,14 @@ export default function SuperadminLayout({ children }: SuperadminLayoutProps) {
       {/* Sub-navigation Header */}
       <div className="flex flex-col gap-4 border-b pb-6">
         <div className="flex flex-col gap-2">
-           <h1 className="text-3xl font-bold tracking-tight">Superadmin Dashboard</h1>
-           <p className="text-muted-foreground">Manage lesson content and system settings.</p>
+          <h1 className="text-3xl font-bold tracking-tight">
+            Superadmin Dashboard
+          </h1>
+          <p className="text-muted-foreground">
+            Manage lesson content and system settings.
+          </p>
         </div>
-        
+
         <nav className="flex items-center space-x-2">
           {tabs.map((tab) => (
             <Link key={tab.href} href={tab.href}>
@@ -73,7 +80,7 @@ export default function SuperadminLayout({ children }: SuperadminLayoutProps) {
                 size="sm"
                 className={cn(
                   "justify-start gap-2",
-                  tab.active && "bg-secondary font-medium text-foreground"
+                  tab.active && "bg-secondary font-medium text-foreground",
                 )}
               >
                 <tab.icon className="size-4" />
@@ -85,9 +92,7 @@ export default function SuperadminLayout({ children }: SuperadminLayoutProps) {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1">
-        {children}
-      </div>
+      <div className="flex-1">{children}</div>
     </div>
   );
 }

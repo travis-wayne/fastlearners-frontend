@@ -3,8 +3,8 @@
 import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 interface LessonNavigationProps {
   previousUrl?: string | null;
@@ -46,9 +46,7 @@ export function LessonNavigation({
         disabled={!previousUrl}
         className={cn(
           "group h-10 rounded-lg border-2 px-3 font-medium transition-all sm:h-12 sm:px-6",
-          previousUrl
-            ? "hover:border-primary hover:shadow-md"
-            : "opacity-50",
+          previousUrl ? "hover:border-primary hover:shadow-md" : "opacity-50",
         )}
       >
         <ChevronLeft className="size-4 transition-transform group-hover:-translate-x-1 sm:mr-2" />

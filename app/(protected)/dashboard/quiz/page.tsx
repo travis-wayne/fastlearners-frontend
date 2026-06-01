@@ -1,4 +1,5 @@
 import { HelpCircle } from "lucide-react";
+
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function QuizDummyPage() {
@@ -11,9 +12,13 @@ export default function QuizDummyPage() {
               <HelpCircle className="size-10 text-blue-600 dark:text-blue-400" />
             </div>
             <div className="space-y-2">
-              <h2 className="text-xl font-bold tracking-tight text-blue-900 dark:text-blue-100">Quizzes Coming Soon!</h2>
+              <h2 className="text-xl font-bold tracking-tight text-blue-900 dark:text-blue-100">
+                Quizzes Coming Soon!
+              </h2>
               <p className="text-sm text-muted-foreground">
-                We are working hard to bring you interactive and challenging quizzes to help you test your understanding of the concepts you have learned. Check back later!
+                We are working hard to bring you interactive and challenging
+                quizzes to help you test your understanding of the concepts you
+                have learned. Check back later!
               </p>
             </div>
           </CardContent>

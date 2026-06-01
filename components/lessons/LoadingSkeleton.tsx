@@ -1,4 +1,5 @@
 import React from "react";
+
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -31,7 +32,9 @@ export function LoadingSkeleton() {
             {Array.from({ length: 4 }).map((_, index) => (
               <React.Fragment key={index}>
                 <Skeleton className="h-5 w-12 shrink-0 sm:h-6 sm:w-16" />
-                {index < 3 && <Skeleton className="size-3 shrink-0 sm:size-4" />}
+                {index < 3 && (
+                  <Skeleton className="size-3 shrink-0 sm:size-4" />
+                )}
               </React.Fragment>
             ))}
           </div>

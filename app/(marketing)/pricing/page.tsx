@@ -9,7 +9,8 @@ import { PricingFaq } from "@/components/pricing/pricing-faq";
 
 export const metadata = constructMetadata({
   title: "Pricing – Fastlearners",
-  description: "Explore our flexible subscription plans for students, guardians, teachers, and schools.",
+  description:
+    "Explore our flexible subscription plans for students, guardians, teachers, and schools.",
 });
 
 export default function PricingPage() {

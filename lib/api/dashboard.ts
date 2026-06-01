@@ -37,7 +37,6 @@ export interface GuardianDashboardResponse {
   code: number;
 }
 
-
 /**
  * Get student dashboard data
  */
@@ -137,5 +136,3 @@ export async function getGuardianDashboard(): Promise<GuardianDashboardResponse>
     };
   }
 }
-
-

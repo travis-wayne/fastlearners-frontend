@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, type TouchEvent } from "react";
+import { useCallback, useState, type TouchEvent } from "react";
 
 interface UseLessonGesturesParams {
   onSwipeLeft: () => void;
@@ -16,16 +16,22 @@ export function useLessonGestures({
   const [touchStartX, setTouchStartX] = useState<number | null>(null);
   const [touchEndX, setTouchEndX] = useState<number | null>(null);
 
-  const handleTouchStart = useCallback((e: TouchEvent) => {
-    if (!enabled) return;
-    setTouchEndX(null);
-    setTouchStartX(e.targetTouches[0].clientX);
-  }, [enabled]);
+  const handleTouchStart = useCallback(
+    (e: TouchEvent) => {
+      if (!enabled) return;
+      setTouchEndX(null);
+      setTouchStartX(e.targetTouches[0].clientX);
+    },
+    [enabled],
+  );
 
-  const handleTouchMove = useCallback((e: TouchEvent) => {
-    if (!enabled) return;
-    setTouchEndX(e.targetTouches[0].clientX);
-  }, [enabled]);
+  const handleTouchMove = useCallback(
+    (e: TouchEvent) => {
+      if (!enabled) return;
+      setTouchEndX(e.targetTouches[0].clientX);
+    },
+    [enabled],
+  );
 
   const handleTouchEnd = useCallback(() => {
     if (!enabled || !touchStartX || !touchEndX) return;

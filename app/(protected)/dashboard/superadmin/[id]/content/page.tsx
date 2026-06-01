@@ -5,8 +5,8 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 
 import {
-  getLessonContent,
   getErrorMessage,
+  getLessonContent,
   type LessonContent,
 } from "@/lib/api/superadmin-lessons";
 import { Button } from "@/components/ui/button";
