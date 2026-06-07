@@ -133,6 +133,14 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
         ],
       },
       {
+        title: "SUBSCRIPTIONS",
+        items: [
+          { href: "/dashboard/subscriptions", icon: "package", title: "Plans", description: "Browse subscription plans" },
+          { href: "/dashboard/subscriptions/transactions", icon: "fileText", title: "Transactions", description: "View your payment history" },
+          { href: "/dashboard/subscriptions/history", icon: "folder", title: "Subscription History", description: "View your active and past subscriptions" },
+        ],
+      },
+      {
         title: "ACCOUNT",
         items: [
           {
@@ -194,33 +202,12 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
       {
         title: "MONITORING",
         items: [
+          // TODO: Add child-specific report endpoints when backend supports it
           {
             href: "/dashboard/records",
             icon: "folder",
             title: "Records",
             description: "View child's academic records and reports",
-          },
-          {
-            href: "/dashboard/reports",
-            icon: "barChart3",
-            title: "Child Reports",
-          },
-          {
-            href: "/dashboard/progress",
-            icon: "trendingUp",
-            title: "Progress Tracking",
-          },
-          {
-            href: "/dashboard/lessons",
-            icon: "bookOpen",
-            title: "Lessons View",
-            description: "Read-only access",
-          },
-          {
-            href: "/dashboard/quizzes",
-            icon: "helpCircle",
-            title: "Quizzes View",
-            description: "Read-only access",
           },
         ],
       },
@@ -244,7 +231,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
       {
         title: "View Reports",
         icon: "barChart3",
-        href: "/dashboard/reports",
+        href: "/dashboard/records",
         description: "Check child's progress",
       },
     ],
@@ -252,7 +239,7 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
       primary: {
         title: "Child Reports",
         icon: "barChart3",
-        href: "/dashboard/reports",
+        href: "/dashboard/records",
         description: "Quick access to reports",
       },
     },
@@ -502,6 +489,16 @@ export const roleNavigationConfig: Record<UserRole, RoleNavigationConfig> = {
             href: "/dashboard/superadmin/curriculum",
             icon: "graduationCap",
             title: "Curriculum Management",
+          },
+          {
+            href: "/dashboard/superadmin/packages",
+            icon: "package",
+            title: "Packages",
+          },
+          {
+            href: "/dashboard/superadmin/coupons",
+            icon: "ticket",
+            title: "Coupons",
           },
         ],
       },

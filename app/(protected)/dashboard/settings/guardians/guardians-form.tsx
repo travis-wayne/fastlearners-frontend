@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AlertCircle, CheckCircle2, Clock } from "lucide-react";
+import { toast } from "sonner";
 
 import {
   acceptGuardianRequest,
@@ -13,6 +14,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
+import { showApiToast } from "@/lib/utils/api-toast";
 
 export function GuardiansForm() {
   const [history, setHistory] = useState<GuardianRequestItem[]>([]);
@@ -24,14 +26,22 @@ export function GuardiansForm() {
 
   const fetchHistory = async () => {
     setIsLoading(true);
-    const data = await getStudentGuardianRequestHistory();
-    if (data.success) {
-      setHistory(data.content?.history.request_history || []);
-      setError(null);
-    } else {
-      setError(data.message);
+    setError(null);
+    try {
+      const data = await getStudentGuardianRequestHistory();
+      if (data.success) {
+        setHistory(data.content?.history.request_history || []);
+      } else {
+        const msg = data.code === 500
+          ? "Unable to load guardian requests right now. Please try again later."
+          : data.message;
+        setError(msg);
+      }
+    } catch (err) {
+      setError("Unable to load guardian requests right now. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
-    setIsLoading(false);
   };
 
   useEffect(() => {
@@ -48,8 +58,7 @@ export function GuardiansForm() {
     if (result.success) {
       await fetchHistory();
     } else {
-      // In a real app, we might show a toast here
-      console.error(result.message);
+      showApiToast("error", result.message || "Action failed. Please try again.");
     }
     setActionLoading((prev) => ({ ...prev, [id]: false }));
   };
@@ -70,6 +79,9 @@ export function GuardiansForm() {
         <AlertCircle className="size-4" />
         <AlertTitle>Error</AlertTitle>
         <AlertDescription>{error}</AlertDescription>
+        <Button variant="outline" size="sm" onClick={fetchHistory} className="mt-4">
+          Try Again
+        </Button>
       </Alert>
     );
   }

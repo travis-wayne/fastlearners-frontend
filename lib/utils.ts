@@ -83,6 +83,49 @@ export function formatDate(input: string | number): string {
   });
 }
 
+export function normalizeAmount(amount: string | number | null | undefined): string {
+  if (amount === null || amount === undefined) return "";
+  if (typeof amount === "number") return amount.toString();
+  return amount.replace(/,/g, "");
+}
+
+export function parseDateString(dateStr: string | null | undefined): Date | null {
+  if (!dateStr) return null;
+  if (dateStr.includes("T")) return new Date(dateStr);
+  
+  const parts = dateStr.split("-");
+  if (parts.length >= 3) {
+    const day = parseInt(parts[0], 10);
+    const month = parseInt(parts[1], 10) - 1;
+    
+    const yearTimeParts = parts[2].split(" ");
+    const year = parseInt(yearTimeParts[0], 10);
+    
+    if (yearTimeParts.length > 1) {
+      const timeParts = yearTimeParts[1].split(":");
+      const hours = parseInt(timeParts[0] || "0", 10);
+      const minutes = parseInt(timeParts[1] || "0", 10);
+      const seconds = parseInt(timeParts[2] || "0", 10);
+      return new Date(year, month, day, hours, minutes, seconds);
+    }
+    
+    return new Date(year, month, day);
+  }
+  
+  const date = new Date(dateStr);
+  return isNaN(date.getTime()) ? null : date;
+}
+
+export function toISODateString(dateStr: string | null | undefined): string {
+  const date = parseDateString(dateStr);
+  if (!date) return "";
+  
+  // Create a new date accounting for timezone offset so ISO string matches local date
+  const tzOffset = date.getTimezoneOffset() * 60000;
+  const localDate = new Date(date.getTime() - tzOffset);
+  return localDate.toISOString().split("T")[0];
+}
+
 export function absoluteUrl(path: string) {
   return `${env.NEXT_PUBLIC_APP_URL}${path}`;
 }

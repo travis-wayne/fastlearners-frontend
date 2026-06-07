@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
-import { BookOpen, FolderCog, LayoutDashboard, Upload } from "lucide-react";
+import { BookOpen, FolderCog, LayoutDashboard, Upload, Package, Ticket, Users, CreditCard } from "lucide-react";
 import { toast } from "sonner";
 
 import { cn } from "@/lib/utils";
@@ -43,19 +43,43 @@ export default function SuperadminLayout({ children }: SuperadminLayoutProps) {
       href: "/dashboard/superadmin/uploads",
       label: "Upload Files",
       icon: Upload,
-      active: pathname === "/dashboard/superadmin/uploads",
+      active: pathname.startsWith("/dashboard/superadmin/uploads"),
     },
     {
       href: "/dashboard/superadmin/browse",
       label: "Browse Lessons",
       icon: BookOpen,
-      active: pathname === "/dashboard/superadmin/browse",
+      active: pathname.startsWith("/dashboard/superadmin/browse"),
     },
     {
       href: "/dashboard/superadmin/manage",
       label: "Manage Files",
       icon: FolderCog,
-      active: pathname === "/dashboard/superadmin/manage",
+      active: pathname.startsWith("/dashboard/superadmin/manage"),
+    },
+    {
+      href: "/dashboard/superadmin/packages",
+      label: "Packages",
+      icon: Package,
+      active: pathname.startsWith("/dashboard/superadmin/packages"),
+    },
+    {
+      href: "/dashboard/superadmin/coupons",
+      label: "Coupons",
+      icon: Ticket,
+      active: pathname.startsWith("/dashboard/superadmin/coupons"),
+    },
+    {
+      href: "/dashboard/superadmin/subscriptions",
+      label: "Subscriptions",
+      icon: Users,
+      active: pathname.startsWith("/dashboard/superadmin/subscriptions"),
+    },
+    {
+      href: "/dashboard/superadmin/transactions",
+      label: "Transactions",
+      icon: CreditCard,
+      active: pathname.startsWith("/dashboard/superadmin/transactions"),
     },
   ];
 

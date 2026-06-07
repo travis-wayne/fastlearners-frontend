@@ -12,6 +12,34 @@
 4. [Student Management](#student-management)
 5. [Parental Consent Management](#parental-consent-management)
 6. [Guardian Management](#guardian-management)
+7. [Subscription](#subscription)
+8. [Superadmin Management](#superadmin-management)
+
+---
+
+## Response `type` Field
+
+Every API response includes a `type` field that indicates the nature of the response. Use this field to determine how to style alerts, notifications, and toast messages in the UI.
+
+| `type` value | Meaning | Suggested UI Color |
+|---|---|---|
+| `success` | The request completed successfully | 🟢 Green |
+| `error` | The request failed (validation, not found, server error, etc.) | 🔴 Red |
+| `info` | Informational response (neutral status) | 🔵 Blue |
+| `warning` | A warning that requires attention but is not a hard failure | 🟡 Yellow/Amber |
+
+**Example:**
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Your profile has been updated successfully.",
+  "content": {},
+  "code": 200
+}
+```
+
+> **Note:** The `type` field is present in all API responses. Earlier endpoint examples in this document may not show `type` explicitly, but it is always returned. Always read `type` alongside `success` for accurate UI feedback.
 
 ---
 
@@ -4152,6 +4180,2159 @@
 {
   "success": false,
   "message": "Server error",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+## Subscription
+
+**Base URL:** `https://api.fastlearnersapp.com`
+
+### 1. View Packages
+
+**Endpoint:** `GET /api/v1/packages`
+
+**Description:** Get the list of all subscription packages. No authentication required.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | None |
+| Accept | application/json |
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Subscription packages",
+  "content": {
+    "packages": [
+      {
+        "id": 1,
+        "name": "Basic",
+        "slug": "basic",
+        "amount": "2,500.00",
+        "billing_cycle": "monthly",
+        "duration_days": 30,
+        "description": null,
+        "is_active": true,
+        "created_at": "21-05-2026",
+        "updated_at": "21-05-2026"
+      }
+    ]
+  },
+  "code": 200
+}
+```
+
+**Package Not Found Error (404):**
+
+```json
+{
+  "success": false,
+  "message": "No package was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "success": false,
+  "message": "An error occurred while retrieving packages",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 2. View Single Package
+
+**Endpoint:** `GET /api/v1/packages/{id}/view`
+
+**Example:** `GET /api/v1/packages/1/view`
+
+**Description:** Get the details of a specific subscription package using its id. Use the id obtained from the View Packages list. The package id is required for initiating a subscription.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | None |
+| Accept | application/json |
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Subscription packages",
+  "content": {
+    "package": {
+      "id": 1,
+      "name": "Basic",
+      "slug": "basic",
+      "amount": "4,000.00",
+      "original_amount": null,
+      "billing_cycle": "monthly",
+      "duration_days": 30,
+      "description": null,
+      "is_active": true,
+      "created_at": "30-05-2026",
+      "updated_at": "30-05-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Package Not Found Error (404):**
+
+```json
+{
+  "success": false,
+  "message": "No package was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "success": false,
+  "message": "An error occurred while retrieving package",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 3. Verify Coupon
+
+**Endpoint:** `POST /api/v1/subscriptions/verify-coupon`
+
+**Description:** This endpoint verifies the coupon of a user and calculate their discount.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "package_id": 1,
+  "coupon_code": "NEWCOM"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+| validation error | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "amount": "4,000.00",
+    "discount_amount": "600.00",
+    "final_amount": "3,400.00"
+  },
+  "code": 200
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while calculating coupon, try again!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 4. Subscribe Package
+
+**Endpoint:** `POST /api/v1/subscriptions/subscribe`
+
+**Description:** This endpoint generates the paystack payment link (authorization_url) for student to make payment. It returns the payment link where you'll open the link for payment to be made on the paystack payment page.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "package_id": 1,
+  "coupon_code": "NEWCOM"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | payment link (authorization_url) |
+| validation error | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Authorization URL created",
+  "content": {
+    "authorization_url": "https://checkout.paystack.com/q3gxk68ush3zu4l",
+    "access_code": "q3gxk68ush3zu4l",
+    "reference": "fl-4d04c63c-2eb0-443e-a78a-c23f3bc4308a"
+  },
+  "code": 200
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+
+```json
+{
+  "success": false,
+  "message": "An error occurred while processing payment, try again!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 5. Get Payment Status
+
+**Frontend Url:** `https://fastlearnersapp.com/subscriptions/payment-status`
+
+**Endpoint:** `GET /api/v1/subscriptions/payment-status/:reference`
+
+**Description:** Get the payment status after a payment has been made with this endpoint using the reference that will be added to the frontend url by paystack after payment.
+
+**Note:**
+=> Make your frontend url exactly as stated above.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "success": true,
+  "message": "Payment was successful",
+  "content": {
+    "transaction_detail": {
+      "id": 6,
+      "package": "Basic",
+      "coupon": "NEWCOM",
+      "reference": "fl-330048f4-8db5-40c5-883b-a87ad5669696",
+      "amount": "4,000.00",
+      "discount_amount": "600.00",
+      "final_amount": "3,400.00",
+      "status": "pending",
+      "created_at": "01-06-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Payment Failed Error (400):**
+
+```json
+{
+  "success": false,
+  "message": "Payment Failed",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+
+```json
+{
+  "success": false,
+  "message": "An error occurred while processing payment, try again!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 6. Get Transaction History
+
+**Endpoint:** `GET /api/v1/transactions`
+
+**Description:** Get user transaction history.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "transactions": [
+        {
+          "id": 1,
+          "package": "Basic",
+          "coupon": null,
+          "reference": "fl-eb7b64d6-18b7-40cf-8198-f7fc7e09ef6b",
+          "amount": "4,000.00",
+          "discount_amount": "0.00",
+          "final_amount": "4,000.00",
+          "status": "pending",
+          "created_at": "30-05-2026"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/transactions?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/transactions?page=2",
+        "prev": null,
+        "next": "https://api.fastlearnersapp.com/api/v1/transactions?page=2"
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 2,
+        "per_page": 10,
+        "total": 5
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+**Transaction Not Found Error (400):**
+
+```json
+{
+  "success": false,
+  "message": "No transaction found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+
+```json
+{
+  "success": false,
+  "message": "An error occurred while verifying your payment, try again!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### 7. Get Subscription History
+
+**Endpoint:** `GET /api/v1/subscriptions`
+
+**Description:** Get user subscription history.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "subscriptions": [
+        {
+          "id": 2,
+          "package": "Basic",
+          "transaction_reference": "fl-9cfe4d2c-6c71-4490-995d-1000f8107d6f",
+          "start_at": null,
+          "expires_at": "2026-06-14T10:40:59.000000Z",
+          "status": "active",
+          "created": "01-06-2026"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/subscriptions?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/subscriptions?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 10,
+        "total": 2
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+**Transaction Not Found Error (400):**
+
+```json
+{
+  "success": false,
+  "message": "No transaction found!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error Message (500):**
+
+```json
+{
+  "success": false,
+  "message": "An error occurred while verifying your payment, try again!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+
+## Superadmin Management
+
+**Base URL:** `https://api.fastlearnersapp.com`
+
+---
+
+### Package Management
+
+#### 1. View Packages
+
+**Endpoint:** `GET /api/v1/superadmin/packages`
+
+**Description:** Returns the list of all available subscription packages.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Subscription packages",
+  "content": {
+    "packages": [
+      {
+        "id": 2,
+        "name": "Terminal",
+        "slug": "terminal",
+        "amount": "1,500.00",
+        "original_amount": null,
+        "billing_cycle": "monthly",
+        "duration_days": 30,
+        "description": null,
+        "is_active": true,
+        "created_at": "30-05-2026",
+        "updated_at": "30-05-2026"
+      },
+      {
+        "id": 1,
+        "name": "Basic",
+        "slug": "basic",
+        "amount": "4,000.00",
+        "original_amount": null,
+        "billing_cycle": "monthly",
+        "duration_days": 30,
+        "description": null,
+        "is_active": true,
+        "created_at": "30-05-2026",
+        "updated_at": "30-05-2026"
+      }
+    ]
+  },
+  "code": 200
+}
+```
+
+**Package Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "No package was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving packages!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 2. Get Package Detail
+
+**Endpoint:** `GET /api/v1/superadmin/packages/{id}/view`
+
+**Example:** `GET /api/v1/superadmin/packages/1/view`
+
+**Description:** Get a specific package's detail using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "package": {
+      "id": 1,
+      "name": "Basic",
+      "slug": "basic",
+      "amount": "4,000.00",
+      "original_amount": null,
+      "billing_cycle": "monthly",
+      "duration_days": 30,
+      "description": null,
+      "is_active": true,
+      "created_at": "30-05-2026",
+      "updated_at": "30-05-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Package Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Package not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving package!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 3. Create Package
+
+**Endpoint:** `POST /api/v1/superadmin/packages/create`
+
+**Description:** Create a new subscription package.
+
+**Notes:**
+- The `billing_cycle` field accepts select options: `monthly` or `yearly`.
+- **Required fields:** `name`, `amount`, `billing_cycle`, `duration_days`.
+- **Optional fields:** `description`, `original_amount` (both nullable — can be omitted or `null`).
+- `original_amount` vs `amount`: When `original_amount` is provided, display it with a strikethrough as the original price. `amount` is always the current/actual price. When `original_amount` is `null`, display only `amount` with no strikethrough.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "name": "Basic",
+  "amount": "2500",
+  "original_amount": 4000,
+  "billing_cycle": "monthly",
+  "duration_days": 30,
+  "description": "Basic subscription for students"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Package created successfully!",
+  "content": {
+    "package": {
+      "id": 3,
+      "name": "Basic",
+      "slug": "basic",
+      "amount": "2,500.00",
+      "original_amount": null,
+      "billing_cycle": "monthly",
+      "duration_days": "30",
+      "description": "Basic subscription for students",
+      "is_active": true,
+      "created_at": "02-06-2026",
+      "updated_at": "02-06-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Validation Error (400):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while creating package",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 4. Update Package
+
+**Endpoint:** `POST /api/v1/superadmin/packages/{id}/update`
+
+**Example:** `POST /api/v1/superadmin/packages/1/update`
+
+**Description:** Update an existing subscription package using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "name": "Basic Package",
+  "amount": "2500",
+  "original_amount": 4000,
+  "billing_cycle": "monthly",
+  "duration_days": 30,
+  "description": "Basic package subscription for students"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Package updated successfully!",
+  "content": {
+    "package": {
+      "id": 3,
+      "name": "Basic Package",
+      "slug": "basic plan",
+      "amount": "2,500.00",
+      "original_amount": null,
+      "billing_cycle": "monthly",
+      "duration_days": "30",
+      "description": "Basic package subscription for students",
+      "is_active": true,
+      "created_at": "02-06-2026",
+      "updated_at": "02-06-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Validation Error (400):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while updating package",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 5. Delete Package
+
+**Endpoint:** `DELETE /api/v1/superadmin/packages/{id}/delete`
+
+**Example:** `DELETE /api/v1/superadmin/packages/2/delete`
+
+**Description:** Delete a package using its id. Packages with active subscriptions cannot be deleted.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Package deleted successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Package Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Package not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Package Cannot Be Deleted Error (400):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Package has subscriptions and can't be deleted!",
+  "errors": null,
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while deleting package",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 6. Update Package Status
+
+**Endpoint:** `POST /api/v1/superadmin/packages/{id}/update-status`
+
+**Example:** `POST /api/v1/superadmin/packages/2/update-status`
+
+**Description:** Toggle a package's status between active and inactive.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Package activated successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Package Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Package not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while updating package status.",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### Coupon Management
+
+#### 1. View Coupons
+
+**Endpoint:** `GET /api/v1/superadmin/coupons`
+
+**Description:** Returns the list of all available coupons with pagination.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "coupons": [
+        {
+          "id": 5,
+          "code": "BONUS",
+          "package_name": "Basic",
+          "description": "Free coupon for student",
+          "type": "fixed",
+          "value": "500.00",
+          "minimum_amount": "1,000.00",
+          "usage_limit": 5,
+          "used_count": 0,
+          "is_active": "inactive",
+          "expires_at": "15-06-2026",
+          "created_at": "31-05-2026",
+          "updated_at": "03-06-2026"
+        },
+        {
+          "id": 2,
+          "code": "QUIZWIN",
+          "package_name": "Basic",
+          "description": "Quiz winners coupon",
+          "type": "fixed",
+          "value": "700.00",
+          "minimum_amount": "1,000.00",
+          "usage_limit": 3,
+          "used_count": 1,
+          "is_active": "active",
+          "expires_at": "08-06-2026",
+          "created_at": "30-05-2026",
+          "updated_at": "01-06-2026"
+        },
+        {
+          "id": 1,
+          "code": "NEWCOM",
+          "package_name": "Basic",
+          "description": "New comers coupon",
+          "type": "percentage",
+          "value": "15.00",
+          "minimum_amount": "1,000.00",
+          "usage_limit": 50,
+          "used_count": 0,
+          "is_active": "active",
+          "expires_at": "25-06-2026",
+          "created_at": "30-05-2026",
+          "updated_at": "30-05-2026"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/superadmin/coupons?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/superadmin/coupons?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 20,
+        "total": 3
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+**Coupon Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "No coupon was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving coupons!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 2. Get Coupon Detail
+
+**Endpoint:** `GET /api/v1/superadmin/coupons/{id}/view`
+
+**Example:** `GET /api/v1/superadmin/coupons/1/view`
+
+**Description:** Get a specific coupon's detail using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "coupon": {
+      "id": 1,
+      "code": "NEWCOM",
+      "package_name": "Basic",
+      "description": "New comers coupon",
+      "type": "percentage",
+      "value": "15.00",
+      "minimum_amount": "1,000.00",
+      "usage_limit": 50,
+      "used_count": 0,
+      "is_active": "active",
+      "expires_at": "25-06-2026",
+      "created_at": "30-05-2026",
+      "updated_at": "30-05-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Coupon Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Coupon not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving coupon!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 3. Create Coupon
+
+**Endpoint:** `POST /api/v1/superadmin/coupons/create`
+
+**Description:** Create a new coupon.
+
+**Notes:**
+- The `type` field accepts select options: `percentage` or `fixed`.
+- For `package_id`, call the View Packages endpoint and load the ids as select option values with package names as labels.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "code": "Premium",
+  "package_id": 1,
+  "type": "percentage",
+  "value": 5,
+  "minimum_amount": 1000,
+  "usage_limit": 3,
+  "expires_at": "19-06-2026",
+  "description": "Premium users coupon"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Coupon created successfully!",
+  "content": {
+    "coupon": {
+      "id": 5,
+      "code": "PREMIUM",
+      "package": "Basic",
+      "description": "Premium users coupon",
+      "type": "percentage",
+      "value": "5",
+      "minimum_amount": "1,000.00",
+      "usage_limit": "3",
+      "used_count": null,
+      "is_active": "active",
+      "expires_at": "19-06-2026",
+      "created_at": "31-05-2026",
+      "updated_at": "31-05-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Validation Error (400):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while creating coupon",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 4. Update Coupon
+
+**Endpoint:** `POST /api/v1/superadmin/coupons/{id}/update`
+
+**Example:** `POST /api/v1/superadmin/coupons/1/update`
+
+**Description:** Update an existing coupon using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "code": "Premium Plan",
+  "package_id": 1,
+  "type": "percentage",
+  "value": 5,
+  "minimum_amount": 1000,
+  "usage_limit": 3,
+  "expires_at": "19-06-2026",
+  "description": "Premium users coupon"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Coupon updated successfully!",
+  "content": {
+    "coupon": {
+      "id": 5,
+      "code": "PREMIUM PLAN",
+      "package": "Basic",
+      "description": "Premium users coupon",
+      "type": "percentage",
+      "value": "5",
+      "minimum_amount": "1,000.00",
+      "usage_limit": "3",
+      "used_count": null,
+      "is_active": "active",
+      "expires_at": "19-06-2026",
+      "created_at": "31-05-2026",
+      "updated_at": "31-05-2026"
+    }
+  },
+  "code": 200
+}
+```
+
+**Validation Error (400):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while updating coupon",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 5. Delete Coupon
+
+**Endpoint:** `DELETE /api/v1/superadmin/coupons/{id}/delete`
+
+**Example:** `DELETE /api/v1/superadmin/coupons/2/delete`
+
+**Description:** Delete a coupon using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Coupon deleted successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Coupon Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Coupon not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while deleting coupon",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 6. Update Coupon Status
+
+**Endpoint:** `POST /api/v1/superadmin/coupons/{id}/update-status`
+
+**Example:** `POST /api/v1/superadmin/coupons/2/update-status`
+
+**Description:** Toggle a coupon's status between active and inactive.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Coupon activated successfully!",
+  "content": null,
+  "code": 200
+}
+```
+
+**Coupon Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Coupon not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while updating coupon status.",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 7. Coupon Search
+
+**Endpoint:** `POST /api/v1/superadmin/coupons/search`
+
+**Description:** Search for coupons by name/code using a search term.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Request Body:**
+
+```json
+{
+  "search_term": "new"
+}
+```
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "coupons": [
+        {
+          "id": 1,
+          "code": "NEWCOM",
+          "package": "Basic",
+          "description": "New comers coupon",
+          "type": "percentage",
+          "value": "15.00",
+          "minimum_amount": "1,000.00",
+          "usage_limit": 50,
+          "used_count": 0,
+          "is_active": "active",
+          "expires_at": "25-06-2026",
+          "created_at": "30-05-2026",
+          "updated_at": "30-05-2026"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/superadmin/coupons/search?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/superadmin/coupons/search?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 20,
+        "total": 1
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+**Validation Error (400):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while creating coupon",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### Subscription Management
+
+#### 1. View Subscriptions
+
+**Endpoint:** `GET /api/v1/superadmin/subscriptions`
+
+**Description:** Returns the list of all subscriptions with pagination.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "subscriptions": [
+        {
+          "id": 1,
+          "user_name": "Student User",
+          "user_email": "student@fastlearnersapp.com",
+          "package": "Basic",
+          "reference": "fl-496bd9ea-936b-48f5-a5be-6e313e4f300d",
+          "subscription_reference": "SUB-3IWQEUF6CIKMUFNY",
+          "starts_at": "01-06-2026",
+          "expires_at": "01-07-2026",
+          "status": "active",
+          "is_first_subscription": true,
+          "created_at": "01-06-2026 10:40",
+          "updated_at": "01-06-2026 10:40"
+        },
+        {
+          "id": 2,
+          "user_name": "Student User",
+          "user_email": "student@fastlearnersapp.com",
+          "package": "Basic",
+          "reference": "fl-9cfe4d2c-6c71-4490-995d-1000f8107d6f",
+          "subscription_reference": "SUB-3IWQEUF6JDFGFKSG",
+          "starts_at": "15-05-2026",
+          "expires_at": "14-06-2026",
+          "status": "active",
+          "is_first_subscription": false,
+          "created_at": "01-06-2026 10:40",
+          "updated_at": "01-06-2026 10:40"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/superadmin/subscriptions?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/superadmin/subscriptions?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 10,
+        "total": 2
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+**Subscription Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "No subscription was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving subscriptions!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 2. View Subscription Detail
+
+**Endpoint:** `GET /api/v1/superadmin/subscriptions/{id}/view`
+
+**Example:** `GET /api/v1/superadmin/subscriptions/1/view`
+
+**Description:** Get a specific subscription's detail using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "id": 1,
+      "user_name": "Student User",
+      "user_email": "student@fastlearnersapp.com",
+      "package": "Basic",
+      "reference": "fl-496bd9ea-936b-48f5-a5be-6e313e4f300d",
+      "subscription_reference": "SUB-3IWQEUF6CIKMUFNY",
+      "starts_at": "01-06-2026",
+      "expires_at": "01-07-2026",
+      "status": "active",
+      "is_first_subscription": true,
+      "created_at": "01-06-2026 10:40",
+      "updated_at": "01-06-2026 10:40"
+    }
+  ],
+  "code": 200
+}
+```
+
+**Subscription Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Subscription not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving subscription!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+### Transaction Management
+
+#### 1. View Transactions
+
+**Endpoint:** `GET /api/v1/superadmin/transactions`
+
+**Description:** Returns the list of all transactions with pagination.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "transactions": [
+        {
+          "id": 1,
+          "user_name": "Student User",
+          "user_email": "student@fastlearnersapp.com",
+          "package": "Basic",
+          "coupon_code": null,
+          "reference": "fl-eb7b64d6-18b7-40cf-8198-f7fc7e09ef6b",
+          "amount": "4,000.00",
+          "discount_amount": "0.00",
+          "final_amount": "4,000.00",
+          "gateway": "paystack",
+          "status": "pending",
+          "created_at": "30-05-2026 13:48:11",
+          "updated_at": "30-05-2026 13:48:11"
+        },
+        {
+          "id": 2,
+          "user_name": "Student User",
+          "user_email": "student@fastlearnersapp.com",
+          "package": "Basic",
+          "coupon_code": "NEWCOM",
+          "reference": "fl-751bdfa8-aaaa-4058-acc0-2e819d08a51f",
+          "amount": "4,000.00",
+          "discount_amount": "600.00",
+          "final_amount": "3,400.00",
+          "gateway": "paystack",
+          "status": "pending",
+          "created_at": "31-05-2026 14:20:05",
+          "updated_at": "31-05-2026 14:20:05"
+        },
+        {
+          "id": 3,
+          "user_name": "Student User",
+          "user_email": "student@fastlearnersapp.com",
+          "package": "Basic",
+          "coupon_code": "NEWCOM",
+          "reference": "fl-ff8a6ec8-ab22-42e8-a93e-c07569f56f88",
+          "amount": "4,000.00",
+          "discount_amount": "600.00",
+          "final_amount": "3,400.00",
+          "gateway": "paystack",
+          "status": "pending",
+          "created_at": "31-05-2026 14:43:54",
+          "updated_at": "31-05-2026 14:43:54"
+        },
+        {
+          "id": 10,
+          "user_name": "Student User",
+          "user_email": "student@fastlearnersapp.com",
+          "package": "Basic",
+          "coupon_code": "QUIZWIN",
+          "reference": "fl-1ae979f6-1048-4958-8a26-504d3aedfacb",
+          "amount": "4,000.00",
+          "discount_amount": "700.00",
+          "final_amount": "3,300.00",
+          "gateway": "paystack",
+          "status": "pending",
+          "created_at": "01-06-2026 07:05:01",
+          "updated_at": "01-06-2026 07:05:01"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/superadmin/transactions?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/superadmin/transactions?page=2",
+        "prev": null,
+        "next": "https://api.fastlearnersapp.com/api/v1/superadmin/transactions?page=2"
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 2,
+        "per_page": 10,
+        "total": 16
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+**Transaction Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "No transaction was found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving transactions!",
+  "errors": ["error message"],
+  "code": 500
+}
+```
+
+---
+
+#### 2. View Transaction Detail
+
+**Endpoint:** `GET /api/v1/superadmin/transactions/{id}/view`
+
+**Example:** `GET /api/v1/superadmin/transactions/1/view`
+
+**Description:** Get a specific transaction's detail using its id.
+
+**Headers:**
+| Key | Value |
+|-----|-------|
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+**Redirection:**
+| Response | Redirect To |
+|----------|-------------|
+| success | none |
+
+**Success Response (200):**
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": [
+    {
+      "id": 1,
+      "user_name": "Student User",
+      "user_email": "student@fastlearnersapp.com",
+      "package": "Basic",
+      "coupon_code": null,
+      "reference": "fl-eb7b64d6-18b7-40cf-8198-f7fc7e09ef6b",
+      "amount": "4,000.00",
+      "discount_amount": "0.00",
+      "final_amount": "4,000.00",
+      "gateway": "paystack",
+      "status": "pending",
+      "created_at": "30-05-2026 13:48:11",
+      "updated_at": "30-05-2026 13:48:11"
+    }
+  ],
+  "code": 200
+}
+```
+
+**Transaction Not Found Error (404):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Transaction not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+**Unauthorized Access (401):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401
+}
+```
+
+**Server Error (500):**
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving transaction!",
   "errors": ["error message"],
   "code": 500
 }

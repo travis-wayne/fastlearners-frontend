@@ -51,6 +51,15 @@ export async function GET(req: NextRequest) {
         return handleUpstreamError(upstream, data, requestId);
       }
 
+      if (upstream.ok && data === null) {
+        return NextResponse.json({
+          success: true,
+          message: "No guardian history found",
+          content: { history: { request_history: [], links: {}, meta: {} } },
+          code: 200,
+        });
+      }
+
       return NextResponse.json(data, { status: upstream.status });
     } catch (fetchError: any) {
       clearTimeout(timeoutId);
@@ -92,6 +101,15 @@ export async function GET(req: NextRequest) {
 
           if (!retryUpstream.ok) {
             return handleUpstreamError(retryUpstream, retryData, requestId);
+          }
+
+          if (retryUpstream.ok && retryData === null) {
+            return NextResponse.json({
+              success: true,
+              message: "No guardian history found",
+              content: { history: { request_history: [], links: {}, meta: {} } },
+              code: 200,
+            });
           }
 
           return NextResponse.json(retryData, { status: retryUpstream.status });

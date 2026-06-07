@@ -54,6 +54,7 @@ import {
   Trash,
   TrendingUp,
   Trophy,
+  Ticket,
   Upload,
   User,
   UserPlus,
@@ -231,4 +232,5 @@ export const Icons = {
   users: Users,
   eye: Eye,
   warning: AlertTriangle,
+  ticket: Ticket,
 };

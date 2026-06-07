@@ -32,7 +32,16 @@ export async function GET(req: NextRequest) {
       });
 
       clearTimeout(timeoutId);
-      const data = await r.json();
+
+      const contentType = r.headers.get("content-type");
+      let data: any = null;
+      if (contentType && contentType.includes("application/json")) {
+        try {
+          data = await r.json();
+        } catch (e) {
+          console.error(`[API] Failed to parse JSON from ${r.url}:`, e);
+        }
+      }
 
       if (!r.ok) {
         return handleUpstreamError(r, data, requestId);
@@ -56,7 +65,15 @@ export async function GET(req: NextRequest) {
             cache: "no-store",
           });
 
-          const retryData = await retryR.json();
+          const retryContentType = retryR.headers.get("content-type");
+          let retryData: any = null;
+          if (retryContentType && retryContentType.includes("application/json")) {
+            try {
+              retryData = await retryR.json();
+            } catch (e) {
+              console.error(`[API] Failed to parse JSON from ${retryR.url}:`, e);
+            }
+          }
 
           if (!retryR.ok) {
             return handleUpstreamError(retryR, retryData, requestId);

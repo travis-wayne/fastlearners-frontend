@@ -6,6 +6,10 @@ import {
   Layers,
   Trash2,
   Upload,
+  Package,
+  Ticket,
+  Users,
+  CreditCard,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -38,7 +42,7 @@ export default function SuperadminOverviewPage() {
         </p>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">
@@ -114,6 +118,78 @@ export default function SuperadminOverviewPage() {
             </Link>
           </CardContent>
         </Card>
+
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Packages</CardTitle>
+            <Package className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Manage subscription packages
+            </CardDescription>
+            <Link href="/dashboard/superadmin/packages">
+              <Button className="w-full gap-2" variant="outline">
+                Go to Packages
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Coupons</CardTitle>
+            <Ticket className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              Manage discount coupons
+            </CardDescription>
+            <Link href="/dashboard/superadmin/coupons">
+              <Button className="w-full gap-2" variant="outline">
+                Go to Coupons
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Subscriptions</CardTitle>
+            <Users className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              View all user subscriptions
+            </CardDescription>
+            <Link href="/dashboard/superadmin/subscriptions">
+              <Button className="w-full gap-2" variant="outline">
+                Go to Subscriptions
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
+
+        <Card className="group transition-all hover:border-primary/50 hover:shadow-md">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Transactions</CardTitle>
+            <CreditCard className="size-4 text-muted-foreground group-hover:text-primary" />
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="mb-4">
+              View all payment transactions
+            </CardDescription>
+            <Link href="/dashboard/superadmin/transactions">
+              <Button className="w-full gap-2" variant="outline">
+                Go to Transactions
+                <ArrowRight className="size-4" />
+              </Button>
+            </Link>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Management Section */}
@@ -146,6 +222,46 @@ export default function SuperadminOverviewPage() {
               <Button variant="outline" className="gap-2">
                 <Trash2 className="size-4" />
                 Trash Management
+              </Button>
+            </Link>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Package className="size-5 text-primary" />
+            <CardTitle>Subscription Management</CardTitle>
+          </div>
+          <CardDescription>
+            Manage subscription packages, view coupons, and track user subscriptions.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/dashboard/superadmin/packages">
+              <Button variant="outline" className="gap-2">
+                <Package className="size-4" />
+                Packages
+              </Button>
+            </Link>
+            <Link href="/dashboard/superadmin/coupons">
+              <Button variant="outline" className="gap-2">
+                <Ticket className="size-4" />
+                Coupons
+              </Button>
+            </Link>
+            <Link href="/dashboard/superadmin/subscriptions">
+              <Button variant="outline" className="gap-2">
+                <Users className="size-4" />
+                Subscriptions
+              </Button>
+            </Link>
+            <Link href="/dashboard/superadmin/transactions">
+              <Button variant="outline" className="gap-2">
+                <CreditCard className="size-4" />
+                Transactions
               </Button>
             </Link>
           </div>

@@ -62,16 +62,18 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
     );
   }
 
-  const filteredLinks = sidebarLinks.map((section) => ({
-    ...section,
-    items: section.items.filter(({ authorizeOnly }) => {
-      if (!authorizeOnly) return true;
-      if (!user.role) return false;
-      // Convert enum to string for comparison with user.role array from API
-      const roleString = authorizeOnly.toLowerCase();
-      return user.role.includes(roleString as any);
-    }),
-  }));
+  const filteredLinks = sidebarLinks
+    .map((section) => ({
+      ...section,
+      items: section.items.filter(({ authorizeOnly }) => {
+        if (!authorizeOnly) return true;
+        if (!user.role) return false;
+        // Convert enum to string for comparison with user.role array from API
+        const roleString = authorizeOnly.toLowerCase();
+        return user.role.includes(roleString as any);
+      }),
+    }))
+    .filter((section) => section.items.length > 0);
 
   return (
     <AcademicProvider>

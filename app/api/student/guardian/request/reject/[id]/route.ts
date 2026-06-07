@@ -10,7 +10,7 @@ import { parseAuthCookiesServer } from "@/lib/server/auth-cookies";
 
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   const auth = parseAuthCookiesServer(req);
   if (!auth) {
@@ -20,7 +20,7 @@ export async function GET(
   const requestId = crypto.randomUUID();
 
   try {
-    const { id } = params;
+    const { id } = await params;
 
     if (!id) {
       return createErrorResponse(

@@ -90,6 +90,10 @@ export function handleApiError(
   if (process.env.NEXT_PUBLIC_DEBUG_AUTH === "true") {
     console.error("API route error:", error);
   }
+  try {
+    const fs = require("fs");
+    fs.appendFileSync("debug-error.log", "\nAPI Error: " + (error instanceof Error ? error.stack : String(error)));
+  } catch(e) {}
 
   const message = error instanceof Error ? error.message : defaultMessage;
 

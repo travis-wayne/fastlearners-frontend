@@ -30,6 +30,14 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/subscriptions/payment-status",
+        destination: "/dashboard/subscriptions/payment-status",
+      },
+    ];
+  },
   // Fix Contentlayer file-watching on Windows
   webpack(config, { dev }) {
     if (dev) {

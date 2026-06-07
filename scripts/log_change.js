@@ -9,9 +9,9 @@ if (!fs.existsSync(logFile)) {
 
 const date = new Date().toISOString().split("T")[0];
 const technicalChange =
-  "Fixed a build error by excluding the docs/ directory from tsconfig.json, preventing type checking failures on old codebase files.";
+  "Resolved production build failures by fixing Tailwind CSS classname ordering and enforce-shorthand rules, escaping JSX apostrophes in components/records/GuardianRecordsPage.tsx and app/(protected)/dashboard/subscriptions/transactions/page.tsx, and resolving missing useEffect dependency warnings.";
 const socialMediaContent =
-  "🚀 Build fixed! Excluded old docs files from our TypeScript configuration, ensuring a smooth and error-free build process for FastLearners. Keeping our codebase clean and deployment-ready! ✅📈 #BuildInPublic #NextJS #TypeScript #BugFix";
+  "🚀 FastLearners production build is officially green! Cleaned up code layout, escaped JSX characters, and squashed linter warnings so we compile flawlessly. Smooth deployments ahead! ✨ #NextJS #BuildInPublic #CleanCode";
 
 const newRow = `${date},"${technicalChange}","${socialMediaContent}"\n`;
 

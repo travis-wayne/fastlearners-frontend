@@ -32,6 +32,14 @@ import { UpgradeCard } from "@/components/dashboard/upgrade-card";
 import { NavUser } from "@/components/nav-user";
 import { Icons } from "@/components/shared/icons";
 
+function isActiveRoute(itemHref: string | undefined, currentPath: string) {
+  if (!itemHref) return false;
+  if (itemHref === currentPath) return true;
+  // Dashboard roots should only match exactly to prevent highlighting on all sub-routes
+  if (itemHref === "/dashboard" || itemHref === "/dashboard/superadmin") return false;
+  return currentPath.startsWith(`${itemHref}/`);
+}
+
 interface DashboardSidebarProps {
   links: SidebarNavItem[];
 }
@@ -111,7 +119,9 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
               </div>
 
               <nav className="flex flex-1 flex-col gap-component-lg px-component-md pt-component-md">
-                {links.map((section) => (
+                {links.map((section) => {
+                  if (section.items.length === 0) return null;
+                  return (
                   <section key={section.title} className="flex flex-col gap-1">
                     {isSidebarExpanded ? (
                       <p className="text-xs text-muted-foreground">
@@ -131,11 +141,11 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                 href={item.disabled ? "#" : item.href}
                                 aria-label={item.title}
                                 aria-current={
-                                  path === item.href ? "page" : undefined
+                                  isActiveRoute(item.href, path) ? "page" : undefined
                                 }
                                 className={cn(
                                   "mobile-touch-target flex items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-                                  path === item.href
+                                  isActiveRoute(item.href, path)
                                     ? "bg-muted"
                                     : "text-muted-foreground hover:text-accent-foreground",
                                   item.disabled &&
@@ -161,11 +171,11 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                                     href={item.disabled ? "#" : item.href}
                                     aria-label={item.title}
                                     aria-current={
-                                      path === item.href ? "page" : undefined
+                                      isActiveRoute(item.href, path) ? "page" : undefined
                                     }
                                     className={cn(
                                       "mobile-touch-target flex items-center gap-component-sm rounded-md py-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-                                      path === item.href
+                                      isActiveRoute(item.href, path)
                                         ? "bg-muted"
                                         : "text-muted-foreground hover:text-accent-foreground",
                                       item.disabled &&
@@ -190,7 +200,8 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
                       );
                     })}
                   </section>
-                ))}
+                  );
+                })}
               </nav>
 
               <div className="mb-control-lg xl:p-4">
@@ -312,7 +323,9 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
 
                 <ProjectSwitcher />
 
-                {links.map((section) => (
+                {links.map((section) => {
+                  if (section.items.length === 0) return null;
+                  return (
                   <section key={section.title} className="flex flex-col gap-1">
                     <p className="text-xs text-muted-foreground">
                       {section.title}
@@ -331,11 +344,11 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                               href={item.disabled ? "#" : item.href}
                               aria-label={item.title}
                               aria-current={
-                                pathname === item.href ? "page" : undefined
+                                isActiveRoute(item.href, pathname) ? "page" : undefined
                               }
                               className={cn(
                                 "mobile-touch-target flex items-center gap-component-sm rounded-md p-component-sm text-sm font-medium hover:bg-muted focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2",
-                                pathname === item.href
+                                isActiveRoute(item.href, pathname)
                                   ? "bg-muted"
                                   : "text-muted-foreground hover:text-accent-foreground",
                                 item.disabled &&
@@ -358,7 +371,8 @@ export function MobileSheetSidebar({ links }: DashboardSidebarProps) {
                       );
                     })}
                   </section>
-                ))}
+                  );
+                })}
 
                 <div className="mt-auto">
                   {isGuest ? (

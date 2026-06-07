@@ -110,6 +110,30 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Manage Files",
         authorizeOnly: UserRole.SUPERADMIN,
       },
+      {
+        href: "/dashboard/superadmin/packages",
+        icon: "package",
+        title: "Packages",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/coupons",
+        icon: "ticket",
+        title: "Coupons",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/subscriptions",
+        icon: "users",
+        title: "Subscriptions",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/transactions",
+        icon: "creditCard",
+        title: "Transactions",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
       // ACCOUNT SECTION for students
       {
         href: "/dashboard/admin/billing",
@@ -136,6 +160,32 @@ export const sidebarLinks: SidebarNavItem[] = [
         icon: "package",
         title: "Orders",
         authorizeOnly: UserRole.TEACHER,
+      },
+    ],
+  },
+  {
+    title: "SUBSCRIPTIONS",
+    items: [
+      {
+        href: "/dashboard/subscriptions",
+        icon: "package",
+        title: "Plans",
+        description: "Browse subscription plans",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/subscriptions/transactions",
+        icon: "fileText",
+        title: "Transactions",
+        description: "View your payment history",
+        authorizeOnly: UserRole.STUDENT,
+      },
+      {
+        href: "/dashboard/subscriptions/history",
+        icon: "folder",
+        title: "Subscription History",
+        description: "View your active and past subscriptions",
+        authorizeOnly: UserRole.STUDENT,
       },
     ],
   },

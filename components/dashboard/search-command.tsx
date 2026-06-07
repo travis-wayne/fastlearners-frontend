@@ -70,7 +70,9 @@ export function SearchCommand({
         <CommandInput placeholder="Type a command or search..." />
         <CommandList>
           <CommandEmpty>No results found.</CommandEmpty>
-          {links.map((section) => (
+          {links.map((section) => {
+            if (section.items.length === 0) return null;
+            return (
             <CommandGroup key={section.title} heading={section.title}>
               {section.items.map((item) => {
                 const Icon = Icons[item.icon || "arrowRight"];
@@ -87,7 +89,8 @@ export function SearchCommand({
                 );
               })}
             </CommandGroup>
-          ))}
+            );
+          })}
         </CommandList>
       </CommandDialog>
     </>
