@@ -34,7 +34,7 @@ export interface Transaction {
   discount_amount: string;
   final_amount: string;
   gateway: string;
-  status: "successful" | "failed" | "pending";
+  status: "success" | "failed" | "pending";
   created_at: string;
   updated_at: string;
 }

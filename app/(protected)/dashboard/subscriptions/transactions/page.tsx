@@ -52,7 +52,7 @@ function formatApiDate(dateStr: string | undefined | null) {
 
 const getTransactionStatusBadge = (status: string) => {
   switch (status?.toLowerCase()) {
-    case "successful":
+    case "success":
       return <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Successful</span>;
     case "failed":
       return <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Failed</span>;
