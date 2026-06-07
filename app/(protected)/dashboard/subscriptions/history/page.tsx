@@ -104,8 +104,8 @@ export default function SubscriptionHistoryPage() {
       if (response.code === 404) {
         setSubscriptions([]);
         setError(null);
-      } else if (response.success && response.content) {
-        setSubscriptions(response.content.subscriptions || []);
+      } else if (response.success && response.content && response.content.length > 0) {
+        setSubscriptions(response.content[0].subscriptions || []);
       } else {
         setError(response.message || "Failed to load subscription history.");
       }

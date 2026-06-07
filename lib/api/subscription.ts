@@ -130,7 +130,7 @@ export async function getPaymentStatus(
 }
 
 export async function getTransactionHistory(): Promise<
-  ApiResponse<{ transactions: Transaction[] }>
+  ApiResponse<{ transactions: Transaction[] }[]>
 > {
   try {
     const res = await fetch("/api/proxy/transactions", {
@@ -150,7 +150,7 @@ export async function getTransactionHistory(): Promise<
 }
 
 export async function getSubscriptionHistory(): Promise<
-  ApiResponse<{ subscriptions: Subscription[] }>
+  ApiResponse<{ subscriptions: Subscription[] }[]>
 > {
   try {
     const res = await fetch("/api/proxy/subscriptions", {

@@ -78,8 +78,8 @@ export default function TransactionsPage() {
       if (response.code === 404) {
         setTransactions([]);
         setError(null);
-      } else if (response.success && response.content) {
-        setTransactions(response.content.transactions || []);
+      } else if (response.success && response.content && response.content.length > 0) {
+        setTransactions(response.content[0].transactions || []);
       } else {
         setError(response.message || "Failed to load transactions.");
       }
