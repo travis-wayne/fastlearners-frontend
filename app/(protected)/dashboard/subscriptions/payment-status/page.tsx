@@ -59,7 +59,7 @@ function PaymentStatusInner() {
     );
   }
 
-  if (error || !data || data.transaction_detail?.status !== "successful") {
+  if (error || !data) {
     return (
       <Card className="mx-auto mt-12 max-w-lg border-destructive/50 bg-destructive/5">
         <CardContent className="flex flex-col items-center py-12">
