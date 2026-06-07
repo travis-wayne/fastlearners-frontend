@@ -4,7 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { getPaymentStatus } from "@/lib/api/subscription";
 import { PaymentStatusContent } from "@/lib/types/subscription";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
@@ -28,6 +28,7 @@ function PaymentStatusInner() {
     async function fetchStatus() {
       try {
         const response = await getPaymentStatus(reference as string);
+        console.log("[PaymentStatus] raw response:", JSON.stringify(response, null, 2));
         if (response.success && response.content) {
           setData(response.content);
         } else {
@@ -59,7 +60,7 @@ function PaymentStatusInner() {
     );
   }
 
-  if (error || !data) {
+  if (error || !data || !data.transaction_detail) {
     return (
       <Card className="mx-auto mt-12 max-w-lg border-destructive/50 bg-destructive/5">
         <CardContent className="flex flex-col items-center py-12">
@@ -128,7 +129,7 @@ function PaymentStatusInner() {
           )}
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Reference</span>
-            <span className="font-mono text-sm font-medium">{transaction_detail.reference}</span>
+            <span className="font-mono text-sm font-medium">{transaction_detail?.reference ?? searchParams.get("reference")}</span>
           </div>
           {transaction_detail.created_at && (
             <div className="flex items-center justify-between">
