@@ -93,11 +93,11 @@ export default function TransactionsPage() {
     const response = await getPaymentStatus(transaction.reference);
     
     // Always update status if backend provided it, even on failure
-    if (response.content?.transaction_detail?.status) {
+    if (response.content?.transaction_details?.status) {
       setTransactions((prev) =>
         prev.map((t) =>
           t.id === transaction.id
-            ? { ...t, status: response.content!.transaction_detail.status }
+            ? { ...t, status: response.content!.transaction_details.status }
             : t
         )
       );

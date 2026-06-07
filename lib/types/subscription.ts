@@ -40,7 +40,7 @@ export interface Transaction {
 }
 
 export interface PaymentStatusContent {
-  transaction_detail: {
+  transaction_details: {
     id: number;
     package?: string;
     coupon?: string | null;
@@ -48,7 +48,7 @@ export interface PaymentStatusContent {
     amount?: string;
     discount_amount?: string;
     final_amount?: string;
-    status: "successful" | "failed" | "pending";
+    status: "success" | "failed" | "pending";
     created_at?: string;
   };
 }

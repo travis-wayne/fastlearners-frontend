@@ -28,7 +28,6 @@ function PaymentStatusInner() {
     async function fetchStatus() {
       try {
         const response = await getPaymentStatus(reference as string);
-        console.log("[PaymentStatus] raw response:", JSON.stringify(response, null, 2));
         if (response.success && response.content) {
           setData(response.content);
         } else {
@@ -60,7 +59,7 @@ function PaymentStatusInner() {
     );
   }
 
-  if (error || !data || !data.transaction_detail) {
+  if (error || !data || !data.transaction_details) {
     return (
       <Card className="mx-auto mt-12 max-w-lg border-destructive/50 bg-destructive/5">
         <CardContent className="flex flex-col items-center py-12">
@@ -85,7 +84,7 @@ function PaymentStatusInner() {
     );
   }
 
-  const { transaction_detail } = data;
+  const { transaction_details } = data;
 
   return (
     <Card className="mx-auto mt-12 max-w-lg border-primary/50 bg-primary/5">
@@ -97,44 +96,44 @@ function PaymentStatusInner() {
         </p>
 
         <div className="mb-8 w-full space-y-4 rounded-lg border bg-background p-6">
-          {transaction_detail.package && (
+          {transaction_details.package && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Package</span>
-              <span className="font-medium">{transaction_detail.package}</span>
+              <span className="font-medium">{transaction_details.package}</span>
             </div>
           )}
-          {transaction_detail.amount && (
+          {transaction_details.amount && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Amount</span>
-              <span className="font-medium">₦{transaction_detail.amount}</span>
+              <span className="font-medium">₦{transaction_details.amount}</span>
             </div>
           )}
-          {transaction_detail.coupon && (
+          {transaction_details.coupon && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Coupon Applied</span>
-              <span className="font-medium">{transaction_detail.coupon}</span>
+              <span className="font-medium">{transaction_details.coupon}</span>
             </div>
           )}
-          {transaction_detail.discount_amount && transaction_detail.discount_amount !== "0.00" && (
+          {transaction_details.discount_amount && transaction_details.discount_amount !== "0.00" && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Discount</span>
-              <span className="font-medium text-green-600">-₦{transaction_detail.discount_amount}</span>
+              <span className="font-medium text-green-600">-₦{transaction_details.discount_amount}</span>
             </div>
           )}
-          {transaction_detail.final_amount && (
+          {transaction_details.final_amount && (
             <div className="flex items-center justify-between border-t pt-2">
               <span className="font-semibold">Total Paid</span>
-              <span className="font-bold">₦{transaction_detail.final_amount}</span>
+              <span className="font-bold">₦{transaction_details.final_amount}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Reference</span>
-            <span className="font-mono text-sm font-medium">{transaction_detail?.reference ?? searchParams.get("reference")}</span>
+            <span className="font-mono text-sm font-medium">{transaction_details?.reference ?? searchParams.get("reference")}</span>
           </div>
-          {transaction_detail.created_at && (
+          {transaction_details.created_at && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Date</span>
-              <span className="font-medium">{transaction_detail.created_at}</span>
+              <span className="font-medium">{transaction_details.created_at}</span>
             </div>
           )}
         </div>
