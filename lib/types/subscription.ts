@@ -40,14 +40,16 @@ export interface Transaction {
 }
 
 export interface PaymentStatusContent {
-  transaction: {
-    reference: string;
-    status: "successful" | "failed" | "pending";
-    amount?: string;
+  transaction_detail: {
+    id: number;
     package?: string;
-    subscription_reference?: string;
-    starts_at?: string;
-    expires_at?: string;
+    coupon?: string | null;
+    reference: string;
+    amount?: string;
+    discount_amount?: string;
+    final_amount?: string;
+    status: "successful" | "failed" | "pending";
+    created_at?: string;
   };
 }
 

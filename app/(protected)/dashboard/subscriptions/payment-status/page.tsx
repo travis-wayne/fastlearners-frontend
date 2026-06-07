@@ -59,7 +59,7 @@ function PaymentStatusInner() {
     );
   }
 
-  if (error || !data || data.transaction.status !== "successful") {
+  if (error || !data || data.transaction_detail?.status !== "successful") {
     return (
       <Card className="mx-auto mt-12 max-w-lg border-destructive/50 bg-destructive/5">
         <CardContent className="flex flex-col items-center py-12">
@@ -84,7 +84,7 @@ function PaymentStatusInner() {
     );
   }
 
-  const { transaction } = data;
+  const { transaction_detail } = data;
 
   return (
     <Card className="mx-auto mt-12 max-w-lg border-primary/50 bg-primary/5">
@@ -96,42 +96,44 @@ function PaymentStatusInner() {
         </p>
 
         <div className="mb-8 w-full space-y-4 rounded-lg border bg-background p-6">
-          {transaction.package && (
+          {transaction_detail.package && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Package</span>
-              <span className="font-medium">{transaction.package}</span>
+              <span className="font-medium">{transaction_detail.package}</span>
             </div>
           )}
-          {transaction.amount && (
+          {transaction_detail.amount && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Amount</span>
-              <span className="font-medium">₦{Number(transaction.amount).toLocaleString()}</span>
+              <span className="font-medium">₦{transaction_detail.amount}</span>
+            </div>
+          )}
+          {transaction_detail.coupon && (
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Coupon Applied</span>
+              <span className="font-medium">{transaction_detail.coupon}</span>
+            </div>
+          )}
+          {transaction_detail.discount_amount && transaction_detail.discount_amount !== "0.00" && (
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Discount</span>
+              <span className="font-medium text-green-600">-₦{transaction_detail.discount_amount}</span>
+            </div>
+          )}
+          {transaction_detail.final_amount && (
+            <div className="flex items-center justify-between border-t pt-2">
+              <span className="font-semibold">Total Paid</span>
+              <span className="font-bold">₦{transaction_detail.final_amount}</span>
             </div>
           )}
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground">Reference</span>
-            <span className="font-mono text-sm font-medium">{transaction.reference}</span>
+            <span className="font-mono text-sm font-medium">{transaction_detail.reference}</span>
           </div>
-          {transaction.subscription_reference && (
+          {transaction_detail.created_at && (
             <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Subscription Ref</span>
-              <span className="font-mono text-sm font-medium">{transaction.subscription_reference}</span>
-            </div>
-          )}
-          {transaction.starts_at && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Start Date</span>
-              <span className="font-medium">
-                {new Date(transaction.starts_at).toLocaleDateString()}
-              </span>
-            </div>
-          )}
-          {transaction.expires_at && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Expiry Date</span>
-              <span className="font-medium">
-                {new Date(transaction.expires_at).toLocaleDateString()}
-              </span>
+              <span className="text-muted-foreground">Date</span>
+              <span className="font-medium">{transaction_detail.created_at}</span>
             </div>
           )}
         </div>
