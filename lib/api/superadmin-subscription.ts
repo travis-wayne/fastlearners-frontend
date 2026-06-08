@@ -353,7 +353,12 @@ export async function adminGetSubscription(
       headers: { Accept: "application/json" },
       credentials: "include",
     });
-    return await res.json();
+    const data = await res.json();
+    // API returns content as an array — unwrap the first element
+    if (data.success && Array.isArray(data.content)) {
+      data.content = { subscription: data.content[0] };
+    }
+    return data;
   } catch (error: any) {
     return {
       success: false,
@@ -401,7 +406,12 @@ export async function adminGetTransaction(
       headers: { Accept: "application/json" },
       credentials: "include",
     });
-    return await res.json();
+    const data = await res.json();
+    // API returns content as an array — unwrap the first element
+    if (data.success && Array.isArray(data.content)) {
+      data.content = { transaction: data.content[0] };
+    }
+    return data;
   } catch (error: any) {
     return {
       success: false,
