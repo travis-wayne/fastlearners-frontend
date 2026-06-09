@@ -10,13 +10,11 @@ import { Clock } from "lucide-react";
 interface PackageCardProps {
   package: Package;
   showSubscribeButton?: boolean;
-  showViewButton?: boolean;
 }
 
 export function PackageCard({ 
   package: pkg, 
-  showSubscribeButton = false, 
-  showViewButton = true 
+  showSubscribeButton = true, 
 }: PackageCardProps) {
   return (
     <Card className="flex h-full flex-col">
@@ -50,11 +48,6 @@ export function PackageCard({
         </div>
       </CardContent>
       <CardFooter className="mt-auto flex gap-3">
-        {showViewButton && (
-          <Button variant="outline" className="w-full" asChild>
-            <Link href={`/dashboard/subscriptions/${pkg.id}`}>View Plan</Link>
-          </Button>
-        )}
         {showSubscribeButton && (
           <Button className="w-full" asChild>
             <Link href={`/dashboard/subscriptions/${pkg.id}/checkout`}>Subscribe</Link>

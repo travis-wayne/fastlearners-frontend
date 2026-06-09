@@ -46,6 +46,8 @@ export default function SubscriptionDetailPage({ params }: { params: { id: strin
         return <Badge className="bg-red-100 text-red-800 hover:bg-red-100/80">Expired</Badge>;
       case "pending":
         return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100/80">Pending</Badge>;
+      case "cancelled":
+        return <Badge className="bg-slate-100 text-slate-800 hover:bg-slate-100/80">Cancelled</Badge>;
       default:
         return <Badge variant="secondary" className="capitalize">{status}</Badge>;
     }

@@ -35,6 +35,8 @@ function getStatusBadge(status: string) {
       return <Badge className="bg-red-100 text-red-800 hover:bg-red-100/80">Expired</Badge>;
     case "pending":
       return <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100/80">Pending</Badge>;
+    case "cancelled":
+      return <Badge className="bg-slate-100 text-slate-800 hover:bg-slate-100/80">Cancelled</Badge>;
     default:
       return <Badge variant="secondary" className="capitalize">{status}</Badge>;
   }
@@ -66,6 +68,11 @@ export default function SubscriptionsPage() {
   }
 
   const columns: ColumnDef<AdminSubscription>[] = [
+    {
+      id: "serial",
+      header: "#",
+      cell: ({ row }) => <span className="font-medium">{row.index + 1}</span>,
+    },
     {
       accessorKey: "user_name",
       header: "User Name",
@@ -167,6 +174,7 @@ export default function SubscriptionsPage() {
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
+                  <TableCell><Skeleton className="h-4 w-[20px]" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-[120px]" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
                   <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>

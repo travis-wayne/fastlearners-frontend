@@ -1,9 +1,11 @@
 "use client";
 
-import { startTransition, useCallback } from "react";
+import { startTransition, useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { getSubscriptionHistory } from "@/lib/api/subscription";
+import { getSubscriptionStatusBadge } from "@/lib/utils/subscription-status";
 import {
   BadgeCheck,
   Bell,
@@ -36,6 +38,7 @@ type NavUserProps = {
     image?: string | null;
     avatar?: string | null;
     role?: string[];
+    subscription_status?: string | null;
   };
 };
 
@@ -44,6 +47,28 @@ export function NavUser({ user }: NavUserProps) {
   const { logout } = useAuthStore();
   const router = useRouter();
   const [open, setOpen] = useDialogState();
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchStatus() {
+      if (!user?.role?.includes("student")) {
+        setSubscriptionStatus(null);
+        return;
+      }
+      try {
+        const response = await getSubscriptionHistory();
+        if (response.success && Array.isArray(response.content) && response.content.length > 0) {
+          const firstBucket = response.content[0];
+          if (firstBucket && Array.isArray(firstBucket.subscriptions) && firstBucket.subscriptions.length > 0) {
+            setSubscriptionStatus(firstBucket.subscriptions[0].status ?? null);
+          }
+        }
+      } catch (error) {
+        // fail silently
+      }
+    }
+    fetchStatus();
+  }, [user]);
 
   const handleLogout = useCallback(async () => {
     // Defer logout to avoid blocking UI
@@ -131,6 +156,9 @@ export function NavUser({ user }: NavUserProps) {
                   <div className="grid flex-1 text-start text-sm leading-tight">
                     <span className="truncate font-semibold">{name}</span>
                     <span className="truncate text-xs">{email}</span>
+                    {user?.role?.includes("student") && subscriptionStatus && (
+                      <div className="mt-1">{getSubscriptionStatusBadge(subscriptionStatus)}</div>
+                    )}
                   </div>
                 </div>
               </DropdownMenuLabel>

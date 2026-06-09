@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getPackage, subscribeToPackage } from "@/lib/api/subscription";
+import { getPackage, subscribeToPackage, verifyCoupon } from "@/lib/api/subscription";
 import { Package } from "@/lib/types/subscription";
 import { PackageCard } from "@/components/subscription/package-card";
 import { useForm } from "react-hook-form";
@@ -29,9 +29,23 @@ export default function CheckoutPage() {
   const [isLoadingPackage, setIsLoadingPackage] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { register, handleSubmit } = useForm<CheckoutFormValues>({
+  const [couponVerified, setCouponVerified] = useState(false);
+  const [couponBreakdown, setCouponBreakdown] = useState<{ amount: string; discount_amount: string; payment_amount: string } | null>(null);
+  const [isVerifying, setIsVerifying] = useState(false);
+  const [verifiedCoupon, setVerifiedCoupon] = useState<string | null>(null);
+
+  const { register, handleSubmit, watch } = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutSchema),
   });
+
+  const couponCode = watch("coupon_code");
+
+  useEffect(() => {
+    if (couponVerified && couponCode !== verifiedCoupon) {
+      setCouponBreakdown(null);
+      setCouponVerified(false);
+    }
+  }, [couponCode, verifiedCoupon, couponVerified]);
 
   useEffect(() => {
     async function fetchPackage() {
@@ -54,6 +68,37 @@ export default function CheckoutPage() {
 
     fetchPackage();
   }, [params.id, router]);
+
+  const handleVerifyCoupon = async () => {
+    if (!pkg) return;
+    if (!couponCode) {
+      showApiToast("error", "Please enter a coupon code");
+      return;
+    }
+
+    setIsVerifying(true);
+    try {
+      const response = await verifyCoupon(pkg.id, couponCode);
+      if (response.success && response.content) {
+        setCouponBreakdown(response.content);
+        setCouponVerified(true);
+        setVerifiedCoupon(couponCode);
+        showApiToast("success", "Coupon applied successfully");
+      } else {
+        setCouponBreakdown(null);
+        setCouponVerified(false);
+        setVerifiedCoupon(null);
+        showApiToast(response.type ?? "error", response.message || "Failed to verify coupon");
+      }
+    } catch (err) {
+      setCouponBreakdown(null);
+      setCouponVerified(false);
+      setVerifiedCoupon(null);
+      showApiToast("error", "An error occurred while verifying coupon");
+    } finally {
+      setIsVerifying(false);
+    }
+  };
 
   const onSubmit = async (data: CheckoutFormValues) => {
     if (!pkg) return;
@@ -124,12 +169,40 @@ export default function CheckoutPage() {
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
                   <div className="space-y-2">
                     <Label htmlFor="coupon_code">Coupon Code (optional)</Label>
-                    <Input
-                      id="coupon_code"
-                      placeholder="e.g. NEWCOMER20"
-                      {...register("coupon_code")}
-                    />
+                    <div className="flex gap-2">
+                      <Input
+                        id="coupon_code"
+                        placeholder="e.g. NEWCOMER20"
+                        {...register("coupon_code")}
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={handleVerifyCoupon}
+                        disabled={isVerifying}
+                      >
+                        {isVerifying ? <Loader2 className="size-4 animate-spin" /> : "Verify"}
+                      </Button>
+                    </div>
                   </div>
+
+                  {couponBreakdown && (
+                    <div className="space-y-2 rounded-md border bg-muted/50 p-4">
+                      <div className="flex justify-between">
+                        <span>Amount:</span>
+                        <span>₦{couponBreakdown.amount}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Discount Amount:</span>
+                        <span>₦{couponBreakdown.discount_amount}</span>
+                      </div>
+                      <div className="flex justify-between font-medium">
+                        <span>Payable Amount:</span>
+                        <span>₦{couponBreakdown.payment_amount}</span>
+                      </div>
+                    </div>
+                  )}
+
                   <Button type="submit" className="w-full" disabled={isSubmitting}>
                     {isSubmitting ? (
                       <>
@@ -137,7 +210,7 @@ export default function CheckoutPage() {
                         Processing...
                       </>
                     ) : (
-                      "Subscribe Now"
+                      "Make Payment"
                     )}
                   </Button>
                 </form>
@@ -145,7 +218,7 @@ export default function CheckoutPage() {
             </Card>
           </div>
           <div className="lg:sticky lg:top-6">
-            <PackageCard package={pkg} showSubscribeButton={false} showViewButton={false} />
+            <PackageCard package={pkg} showSubscribeButton={false} />
           </div>
         </div>
       )}

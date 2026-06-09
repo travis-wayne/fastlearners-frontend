@@ -8,12 +8,10 @@ if (!fs.existsSync(logFile)) {
 }
 
 const date = new Date().toISOString().split("T")[0];
-const technicalChange =
-  "Resolved production build failures by fixing Tailwind CSS classname ordering and enforce-shorthand rules, escaping JSX apostrophes in components/records/GuardianRecordsPage.tsx and app/(protected)/dashboard/subscriptions/transactions/page.tsx, and resolving missing useEffect dependency warnings.";
-const socialMediaContent =
-  "🚀 FastLearners production build is officially green! Cleaned up code layout, escaped JSX characters, and squashed linter warnings so we compile flawlessly. Smooth deployments ahead! ✨ #NextJS #BuildInPublic #CleanCode";
+const technicalChange = process.argv[2] || "Updated subscription and transaction types, unified tables with serial columns, updated statuses";
+const socialMediaContent = process.argv[3] || "🚀 Enhanced FastLearners subscription tracking! Added processing status, discount columns, unified tables with serial numbers, and squashed status badge issues. Tables are perfectly synced with backend types! 💯 #NextJS #BuildInPublic #Typescript";
 
-const newRow = `${date},"${technicalChange}","${socialMediaContent}"\n`;
+const newRow = `${date},"${technicalChange.replace(/"/g, '""')}","${socialMediaContent.replace(/"/g, '""')}"\n`;
 
 fs.appendFileSync(logFile, newRow);
 console.log("Change logged successfully to docs/project_changelog.csv");

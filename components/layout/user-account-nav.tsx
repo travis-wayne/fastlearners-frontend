@@ -4,6 +4,8 @@ import { startTransition, useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuthStore } from "@/store/authStore";
+import { getSubscriptionHistory } from "@/lib/api/subscription";
+import { getSubscriptionStatusBadge } from "@/lib/utils/subscription-status";
 import { GraduationCap, LayoutDashboard, Lock, LogOut, Settings } from "lucide-react";
 import { Drawer } from "vaul";
 
@@ -23,11 +25,34 @@ export function UserAccountNav() {
   const pathname = usePathname();
 
   const [open, setOpen] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<string | null>(null);
+
   const closeDrawer = () => {
     setOpen(false);
   };
 
   const { isMobile } = useMediaQuery();
+
+  useEffect(() => {
+    async function fetchStatus() {
+      if (!user?.role?.includes("student")) {
+        setSubscriptionStatus(null);
+        return;
+      }
+      try {
+        const response = await getSubscriptionHistory();
+        if (response.success && Array.isArray(response.content) && response.content.length > 0) {
+          const firstBucket = response.content[0];
+          if (firstBucket && Array.isArray(firstBucket.subscriptions) && firstBucket.subscriptions.length > 0) {
+            setSubscriptionStatus(firstBucket.subscriptions[0].status ?? null);
+          }
+        }
+      } catch (error) {
+        // fail silently
+      }
+    }
+    fetchStatus();
+  }, [user]);
 
   // Close drawer on route changes
   useEffect(() => {
@@ -73,6 +98,9 @@ export function UserAccountNav() {
                   <p className="w-[200px] truncate text-muted-foreground">
                     {user?.email}
                   </p>
+                )}
+                {user?.role?.includes("student") && subscriptionStatus && (
+                  <div className="mt-1">{getSubscriptionStatusBadge(subscriptionStatus)}</div>
                 )}
                 {user.class && (
                   <div className="mt-1 flex items-center gap-1">
@@ -165,6 +193,9 @@ export function UserAccountNav() {
               <p className="w-[200px] truncate text-sm text-muted-foreground">
                 {user?.email}
               </p>
+            )}
+            {user?.role?.includes("student") && subscriptionStatus && (
+              <div className="mt-1">{getSubscriptionStatusBadge(subscriptionStatus)}</div>
             )}
             {user.class && (
               <div className="mt-1 flex items-center gap-1">

@@ -36,7 +36,26 @@ import {
 import { ProfilePageData } from "@/lib/types/profile";
 import { useDebounce } from "@/hooks/use-debounce";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+
+function getSubscriptionStatusBadge(status?: string) {
+  if (!status) return null;
+  const s = status.toLowerCase();
+  if (s === "active") {
+    return <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Active</Badge>;
+  }
+  if (s === "pending") {
+    return <Badge className="border-amber-200 bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>;
+  }
+  if (s === "expired") {
+    return <Badge className="border-red-200 bg-red-100 text-red-800 hover:bg-red-100">Expired</Badge>;
+  }
+  if (s === "cancelled") {
+    return <Badge className="border-slate-200 bg-slate-100 text-slate-800 hover:bg-slate-100">Cancelled</Badge>;
+  }
+  return <Badge className="border-gray-200 bg-gray-100 capitalize text-gray-800 hover:bg-gray-100">{status}</Badge>;
+}
 import {
   Card,
   CardContent,
@@ -451,13 +470,16 @@ export function ProfileForm({ onSuccess }: ProfileFormProps) {
                 </button>
               </div>
               <CardTitle>{profile?.name}</CardTitle>
-              <CardDescription className="flex items-center justify-center gap-1">
+              <CardDescription className="flex items-center justify-center gap-2">
                 {selectedRole || primaryRole ? (
                   <span className="badge rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium capitalize text-primary">
                     {primaryRole || selectedRole}
                   </span>
                 ) : (
                   "Guest User"
+                )}
+                {profile?.subscription_status && (
+                  getSubscriptionStatusBadge(profile.subscription_status)
                 )}
               </CardDescription>
             </CardHeader>

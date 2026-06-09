@@ -32,6 +32,7 @@ export interface User {
   role: UserRole[];
   child_email?: string | null;
   child_phone?: string | null;
+  subscription_status?: string | null;
 }
 
 export type UserRole =

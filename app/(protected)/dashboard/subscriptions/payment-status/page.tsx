@@ -7,8 +7,26 @@ import { PaymentStatusContent } from "@/lib/types/subscription";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { CheckCircle2, XCircle, ArrowLeft } from "lucide-react";
+import { CheckCircle2, XCircle, ArrowLeft, Clock } from "lucide-react";
 import Link from "next/link";
+import { Badge } from "@/components/ui/badge";
+
+function getTransactionStatusBadge(status: string) {
+  const s = status.toLowerCase();
+  if (s === "success" || s === "successful") {
+    return <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Successful</Badge>;
+  }
+  if (s === "pending") {
+    return <Badge className="border-amber-200 bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>;
+  }
+  if (s === "processing") {
+    return <Badge className="border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-100">Processing</Badge>;
+  }
+  if (s === "failed") {
+    return <Badge className="border-red-200 bg-red-100 text-red-800 hover:bg-red-100">Failed</Badge>;
+  }
+  return <Badge className="border-gray-200 bg-gray-100 text-gray-800 hover:bg-gray-100">{status}</Badge>;
+}
 
 function PaymentStatusInner() {
   const searchParams = useSearchParams();
@@ -85,12 +103,74 @@ function PaymentStatusInner() {
   }
 
   const { transaction_details } = data;
+  const status = transaction_details.status?.toLowerCase() || "";
+  const isPendingOrProcessing = status === "pending" || status === "processing";
+  const isFailed = status === "failed";
+  
+  if (isFailed) {
+    return (
+      <Card className="mx-auto mt-12 max-w-lg border-destructive/50 bg-destructive/5">
+        <CardContent className="flex flex-col items-center py-12">
+          <XCircle className="mb-6 size-16 text-destructive" />
+          <h2 className="mb-2 text-2xl font-bold">Payment Failed</h2>
+          <div className="mb-4">
+            {getTransactionStatusBadge(transaction_details.status)}
+          </div>
+          <p className="mb-6 text-center text-muted-foreground">
+            Your transaction could not be completed successfully.
+            {searchParams.get("reference") && (
+              <span className="mt-2 block text-sm">
+                Reference: {searchParams.get("reference")}
+              </span>
+            )}
+          </p>
+          <Button asChild>
+            <Link href="/dashboard/subscriptions">
+              <ArrowLeft className="mr-2 size-4" />
+              Try Again
+            </Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isPendingOrProcessing) {
+    return (
+      <Card className="mx-auto mt-12 max-w-lg border-amber-500/50 bg-amber-500/5">
+        <CardContent className="flex flex-col items-center py-12">
+          <Clock className="mb-6 size-16 text-amber-500" />
+          <h2 className="mb-2 text-2xl font-bold">
+            {status === "pending" ? "Payment Pending" : "Payment Processing"}
+          </h2>
+          <div className="mb-4">
+            {getTransactionStatusBadge(transaction_details.status)}
+          </div>
+          <div className="mb-8 w-full space-y-4 rounded-lg border bg-background p-6">
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Reference</span>
+              <span className="font-mono text-sm font-medium">{transaction_details?.reference ?? searchParams.get("reference")}</span>
+            </div>
+          </div>
+          <p className="mb-6 text-center text-muted-foreground">
+            Your payment is currently being processed. Please check back later.
+          </p>
+          <Button asChild>
+            <Link href="/dashboard">Go to Dashboard</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <Card className="mx-auto mt-12 max-w-lg border-primary/50 bg-primary/5">
       <CardContent className="flex flex-col items-center py-12">
         <CheckCircle2 className="mb-6 size-16 text-primary" />
         <h2 className="mb-2 text-2xl font-bold">Payment Successful!</h2>
+        <div className="mb-4">
+          {getTransactionStatusBadge(transaction_details.status)}
+        </div>
         <p className="mb-8 text-muted-foreground">
           Your subscription has been activated.
         </p>
@@ -114,16 +194,16 @@ function PaymentStatusInner() {
               <span className="font-medium">{transaction_details.coupon}</span>
             </div>
           )}
-          {transaction_details.discount_amount && transaction_details.discount_amount !== "0.00" && (
+          {transaction_details.discount_amount && (
             <div className="flex items-center justify-between">
               <span className="text-muted-foreground">Discount</span>
               <span className="font-medium text-green-600">-₦{transaction_details.discount_amount}</span>
             </div>
           )}
-          {transaction_details.final_amount && (
+          {transaction_details.payment_amount && (
             <div className="flex items-center justify-between border-t pt-2">
-              <span className="font-semibold">Total Paid</span>
-              <span className="font-bold">₦{transaction_details.final_amount}</span>
+              <span className="font-semibold">Payment Amount</span>
+              <span className="font-bold">₦{transaction_details.payment_amount}</span>
             </div>
           )}
           <div className="flex items-center justify-between">

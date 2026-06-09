@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { getSubscriptionHistory } from "@/lib/api/subscription";
 import { Subscription } from "@/lib/types/subscription";
+import { getSubscriptionStatusBadge } from "@/lib/utils/subscription-status";
 import {
   Table,
   TableBody,
@@ -39,20 +40,14 @@ function formatApiDate(dateStr: string | undefined | null) {
   return dateStr;
 }
 
-const getSubscriptionStatusBadge = (status: string) => {
-  switch (status?.toLowerCase()) {
-    case "active":
-      return <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Active</span>;
-    case "expired":
-      return <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Expired</span>;
-    case "pending":
-      return <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">Pending</span>;
-    default:
-      return <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">{status}</span>;
-  }
-};
+
 
 const columns: ColumnDef<Subscription>[] = [
+  {
+    id: "serial",
+    header: "#",
+    cell: ({ row }) => row.index + 1,
+  },
   {
     accessorKey: "package",
     header: "Package",

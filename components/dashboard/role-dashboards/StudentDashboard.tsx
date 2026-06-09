@@ -15,6 +15,7 @@ import { useAuthStore } from "@/store/authStore";
 
 import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
 import { getAllSubjectsTotalScores } from "@/lib/api/lessons";
+import { getSubscriptionStatusBadge } from "@/lib/utils/subscription-status";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -34,6 +35,8 @@ import { OverviewGrid } from "@/components/dashboard/OverviewGrid";
 import { PerformanceSection } from "@/components/dashboard/PerformanceSection";
 import { ProgressDonut } from "@/components/dashboard/ProgressDonut";
 import { useAcademicContext } from "@/components/providers/academic-context";
+
+
 
 // Animation variants for smooth entrance
 const containerVariants = {
@@ -322,18 +325,15 @@ export function StudentDashboard() {
                   Subscription
                 </p>
                 <div className="flex items-baseline gap-2">
-                  <h3 className="text-xl font-bold sm:text-2xl">
+                  <div className="text-xl font-bold sm:text-2xl">
                     {isLoadingDashboard ? (
                       <Skeleton className="h-8 w-16" />
                     ) : dashboardData?.subscription_status ? (
-                      dashboardData.subscription_status
-                        .charAt(0)
-                        .toUpperCase() +
-                      dashboardData.subscription_status.slice(1)
+                      getSubscriptionStatusBadge(dashboardData.subscription_status)
                     ) : (
                       "—"
                     )}
-                  </h3>
+                  </div>
                 </div>
               </div>
               <div className="absolute right-0 top-0 flex size-8 items-center justify-center rounded-bl-xl bg-primary/10">
@@ -389,10 +389,7 @@ export function StudentDashboard() {
                 {
                   label: "Subscription Status",
                   value: dashboardData?.subscription_status
-                    ? dashboardData.subscription_status
-                        .charAt(0)
-                        .toUpperCase() +
-                      dashboardData.subscription_status.slice(1)
+                    ? getSubscriptionStatusBadge(dashboardData.subscription_status)
                     : "N/A",
                 },
               ]}

@@ -49,7 +49,7 @@ export async function verifyCoupon(
   ApiResponse<{
     amount: string;
     discount_amount: string;
-    final_amount: string;
+    payment_amount: string;
   }>
 > {
   try {

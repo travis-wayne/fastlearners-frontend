@@ -64,7 +64,7 @@ export default function SubscriptionsPage() {
       ) : (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {packages.map((pkg) => (
-            <PackageCard key={pkg.id} package={pkg} showViewButton />
+            <PackageCard key={pkg.id} package={pkg} />
           ))}
         </div>
       )}

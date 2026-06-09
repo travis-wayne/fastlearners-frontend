@@ -21,22 +21,27 @@ export interface Subscription {
   subscription_reference: string;
   starts_at: string;
   expires_at: string;
-  status: "active" | "expired" | "pending";
+  status: "active" | "expired" | "pending" | "cancelled";
   created_at: string;
 }
 
-export interface Transaction {
+export type TransactionStatus = "success" | "successful" | "failed" | "pending" | "processing";
+
+export interface BaseTransaction {
   id: number;
   package: string;
-  coupon_code: string | null;
   reference: string;
   amount: string;
   discount_amount: string;
-  final_amount: string;
   gateway: string;
-  status: "success" | "successful" | "failed" | "pending";
+  status: TransactionStatus;
   created_at: string;
   updated_at: string;
+}
+
+export interface Transaction extends BaseTransaction {
+  coupon: string | null;
+  payment_amount: string;
 }
 
 export interface PaymentStatusContent {
@@ -47,8 +52,8 @@ export interface PaymentStatusContent {
     reference: string;
     amount?: string;
     discount_amount?: string;
-    final_amount?: string;
-    status: "success" | "successful" | "failed" | "pending";
+    payment_amount?: string;
+    status: TransactionStatus;
     created_at?: string;
   };
 }
@@ -77,7 +82,9 @@ export interface AdminSubscription extends Subscription {
   updated_at: string;
 }
 
-export interface AdminTransaction extends Transaction {
+export interface AdminTransaction extends BaseTransaction {
+  coupon_code: string | null;
+  final_amount: string;
   user_name: string;
   user_email: string;
 }

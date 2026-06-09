@@ -53,7 +53,10 @@ function formatApiDate(dateStr: string | undefined | null) {
 const getTransactionStatusBadge = (status: string) => {
   switch (status?.toLowerCase()) {
     case "success":
+    case "successful":
       return <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Successful</span>;
+    case "processing":
+      return <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">Processing</span>;
     case "failed":
       return <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Failed</span>;
     case "pending":
@@ -113,6 +116,11 @@ export default function TransactionsPage() {
 
   const columns: ColumnDef<Transaction>[] = [
     {
+      id: "serial",
+      header: "#",
+      cell: ({ row }) => row.index + 1,
+    },
+    {
       accessorKey: "package",
       header: "Package",
       cell: ({ row }) => <span className="font-medium">{row.original.package}</span>,
@@ -123,15 +131,25 @@ export default function TransactionsPage() {
       cell: ({ row }) => `₦${formatCurrency(row.original.amount)}`,
     },
     {
-      accessorKey: "final_amount",
-      header: "Final Amount",
-      cell: ({ row }) => `₦${formatCurrency(row.original.final_amount)}`,
+      accessorKey: "discount_amount",
+      header: "Discount Amount",
+      cell: ({ row }) => `₦${formatCurrency(row.original.discount_amount)}`,
     },
     {
-      accessorKey: "coupon_code",
+      accessorKey: "payment_amount",
+      header: "Payment Amount",
+      cell: ({ row }) => `₦${formatCurrency(row.original.payment_amount)}`,
+    },
+    {
+      accessorKey: "reference",
+      header: "Reference",
+      cell: ({ row }) => <span className="font-mono text-xs">{row.original.reference}</span>,
+    },
+    {
+      accessorKey: "coupon",
       header: "Coupon Code",
       cell: ({ row }) => {
-        const code = row.original.coupon_code;
+        const code = row.original.coupon;
         return code ? (
           <span className="font-mono text-xs">{code}</span>
         ) : (
@@ -159,7 +177,7 @@ export default function TransactionsPage() {
       header: "Action",
       cell: ({ row }) => {
         const transaction = row.original;
-        if (transaction.status === "pending") {
+        if (transaction.status === "pending" || transaction.status === "processing") {
           const isVerifying = verifyingId === transaction.id;
           return (
             <Button

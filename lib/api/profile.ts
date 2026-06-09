@@ -34,6 +34,7 @@ export interface UserProfile {
   address: string | null;
   gender: string | null;
   status: string;
+  subscription_status?: string;
 }
 
 export interface ProfileResponse {

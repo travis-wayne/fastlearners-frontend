@@ -19,7 +19,7 @@ export interface OverviewChange {
 
 export interface OverviewItem {
   label: string;
-  value: string | number;
+  value: React.ReactNode;
   icon?: React.ReactNode;
   iconColorClass?: string;
   change?: OverviewChange;
