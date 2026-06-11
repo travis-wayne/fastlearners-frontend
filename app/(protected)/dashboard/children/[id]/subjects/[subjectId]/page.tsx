@@ -68,7 +68,7 @@ export default function SubjectDetailPage() {
 
   if (error || !subjectDetail) {
     return (
-      <div className="space-y-6 text-center py-12">
+      <div className="space-y-6 py-12 text-center">
         <h3 className="text-lg font-medium text-red-500">{error || "Subject not found"}</h3>
         <Button onClick={() => router.back()} variant="outline" className="mt-4">
           <ArrowLeft className="mr-2 size-4" /> Go Back
@@ -89,9 +89,9 @@ export default function SubjectDetailPage() {
         />
       </div>
 
-      <Card className="bg-gradient-to-br from-primary/10 to-transparent border-primary/20">
+      <Card className="border-primary/20 bg-gradient-to-br from-primary/10 to-transparent">
         <CardContent className="p-6">
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Overall Score</h3>
+          <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Overall Score</h3>
           <p className="mt-2 text-4xl font-bold">{subjectDetail.subject_total_score}</p>
         </CardContent>
       </Card>
@@ -102,11 +102,11 @@ export default function SubjectDetailPage() {
         </CardHeader>
         <CardContent>
           {subjectDetail.lesson_scores.length === 0 ? (
-             <div className="py-8 text-center text-muted-foreground border rounded-lg border-dashed">
+             <div className="rounded-lg border border-dashed py-8 text-center text-muted-foreground">
                 No lessons completed yet.
              </div>
           ) : (
-            <div className="rounded-md border overflow-x-auto">
+            <div className="overflow-x-auto rounded-md border">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -124,13 +124,13 @@ export default function SubjectDetailPage() {
                       <TableCell className="font-medium">{lesson.lesson_topic}</TableCell>
                       <TableCell>{lesson.term_name}</TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Calendar className="size-3" />
                           {lesson.start_date || "N/A"}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="flex items-center gap-1 text-muted-foreground text-sm">
+                        <div className="flex items-center gap-1 text-sm text-muted-foreground">
                           <Clock className="size-3" />
                           {lesson.last_attempted_date || "N/A"}
                         </div>

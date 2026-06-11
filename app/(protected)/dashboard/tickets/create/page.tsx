@@ -105,11 +105,11 @@ export default function CreateTicketPage() {
   }
 
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="max-w-3xl space-y-6">
       <div className="flex items-center space-x-2">
         <Link href="/dashboard/tickets">
           <Button variant="ghost" size="icon">
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="size-5" />
           </Button>
         </Link>
         <div>
@@ -238,7 +238,7 @@ export default function CreateTicketPage() {
               <Button type="submit" disabled={isSubmitting} className="w-full sm:w-auto">
                 {isSubmitting ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-2 size-4 animate-spin" />
                     Submitting...
                   </>
                 ) : (

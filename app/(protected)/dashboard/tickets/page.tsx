@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MessagesSquare, Plus, Eye } from "lucide-react";
 import { showApiToast } from "@/lib/utils/api-toast";
 import Link from "next/link";
@@ -35,9 +35,15 @@ export default function TicketsPage() {
     fetchTickets();
   }, []);
 
+  const fetchCountRef = useRef(0);
+
   async function fetchTickets() {
+    const currentFetch = ++fetchCountRef.current;
     setLoading(true);
     const res = await getTickets();
+    
+    if (currentFetch !== fetchCountRef.current) return;
+
     if (res.success && res.content) {
       setTickets(res.content.tickets || []);
     } else {
@@ -112,7 +118,7 @@ export default function TicketsPage() {
         </div>
         <Link href="/dashboard/tickets/create">
           <Button>
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-2 size-4" />
             New Ticket
           </Button>
         </Link>

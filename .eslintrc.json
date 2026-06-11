@@ -61,7 +61,7 @@
       "parser": "@typescript-eslint/parser"
     },
     {
-      "files": ["app/api/**/*.ts", "app/api/**/*.tsx"],
+      "files": ["app/api/**/*.ts", "app/api/**/*.tsx", "middleware.ts"],
       "rules": {
         "no-restricted-imports": "off"
       }

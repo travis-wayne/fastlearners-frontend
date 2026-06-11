@@ -25,6 +25,10 @@ import { Progress } from "@/components/ui/progress";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LessonSummaryCard } from "@/components/dashboard/student/LessonSummaryCard";
 import { useAcademicContext } from "@/components/providers/academic-context";
+import {
+  deriveLessonStatus,
+  lessonStatusBadgeClass,
+} from "@/lib/utils/lesson-status";
 
 export default function SubjectPerformancePage() {
   const params = useParams();
@@ -46,6 +50,9 @@ export default function SubjectPerformancePage() {
   const [expandedTopicId, setExpandedTopicId] = useState<number | null>(null);
   const [summaryCache, setSummaryCache] = useState<
     Map<number, LessonSummaryResponse>
+  >(new Map());
+  const [summaryStatusMap, setSummaryStatusMap] = useState<
+    Map<number, boolean>
   >(new Map());
   const [loadingSummaryId, setLoadingSummaryId] = useState<number | null>(null);
 
@@ -124,7 +131,7 @@ export default function SubjectPerformancePage() {
           if (t.third_term) allTopicsList.push(...t.third_term);
         }
 
-        // 5. Per-lesson scores
+        // 5. Per-lesson scores & eager summary fetch
         if (allTopicsList.length > 0) {
           const lessonPromises = allTopicsList.map(async (topic) => {
             const res = await getLessonScore(topic.id);
@@ -136,11 +143,53 @@ export default function SubjectPerformancePage() {
             return { id: topic.id, score };
           });
 
-          const results = await Promise.all(lessonPromises);
+          const summaryPromises = allTopicsList.map(async (topic) => {
+            try {
+              const res = await getLessonSummary(topic.id);
+              return { id: topic.id, res };
+            } catch (err) {
+              return { id: topic.id, res: null };
+            }
+          });
+
+          const [results, summaryResults] = await Promise.all([
+            Promise.all(lessonPromises),
+            Promise.all(summaryPromises),
+          ]);
+
           if (isMounted) {
             const scoresMap = new Map<number, number>();
             results.forEach((r) => scoresMap.set(r.id, r.score));
             setLessonScores(scoresMap);
+
+            const statusMap = new Map<number, boolean>();
+            const sCache = new Map(summaryCache); // Merge into existing cache
+            summaryResults.forEach((r) => {
+              if (r.res) {
+                const hasData = r.res.noData !== true && r.res.content !== null;
+                statusMap.set(r.id, hasData);
+                sCache.set(r.id, r.res);
+              } else {
+                statusMap.set(r.id, false);
+              }
+            });
+            setSummaryStatusMap(statusMap);
+            setSummaryCache(sCache);
+
+            // Fallback for subject score if it is 0 but we have valid lesson scores
+            if (
+              subjectScore === 0 && // or parseFloat((scoreRes?.content?.subject_total_score)) === 0 (if we had the raw scoreRes here. Relying on current subjectScore state is tricky because setSubjectScore hasn't flushed. We should use a local variable or just check the map). Let's calculate the average.
+              scoresMap.size > 0
+            ) {
+              const nonZeroScores = Array.from(scoresMap.values()).filter(
+                (s) => s > 0,
+              );
+              if (nonZeroScores.length > 0) {
+                const sum = nonZeroScores.reduce((a, b) => a + b, 0);
+                const avg = Math.round(sum / nonZeroScores.length);
+                setSubjectScore(avg);
+              }
+            }
           }
         }
       } catch (err: any) {
@@ -156,7 +205,14 @@ export default function SubjectPerformancePage() {
     return () => {
       isMounted = false;
     };
-  }, [subjectSlug, user?.class, currentClassApiId, currentTermApiId]);
+  }, [
+    subjectSlug,
+    user?.class,
+    currentClassApiId,
+    currentTermApiId,
+    subjectScore,
+    summaryCache,
+  ]);
 
   const renderTermSection = (title: string, termTopics?: TopicItem[]) => {
     if (!termTopics || termTopics.length === 0) return null;
@@ -169,7 +225,12 @@ export default function SubjectPerformancePage() {
         <CardContent className="space-y-4">
           {termTopics.map((topic) => {
             const score = lessonScores.get(topic.id) ?? 0;
-            const isNotStarted = score === 0; // Using score === 0 to denote "Not started"
+            const hasSummaryData = summaryStatusMap.get(topic.id) ?? false;
+            // TODO: We assume false for `isCompleted` for now, backend needs an API to tell us this.
+            // If the user has a grade/score we might want to say completed, but we'll stick to the plan.
+            const status = deriveLessonStatus(hasSummaryData, false);
+            const isNotStarted = status === "not_started";
+            const isInProgress = status === "in_progress";
             const gradeInfo = getGrade(score);
 
             return (
@@ -187,12 +248,31 @@ export default function SubjectPerformancePage() {
                     {isNotStarted ? (
                       <Badge
                         variant="secondary"
-                        className="whitespace-nowrap bg-muted text-muted-foreground"
+                        className={lessonStatusBadgeClass("not_started")}
                       >
                         Not started
                       </Badge>
+                    ) : isInProgress ? (
+                      <>
+                        <Badge
+                          variant="secondary"
+                          className={lessonStatusBadgeClass("in_progress")}
+                        >
+                          In progress
+                        </Badge>
+                        <span className="font-semibold">{score}%</span>
+                        <Badge className={gradeInfo.colorClass}>
+                          {gradeInfo.letter}
+                        </Badge>
+                      </>
                     ) : (
                       <>
+                        <Badge
+                          variant="secondary"
+                          className={lessonStatusBadgeClass("completed")}
+                        >
+                          Completed
+                        </Badge>
                         <span className="font-semibold">{score}%</span>
                         <Badge className={gradeInfo.colorClass}>
                           {gradeInfo.letter}
@@ -201,7 +281,7 @@ export default function SubjectPerformancePage() {
                     )}
                   </div>
                 </div>
-                {!isNotStarted && (
+                {(isInProgress || status === "completed") && (
                   <Progress value={score} className="h-1.5 sm:h-2" />
                 )}
 

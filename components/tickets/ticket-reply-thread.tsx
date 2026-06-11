@@ -12,7 +12,7 @@ interface TicketReplyThreadProps {
 export function TicketReplyThread({ replies }: TicketReplyThreadProps) {
   if (!replies || replies.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center p-8 text-center border rounded-lg border-dashed text-muted-foreground">
+      <div className="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center text-muted-foreground">
         <p>No replies yet.</p>
       </div>
     );
@@ -33,7 +33,7 @@ export function TicketReplyThread({ replies }: TicketReplyThreadProps) {
               }`}
             >
               <div className="mb-1 text-xs text-muted-foreground">
-                <span className="font-medium mr-2">
+                <span className="mr-2 font-medium">
                   {isUser ? "You" : "Support Agent"}
                 </span>
                 {reply.created_at ? parseDateString(reply.created_at)?.toLocaleString() : ""}
@@ -43,10 +43,10 @@ export function TicketReplyThread({ replies }: TicketReplyThreadProps) {
                   isUser ? "bg-primary text-primary-foreground" : "bg-muted"
                 }`}
               >
-                <CardContent className="p-3 text-sm whitespace-pre-wrap">
+                <CardContent className="whitespace-pre-wrap p-3 text-sm">
                   {reply.reply}
                   {reply.reply_attachments && reply.reply_attachments.length > 0 && (
-                    <div className="mt-3 pt-3 border-t border-primary/20 space-y-1">
+                    <div className="mt-3 space-y-1 border-t border-primary/20 pt-3">
                       {reply.reply_attachments.map((att) => (
                         <Link
                           key={att.id}
@@ -55,7 +55,7 @@ export function TicketReplyThread({ replies }: TicketReplyThreadProps) {
                           rel="noreferrer"
                           className="flex items-center text-xs hover:underline"
                         >
-                          <Paperclip className="h-3 w-3 mr-1" />
+                          <Paperclip className="mr-1 size-3" />
                           {att.file_name || `Attachment ${att.id}`}
                         </Link>
                       ))}

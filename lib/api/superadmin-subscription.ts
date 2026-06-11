@@ -385,6 +385,14 @@ export async function adminGetTransactions(
     const data = await res.json();
     if (data.success && Array.isArray(data.content)) {
       data.content = data.content[0];
+      if (data.content && Array.isArray(data.content.transactions)) {
+        data.content.transactions = data.content.transactions.map((t: any) => {
+          if (t.final_amount !== undefined && t.payment_amount === undefined) {
+            t.payment_amount = t.final_amount;
+          }
+          return t;
+        });
+      }
     }
     return data;
   } catch (error: any) {
@@ -409,7 +417,11 @@ export async function adminGetTransaction(
     const data = await res.json();
     // API returns content as an array — unwrap the first element
     if (data.success && Array.isArray(data.content)) {
-      data.content = { transaction: data.content[0] };
+      const transaction = data.content[0];
+      if (transaction && transaction.final_amount !== undefined && transaction.payment_amount === undefined) {
+        transaction.payment_amount = transaction.final_amount;
+      }
+      data.content = { transaction };
     }
     return data;
   } catch (error: any) {

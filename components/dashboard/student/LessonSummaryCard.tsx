@@ -74,7 +74,10 @@ export function LessonSummaryCard({
       {/* Divider + Total row */}
       <div className="my-2 border-t border-border" />
       <div className="flex justify-between font-bold">
-        <span>Total Score</span>
+        <span>
+          Total Score
+          <span className="ml-1 text-xs font-normal text-muted-foreground">(weighted)</span>
+        </span>
         <span className="text-right">{lesson_total}</span>
       </div>
     </div>

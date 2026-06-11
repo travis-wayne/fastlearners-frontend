@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { MessagesSquare, Eye } from "lucide-react";
 import { showApiToast } from "@/lib/utils/api-toast";
 import Link from "next/link";
@@ -35,9 +35,15 @@ export default function SuperadminTicketsPage() {
     fetchTickets();
   }, []);
 
+  const fetchCountRef = useRef(0);
+
   async function fetchTickets() {
+    const currentFetch = ++fetchCountRef.current;
     setLoading(true);
     const res = await adminGetTickets();
+    
+    if (currentFetch !== fetchCountRef.current) return;
+
     if (res.success && res.content) {
       setTickets(res.content.tickets || []);
     } else {

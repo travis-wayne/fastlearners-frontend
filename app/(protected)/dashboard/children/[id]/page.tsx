@@ -56,7 +56,7 @@ export default function ChildDetailPage() {
 
   if (error || !childDetail) {
     return (
-      <div className="space-y-6 text-center py-12">
+      <div className="space-y-6 py-12 text-center">
         <h3 className="text-lg font-medium text-red-500">{error || "Child not found"}</h3>
         <Button onClick={() => router.back()} variant="outline" className="mt-4">
           <ArrowLeft className="mr-2 size-4" /> Go Back
@@ -79,12 +79,12 @@ export default function ChildDetailPage() {
 
       <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         {childDetail.child_subjects.length === 0 ? (
-          <div className="col-span-full py-12 text-center text-muted-foreground border rounded-lg border-dashed">
+          <div className="col-span-full rounded-lg border border-dashed py-12 text-center text-muted-foreground">
             No subjects found for this child.
           </div>
         ) : (
           childDetail.child_subjects.map((subject) => (
-            <Card key={subject.id} className="hover:shadow-md transition-shadow">
+            <Card key={subject.id} className="transition-shadow hover:shadow-md">
               <CardHeader className="pb-4">
                 <div className="flex items-start justify-between">
                   <div className="rounded-lg bg-primary/10 p-2">

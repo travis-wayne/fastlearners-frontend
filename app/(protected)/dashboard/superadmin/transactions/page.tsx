@@ -30,14 +30,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 function getStatusBadge(status: string) {
   switch (status) {
     case "success":
-    case "successful":
       return <Badge className="bg-emerald-100 capitalize text-emerald-800 hover:bg-emerald-100/80">{status}</Badge>;
     case "failed":
       return <Badge className="bg-red-100 capitalize text-red-800 hover:bg-red-100/80">{status}</Badge>;
     case "pending":
       return <Badge className="bg-amber-100 capitalize text-amber-800 hover:bg-amber-100/80">{status}</Badge>;
-    case "processing":
-      return <Badge className="bg-blue-100 capitalize text-blue-800 hover:bg-blue-100/80">{status}</Badge>;
     default:
       return <Badge variant="secondary" className="capitalize">{status}</Badge>;
   }
@@ -107,9 +104,9 @@ export default function TransactionsPage() {
       cell: ({ row }) => `₦${Number(normalizeAmount(row.original.discount_amount)).toLocaleString()}`,
     },
     {
-      accessorKey: "final_amount",
+      accessorKey: "payment_amount",
       header: "Payment Amount",
-      cell: ({ row }) => `₦${Number(normalizeAmount(row.original.final_amount)).toLocaleString()}`,
+      cell: ({ row }) => `₦${Number(normalizeAmount(row.original.payment_amount)).toLocaleString()}`,
     },
     {
       accessorKey: "gateway",

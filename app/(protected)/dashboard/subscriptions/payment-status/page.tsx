@@ -13,14 +13,11 @@ import { Badge } from "@/components/ui/badge";
 
 function getTransactionStatusBadge(status: string) {
   const s = status.toLowerCase();
-  if (s === "success" || s === "successful") {
+  if (s === "success") {
     return <Badge className="border-emerald-200 bg-emerald-100 text-emerald-800 hover:bg-emerald-100">Successful</Badge>;
   }
   if (s === "pending") {
     return <Badge className="border-amber-200 bg-amber-100 text-amber-800 hover:bg-amber-100">Pending</Badge>;
-  }
-  if (s === "processing") {
-    return <Badge className="border-blue-200 bg-blue-100 text-blue-800 hover:bg-blue-100">Processing</Badge>;
   }
   if (s === "failed") {
     return <Badge className="border-red-200 bg-red-100 text-red-800 hover:bg-red-100">Failed</Badge>;
@@ -104,8 +101,9 @@ function PaymentStatusInner() {
 
   const { transaction_details } = data;
   const status = transaction_details.status?.toLowerCase() || "";
-  const isPendingOrProcessing = status === "pending" || status === "processing";
+  const isPending = status === "pending";
   const isFailed = status === "failed";
+  const isSuccess = status === "success";
   
   if (isFailed) {
     return (
@@ -135,13 +133,13 @@ function PaymentStatusInner() {
     );
   }
 
-  if (isPendingOrProcessing) {
+  if (isPending) {
     return (
       <Card className="mx-auto mt-12 max-w-lg border-amber-500/50 bg-amber-500/5">
         <CardContent className="flex flex-col items-center py-12">
           <Clock className="mb-6 size-16 text-amber-500" />
           <h2 className="mb-2 text-2xl font-bold">
-            {status === "pending" ? "Payment Pending" : "Payment Processing"}
+            Payment Pending
           </h2>
           <div className="mb-4">
             {getTransactionStatusBadge(transaction_details.status)}
@@ -163,63 +161,91 @@ function PaymentStatusInner() {
     );
   }
 
+  if (isSuccess) {
+    return (
+      <Card className="mx-auto mt-12 max-w-lg border-primary/50 bg-primary/5">
+        <CardContent className="flex flex-col items-center py-12">
+          <CheckCircle2 className="mb-6 size-16 text-primary" />
+          <h2 className="mb-2 text-2xl font-bold">Payment Successful!</h2>
+          <div className="mb-4">
+            {getTransactionStatusBadge(transaction_details.status)}
+          </div>
+          <p className="mb-8 text-muted-foreground">
+            Your subscription has been activated.
+          </p>
+
+          <div className="mb-8 w-full space-y-4 rounded-lg border bg-background p-6">
+            {transaction_details.package && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Package</span>
+                <span className="font-medium">{transaction_details.package}</span>
+              </div>
+            )}
+            {transaction_details.amount && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Amount</span>
+                <span className="font-medium">₦{transaction_details.amount}</span>
+              </div>
+            )}
+            {transaction_details.coupon && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Coupon Applied</span>
+                <span className="font-medium">{transaction_details.coupon}</span>
+              </div>
+            )}
+            {transaction_details.discount_amount && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Discount</span>
+                <span className="font-medium text-green-600">-₦{transaction_details.discount_amount}</span>
+              </div>
+            )}
+            {transaction_details.payment_amount && (
+              <div className="flex items-center justify-between border-t pt-2">
+                <span className="font-semibold">Payment Amount</span>
+                <span className="font-bold">₦{transaction_details.payment_amount}</span>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <span className="text-muted-foreground">Reference</span>
+              <span className="font-mono text-sm font-medium">{transaction_details?.reference ?? searchParams.get("reference")}</span>
+            </div>
+            {transaction_details.created_at && (
+              <div className="flex items-center justify-between">
+                <span className="text-muted-foreground">Date</span>
+                <span className="font-medium">{transaction_details.created_at}</span>
+              </div>
+            )}
+          </div>
+
+          <Button className="w-full" asChild>
+            <Link href="/dashboard">Go to Dashboard</Link>
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
   return (
-    <Card className="mx-auto mt-12 max-w-lg border-primary/50 bg-primary/5">
+    <Card className="mx-auto mt-12 max-w-lg border-muted bg-muted/5">
       <CardContent className="flex flex-col items-center py-12">
-        <CheckCircle2 className="mb-6 size-16 text-primary" />
-        <h2 className="mb-2 text-2xl font-bold">Payment Successful!</h2>
+        <Clock className="mb-6 size-16 text-muted-foreground" />
+        <h2 className="mb-2 text-2xl font-bold">Payment Status Unknown</h2>
         <div className="mb-4">
           {getTransactionStatusBadge(transaction_details.status)}
         </div>
-        <p className="mb-8 text-muted-foreground">
-          Your subscription has been activated.
+        <p className="mb-6 text-center text-muted-foreground">
+          Your payment status is currently unknown or processing. Please check your transaction history for updates.
+          {searchParams.get("reference") && (
+            <span className="mt-2 block text-sm">
+              Reference: {searchParams.get("reference")}
+            </span>
+          )}
         </p>
-
-        <div className="mb-8 w-full space-y-4 rounded-lg border bg-background p-6">
-          {transaction_details.package && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Package</span>
-              <span className="font-medium">{transaction_details.package}</span>
-            </div>
-          )}
-          {transaction_details.amount && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Amount</span>
-              <span className="font-medium">₦{transaction_details.amount}</span>
-            </div>
-          )}
-          {transaction_details.coupon && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Coupon Applied</span>
-              <span className="font-medium">{transaction_details.coupon}</span>
-            </div>
-          )}
-          {transaction_details.discount_amount && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Discount</span>
-              <span className="font-medium text-green-600">-₦{transaction_details.discount_amount}</span>
-            </div>
-          )}
-          {transaction_details.payment_amount && (
-            <div className="flex items-center justify-between border-t pt-2">
-              <span className="font-semibold">Payment Amount</span>
-              <span className="font-bold">₦{transaction_details.payment_amount}</span>
-            </div>
-          )}
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Reference</span>
-            <span className="font-mono text-sm font-medium">{transaction_details?.reference ?? searchParams.get("reference")}</span>
-          </div>
-          {transaction_details.created_at && (
-            <div className="flex items-center justify-between">
-              <span className="text-muted-foreground">Date</span>
-              <span className="font-medium">{transaction_details.created_at}</span>
-            </div>
-          )}
-        </div>
-
-        <Button className="w-full" asChild>
-          <Link href="/dashboard">Go to Dashboard</Link>
+        <Button asChild>
+          <Link href="/dashboard/subscriptions">
+            <ArrowLeft className="mr-2 size-4" />
+            Back to Subscriptions
+          </Link>
         </Button>
       </CardContent>
     </Card>

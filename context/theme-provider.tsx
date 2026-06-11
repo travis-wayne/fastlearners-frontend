@@ -142,7 +142,7 @@ export function ThemeProvider({
       theme,
       setTheme,
     }),
-    [defaultTheme, resolvedTheme, theme],
+    [defaultTheme, resolvedTheme, theme, resetTheme, setTheme],
   );
 
   return (
@@ -152,7 +152,7 @@ export function ThemeProvider({
   );
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
+
 export const useTheme = () => {
   const context = useContext(ThemeContext);
 

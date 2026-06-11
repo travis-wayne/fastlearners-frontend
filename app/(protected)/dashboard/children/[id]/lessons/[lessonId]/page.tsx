@@ -51,7 +51,7 @@ export default function LessonDetailPage() {
         <Skeleton className="h-10 w-[200px]" />
         <Skeleton className="h-6 w-[300px]" />
         <Skeleton className="h-[120px] w-full" />
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           <Skeleton className="h-[150px] w-full" />
           <Skeleton className="h-[150px] w-full" />
           <Skeleton className="h-[150px] w-full" />
@@ -62,7 +62,7 @@ export default function LessonDetailPage() {
 
   if (error || !lessonDetail) {
     return (
-      <div className="space-y-6 text-center py-12">
+      <div className="space-y-6 py-12 text-center">
         <h3 className="text-lg font-medium text-red-500">{error || "Lesson not found"}</h3>
         <Button onClick={() => router.back()} variant="outline" className="mt-4">
           <ArrowLeft className="mr-2 size-4" /> Go Back
@@ -85,14 +85,14 @@ export default function LessonDetailPage() {
         />
       </div>
 
-      <Card className="bg-gradient-to-br from-indigo-500/10 to-transparent border-indigo-500/20">
+      <Card className="border-indigo-500/20 bg-gradient-to-br from-indigo-500/10 to-transparent">
         <CardContent className="p-6">
-          <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Total Lesson Score</h3>
+          <h3 className="text-sm font-medium uppercase tracking-wider text-muted-foreground">Total Lesson Score</h3>
           <p className="mt-2 text-4xl font-bold text-indigo-600 dark:text-indigo-400">{lesson_total}</p>
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export default function LessonDetailPage() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{lesson_summary.overview || "0"}</p>
-            <p className="text-sm text-muted-foreground mt-1">Score</p>
+            <p className="mt-1 text-sm text-muted-foreground">Score</p>
           </CardContent>
         </Card>
 
@@ -115,7 +115,7 @@ export default function LessonDetailPage() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{lesson_summary.video || "0"}</p>
-            <p className="text-sm text-muted-foreground mt-1">Score</p>
+            <p className="mt-1 text-sm text-muted-foreground">Score</p>
           </CardContent>
         </Card>
 
@@ -128,7 +128,7 @@ export default function LessonDetailPage() {
           </CardHeader>
           <CardContent>
             <p className="text-3xl font-bold">{lesson_summary.general_exercise || "0"}</p>
-            <p className="text-sm text-muted-foreground mt-1">Score</p>
+            <p className="mt-1 text-sm text-muted-foreground">Score</p>
           </CardContent>
         </Card>
       </div>
@@ -143,13 +143,13 @@ export default function LessonDetailPage() {
         </CardHeader>
         <CardContent>
           {!lesson_summary.concepts || Object.keys(lesson_summary.concepts).length === 0 ? (
-            <p className="text-muted-foreground text-sm">No concept breakdown available.</p>
+            <p className="text-sm text-muted-foreground">No concept breakdown available.</p>
           ) : (
             <div className="space-y-4">
               {Object.entries(lesson_summary.concepts).map(([conceptName, score], index) => (
-                <div key={index} className="flex items-center justify-between border-b pb-2 last:border-0 last:pb-0 border-border/50">
+                <div key={index} className="flex items-center justify-between border-b border-border/50 pb-2 last:border-0 last:pb-0">
                   <span className="font-medium">{conceptName}</span>
-                  <span className="font-semibold px-3 py-1 bg-secondary rounded-full text-sm">{score as React.ReactNode}</span>
+                  <span className="rounded-full bg-secondary px-3 py-1 text-sm font-semibold">{score as React.ReactNode}</span>
                 </div>
               ))}
             </div>

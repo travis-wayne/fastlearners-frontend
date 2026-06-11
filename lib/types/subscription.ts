@@ -25,7 +25,7 @@ export interface Subscription {
   created_at: string;
 }
 
-export type TransactionStatus = "success" | "successful" | "failed" | "pending" | "processing";
+export type TransactionStatus = "success" | "failed" | "pending";
 
 export interface BaseTransaction {
   id: number;
@@ -84,7 +84,7 @@ export interface AdminSubscription extends Subscription {
 
 export interface AdminTransaction extends BaseTransaction {
   coupon_code: string | null;
-  final_amount: string;
+  payment_amount: string;
   user_name: string;
   user_email: string;
 }

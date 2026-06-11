@@ -87,7 +87,7 @@ export default function ChildrenPage() {
                   <CardContent className="p-6">
                     <div className="flex flex-col gap-4">
                       <div>
-                        <h3 className="font-semibold text-lg">{child.name}</h3>
+                        <h3 className="text-lg font-semibold">{child.name}</h3>
                         <p className="text-sm text-muted-foreground">{child.email}</p>
                       </div>
                       <div className="flex flex-wrap gap-2">
@@ -105,13 +105,13 @@ export default function ChildrenPage() {
               ))}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-center rounded-lg border border-dashed">
+            <div className="flex flex-col items-center justify-center rounded-lg border border-dashed py-12 text-center">
               <div className="mb-4 rounded-full bg-muted p-4">
                 <Users className="size-8 text-muted-foreground" />
               </div>
               <h3 className="text-lg font-medium">No children linked yet</h3>
-              <p className="mb-6 text-sm text-muted-foreground max-w-sm">
-                You haven't linked any children yet. Go to the Requests tab to invite a child to monitor their learning progress.
+              <p className="mb-6 max-w-sm text-sm text-muted-foreground">
+                You haven&apos;t linked any children yet. Go to the Requests tab to invite a child to monitor their learning progress.
               </p>
               <Button onClick={() => {
                 const trigger = document.querySelector('[data-state="inactive"][data-value="requests"]') as HTMLElement;

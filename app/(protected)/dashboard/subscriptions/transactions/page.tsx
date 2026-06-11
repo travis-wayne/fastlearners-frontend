@@ -53,10 +53,7 @@ function formatApiDate(dateStr: string | undefined | null) {
 const getTransactionStatusBadge = (status: string) => {
   switch (status?.toLowerCase()) {
     case "success":
-    case "successful":
       return <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Successful</span>;
-    case "processing":
-      return <span className="inline-flex items-center rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-semibold text-blue-800">Processing</span>;
     case "failed":
       return <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Failed</span>;
     case "pending":
@@ -177,7 +174,7 @@ export default function TransactionsPage() {
       header: "Action",
       cell: ({ row }) => {
         const transaction = row.original;
-        if (transaction.status === "pending" || transaction.status === "processing") {
+        if (transaction.status === "pending") {
           const isVerifying = verifyingId === transaction.id;
           return (
             <Button
