@@ -23,7 +23,7 @@ export default function GuardiansPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
       <DashboardHeader
         heading="Guardians"
         text="Manage guardian requests and monitor who can view your progress."

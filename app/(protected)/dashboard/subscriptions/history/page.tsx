@@ -1,9 +1,20 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { AlertCircle, Calendar, History } from "lucide-react";
+
 import { getSubscriptionHistory } from "@/lib/api/subscription";
 import { Subscription } from "@/lib/types/subscription";
 import { getSubscriptionStatusBadge } from "@/lib/utils/subscription-status";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -12,16 +23,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Calendar, History } from "lucide-react";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 
 // Helper for date parsing (handles day-first like DD-MM-YYYY or DD/MM/YYYY)
 function formatApiDate(dateStr: string | undefined | null) {
@@ -40,8 +41,6 @@ function formatApiDate(dateStr: string | undefined | null) {
   return dateStr;
 }
 
-
-
 const columns: ColumnDef<Subscription>[] = [
   {
     id: "serial",
@@ -51,12 +50,18 @@ const columns: ColumnDef<Subscription>[] = [
   {
     accessorKey: "package",
     header: "Package",
-    cell: ({ row }) => <span className="font-medium">{row.original.package}</span>,
+    cell: ({ row }) => (
+      <span className="font-medium">{row.original.package}</span>
+    ),
   },
   {
     accessorKey: "subscription_reference",
     header: "Subscription Reference",
-    cell: ({ row }) => <span className="font-mono text-xs">{row.original.subscription_reference}</span>,
+    cell: ({ row }) => (
+      <span className="font-mono text-xs">
+        {row.original.subscription_reference}
+      </span>
+    ),
   },
   {
     accessorKey: "starts_at",
@@ -74,7 +79,9 @@ const columns: ColumnDef<Subscription>[] = [
     cell: ({ row }) => (
       <div className="flex items-center gap-2">
         <Calendar className="size-4 text-muted-foreground" />
-        <span className="text-sm">{formatApiDate(row.original.expires_at)}</span>
+        <span className="text-sm">
+          {formatApiDate(row.original.expires_at)}
+        </span>
       </div>
     ),
   },
@@ -99,7 +106,11 @@ export default function SubscriptionHistoryPage() {
       if (response.code === 404) {
         setSubscriptions([]);
         setError(null);
-      } else if (response.success && response.content && response.content.length > 0) {
+      } else if (
+        response.success &&
+        response.content &&
+        response.content.length > 0
+      ) {
         setSubscriptions(response.content[0].subscriptions || []);
       } else {
         setError(response.message || "Failed to load subscription history.");
@@ -117,17 +128,23 @@ export default function SubscriptionHistoryPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Subscription History</h1>
-          <p className="text-muted-foreground">View your active and past subscriptions.</p>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Subscription History
+          </h1>
+          <p className="text-muted-foreground">
+            View your active and past subscriptions.
+          </p>
         </div>
         <div className="rounded-md border bg-card">
           <Table>
             <TableHeader>
               <TableRow>
                 {columns.map((col, i) => (
-                  <TableHead key={i}>{typeof col.header === 'string' ? col.header : '...'}</TableHead>
+                  <TableHead key={i}>
+                    {typeof col.header === "string" ? col.header : "..."}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -150,10 +167,14 @@ export default function SubscriptionHistoryPage() {
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight">Subscription History</h1>
-          <p className="text-muted-foreground">View your active and past subscriptions.</p>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Subscription History
+          </h1>
+          <p className="text-muted-foreground">
+            View your active and past subscriptions.
+          </p>
         </div>
         <Alert variant="destructive">
           <AlertCircle className="size-4" />
@@ -165,17 +186,23 @@ export default function SubscriptionHistoryPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Subscription History</h1>
-        <p className="text-muted-foreground">View your active and past subscriptions.</p>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Subscription History
+        </h1>
+        <p className="text-muted-foreground">
+          View your active and past subscriptions.
+        </p>
       </div>
 
       {!subscriptions || subscriptions.length === 0 ? (
         <Card className="border-dashed">
           <CardContent className="flex flex-col items-center justify-center p-12 text-center">
             <History className="mb-4 size-12 text-muted-foreground" />
-            <h3 className="text-lg font-medium">No subscription history found</h3>
+            <h3 className="text-lg font-medium">
+              No subscription history found
+            </h3>
             <p className="text-sm text-muted-foreground">
               You do not have any active or past subscriptions.
             </p>
@@ -193,7 +220,7 @@ export default function SubscriptionHistoryPage() {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -211,7 +238,7 @@ export default function SubscriptionHistoryPage() {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

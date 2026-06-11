@@ -1,8 +1,24 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getTransactionHistory, getPaymentStatus } from "@/lib/api/subscription";
+import {
+  ColumnDef,
+  flexRender,
+  getCoreRowModel,
+  useReactTable,
+} from "@tanstack/react-table";
+import { AlertCircle, Calendar, ReceiptText, RefreshCw } from "lucide-react";
+
+import {
+  getPaymentStatus,
+  getTransactionHistory,
+} from "@/lib/api/subscription";
 import { Transaction } from "@/lib/types/subscription";
+import { showApiToast } from "@/lib/utils/api-toast";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -11,18 +27,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle, Calendar, ReceiptText, RefreshCw } from "lucide-react";
-import { showApiToast } from "@/lib/utils/api-toast";
-import {
-  ColumnDef,
-  flexRender,
-  getCoreRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
 
 // Helper for currency parsing
 function formatCurrency(val: string | number | undefined | null) {
@@ -53,13 +57,29 @@ function formatApiDate(dateStr: string | undefined | null) {
 const getTransactionStatusBadge = (status: string) => {
   switch (status?.toLowerCase()) {
     case "success":
-      return <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">Successful</span>;
+      return (
+        <span className="inline-flex items-center rounded-full bg-emerald-100 px-2.5 py-0.5 text-xs font-semibold text-emerald-800">
+          Successful
+        </span>
+      );
     case "failed":
-      return <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">Failed</span>;
+      return (
+        <span className="inline-flex items-center rounded-full bg-red-100 px-2.5 py-0.5 text-xs font-semibold text-red-800">
+          Failed
+        </span>
+      );
     case "pending":
-      return <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">Pending</span>;
+      return (
+        <span className="inline-flex items-center rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-800">
+          Pending
+        </span>
+      );
     default:
-      return <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">{status}</span>;
+      return (
+        <span className="inline-flex items-center rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-semibold text-gray-800">
+          {status}
+        </span>
+      );
   }
 };
 
@@ -78,7 +98,11 @@ export default function TransactionsPage() {
       if (response.code === 404) {
         setTransactions([]);
         setError(null);
-      } else if (response.success && response.content && response.content.length > 0) {
+      } else if (
+        response.success &&
+        response.content &&
+        response.content.length > 0
+      ) {
         setTransactions(response.content[0].transactions || []);
       } else {
         setError(response.message || "Failed to load transactions.");
@@ -91,22 +115,28 @@ export default function TransactionsPage() {
   const handleVerify = async (transaction: Transaction) => {
     setVerifyingId(transaction.id);
     const response = await getPaymentStatus(transaction.reference);
-    
+
     // Always update status if backend provided it, even on failure
     if (response.content?.transaction_details?.status) {
       setTransactions((prev) =>
         prev.map((t) =>
           t.id === transaction.id
             ? { ...t, status: response.content!.transaction_details.status }
-            : t
-        )
+            : t,
+        ),
       );
     }
-    
+
     if (response.success) {
-      showApiToast(response.type ?? "success", response.message || "Payment verified successfully");
+      showApiToast(
+        response.type ?? "success",
+        response.message || "Payment verified successfully",
+      );
     } else {
-      showApiToast(response.type ?? "error", response.message || "Could not verify payment");
+      showApiToast(
+        response.type ?? "error",
+        response.message || "Could not verify payment",
+      );
     }
     setVerifyingId(null);
   };
@@ -120,7 +150,9 @@ export default function TransactionsPage() {
     {
       accessorKey: "package",
       header: "Package",
-      cell: ({ row }) => <span className="font-medium">{row.original.package}</span>,
+      cell: ({ row }) => (
+        <span className="font-medium">{row.original.package}</span>
+      ),
     },
     {
       accessorKey: "amount",
@@ -140,7 +172,9 @@ export default function TransactionsPage() {
     {
       accessorKey: "reference",
       header: "Reference",
-      cell: ({ row }) => <span className="font-mono text-xs">{row.original.reference}</span>,
+      cell: ({ row }) => (
+        <span className="font-mono text-xs">{row.original.reference}</span>
+      ),
     },
     {
       accessorKey: "coupon",
@@ -165,7 +199,9 @@ export default function TransactionsPage() {
       cell: ({ row }) => (
         <div className="flex items-center gap-2">
           <Calendar className="size-4 text-muted-foreground" />
-          <span className="text-sm">{formatApiDate(row.original.created_at)}</span>
+          <span className="text-sm">
+            {formatApiDate(row.original.created_at)}
+          </span>
         </div>
       ),
     },
@@ -203,7 +239,7 @@ export default function TransactionsPage() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
+      <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
           <p className="text-muted-foreground">View your payment history.</p>
@@ -213,7 +249,9 @@ export default function TransactionsPage() {
             <TableHeader>
               <TableRow>
                 {columns.map((col, i) => (
-                  <TableHead key={i}>{typeof col.header === 'string' ? col.header : '...'}</TableHead>
+                  <TableHead key={i}>
+                    {typeof col.header === "string" ? col.header : "..."}
+                  </TableHead>
                 ))}
               </TableRow>
             </TableHeader>
@@ -236,7 +274,7 @@ export default function TransactionsPage() {
 
   if (error) {
     return (
-      <div className="space-y-6">
+      <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
           <p className="text-muted-foreground">View your payment history.</p>
@@ -251,7 +289,7 @@ export default function TransactionsPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Transactions</h1>
         <p className="text-muted-foreground">View your payment history.</p>
@@ -279,7 +317,7 @@ export default function TransactionsPage() {
                         ? null
                         : flexRender(
                             header.column.columnDef.header,
-                            header.getContext()
+                            header.getContext(),
                           )}
                     </TableHead>
                   ))}
@@ -297,7 +335,7 @@ export default function TransactionsPage() {
                       <TableCell key={cell.id}>
                         {flexRender(
                           cell.column.columnDef.cell,
-                          cell.getContext()
+                          cell.getContext(),
                         )}
                       </TableCell>
                     ))}

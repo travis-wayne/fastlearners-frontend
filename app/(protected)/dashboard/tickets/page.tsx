@@ -1,8 +1,6 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { MessagesSquare, Plus, Eye } from "lucide-react";
-import { showApiToast } from "@/lib/utils/api-toast";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ColumnDef,
@@ -10,11 +8,15 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { Eye, MessagesSquare, Plus } from "lucide-react";
 
 import { getTickets } from "@/lib/api/tickets";
 import { Ticket } from "@/lib/types/ticket";
 import { parseDateString } from "@/lib/utils";
+import { showApiToast } from "@/lib/utils/api-toast";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -23,8 +25,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { TicketStatusBadge } from "@/components/tickets/ticket-status-badge";
 
 export default function TicketsPage() {
@@ -41,13 +41,16 @@ export default function TicketsPage() {
     const currentFetch = ++fetchCountRef.current;
     setLoading(true);
     const res = await getTickets();
-    
+
     if (currentFetch !== fetchCountRef.current) return;
 
     if (res.success && res.content) {
       setTickets(res.content.tickets || []);
     } else {
-      showApiToast(res.type ?? "error", res.message || "Failed to fetch tickets");
+      showApiToast(
+        res.type ?? "error",
+        res.message || "Failed to fetch tickets",
+      );
     }
     setLoading(false);
   }
@@ -61,7 +64,9 @@ export default function TicketsPage() {
     {
       accessorKey: "subject",
       header: "Subject",
-      cell: ({ row }) => <span className="font-medium">{row.original.subject}</span>,
+      cell: ({ row }) => (
+        <span className="font-medium">{row.original.subject}</span>
+      ),
     },
     {
       accessorKey: "category",
@@ -76,7 +81,9 @@ export default function TicketsPage() {
     {
       accessorKey: "status",
       header: "Status",
-      cell: ({ row }) => <TicketStatusBadge status={row.original.status as string} />,
+      cell: ({ row }) => (
+        <TicketStatusBadge status={row.original.status as string} />
+      ),
     },
     {
       accessorKey: "created_at",
@@ -108,7 +115,7 @@ export default function TicketsPage() {
   });
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">Support Tickets</h2>
@@ -135,7 +142,7 @@ export default function TicketsPage() {
                       ? null
                       : flexRender(
                           header.column.columnDef.header,
-                          header.getContext()
+                          header.getContext(),
                         )}
                   </TableHead>
                 ))}
@@ -146,13 +153,27 @@ export default function TicketsPage() {
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-[20px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[200px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[100px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell className="text-right"><Skeleton className="ml-auto size-8" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[20px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[200px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[100px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="ml-auto size-8" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : tickets.length === 0 ? (
@@ -176,7 +197,7 @@ export default function TicketsPage() {
                     <TableCell key={cell.id}>
                       {flexRender(
                         cell.column.columnDef.cell,
-                        cell.getContext()
+                        cell.getContext(),
                       )}
                     </TableCell>
                   ))}

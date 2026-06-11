@@ -1,12 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { AlertCircle, PackageOpen } from "lucide-react";
+
 import { getPackages } from "@/lib/api/subscription";
 import { Package } from "@/lib/types/subscription";
-import { PackageCard } from "@/components/subscription/package-card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
-import { PackageOpen, AlertCircle } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { PackageCard } from "@/components/subscription/package-card";
 
 export default function SubscriptionsPage() {
   const [packages, setPackages] = useState<Package[]>([]);
@@ -33,9 +34,11 @@ export default function SubscriptionsPage() {
   }, []);
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto space-y-6 px-4 py-6 sm:px-6 sm:py-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Subscription Plans</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          Subscription Plans
+        </h1>
         <p className="mt-2 text-muted-foreground">
           Choose a plan that best fits your learning goals.
         </p>
