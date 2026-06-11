@@ -1,4 +1,4 @@
-export type MotdAudience = 
+export type MotdAudience =
   | "all"
   | "app_users"
   | "students"
@@ -11,7 +11,7 @@ export interface Motd {
   id: number;
   title: string;
   message: string;
-  audience: MotdAudience;
+  audience?: MotdAudience | null;
   is_active: boolean;
   starts_at: string;
   ends_at: string;
@@ -20,13 +20,13 @@ export interface Motd {
 
 export interface AdminMotd extends Motd {
   updated_at: string;
-  created_by: number;
+  created_by: string | number;
 }
 
 export interface CreateMotdData {
   title: string;
   message: string;
-  audience: MotdAudience;
+  audience?: MotdAudience | null;
   is_active: 0 | 1;
   starts_at: string;
   ends_at: string;

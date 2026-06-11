@@ -1,17 +1,27 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { MessagesSquare, Pencil, Trash2, Plus } from "lucide-react";
-import { showApiToast } from "@/lib/utils/api-toast";
+import { MessagesSquare, Pencil, Plus, Trash2 } from "lucide-react";
 
 import {
-  adminGetMotds,
   adminDeleteMotd,
+  adminGetMotds,
   adminUpdateMotdStatus,
 } from "@/lib/api/motd";
 import { AdminMotd } from "@/lib/types/motd";
 import { parseDateString } from "@/lib/utils";
+import { showApiToast } from "@/lib/utils/api-toast";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+} from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
   Table,
   TableBody,
@@ -20,18 +30,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from "@/components/ui/sheet";
-import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { MotdForm } from "@/components/superadmin/motd-form";
 
+function formatAudience(audience?: AdminMotd["audience"]) {
+  return audience ? audience.replace(/_/g, " ") : "All";
+}
 export default function MotdsPage() {
   const [motds, setMotds] = useState<AdminMotd[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,7 +66,10 @@ export default function MotdsPage() {
       await fetchMotds();
       showApiToast(res.type ?? "success", res.message || "MOTD status updated");
     } else {
-      showApiToast(res.type ?? "error", res.message || "Failed to update status");
+      showApiToast(
+        res.type ?? "error",
+        res.message || "Failed to update status",
+      );
     }
   }
 
@@ -114,14 +120,30 @@ export default function MotdsPage() {
             {loading ? (
               Array.from({ length: 5 }).map((_, i) => (
                 <TableRow key={i}>
-                  <TableCell><Skeleton className="h-4 w-[20px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[150px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[60px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[80px]" /></TableCell>
-                  <TableCell><Skeleton className="h-4 w-[60px]" /></TableCell>
-                  <TableCell className="text-right"><Skeleton className="ml-auto size-8" /></TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[20px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[150px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[60px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[80px]" />
+                  </TableCell>
+                  <TableCell>
+                    <Skeleton className="h-4 w-[60px]" />
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Skeleton className="ml-auto size-8" />
+                  </TableCell>
                 </TableRow>
               ))
             ) : motds.length === 0 ? (
@@ -140,7 +162,9 @@ export default function MotdsPage() {
                 <TableRow key={motd.id}>
                   <TableCell>{index + 1}</TableCell>
                   <TableCell className="font-bold">{motd.title}</TableCell>
-                  <TableCell className="capitalize">{motd.audience.replace(/_/g, " ")}</TableCell>
+                  <TableCell className="capitalize">
+                    {formatAudience(motd.audience)}
+                  </TableCell>
                   <TableCell>
                     <Badge
                       variant={motd.is_active ? "default" : "secondary"}
@@ -182,7 +206,10 @@ export default function MotdsPage() {
       </div>
 
       <Sheet open={isCreateOpen} onOpenChange={setIsCreateOpen}>
-        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
+        <SheetContent
+          side="right"
+          className="w-full overflow-y-auto sm:max-w-xl"
+        >
           <SheetHeader>
             <SheetTitle>Create MOTD</SheetTitle>
           </SheetHeader>
@@ -201,7 +228,10 @@ export default function MotdsPage() {
         open={!!editingMotd}
         onOpenChange={(open) => !open && setEditingMotd(null)}
       >
-        <SheetContent side="right" className="w-full overflow-y-auto sm:max-w-xl">
+        <SheetContent
+          side="right"
+          className="w-full overflow-y-auto sm:max-w-xl"
+        >
           <SheetHeader>
             <SheetTitle>Edit MOTD</SheetTitle>
           </SheetHeader>

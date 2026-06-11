@@ -1,7 +1,4 @@
-import Link from "next/link";
-
 import { features } from "@/config/landing";
-import { Button } from "@/components/ui/button";
 import { HeaderSection } from "@/components/shared/header-section";
 import { Icons } from "@/components/shared/icons";
 import { SectionWrapper } from "@/components/shared/section-wrapper";
@@ -25,7 +22,7 @@ export default function Features() {
             >
               <div
                 aria-hidden="true"
-                className="absolute inset-0 aspect-video -translate-y-1/2 rounded-full border bg-gradient-to-b from-purple-500/80 to-white opacity-25 blur-2xl duration-300 group-hover:-translate-y-1/4 dark:from-white dark:to-white dark:opacity-5 dark:group-hover:opacity-10"
+                className="absolute inset-0 aspect-video -translate-y-1/2 rounded-full border bg-gradient-to-b from-cyan-400/25 via-primary/10 to-yellow-300/20 opacity-70 blur-2xl duration-300 group-hover:-translate-y-1/4 dark:from-cyan-400/10 dark:via-primary/10 dark:to-yellow-300/10 dark:opacity-60"
               />
               <div className="relative">
                 <div className="relative flex size-control-md rounded-2xl border border-border shadow-sm *:relative *:m-auto *:size-5 sm:size-control-lg sm:*:size-6">
@@ -35,19 +32,6 @@ export default function Features() {
                 <p className="mt-6 pb-6 text-sm text-muted-foreground sm:text-base">
                   {feature.description}
                 </p>
-
-                <div className="-mb-5 flex gap-3 border-t border-muted py-4 md:-mb-7">
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="rounded-xl px-4"
-                  >
-                    <Link href="/" className="flex items-center gap-2">
-                      <span className="text-xs sm:text-sm">Visit the site</span>
-                      <Icons.arrowUpRight className="size-4" />
-                    </Link>
-                  </Button>
-                </div>
               </div>
             </div>
           );

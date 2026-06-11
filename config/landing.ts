@@ -5,24 +5,24 @@ export const infos: InfoLdg[] = [
     title: "Curriculum-Perfect Learning",
     description:
       "Every lesson, quiz, and study pack is mapped to the Nigerian Secondary School Curriculum (JSS1–SS3). Learn exactly what matters for your exams with content created by expert educators and aligned with WAEC, NECO, and JAMB standards.",
-    image: "/_static/illustrations/work-from-home.jpg",
+    image: "/Meta 1.png",
     list: [
       {
         title: "Complete Coverage",
         description: "All subjects and topics from JSS1 to SS3 fully covered.",
-        icon: "laptop",
+        icon: "bookOpen",
       },
       {
         title: "Exam-Aligned",
         description:
           "Practice questions and lessons mirror actual exam formats.",
-        icon: "settings",
+        icon: "checkCircle",
       },
       {
         title: "Expert Content",
         description:
           "Developed by experienced Nigerian educators and curriculum specialists.",
-        icon: "search",
+        icon: "graduationCap",
       },
     ],
   },
@@ -30,7 +30,7 @@ export const infos: InfoLdg[] = [
     title: "Personalized Learning Experience",
     description:
       "Our platform adapts to how you learn. Get personalized recommendations, adaptive quizzes that match your skill level, and smart study reminders that keep you on track. Track your progress with detailed analytics and see exactly where you excel and where you need more practice.",
-    image: "/_static/illustrations/work-from-home.jpg",
+    image: "/2 infographic 1.png",
     list: [
       {
         title: "Adaptive Quizzes",

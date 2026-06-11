@@ -22,22 +22,8 @@ export const footerLinks: SidebarNavItem[] = [
     items: [
       { title: "About", href: "/about" },
       { title: "Contact", href: "/contact" },
-    ],
-  },
-  {
-    title: "Product",
-    items: [
       { title: "Features", href: "/features" },
       { title: "Pricing", href: "/pricing" },
-    ],
-  },
-  {
-    title: "Docs",
-    items: [
-      { title: "Introduction", href: "#" },
-      { title: "Installation", href: "#" },
-      { title: "Components", href: "#" },
-      { title: "Code Blocks", href: "#" },
     ],
   },
   {
@@ -47,6 +33,11 @@ export const footerLinks: SidebarNavItem[] = [
       { title: "Privacy Policy", href: "/privacy-policy" },
       { title: "Cookie Policy", href: "/cookie-policy" },
       { title: "Data Breach Policy", href: "/data-breach-policy" },
+    ],
+  },
+  {
+    title: "Compliance",
+    items: [
       { title: "Data Processing Addendum", href: "/data-processing-addendum" },
       {
         title: "Children's Data Protection Policy",

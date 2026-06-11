@@ -49,13 +49,13 @@ export default function InfoLanding({
             reverse ? "lg:order-1" : "lg:order-2",
           )}
         >
-          <div className="aspect-video overflow-hidden">
+          <div className="aspect-[4/3] overflow-hidden sm:aspect-[16/11] lg:aspect-[4/3]">
             <Image
-              className="size-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+              className="size-full object-contain object-center p-4 transition-transform duration-500 group-hover:scale-[1.02] sm:p-6"
               src={data.image}
               alt={data.title}
-              width={1000}
-              height={500}
+              width={900}
+              height={700}
               priority={true}
             />
           </div>

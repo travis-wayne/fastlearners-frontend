@@ -6,6 +6,7 @@ export default function ContactPage() {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
+    phone: "",
     subject: "",
     message: "",
   });
@@ -29,11 +30,10 @@ export default function ContactPage() {
     e.preventDefault();
     setIsSubmitting(true);
 
-    // Simulate form submission
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmitStatus("success");
-      setFormData({ name: "", email: "", subject: "", message: "" });
+      setFormData({ name: "", email: "", phone: "", subject: "", message: "" });
 
       setTimeout(() => setSubmitStatus("idle"), 5000);
     }, 1500);
@@ -42,7 +42,6 @@ export default function ContactPage() {
   return (
     <div className="container mx-auto max-w-6xl px-4 py-10 sm:py-16 md:py-20">
       <div className="space-y-12 sm:space-y-16 md:space-y-20">
-        {/* Hero Section */}
         <div className="space-y-6 text-center">
           <h1 className="text-balance font-urban text-4xl font-extrabold tracking-tight text-foreground sm:text-5xl md:text-6xl lg:text-7xl">
             Get in <span className="text-gradient_indigo-purple">Touch</span>
@@ -54,7 +53,6 @@ export default function ContactPage() {
         </div>
 
         <div className="grid grid-cols-1 gap-10 md:gap-12 lg:grid-cols-2">
-          {/* Contact Form */}
           <div className="space-y-8">
             <div className="space-y-4">
               <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -103,6 +101,25 @@ export default function ContactPage() {
                   required
                   className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:px-4 sm:py-3"
                   placeholder="your.email@example.com"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label
+                  htmlFor="phone"
+                  className="text-sm font-medium text-foreground"
+                >
+                  Phone Number{" "}
+                  <span className="text-muted-foreground">(optional)</span>
+                </label>
+                <input
+                  type="tel"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 sm:px-4 sm:py-3"
+                  placeholder="+234 000 000 0000"
                 />
               </div>
 
@@ -171,14 +188,13 @@ export default function ContactPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full rounded-lg bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 sm:py-3.5"
+                className="w-full rounded-full bg-primary px-6 py-3 font-semibold text-primary-foreground shadow-lg transition-all hover:bg-primary/90 hover:shadow-xl disabled:cursor-not-allowed disabled:opacity-50 sm:py-3.5"
               >
                 {isSubmitting ? "Sending..." : "Send Message"}
               </button>
             </form>
           </div>
 
-          {/* Contact Information */}
           <div className="space-y-8">
             <div className="space-y-4">
               <h2 className="font-heading text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -191,7 +207,6 @@ export default function ContactPage() {
             </div>
 
             <div className="space-y-6">
-              {/* Email */}
               <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-md sm:p-5 md:p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:size-12">
@@ -226,7 +241,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Phone */}
               <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-md sm:p-5 md:p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:size-12">
@@ -261,7 +275,6 @@ export default function ContactPage() {
                 </div>
               </div>
 
-              {/* Address */}
               <div className="group rounded-xl border-2 border-primary/20 bg-card p-4 shadow-sm transition-all hover:border-primary hover:shadow-md sm:p-5 md:p-6">
                 <div className="flex items-start gap-4">
                   <div className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-primary/10 sm:size-12">
@@ -301,35 +314,11 @@ export default function ContactPage() {
               </div>
             </div>
 
-            {/* Support Channels */}
             <div className="rounded-xl border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-transparent p-6">
               <h3 className="mb-4 text-xl font-semibold text-foreground">
                 Other Support Channels
               </h3>
               <div className="space-y-3">
-                <div className="flex items-center gap-3">
-                  <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
-                    <svg
-                      className="size-4 text-primary"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                      />
-                    </svg>
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">Live Chat</p>
-                    <p className="text-sm text-muted-foreground">
-                      Available on the platform
-                    </p>
-                  </div>
-                </div>
                 <div className="flex items-center gap-3">
                   <div className="flex size-8 items-center justify-center rounded-full bg-primary/10">
                     <svg
@@ -383,7 +372,6 @@ export default function ContactPage() {
           </div>
         </div>
 
-        {/* Quick Links */}
         <section className="rounded-2xl bg-gradient-to-r from-primary/10 to-primary/5 p-8 md:p-12">
           <div className="text-center">
             <h2 className="mb-4 text-2xl font-bold text-foreground md:text-3xl">
@@ -395,19 +383,19 @@ export default function ContactPage() {
             <div className="flex flex-wrap justify-center gap-4">
               <a
                 href="/features"
-                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
+                className="rounded-full border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
               >
                 View Features
               </a>
               <a
                 href="/pricing"
-                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
+                className="rounded-full border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
               >
                 Pricing Plans
               </a>
               <a
                 href="/about"
-                className="rounded-lg border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
+                className="rounded-full border-2 border-primary/20 bg-card px-6 py-3 font-medium text-foreground shadow-sm transition-all hover:border-primary hover:shadow-md"
               >
                 About Us
               </a>

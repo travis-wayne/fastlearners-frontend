@@ -14,6 +14,7 @@ import { useScroll } from "@/hooks/use-scroll";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DocsSearch } from "@/components/docs/search";
+import { ModeToggle } from "@/components/layout/mode-toggle";
 import { ModalContext } from "@/components/modals/providers";
 import { ClientOnly } from "@/components/shared/client-only";
 import { Icons } from "@/components/shared/icons";
@@ -81,6 +82,9 @@ export function NavBar({ scroll = false }: NavBarProps) {
         </div>
 
         <div className="flex items-center space-x-component-sm">
+          <div className="hidden sm:block">
+            <ModeToggle />
+          </div>
           {/* right header for docs */}
           {documentation ? (
             <div className="hidden flex-1 items-center space-x-component-md sm:justify-end lg:flex">

@@ -16,7 +16,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
     <footer className={cn("border-t", className)}>
       <SectionWrapper
         as="div"
-        className="grid grid-cols-1 gap-10 py-10 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5"
+        className="grid grid-cols-1 gap-10 py-10 sm:grid-cols-2 lg:grid-cols-4"
       >
         {footerLinks.map((section) => (
           <div key={section.title}>
@@ -37,7 +37,7 @@ export function SiteFooter({ className }: React.HTMLAttributes<HTMLElement>) {
             </ul>
           </div>
         ))}
-        <div className="md:col-span-2 lg:col-span-2">
+        <div className="sm:col-span-2 lg:col-span-1">
           <NewsletterForm />
         </div>
       </SectionWrapper>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import Link from "next/link";
 import { UserSubscriptionPlan } from "@/types";
 
@@ -9,7 +9,6 @@ import { siteConfig } from "@/config/site";
 import { pricingData } from "@/config/subscriptions";
 import { cn } from "@/lib/utils";
 import { Button, buttonVariants } from "@/components/ui/button";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BillingFormButton } from "@/components/forms/billing-form-button";
 import { ModalContext } from "@/components/modals/providers";
 import { HeaderSection } from "@/components/shared/header-section";
@@ -22,24 +21,16 @@ interface PricingCardsProps {
 }
 
 export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
-  const isYearlyDefault =
-    !subscriptionPlan?.stripeCustomerId || subscriptionPlan.interval === "year"
-      ? true
-      : false;
-  const [isYearly, setIsYearly] = useState<boolean>(!!isYearlyDefault);
+  const isYearly = false;
   const { setShowSignInModal } = useContext(ModalContext);
-
-  const toggleBilling = () => {
-    setIsYearly(!isYearly);
-  };
 
   const PricingCard = ({ offer }: { offer: SubscriptionPlan }) => {
     return (
       <div
         className={cn(
           "relative flex flex-col overflow-hidden rounded-xl border shadow-sm",
-          offer.title.toLocaleLowerCase() === "pro"
-            ? "-m-0.5 border-2 border-purple-400"
+          offer.title.toLocaleLowerCase() === "basic"
+            ? "border-2 border-primary shadow-md"
             : "",
         )}
         key={offer.title}
@@ -52,36 +43,24 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           <div className="flex flex-row">
             <div className="flex items-end">
               <div className="flex text-left text-2xl font-semibold leading-6 sm:text-3xl lg:text-4xl">
-                {isYearly && offer.prices.monthly > 0 ? (
-                  <>
-                    <span className="mr-2 text-muted-foreground/80 line-through">
-                      ${offer.prices.monthly}
-                    </span>
-                    <span>${offer.prices.yearly / 12}</span>
-                  </>
-                ) : (
-                  `$${offer.prices.monthly}`
-                )}
+                {offer.prices.monthly > 0
+                  ? `$${offer.prices.monthly}`
+                  : "Contact us"}
               </div>
-              <div className="-mb-1 ml-2 text-left text-sm font-medium text-muted-foreground">
-                <div>/month</div>
-              </div>
+              {offer.prices.monthly > 0 ? (
+                <div className="-mb-1 ml-2 text-left text-sm font-medium text-muted-foreground">
+                  <div>/month</div>
+                </div>
+              ) : null}
             </div>
           </div>
-          {offer.prices.monthly > 0 ? (
-            <div className="text-left text-sm text-muted-foreground">
-              {isYearly
-                ? `$${offer.prices.yearly} will be charged when annual`
-                : "when charged monthly"}
-            </div>
-          ) : null}
         </div>
 
         <div className="flex h-full flex-col justify-between gap-16 p-component-md sm:p-component-lg lg:p-component-xl">
           <ul className="space-y-2 text-left text-sm font-medium leading-normal sm:space-y-3 sm:text-base">
             {offer.benefits.map((feature) => (
               <li className="flex items-start gap-x-3" key={feature}>
-                <Icons.check className="size-5 shrink-0 text-purple-500" />
+                <Icons.check className="size-5 shrink-0 text-primary" />
                 <p>{feature}</p>
               </li>
             ))}
@@ -99,7 +78,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           </ul>
 
           {userId && subscriptionPlan ? (
-            offer.title === "Starter" ? (
+            offer.title === "Basic" && subscriptionPlan.title === "Basic" ? (
               <Link
                 href="/dashboard"
                 className={cn(
@@ -121,7 +100,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           ) : (
             <Button
               variant={
-                offer.title.toLocaleLowerCase() === "pro"
+                offer.title.toLocaleLowerCase() === "basic"
                   ? "default"
                   : "outline"
               }
@@ -141,32 +120,7 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
       <section className="flex flex-col items-center text-center">
         <HeaderSection label="Pricing" title="Start at full speed !" />
 
-        <div className="mb-4 mt-10 flex items-center gap-5">
-          <ToggleGroup
-            type="single"
-            defaultValue={isYearly ? "yearly" : "monthly"}
-            onValueChange={toggleBilling}
-            aria-label="toggle-year"
-            className="h-auto overflow-hidden rounded-full border bg-background p-1 *:h-11 *:text-muted-foreground"
-          >
-            <ToggleGroupItem
-              value="yearly"
-              className="rounded-full px-5 data-[state=on]:!bg-primary data-[state=on]:!text-primary-foreground"
-              aria-label="Toggle yearly billing"
-            >
-              Yearly (-20%)
-            </ToggleGroupItem>
-            <ToggleGroupItem
-              value="monthly"
-              className="rounded-full px-5 data-[state=on]:!bg-primary data-[state=on]:!text-primary-foreground"
-              aria-label="Toggle monthly billing"
-            >
-              Monthly
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-
-        <div className="grid grid-cols-1 gap-component-lg bg-inherit py-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-component-lg bg-inherit py-5">
           {pricingData.map((offer) => (
             <PricingCard offer={offer} key={offer.title} />
           ))}
@@ -180,10 +134,11 @@ export function PricingCards({ userId, subscriptionPlan }: PricingCardsProps) {
           >
             {siteConfig.mailSupport}
           </a>{" "}
-          for to contact our support team.
+          to contact our support team.
           <br />
           <strong>
-            You can test the subscriptions and won&apos;t be charged.
+            Subscription billing will be finalized when the payment setup is
+            connected.
           </strong>
         </p>
       </section>

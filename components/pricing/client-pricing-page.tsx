@@ -5,9 +5,7 @@ import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 
 import { UserSubscriptionPlan } from "types";
-import { ComparePlans } from "@/components/pricing/compare-plans";
 import { PricingCards } from "@/components/pricing/pricing-cards";
-import { PricingFaq } from "@/components/pricing/pricing-faq";
 
 export function ClientPricingPage() {
   const { user } = useAuthStore();
@@ -29,7 +27,7 @@ export function ClientPricingPage() {
           You are an admin. Back to{" "}
           <Link
             href="/admin"
-            className="text-purple-600 underline underline-offset-4 hover:text-purple-500"
+            className="text-primary underline underline-offset-4 hover:text-primary/80"
           >
             Dashboard
           </Link>
@@ -68,9 +66,6 @@ export function ClientPricingPage() {
         userId={user?.id?.toString()}
         subscriptionPlan={subscriptionPlan}
       />
-      <hr className="container" />
-      <ComparePlans />
-      <PricingFaq />
     </div>
   );
 }

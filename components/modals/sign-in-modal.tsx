@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  Dispatch,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
 import { siteConfig } from "@/config/site";
@@ -25,7 +18,6 @@ export function SignInModal({
 }) {
   const router = useRouter();
   const pathname = usePathname();
-  const [signInClicked, setSignInClicked] = useState(false);
 
   // Close modal on route changes
   useEffect(() => {
@@ -44,15 +36,15 @@ export function SignInModal({
             Sign In
           </h3>
           <p className="responsive-text text-muted-foreground">
-            This is strictly for demo purposes - only your email and profile
-            picture will be stored.
+            Access your FastLearners account to continue learning, track your
+            progress, and manage your subscription.
           </p>
         </div>
 
         <div className="flex flex-col space-y-component-sm bg-secondary/50 px-component-md py-component-xl sm:space-y-component-md sm:px-component-lg md:px-component-xl">
           <Button
             variant="default"
-            className="h-control-md sm:h-control-lg"
+            className="h-control-md rounded-full sm:h-control-lg"
             onClick={() => {
               router.push("/auth/register");
             }}
@@ -61,7 +53,7 @@ export function SignInModal({
           </Button>
           <Button
             variant="outline"
-            className="h-control-md sm:h-control-lg"
+            className="h-control-md rounded-full sm:h-control-lg"
             onClick={() => {
               router.push("/auth/login");
             }}

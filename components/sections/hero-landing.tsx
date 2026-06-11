@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 
 import { cn } from "@/lib/utils";
@@ -9,45 +8,6 @@ import BlurImage from "@/components/shared/blur-image";
 import { SectionWrapper } from "@/components/shared/section-wrapper";
 
 import { Icons } from "../shared/icons";
-
-const logos = [
-  "/fastlearners-logo.png",
-  "/fastlearners-logo.png",
-  "/fastlearners-logo.png",
-  "/fastlearners-logo.png",
-  "/fastlearners-logo.png",
-  "/fastlearners-logo.png",
-];
-
-const InfiniteLogoSlider = () => {
-  return (
-    <div className="relative overflow-hidden">
-      {/* Left blur overlay */}
-      <div className="absolute left-0 top-0 z-10 h-full w-16 bg-gradient-to-r from-background to-transparent" />
-
-      {/* Right blur overlay */}
-      <div className="absolute right-0 top-0 z-10 h-full w-16 bg-gradient-to-l from-background to-transparent" />
-
-      {/* Scrolling container */}
-      <div className="animate-scroll flex space-x-12">
-        {/* Duplicate logos for seamless infinite scroll */}
-        {[...logos, ...logos, ...logos].map((logo, index) => (
-          <div key={index} className="shrink-0">
-            {/* eslint-disable-next-line tailwindcss/classnames-order */}
-            <Image
-              src={logo}
-              alt={`Logo ${index + 1}`}
-              width={100}
-              height={40}
-              className="h-8 w-auto object-contain opacity-50 grayscale transition-all duration-300 hover:opacity-100 hover:grayscale-0 dark:invert sm:h-10 lg:h-12"
-              style={{ width: "auto" }}
-            />
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export default function HeroLanding() {
   return (
@@ -140,15 +100,6 @@ export default function HeroLanding() {
 
           <div className="aspect-square opacity-20 lg:aspect-[4/3]" />
         </div>
-      </div>
-
-      {/* Powered by section */}
-      <div className="space-y-8">
-        <p className="text-center text-sm font-medium text-muted-foreground">
-          Powered by the tools you love
-        </p>
-
-        <InfiniteLogoSlider />
       </div>
     </SectionWrapper>
   );
