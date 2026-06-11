@@ -424,6 +424,7 @@ export function StudentRecordsPage() {
                                 subjectName={lesson.topic}
                                 score={lesson.score}
                                 showProgress={true}
+                                status="completed"
                               />
                             ))
                           ) : (
@@ -484,6 +485,7 @@ export function StudentRecordsPage() {
                             score={score}
                             onClick={handleClick}
                             showProgress={true}
+                            status="completed"
                           />
                         );
                       })}

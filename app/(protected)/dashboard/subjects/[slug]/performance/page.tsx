@@ -107,14 +107,18 @@ export default function SubjectPerformancePage() {
         if (isMounted) setSubjectName(subject.name);
         const subjectId = subject.id;
 
-        // 2. Overall subject score using live class ID
+        // 2. Overall subject score (dual fetch)
+        let subjectApiScore = 0;
         if (currentClassApiId) {
           const scoreRes = await getSubjectScore(subjectId, currentClassApiId);
           if (scoreRes.success && scoreRes.content) {
-            if (isMounted)
-              setSubjectScore(
-                parseFloat(scoreRes.content.subject_total_score) || 0,
-              );
+            subjectApiScore = parseFloat(scoreRes.content.subject_total_score) || 0;
+          }
+        }
+        if (subjectApiScore === 0 && currentTermApiId) {
+          const scoreResTerm = await getSubjectScore(subjectId, currentTermApiId);
+          if (scoreResTerm.success && scoreResTerm.content) {
+            subjectApiScore = parseFloat(scoreResTerm.content.subject_total_score) || 0;
           }
         }
 
@@ -163,22 +167,30 @@ export default function SubjectPerformancePage() {
             setLessonScores(scoresMap);
 
             const statusMap = new Map<number, boolean>();
-            const sCache = new Map(summaryCache); // Merge into existing cache
             summaryResults.forEach((r) => {
               if (r.res) {
                 const hasData = r.res.noData !== true && r.res.content !== null;
                 statusMap.set(r.id, hasData);
-                sCache.set(r.id, r.res);
               } else {
                 statusMap.set(r.id, false);
               }
             });
             setSummaryStatusMap(statusMap);
-            setSummaryCache(sCache);
+
+            setSummaryCache((prev) => {
+              const next = new Map(prev);
+              summaryResults.forEach((r) => {
+                if (r.res) {
+                  next.set(r.id, r.res);
+                }
+              });
+              return next;
+            });
 
             // Fallback for subject score if it is 0 but we have valid lesson scores
+            let finalSubjectScore = subjectApiScore;
             if (
-              subjectScore === 0 && // or parseFloat((scoreRes?.content?.subject_total_score)) === 0 (if we had the raw scoreRes here. Relying on current subjectScore state is tricky because setSubjectScore hasn't flushed. We should use a local variable or just check the map). Let's calculate the average.
+              subjectApiScore === 0 &&
               scoresMap.size > 0
             ) {
               const nonZeroScores = Array.from(scoresMap.values()).filter(
@@ -186,10 +198,10 @@ export default function SubjectPerformancePage() {
               );
               if (nonZeroScores.length > 0) {
                 const sum = nonZeroScores.reduce((a, b) => a + b, 0);
-                const avg = Math.round(sum / nonZeroScores.length);
-                setSubjectScore(avg);
+                finalSubjectScore = Math.round(sum / nonZeroScores.length);
               }
             }
+            setSubjectScore(finalSubjectScore);
           }
         }
       } catch (err: any) {
@@ -210,8 +222,6 @@ export default function SubjectPerformancePage() {
     user?.class,
     currentClassApiId,
     currentTermApiId,
-    subjectScore,
-    summaryCache,
   ]);
 
   const renderTermSection = (title: string, termTopics?: TopicItem[]) => {
