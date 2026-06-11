@@ -9,9 +9,14 @@ import {
   Loader2,
   Target,
   Trophy,
+  Bell,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/authStore";
+
+import { getMotd } from "@/lib/api/motd";
+import { Motd } from "@/lib/types/motd";
 
 import { getDashboard, type DashboardContent } from "@/lib/api/dashboard";
 import { getAllSubjectsTotalScores } from "@/lib/api/lessons";
@@ -74,6 +79,37 @@ export function StudentDashboard() {
     Array<{ subject: string; percentage: number }>
   >([]);
   const [isLoadingPerformance, setIsLoadingPerformance] = useState(true);
+
+  const [motd, setMotd] = useState<Motd | null>(null);
+  const [motdDismissed, setMotdDismissed] = useState(true);
+
+  // Fetch MOTD
+  useEffect(() => {
+    if (!user) return;
+    const dismissedKey = `motd_dismissed_${user.id}`;
+    const isDismissed = sessionStorage.getItem(dismissedKey) === "true";
+    setMotdDismissed(isDismissed);
+
+    const fetchMotd = async () => {
+      if (isDismissed) return;
+      try {
+        const res = await getMotd();
+        if (res.success && res.content?.motd) {
+          setMotd(res.content.motd);
+        }
+      } catch (error) {
+        console.error("Failed to fetch MOTD:", error);
+      }
+    };
+    fetchMotd();
+  }, [user]);
+
+  const handleDismissMotd = () => {
+    if (!user) return;
+    const dismissedKey = `motd_dismissed_${user.id}`;
+    sessionStorage.setItem(dismissedKey, "true");
+    setMotdDismissed(true);
+  };
 
   // Fetch dashboard data
   useEffect(() => {
@@ -185,6 +221,30 @@ export function StudentDashboard() {
       className="dashboard-spacing"
     >
       <motion.div variants={itemVariants}>
+        {motd && !motdDismissed && (
+          <Card className="mb-6 border-amber-200 bg-amber-50/50 dark:border-amber-900/50 dark:bg-amber-900/20">
+            <CardContent className="flex items-start justify-between p-4">
+              <div className="flex gap-3">
+                <div className="mt-1 rounded-full bg-amber-100 p-2 dark:bg-amber-900/50">
+                  <Bell className="size-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <h4 className="font-bold text-amber-900 dark:text-amber-100">{motd.title}</h4>
+                  <p className="mt-1 text-sm text-amber-800 dark:text-amber-200">{motd.message}</p>
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={handleDismissMotd}
+                className="text-amber-700 hover:bg-amber-200/50 hover:text-amber-900 dark:text-amber-300 dark:hover:bg-amber-800/50 dark:hover:text-amber-100"
+              >
+                <X className="size-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        )}
+
         <DismissibleCard
           id="student_dashboard_intro"
           title="Welcome to your Dashboard!"

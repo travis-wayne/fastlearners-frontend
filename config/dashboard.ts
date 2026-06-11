@@ -48,6 +48,12 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Guardians",
         authorizeOnly: UserRole.STUDENT,
       },
+      {
+        href: "/dashboard/tickets",
+        icon: "helpCircle",
+        title: "Support",
+        authorizeOnly: UserRole.STUDENT,
+      },
       // Guardian specific menu remains but streamlined
       {
         href: "/dashboard/records",
@@ -132,6 +138,18 @@ export const sidebarLinks: SidebarNavItem[] = [
         href: "/dashboard/superadmin/transactions",
         icon: "creditCard",
         title: "Transactions",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/tickets",
+        icon: "ticket",
+        title: "Tickets",
+        authorizeOnly: UserRole.SUPERADMIN,
+      },
+      {
+        href: "/dashboard/superadmin/motds",
+        icon: "messages",
+        title: "MOTDs",
         authorizeOnly: UserRole.SUPERADMIN,
       },
       // ACCOUNT SECTION for students
@@ -225,13 +243,7 @@ export const sidebarLinks: SidebarNavItem[] = [
         title: "Documentation",
         authorizeOnly: UserRole.SUPERADMIN,
       },
-      {
-        href: "#",
-        icon: "messages",
-        title: "Support",
-        authorizeOnly: UserRole.STUDENT,
-        disabled: true,
-      },
+
     ],
   },
 ];

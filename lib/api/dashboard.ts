@@ -27,7 +27,10 @@ export interface DashboardResponse {
 
 export interface GuardianDashboardContent {
   children: number;
-  report: null;
+  active_children: number;
+  active_subscriptions: number;
+  account_status: string;
+  reports: any[];
 }
 
 export interface GuardianDashboardResponse {
@@ -117,7 +120,10 @@ export async function getGuardianDashboard(): Promise<GuardianDashboardResponse>
         message: data.message || "Failed to fetch guardian dashboard",
         content: {
           children: 0,
-          report: null,
+          active_children: 0,
+          active_subscriptions: 0,
+          account_status: "",
+          reports: [],
         },
         code: response.status,
       };
@@ -130,7 +136,10 @@ export async function getGuardianDashboard(): Promise<GuardianDashboardResponse>
       message: error?.message || "Network error",
       content: {
         children: 0,
-        report: null,
+        active_children: 0,
+        active_subscriptions: 0,
+        account_status: "",
+        reports: [],
       },
       code: 500,
     };

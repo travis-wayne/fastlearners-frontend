@@ -1,9 +1,9 @@
 # Fastlearners API Documentation
 
-Generated: 2026-06-09 15:09:06 +01:00
+Generated: 2026-06-11 08:26:44 +01:00
 Base API URL: `https://api.fastlearnersapp.com`
-Documentation pages: 37
-Endpoints documented: 113
+Documentation pages: 39
+Endpoints documented: 124
 
 ## Table of Contents
 
@@ -23,6 +23,7 @@ Endpoints documented: 113
 - [Student's Subject](#students-subject)
 - [Topics](#topics)
 - [Total Scores API Request](#total-scores-api-request)
+- [MOTD](#motd)
 - [Student's Subject](#students-subject)
 - [Subscription Management](#subscription-management)
 - [Packages](#packages)
@@ -39,6 +40,7 @@ Endpoints documented: 113
 - [Lessons Upload](#lessons-upload)
 - [Scheme Of Work Upload](#scheme-of-work-upload)
 - [View Trashed Lessons](#view-trashed-lessons)
+- [MOTD Management](#motd-management)
 - [Subscription Management](#subscription-management)
 - [Coupon Management](#coupon-management)
 - [Package Management](#package-management)
@@ -87,6 +89,10 @@ Endpoints documented: 113
 | GET | `/api/v1/superadmin/lessons/lesson/2` | Get Specific Lesson | Get Specific Lesson |
 | GET | `/api/v1/superadmin/lessons/lesson/2/content` | Get Specific Lesson | Get Specific Lesson Content |
 | GET | `/api/v1/guardian` | Guardian Management | Dashboard |
+| GET | `/api/v1/guardian/children/2/view` | Guardian Management | View Child Details |
+| GET | `/api/v1/guardian/children/lesson/1/2/view-lesson-details` | Guardian Management | View Child Lesson Details |
+| GET | `/api/v1/guardian/children/subject/2/4/4/view-subject-details` | Guardian Management | View Child Subject Details |
+| GET | `/api/v1/guardian/children` | Guardian Management | View Children |
 | GET | `/api/v1/student/guardian/request/accept/{id}` | Guardian Request Management | Accept Request |
 | GET | `/api/v1/student/guardian/request/reject/{id}` | Guardian Request Management | Reject Request |
 | GET | `/api/v1/student/guardian/request/history` | Guardian Request Management | Request History |
@@ -100,6 +106,13 @@ Endpoints documented: 113
 | GET | `/api/v1/lessons/check/summary-and-application/2` | Lesson Completion Check System | Lesson Summary & Application Completion Check |
 | GET | `/api/v1/lessons/general-mathematics/number-bases-system/content` | Lesson Content | Get Lesson Content |
 | POST | `/api/v1/superadmin/lessons/uploads/lessons` | Lessons Upload | Lessons Upload |
+| GET | `/api/v1/motd` | MOTD | View MOTD |
+| POST | `/api/v1/superadmin/motds/create` | MOTD Management | Create MOTD |
+| DELETE | `/api/v1/superadmin/motds/3/delete` | MOTD Management | Delete MOTD |
+| GET | `/api/v1/superadmin/motds/2/view` | MOTD Management | Get MOTD Detail |
+| PUT | `/api/v1/superadmin/motds/4/update` | MOTD Management | Update MOTD |
+| POST | `/api/v1/superadmin/motds/2/update-status` | MOTD Management | Update MOTD Status |
+| GET | `/api/v1/superadmin/motds` | MOTD Management | View MOTDs |
 | POST | `/api/v1/superadmin/packages/create` | Package Management | Create Package |
 | DELETE | `/api/v1/superadmin/packages/2/delete` | Package Management | Delete Package |
 | GET | `/api/v1/superadmin/packages/1/view` | Package Management | Get Package Detail |
@@ -137,9 +150,9 @@ Endpoints documented: 113
 | POST | `/api/v1/superadmin/tickets/5/reply` | Ticket Management | Reply Ticket |
 | POST | `/api/v1/tickets/5/reply` | Ticket Management | Reply Ticket |
 | POST | `/api/v1/tickets/2/update-status` | Ticket Management | Update Ticket Status |
-| GET | `/api/v1/superadmin/tickets/2/view` | Ticket Management | View Ticket |
-| GET | `/api/v1/tickets/2/view` | Ticket Management | View Ticket |
 | GET | `/api/v1/tickets/categories` | Ticket Management | View Ticket Categories |
+| GET | `/api/v1/superadmin/tickets/5/view` | Ticket Management | View Ticket Details |
+| GET | `/api/v1/tickets/5/view` | Ticket Management | View Ticket Details |
 | GET | `/api/v1/tickets/priorities` | Ticket Management | View Ticket Priority |
 | GET | `/api/v1/tickets/statuses` | Ticket Management | View Ticket Statuses |
 | GET | `/api/v1/superadmin/tickets` | Ticket Management | View Tickets |
@@ -1191,12 +1204,13 @@ Endpoints documented: 113
 
 ```json
 {
+  "type": "success",
   "success": true,
   "message": "Your children's report and statistics",
   "content": {
     "children": 1,
     "active_children": 1,
-    "active_subscriptions": 0,
+    "active_subscriptions": 1,
     "account_status": "active",
     "reports": []
   },
@@ -1221,6 +1235,459 @@ Endpoints documented: 113
 {
   "success": false,
   "message": "Server error",
+  "errors": null,
+  "code": 500,
+}
+```
+
+### View Children
+
+**Endpoint:** `Get /api/v1/guardian/children`
+
+**Description:** Get the list of guardian's children.
+
+#### Headers
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+#### Success Response (200)
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "children": {
+      "children": [
+        {
+          "id": 1,
+          "child_id": 2,
+          "name": "Student User",
+          "email": "student@fastlearnersapp.com",
+          "class": "SSS1",
+          "subscription_active": true,
+          "created_at": "2026-05-30"
+        }
+      ],
+      "links": {
+        "first": "https://api.fastlearnersapp.com/api/v1/guardian/children?page=1",
+        "last": "https://api.fastlearnersapp.com/api/v1/guardian/children?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 20,
+        "total": 1
+      }
+    }
+  },
+  "code": 200
+}
+```
+
+#### No Child Found Error
+
+```json
+{
+  "type": info,
+  "success": false,
+  "message": "No child added yet!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Unauthorized Access
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+#### Server Error Message
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Server error",
+  "errors": null,
+  "code": 500,
+}
+```
+
+### View Child Details
+
+**Endpoint:** `Get /api/v1/guardian/children/2/view`
+
+**Description:** View a child's details using their `id`.
+
+#### Headers
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+#### Success Response (200)
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "child_id": "2",
+    "class_id": 4,
+    "child_subjects": [
+      {
+        "id": 1,
+        "name": "General Mathematics",
+        "slug": "general-mathematics"
+      },
+      {
+        "id": 2,
+        "name": "English Language",
+        "slug": "english-language"
+      },
+      {
+        "id": 4,
+        "name": "Biology",
+        "slug": "biology"
+      },
+      {
+        "id": 5,
+        "name": "Physics",
+        "slug": "physics"
+      },
+      {
+        "id": 6,
+        "name": "Chemistry",
+        "slug": "chemistry"
+      },
+      {
+        "id": 31,
+        "name": "Efik",
+        "slug": "efik"
+      },
+      {
+        "id": 7,
+        "name": "Further Mathematics",
+        "slug": "further-mathematics"
+      },
+      {
+        "id": 8,
+        "name": "Economics",
+        "slug": "economics"
+      },
+      {
+        "id": 36,
+        "name": "Computer Studies",
+        "slug": "computer-studies"
+      }
+    ]
+  },
+  "code": 200
+}
+```
+
+#### Child Not Found Error
+
+```json
+{
+  "type": info,
+  "success": false,
+  "message": "Sorry, this child was not found!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Child Not A Student Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Sorry, this child is not a student!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Not Your Child Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Sorry, this is not  your child!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Unauthorized Access
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+#### Server Error Message
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "An error occurred while retrieving your child information!",
+  "errors": null,
+  "code": 500,
+}
+```
+
+### View Child Subject Details
+
+**Endpoint Sample:** `Get subject/{child_id}/{class_id}/{subject_id}/view-subject-details`
+
+**Endpoint:** `Get /api/v1/guardian/children/subject/2/4/4/view-subject-details`
+
+**Description:** View a child's subject details using the  `child_id`, `class_id` and the `subject_id`.
+
+#### Headers
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+#### Success Response (200)
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "subject_total_score": "5.45",
+    "lesson_scores": [
+      {
+        "id": 1,
+        "child_id": 2,
+        "child_name": "Student User",
+        "class_id": 4,
+        "class_name": "SSS1",
+        "subject_id": 4,
+        "subject_name": "Biology",
+        "lesson_id": 1,
+        "lesson_topic": "Introduction to Biology",
+        "term_id": 1,
+        "term_name": "First",
+        "lesson_total_score": "54.50",
+        "start_date": "10-06-2026",
+        "last_attempted_date": "10-06-2026"
+      }
+    ]
+  },
+  "code": 200
+}
+```
+
+#### Child Not Found Error
+
+```json
+{
+  "type": info,
+  "success": false,
+  "message": "Sorry, this child was not found!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Child Not A Student Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Sorry, this user is not a student!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Not Your Child Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Sorry, this is not your child!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Subject Not Attempted Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Sorry, there was no record found. Your child is yet to attempt this subject!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Lessons Not Found Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Sorry, there was no record found. Your child is yet to attempt these subject lessons!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Unauthorized Access
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+#### Server Error Message
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "An error occurred while retrieving subject details!",
+  "errors": null,
+  "code": 500,
+}
+```
+
+### View Child Lesson Details
+
+**Endpoint Sample:** `Get /api/v1/guardian/children/lesson/{lesson_id}/{child_id}/view-lesson-details`
+
+**Endpoint:** `Get /api/v1/guardian/children/lesson/1/2/view-lesson-details`
+
+**Description:** View a child's lesson details using the  `lesson_id` and the `child_id`.
+
+#### Headers
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+#### Success Response (200)
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "Success",
+  "content": {
+    "lesson_summary": {
+      "overview": "5.00/5.00",
+      "video": "5.00/5.00",
+      "concepts": {
+        "Definition of Science and Biology": "15.00/15",
+        "Process of Science": "10.00/10",
+        "Living and Non-Living Things and Their Characteristics": "15.00/15",
+        "Differences between Plants and Animals": "1.50/10"
+      },
+      "general_exercise": "3.00/20"
+    },
+    "lesson_total": "54.50/100"
+  },
+  "code": 200
+}
+```
+
+#### Checkmarker Not Found Error
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Lesson check marker not found!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Lesson Score Not Found Error
+
+```json
+{
+  "type": info,
+  "success": false,
+  "message": "There's no attempt on any lesson yet!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Lesson Concept Score Not Found Error
+
+```json
+{
+  "type": info,
+  "success": false,
+  "message": "There's no attempt on the lesson concept yet!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+#### Unauthorized Access
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+#### Server Error Message
+
+```json
+{
+  "type": error,
+  "success": false,
+  "message": "An error occurred while getting lesson's total scores summary!",
   "errors": null,
   "code": 500,
 }
@@ -3184,17 +3651,17 @@ Endpoints documented: 113
               "order_index": 1,
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Example 1",
-              "problem": "Convert 67₁₀ to base 2",
+              "problem": "Convert 6710 to base 2",
               "solution_steps": [
-                "67 ÷ 2 = 33 R1",
-                "33 ÷ 2 = 16 R1",
-                "16 ÷ 2 = 8 R0",
-                "8 ÷ 2 = 4 R0",
-                "4 ÷ 2 = 2 R0",
-                "2 ÷ 2 = 1 R0",
-                "1 ÷ 2 = 0 R1"
+                "67 � 2 = 33 R1",
+                "33 � 2 = 16 R1",
+                "16 � 2 = 8 R0",
+                "8 � 2 = 4 R0",
+                "4 � 2 = 2 R0",
+                "2 � 2 = 1 R0",
+                "1 � 2 = 0 R1"
               ],
-              "answer": "1000011₂",
+              "answer": "10000112",
               "image_path": "null,
               "audio_path": null,
               "created_at": "22-08-2025",
@@ -3205,13 +3672,13 @@ Endpoints documented: 113
               "order_index": 2,
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Example 2",
-              "problem": "Convert 67₁₀ to base 8",
+              "problem": "Convert 6710 to base 8",
               "solution_steps": [
-                "67 ÷ 8 = 8 R3",
-                "8 ÷ 8 = 1 R0",
-                "1 ÷ 8 = 0 R1"
+                "67 � 8 = 8 R3",
+                "8 � 8 = 1 R0",
+                "1 � 8 = 0 R1"
               ],
-              "answer": "103₈",
+              "answer": "1038",
               "image_path": "null,
               "audio_path": null,
               "created_at": "22-08-2025",
@@ -3224,23 +3691,23 @@ Endpoints documented: 113
               "order_index": 1,
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Exercise 1",
-              "problem": "Convert 97₁₀ to base 2",
+              "problem": "Convert 9710 to base 2",
               "solution_steps": [
-                "67 ÷ 2 = 33 R1",
-                "33 ÷ 2 = 16 R1",
-                "16 ÷ 2 = 8 R0",
-                "8 ÷ 2 = 4 R0",
-                "4 ÷ 2 = 2 R0",
-                "2 ÷ 2 = 1 R0",
-                "1 ÷ 2 = 0 R1"
+                "67 � 2 = 33 R1",
+                "33 � 2 = 16 R1",
+                "16 � 2 = 8 R0",
+                "8 � 2 = 4 R0",
+                "4 � 2 = 2 R0",
+                "2 � 2 = 1 R0",
+                "1 � 2 = 0 R1"
               ],
               "answers": [
-                "1110011₂",
-                "1001011₂",
-                "0101011₂",
-                "1000011₂"
+                "11100112",
+                "10010112",
+                "01010112",
+                "10000112"
               ],
-              "correct_answer": "1000011₂",
+              "correct_answer": "10000112",
               "correct_answer_option": "D",
               "image_path": "null,
               "audio_path": null,
@@ -3252,19 +3719,19 @@ Endpoints documented: 113
               "order_index": 2,
               "concept_title": "Conversion from Base 10 to Other Bases",
               "title": "Exercise 2",
-              "problem": "Convert 152₁₀ to base 5",
+              "problem": "Convert 15210 to base 5",
               "solution_steps": [
-                "67 ÷ 8 = 8 R3",
-                "8 ÷ 8 = 1 R0",
-                "1 ÷ 8 = 0 R1"
+                "67 � 8 = 8 R3",
+                "8 � 8 = 1 R0",
+                "1 � 8 = 0 R1"
               ],
               "answers": [
-                "103₈",
-                "123₈",
-                "116₈",
-                "100₈"
+                "1038",
+                "1238",
+                "1168",
+                "1008"
               ],
-              "correct_answer": "103₈",
+              "correct_answer": "1038",
               "correct_answer_option": "A",
               "image_path": "null,
               "audio_path": null,
@@ -3295,13 +3762,13 @@ Endpoints documented: 113
               "order_index": 1,
               "concept_title": "Conversion from Any Base to Base 10",
               "title": "Example 1",
-              "problem": "Convert 321₅ to a number in base 10",
+              "problem": "Convert 3215 to a number in base 10",
               "solution_steps": [
-                "321₅ = 3 × 5² + 2 × 5¹ + 1 × 5⁰",
-                "321₅ = 3 × 25 + 10 + 1",
-                "321₅ = 75 + 10 + 1"
+                "3215 = 3 � 5� + 2 � 5� + 1 � 5�",
+                "3215 = 3 � 25 + 10 + 1",
+                "3215 = 75 + 10 + 1"
               ],
-              "answer": "86₁₀",
+              "answer": "8610",
               "image_path": "null,
               "audio_path": null,
               "created_at": "22-08-2025",
@@ -3312,13 +3779,13 @@ Endpoints documented: 113
               "order_index": 2,
               "concept_title": "Conversion from Any Base to Base 10",
               "title": "Example 2",
-              "problem": "Convert 110101₂ to base 10",
+              "problem": "Convert 1101012 to base 10",
               "solution_steps": [
-                "110101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰",
-                "110101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1",
-                "110101₂ = 32 + 16 + 0 + 4 + 0 + 1"
+                "1101012 = 1 � 25 + 1 � 24 + 0 � 2� + 1 � 2� + 0 � 2� + 1 � 2�",
+                "1101012 = 1 � 32 + 1 � 16 + 0 � 8 + 1 � 4 + 0 � 2 + 1 � 1",
+                "1101012 = 32 + 16 + 0 + 4 + 0 + 1"
               ],
-              "answer": "53₁₀",
+              "answer": "5310",
               "image_path": "null,
               "audio_path": null,
               "created_at": "22-08-2025",
@@ -3333,17 +3800,17 @@ Endpoints documented: 113
               "title": "Exercise 1",
               "problem": "Convert 4156 to base 10",
               "solution_steps": [
-                "67 ÷ 8 = 8 R3",
-                "8 ÷ 8 = 1 R0",
-                "1 ÷ 8 = 0 R1"
+                "67 � 8 = 8 R3",
+                "8 � 8 = 1 R0",
+                "1 � 8 = 0 R1"
               ],
               "answers": [
-                "86₁₀",
-                "72₁₀",
-                "84₁₀",
-                "68₁₀"
+                "8610",
+                "7210",
+                "8410",
+                "6810"
               ],
-              "correct_answer": "86₁₀",
+              "correct_answer": "8610",
               "correct_answer_option": "A",
               "image_path": "null,
               "audio_path": null,
@@ -3355,19 +3822,19 @@ Endpoints documented: 113
               "order_index": 2,
               "concept_title": "Conversion from Any Base to Base 10",
               "title": "Exercise 2",
-              "problem": "Convert 101101₂ to base 10",
+              "problem": "Convert 1011012 to base 10",
               "solution_steps": [
-                "101101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰",
-                "101101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1",
-                "101101₂ = 32 + 16 + 0 + 4 + 0 + 1"
+                "1011012 = 1 � 25 + 1 � 24 + 0 � 2� + 1 � 2� + 0 � 2� + 1 � 2�",
+                "1011012 = 1 � 32 + 1 � 16 + 0 � 8 + 1 � 4 + 0 � 2 + 1 � 1",
+                "1011012 = 32 + 16 + 0 + 4 + 0 + 1"
               ],
               "answers": [
-                "63₁₀",
-                "53₁₀",
-                "55₁₀",
-                "45₁₀"
+                "6310",
+                "5310",
+                "5510",
+                "4510"
               ],
-              "correct_answer": "53₁₀",
+              "correct_answer": "5310",
               "correct_answer_option": "B",
               "image_path": "null,
               "audio_path": null,
@@ -3398,13 +3865,13 @@ Endpoints documented: 113
               "order_index": 1,
               "concept_title": "Conversion of Decimal Fractions to Base 10",
               "title": "Example 1",
-              "problem": "Convert 11.011₂ to base 10",
+              "problem": "Convert 11.0112 to base 10",
               "solution_steps": [
-                "11.011₂ = 1 × 2¹ + 1 × 20 + 0 × 2-1 + 1 × 2-2 + 1 × 2-3",
-                "11.011₂ = 2 + 1 + 0 + (1/22) + (1/23) ",
-                "11.011₂ = 3 + (1/4) + (1/8) = 27/8"
+                "11.0112 = 1 � 2� + 1 � 20 + 0 � 2-1 + 1 � 2-2 + 1 � 2-3",
+                "11.0112 = 2 + 1 + 0 + (1/22) + (1/23) ",
+                "11.0112 = 3 + (1/4) + (1/8) = 27/8"
               ],
-              "answer": "3(3/8₁₀)",
+              "answer": "3(3/810)",
               "image_path": "null,
               "audio_path": null,
               "created_at": "22-08-2025",
@@ -3417,8 +3884,8 @@ Endpoints documented: 113
               "title": "Example 2",
               "problem": "Convert 241.238 to base 10",
               "solution_steps": [
-                "241.238  = 2 × 82 + 4 × 81 + 1 × 80 + 2 × 8−1 + 3 × 8−2",
-                "241.238 = 2 × 64 + 4 × 8 + 1 × 1 + 2 × (1/8) + 3 × (1/64)",
+                "241.238  = 2 � 82 + 4 � 81 + 1 � 80 + 2 � 8-1 + 3 � 8-2",
+                "241.238 = 2 � 64 + 4 � 8 + 1 � 1 + 2 � (1/8) + 3 � (1/64)",
                 "241.238 = 128 + 32 + 1 + (2/8) + (3/64)",
                 "241.238 = 161 + (19/64)"
               ],
@@ -3437,23 +3904,23 @@ Endpoints documented: 113
           "id": 5,
           "order_index": 1,
           "lesson_topic": "Number Bases System",
-          "problem": "Convert 97₁₀ to base 2",
+          "problem": "Convert 9710 to base 2",
           "solution_steps": [
-            "67 ÷ 2 = 33 R1",
-            "33 ÷ 2 = 16 R1",
-            "16 ÷ 2 = 8 R0",
-            "8 ÷ 2 = 4 R0",
-            "4 ÷ 2 = 2 R0",
-            "2 ÷ 2 = 1 R0",
-            "1 ÷ 2 = 0 R1"
+            "67 � 2 = 33 R1",
+            "33 � 2 = 16 R1",
+            "16 � 2 = 8 R0",
+            "8 � 2 = 4 R0",
+            "4 � 2 = 2 R0",
+            "2 � 2 = 1 R0",
+            "1 � 2 = 0 R1"
           ],
           "answers": [
-            "1110011₂",
-            "1001011₂",
-            "0101011₂",
-            "1000011₂"
+            "11100112",
+            "10010112",
+            "01010112",
+            "10000112"
           ],
-          "correct_answer": "1000011₂",
+          "correct_answer": "10000112",
           "correct_answer_option": "D",
           "image_path": "null,
           "audio_path": null,
@@ -3464,19 +3931,19 @@ Endpoints documented: 113
           "id": 6,
           "order_index": 2,
           "lesson_topic": "Number Bases System",
-          "problem": "Convert 152₁₀ to base 5",
+          "problem": "Convert 15210 to base 5",
           "solution_steps": [
-            "67 ÷ 8 = 8 R3",
-            "8 ÷ 8 = 1 R0",
-            "1 ÷ 8 = 0 R1"
+            "67 � 8 = 8 R3",
+            "8 � 8 = 1 R0",
+            "1 � 8 = 0 R1"
           ],
           "answers": [
-            "103₈",
-            "123₈",
-            "116₈",
-            "100₈"
+            "1038",
+            "1238",
+            "1168",
+            "1008"
           ],
-          "correct_answer": "103₈",
+          "correct_answer": "1038",
           "correct_answer_option": "A",
           "image_path": "null,
           "audio_path": null,
@@ -3489,17 +3956,17 @@ Endpoints documented: 113
           "lesson_topic": "Number Bases System",
           "problem": "Convert 4156 to base 10",
           "solution_steps": [
-            "67 ÷ 8 = 8 R3",
-            "8 ÷ 8 = 1 R0",
-            "1 ÷ 8 = 0 R1"
+            "67 � 8 = 8 R3",
+            "8 � 8 = 1 R0",
+            "1 � 8 = 0 R1"
           ],
           "answers": [
-            "86₁₀",
-            "72₁₀",
-            "84₁₀",
-            "68₁₀"
+            "8610",
+            "7210",
+            "8410",
+            "6810"
           ],
-          "correct_answer": "86₁₀",
+          "correct_answer": "8610",
           "correct_answer_option": "A",
           "image_path": "null,
           "audio_path": null,
@@ -3510,19 +3977,19 @@ Endpoints documented: 113
           "id": 8,
           "order_index": 4,
           "lesson_topic": "Number Bases System",
-          "problem": "Convert 101101₂ to base 10",
+          "problem": "Convert 1011012 to base 10",
           "solution_steps": [
-            "101101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰",
-            "101101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1",
-            "101101₂ = 32 + 16 + 0 + 4 + 0 + 1"
+            "1011012 = 1 � 25 + 1 � 24 + 0 � 2� + 1 � 2� + 0 � 2� + 1 � 2�",
+            "1011012 = 1 � 32 + 1 � 16 + 0 � 8 + 1 � 4 + 0 � 2 + 1 � 1",
+            "1011012 = 32 + 16 + 0 + 4 + 0 + 1"
           ],
           "answers": [
-            "63₁₀",
-            "53₁₀",
-            "55₁₀",
-            "45₁₀"
+            "6310",
+            "5310",
+            "5510",
+            "4510"
           ],
-          "correct_answer": "53₁₀",
+          "correct_answer": "5310",
           "correct_answer_option": "B",
           "image_path": "null,
           "audio_path": null,
@@ -4400,6 +4867,68 @@ Endpoints documented: 113
 ```
 
 
+## MOTD
+
+**Base Url:** `https://api.fastlearnersapp.com`
+
+### View MOTD
+
+**Endpoint:** `Get /api/v1/motd`
+
+**Description:** View Message of the Day with this endpoint.
+
+#### Headers
+
+| Key | Value |
+| --- | --- |
+| Authorization | None |
+| Accept | application/json |
+
+#### Success Response (200)
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTD retrieved successfully!",
+  "content": {
+    "id": 2,
+    "title": "Our Latest App Update",
+    "message": "Another new app update update now!",
+    "is_active": true,
+    "starts_at": "11-06-2026",
+    "ends_at": "17-06-2026",
+    "created_at": "10-06-2026"
+  },
+  "code": 200
+}
+```
+
+#### MOTD Not Found Error
+
+```json
+{
+  "type": "info",
+  "success": false,
+  "message": "No MOTD available at the moment!",
+  "errors": null,
+  "code": 200
+}
+```
+
+#### Server Error Message
+
+```json
+{
+  "type": false,
+  "success": false,
+  "message": "An error occurred while retrieving MOTD!",
+  "errors": ["error message"],
+  "code": 500,
+}
+```
+
+
 ## Student's Subject
 
 **Base Url:** `https://api.fastlearnersapp.com`
@@ -4639,7 +5168,7 @@ Endpoints documented: 113
 **Description:** Update a student's selective/discipline selective subjects.
 
 **Note:**
-=> Under selective (for JSS class) or discipline selective subjects (for SSS class), students are to select four (4) subjects from the list of subjects
+=> Under selective (for JSS class) students are to select two (2) subjects while discipline selective subjects (for SSS class), students are to select four (4) subjects from the list of subjects
 
 => Post the subject ids in the request body.
 
@@ -5469,9 +5998,9 @@ Endpoints documented: 113
 }
 ```
 
-### View Ticket
+### View Ticket Details
 
-**Endpoint:** `GET /api/v1/tickets/2/view`
+**Endpoint:** `GET /api/v1/tickets/5/view`
 
 **Description:** This endpoint retrieves a specific ticket.
 
@@ -5498,45 +6027,111 @@ Endpoints documented: 113
   "message": "Ticket retrieved successfully!",
   "content": {
     "ticket": {
-      "id": 2,
+      "id": 5,
       "category": "Billing",
       "priority": "High",
       "status": "Open",
       "assigned_to": null,
       "subject": "Invoice",
       "description": "Will I get an invoice after payment?",
-      "replies": [],
-      "ticket_attachments": [
+      "replies": [
         {
           "id": 1,
-          "ticket_id": 2,
-          "ticket_message_id": null,
-          "path": "https://api.fastlearnersapp.com/storage/tickets/6a221a5e8f561_student.png",
-          "original_file_name": "time.png",
-          "file_type": "image/png",
-          "file_size": 7048,
-          "created_at": "05-06-2026",
-          "updated_at": "05-06-2026"
+          "sender_type": "user",
+          "reply": "I want the  invoice to show my guardian.",
+          "reply_attachments": [
+            {
+              "id": 13,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a227c00b0e25_student.png",
+              "created_at": "05-06-2026",
+              "updated_at": "05-06-2026"
+            },
+            {
+              "id": 14,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a227c00b9365_student.png",
+              "created_at": "05-06-2026",
+              "updated_at": "05-06-2026"
+            },
+            {
+              "id": 15,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a227c00bacb1_student.png",
+              "created_at": "05-06-2026",
+              "updated_at": "05-06-2026"
+            }
+          ],
+          "created_at": "05-06-2026 07:34",
+          "updated_at": "05-06-2026 07:34"
         },
         {
           "id": 2,
-          "ticket_id": 2,
-          "ticket_message_id": null,
-          "path": "https://api.fastlearnersapp.com/storage/tickets/6a221a5e9c4a3_student.png",
-          "original_file_name": "Training Exercise.png",
-          "file_type": "image/png",
-          "file_size": 72954,
+          "sender_type": "user",
+          "reply": "When should I be expecting the update?",
+          "reply_attachments": [
+            {
+              "id": 16,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a237375b9483_student.png",
+              "created_at": "06-06-2026",
+              "updated_at": "06-06-2026"
+            }
+          ],
+          "created_at": "06-06-2026 01:10",
+          "updated_at": "06-06-2026 01:10"
+        },
+        {
+          "id": 3,
+          "sender_type": "admin",
+          "reply": "This is to inform you the your ticket has been received",
+          "reply_attachments": [],
+          "created_at": "07-06-2026 08:47",
+          "updated_at": "07-06-2026 08:47"
+        },
+        {
+          "id": 11,
+          "sender_type": "user",
+          "reply": "Alright",
+          "reply_attachments": [
+            {
+              "id": 17,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a272ecef3da8_1780952782.png",
+              "created_at": "08-06-2026",
+              "updated_at": "08-06-2026"
+            }
+          ],
+          "created_at": "08-06-2026 21:06",
+          "updated_at": "08-06-2026 21:06"
+        },
+        {
+          "id": 15,
+          "sender_type": "user",
+          "reply": "Thank you for your response",
+          "reply_attachments": [
+            {
+              "id": 21,
+              "path": "https://api.fastlearnersapp.com/storage/tickets/6a28273c73b07_1781016380.png",
+              "created_at": "09-06-2026",
+              "updated_at": "09-06-2026"
+            }
+          ],
+          "created_at": "09-06-2026 14:46",
+          "updated_at": "09-06-2026 14:46"
+        }
+      ],
+      "ticket_attachments": [
+        {
+          "id": 10,
+          "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a22228eee662_student.png",
           "created_at": "05-06-2026",
           "updated_at": "05-06-2026"
         },
         {
-          "id": 3,
-          "ticket_id": 2,
-          "ticket_message_id": null,
-          "path": "https://api.fastlearnersapp.com/storage/tickets/6a221a5e9dc1c_student.png",
-          "original_file_name": "logo-n-01.png",
-          "file_type": "image/png",
-          "file_size": 37529,
+          "id": 11,
+          "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a22228ef3e3b_student.png",
+          "created_at": "05-06-2026",
+          "updated_at": "05-06-2026"
+        },
+        {
+          "id": 12,
+          "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a22228f0141b_student.png",
           "created_at": "05-06-2026",
           "updated_at": "05-06-2026"
         }
@@ -6426,17 +7021,17 @@ Delete Lesson
             "order_index": 1,
             "concept_title": "Conversion from Base 10 to Other Bases",
             "title": "Example 1",
-            "problem": "Convert 67₁₀ to base 2",
+            "problem": "Convert 6710 to base 2",
             "solution_steps": [
-              "67 ÷ 2 = 33 R1",
-              "33 ÷ 2 = 16 R1",
-              "16 ÷ 2 = 8 R0",
-              "8 ÷ 2 = 4 R0",
-              "4 ÷ 2 = 2 R0",
-              "2 ÷ 2 = 1 R0",
-              "1 ÷ 2 = 0 R1"
+              "67 � 2 = 33 R1",
+              "33 � 2 = 16 R1",
+              "16 � 2 = 8 R0",
+              "8 � 2 = 4 R0",
+              "4 � 2 = 2 R0",
+              "2 � 2 = 1 R0",
+              "1 � 2 = 0 R1"
             ],
-            "answer": "1000011₂",
+            "answer": "10000112",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
           },
@@ -6445,13 +7040,13 @@ Delete Lesson
             "order_index": 2,
             "concept_title": "Conversion from Base 10 to Other Bases",
             "title": "Example 2",
-            "problem": "Convert 67₁₀ to base 8",
+            "problem": "Convert 6710 to base 8",
             "solution_steps": [
-              "67 ÷ 8 = 8 R3",
-              "8 ÷ 8 = 1 R0",
-              "1 ÷ 8 = 0 R1"
+              "67 � 8 = 8 R3",
+              "8 � 8 = 1 R0",
+              "1 � 8 = 0 R1"
             ],
-            "answer": "103₈",
+            "answer": "1038",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
           }
@@ -6462,23 +7057,23 @@ Delete Lesson
             "order_index": 1,
             "concept_title": "Conversion from Base 10 to Other Bases",
             "title": "Exercise 1",
-            "problem": "Convert 97₁₀ to base 2",
+            "problem": "Convert 9710 to base 2",
             "solution_steps": [
-              "67 ÷ 2 = 33 R1",
-              "33 ÷ 2 = 16 R1",
-              "16 ÷ 2 = 8 R0",
-              "8 ÷ 2 = 4 R0",
-              "4 ÷ 2 = 2 R0",
-              "2 ÷ 2 = 1 R0",
-              "1 ÷ 2 = 0 R1"
+              "67 � 2 = 33 R1",
+              "33 � 2 = 16 R1",
+              "16 � 2 = 8 R0",
+              "8 � 2 = 4 R0",
+              "4 � 2 = 2 R0",
+              "2 � 2 = 1 R0",
+              "1 � 2 = 0 R1"
             ],
             "answers": [
-              "1110011₂",
-              "1001011₂",
-              "0101011₂",
-              "1000011₂"
+              "11100112",
+              "10010112",
+              "01010112",
+              "10000112"
             ],
-            "correct_answer": "1000011₂",
+            "correct_answer": "10000112",
             "correct_answer_option": "B",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
@@ -6488,19 +7083,19 @@ Delete Lesson
             "order_index": 2,
             "concept_title": "Conversion from Base 10 to Other Bases",
             "title": "Exercise 2",
-            "problem": "Convert 152₁₀ to base 5",
+            "problem": "Convert 15210 to base 5",
             "solution_steps": [
-              "67 ÷ 8 = 8 R3",
-              "8 ÷ 8 = 1 R0",
-              "1 ÷ 8 = 0 R1"
+              "67 � 8 = 8 R3",
+              "8 � 8 = 1 R0",
+              "1 � 8 = 0 R1"
             ],
             "answers": [
-              "103₈",
-              "123₈",
-              "116₈",
-              "100₈"
+              "1038",
+              "1238",
+              "1168",
+              "1008"
             ],
-            "correct_answer": "103₈",
+            "correct_answer": "1038",
             "correct_answer_option": "C",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
@@ -6528,13 +7123,13 @@ Delete Lesson
             "order_index": 1,
             "concept_title": "Conversion from Any Base to Base 10",
             "title": "Example 1",
-            "problem": "Convert 321₅ to a number in base 10",
+            "problem": "Convert 3215 to a number in base 10",
             "solution_steps": [
-              "321₅ = 3 × 5² + 2 × 5¹ + 1 × 5⁰",
-              "321₅ = 3 × 25 + 10 + 1",
-              "321₅ = 75 + 10 + 1"
+              "3215 = 3 � 5� + 2 � 5� + 1 � 5�",
+              "3215 = 3 � 25 + 10 + 1",
+              "3215 = 75 + 10 + 1"
             ],
-            "answer": "86₁₀",
+            "answer": "8610",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
           },
@@ -6543,13 +7138,13 @@ Delete Lesson
             "order_index": 2,
             "concept_title": "Conversion from Any Base to Base 10",
             "title": "Example 2",
-            "problem": "Convert 110101₂ to base 10",
+            "problem": "Convert 1101012 to base 10",
             "solution_steps": [
-              "110101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰",
-              "110101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1",
-              "110101₂ = 32 + 16 + 0 + 4 + 0 + 1"
+              "1101012 = 1 � 25 + 1 � 24 + 0 � 2� + 1 � 2� + 0 � 2� + 1 � 2�",
+              "1101012 = 1 � 32 + 1 � 16 + 0 � 8 + 1 � 4 + 0 � 2 + 1 � 1",
+              "1101012 = 32 + 16 + 0 + 4 + 0 + 1"
             ],
-            "answer": "53₁₀",
+            "answer": "5310",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
           }
@@ -6562,17 +7157,17 @@ Delete Lesson
             "title": "Exercise 1",
             "problem": "Convert 4156 to base 10",
             "solution_steps": [
-              "67 ÷ 8 = 8 R3",
-              "8 ÷ 8 = 1 R0",
-              "1 ÷ 8 = 0 R1"
+              "67 � 8 = 8 R3",
+              "8 � 8 = 1 R0",
+              "1 � 8 = 0 R1"
             ],
             "answers": [
-              "86₁₀",
-              "72₁₀",
-              "84₁₀",
-              "68₁₀"
+              "8610",
+              "7210",
+              "8410",
+              "6810"
             ],
-            "correct_answer": "86₁₀",
+            "correct_answer": "8610",
             "correct_answer_option": "A",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
@@ -6582,19 +7177,19 @@ Delete Lesson
             "order_index": 2,
             "concept_title": "Conversion from Any Base to Base 10",
             "title": "Exercise 2",
-            "problem": "Convert 101101₂ to base 10",
+            "problem": "Convert 1011012 to base 10",
             "solution_steps": [
-              "101101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰",
-              "101101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1",
-              "101101₂ = 32 + 16 + 0 + 4 + 0 + 1"
+              "1011012 = 1 � 25 + 1 � 24 + 0 � 2� + 1 � 2� + 0 � 2� + 1 � 2�",
+              "1011012 = 1 � 32 + 1 � 16 + 0 � 8 + 1 � 4 + 0 � 2 + 1 � 1",
+              "1011012 = 32 + 16 + 0 + 4 + 0 + 1"
             ],
             "answers": [
-              "63₁₀",
-              "53₁₀",
-              "55₁₀",
-              "45₁₀"
+              "6310",
+              "5310",
+              "5510",
+              "4510"
             ],
-            "correct_answer": "53₁₀",
+            "correct_answer": "5310",
             "correct_answer_option": "D",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
@@ -6622,13 +7217,13 @@ Delete Lesson
             "order_index": 1,
             "concept_title": "Conversion of Decimal Fractions to Base 10",
             "title": "Example 1",
-            "problem": "Convert 11.011₂ to base 10",
+            "problem": "Convert 11.0112 to base 10",
             "solution_steps": [
-              "11.011₂ = 1 × 2¹ + 1 × 20 + 0 × 2-1 + 1 × 2-2 + 1 × 2-3",
-              "11.011₂ = 2 + 1 + 0 + (1/22) + (1/23) ",
-              "11.011₂ = 3 + (1/4) + (1/8) = 27/8"
+              "11.0112 = 1 � 2� + 1 � 20 + 0 � 2-1 + 1 � 2-2 + 1 � 2-3",
+              "11.0112 = 2 + 1 + 0 + (1/22) + (1/23) ",
+              "11.0112 = 3 + (1/4) + (1/8) = 27/8"
             ],
-            "answer": "3(3/8₁₀)",
+            "answer": "3(3/810)",
             "created_at": "22-08-2025",
             "updated_at": "22-08-2025"
           },
@@ -6639,8 +7234,8 @@ Delete Lesson
             "title": "Example 2",
             "problem": "Convert 241.238 to base 10",
             "solution_steps": [
-              "241.238  = 2 × 82 + 4 × 81 + 1 × 80 + 2 × 8−1 + 3 × 8−2",
-              "241.238 = 2 × 64 + 4 × 8 + 1 × 1 + 2 × (1/8) + 3 × (1/64)",
+              "241.238  = 2 � 82 + 4 � 81 + 1 � 80 + 2 � 8-1 + 3 � 8-2",
+              "241.238 = 2 � 64 + 4 � 8 + 1 � 1 + 2 � (1/8) + 3 � (1/64)",
               "241.238 = 128 + 32 + 1 + (2/8) + (3/64)",
               "241.238 = 161 + (19/64)"
             ],
@@ -6657,23 +7252,23 @@ Delete Lesson
         "id": 5,
         "order_index": 1,
         "lesson_topic": "Number Bases System",
-        "problem": "Convert 97₁₀ to base 2",
+        "problem": "Convert 9710 to base 2",
         "solution_steps": [
-          "67 ÷ 2 = 33 R1",
-          "33 ÷ 2 = 16 R1",
-          "16 ÷ 2 = 8 R0",
-          "8 ÷ 2 = 4 R0",
-          "4 ÷ 2 = 2 R0",
-          "2 ÷ 2 = 1 R0",
-          "1 ÷ 2 = 0 R1"
+          "67 � 2 = 33 R1",
+          "33 � 2 = 16 R1",
+          "16 � 2 = 8 R0",
+          "8 � 2 = 4 R0",
+          "4 � 2 = 2 R0",
+          "2 � 2 = 1 R0",
+          "1 � 2 = 0 R1"
         ],
         "answers": [
-          "1110011₂",
-          "1001011₂",
-          "0101011₂",
-          "1000011₂"
+          "11100112",
+          "10010112",
+          "01010112",
+          "10000112"
         ],
-        "correct_answer": "1000011₂",
+        "correct_answer": "10000112",
         "created_at": "22-08-2025",
         "updated_at": "22-08-2025"
       },
@@ -6681,19 +7276,19 @@ Delete Lesson
         "id": 6,
         "order_index": 2,
         "lesson_topic": "Number Bases System",
-        "problem": "Convert 152₁₀ to base 5",
+        "problem": "Convert 15210 to base 5",
         "solution_steps": [
-          "67 ÷ 8 = 8 R3",
-          "8 ÷ 8 = 1 R0",
-          "1 ÷ 8 = 0 R1"
+          "67 � 8 = 8 R3",
+          "8 � 8 = 1 R0",
+          "1 � 8 = 0 R1"
         ],
         "answers": [
-          "103₈",
-          "123₈",
-          "116₈",
-          "100₈"
+          "1038",
+          "1238",
+          "1168",
+          "1008"
         ],
-        "correct_answer": "103₈",
+        "correct_answer": "1038",
         "created_at": "22-08-2025",
         "updated_at": "22-08-2025"
       },
@@ -6703,17 +7298,17 @@ Delete Lesson
         "lesson_topic": "Number Bases System",
         "problem": "Convert 4156 to base 10",
         "solution_steps": [
-          "67 ÷ 8 = 8 R3",
-          "8 ÷ 8 = 1 R0",
-          "1 ÷ 8 = 0 R1"
+          "67 � 8 = 8 R3",
+          "8 � 8 = 1 R0",
+          "1 � 8 = 0 R1"
         ],
         "answers": [
-          "86₁₀",
-          "72₁₀",
-          "84₁₀",
-          "68₁₀"
+          "8610",
+          "7210",
+          "8410",
+          "6810"
         ],
-        "correct_answer": "86₁₀",
+        "correct_answer": "8610",
         "created_at": "22-08-2025",
         "updated_at": "22-08-2025"
       },
@@ -6721,19 +7316,19 @@ Delete Lesson
         "id": 8,
         "order_index": 4,
         "lesson_topic": "Number Bases System",
-        "problem": "Convert 101101₂ to base 10",
+        "problem": "Convert 1011012 to base 10",
         "solution_steps": [
-          "101101₂ = 1 × 2⁵ + 1 × 2⁴ + 0 × 2³ + 1 × 2² + 0 × 2¹ + 1 × 2⁰",
-          "101101₂ = 1 × 32 + 1 × 16 + 0 × 8 + 1 × 4 + 0 × 2 + 1 × 1",
-          "101101₂ = 32 + 16 + 0 + 4 + 0 + 1"
+          "1011012 = 1 � 25 + 1 � 24 + 0 � 2� + 1 � 2� + 0 � 2� + 1 � 2�",
+          "1011012 = 1 � 32 + 1 � 16 + 0 � 8 + 1 � 4 + 0 � 2 + 1 � 1",
+          "1011012 = 32 + 16 + 0 + 4 + 0 + 1"
         ],
         "answers": [
-          "63₁₀",
-          "53₁₀",
-          "55₁₀",
-          "45₁₀"
+          "6310",
+          "5310",
+          "5510",
+          "4510"
         ],
-        "correct_answer": "53₁₀",
+        "correct_answer": "5310",
         "created_at": "22-08-2025",
         "updated_at": "22-08-2025"
       }
@@ -8414,6 +9009,621 @@ Delete Lesson
   "message": "No class found, add classes!",
   "errors": null,
   "code": 404,
+}
+```
+
+
+## MOTD Management
+
+**Base Url:** `https://api.fastlearnersapp.com`
+
+
+### View MOTDs
+
+**Endpoint:** `GET /api/v1/superadmin/motds`
+
+**Description:** This endpoint returns the list of available and active motds.
+
+
+#### Headers
+
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+
+#### Redirection
+
+
+| Response | Redirect To |
+| --- | --- |
+| success | none |
+
+
+#### Success Response (200)
+
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTDs retrieved successfully!",
+  "content": [
+    {
+      "motd": [
+        {
+          "id": 2,
+          "title": "Our Latest App Update",
+          "message": "Another new app update update now!",
+          "is_active": true,
+          "starts_at": "11-06-2026",
+          "ends_at": "17-06-2026",
+          "created_at": "10-06-2026",
+          "updated_at": "11-06-2026",
+          "created_by": "Super Admin"
+        },
+        {
+          "id": 1,
+          "title": "New App Update",
+          "message": "Hello! A new update has been made to the app. Go on snd doqnload now!",
+          "is_active": false,
+          "starts_at": "10-06-2026",
+          "ends_at": "15-06-2026",
+          "created_at": "10-06-2026",
+          "updated_at": "10-06-2026",
+          "created_by": "Super Admin"
+        }
+      ],
+      "links": {
+        "first": "https://fastlearnersapp.com/api/v1/superadmin/motds?page=1",
+        "last": "https://fastlearnersapp.com/api/v1/superadmin/motds?page=1",
+        "prev": null,
+        "next": null
+      },
+      "meta": {
+        "current_page": 1,
+        "last_page": 1,
+        "per_page": 20,
+        "total": 2
+      }
+    }
+  ],
+  "code": 200
+}
+```
+
+
+#### MOTD Not Found Error
+
+
+```json
+{
+  "type": "info",
+  "success": false,
+  "message": "No MOTD created yet!",
+  "errors": null,
+  "code": 400,
+}
+```
+
+
+#### Unauthorized Access
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+
+#### Server Error Message
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving MOTD!",
+  "errors": ["error message"],
+  "code": 500,
+}
+```
+
+
+### Get MOTD Detail
+
+
+**Endpoint:** `GET /api/v1/superadmin/motds/2/view`
+
+**Description:** Get a specific motd detail with this endpoint using the id (2)
+
+
+#### Headers
+
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+
+#### Redirection
+
+
+| Response | Redirect To |
+| --- | --- |
+| success | none |
+
+
+#### Success Response (200)
+
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTD retrieved successfully!",
+  "content": {
+    "motd": {
+      "id": 2,
+      "title": "Our Latest App Update",
+      "message": "Another new app update update now!",
+      "is_active": true,
+      "starts_at": "11-06-2026",
+      "ends_at": "17-06-2026",
+      "created_at": "10-06-2026",
+      "updated_at": "11-06-2026",
+      "created_by": "Super Admin"
+    }
+  },
+  "code": 200
+}
+```
+
+
+#### MOTD Not Found Error
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "MOTD not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+
+#### Unauthorized Access
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+
+#### Server Error Message
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while retrieving MOTD!",
+  "errors": ["error message"],
+  "code": 500,
+}
+```
+
+
+### Create MOTD
+
+**Endpoint:** `POST /api/v1/superadmin/motds/create`
+
+**Description:** Create motd using this endpoint.
+
+**Note:**
+
+=> The values for `audience` will be `select` options from `all, app_users, students, agents, guardians, app_users_students, admins`
+
+=> The values for `is_active` will be `select` option of `1` for true and `0` for false
+
+=> The format for dates (`starts_at, ends_at`) is dd-mm-yyyy and that's applicable to all the dates for any endpoint on fastlearnersapp
+
+
+#### Headers
+
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+
+#### Request Body
+
+
+```json
+{
+  "title": "Latest App Update",
+  "message": "Another new app update update now!",
+  "audience": "app_users",
+  "is_active": 1,
+  "starts_at": "15-06-2026",
+  "ends_at": "15-06-2026"
+}
+```
+
+
+#### Redirection
+
+
+| Response | Redirect To |
+| --- | --- |
+| success | none |
+
+
+#### Success Response (200)
+
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTD created successfully!",
+  "content": {
+    "id": 4,
+    "title": "Latest App Update",
+    "message": "Another new app update update now!",
+    "is_active": true,
+    "starts_at": "11-06-2026",
+    "ends_at": "17-06-2026",
+    "created_at": "11-06-2026",  // can be null
+    "updated_at": "11-06-2026",  // can be null
+    "created_by": "Super Admin"
+  },
+  "code": 200
+}
+```
+
+
+#### Validation Error
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+
+#### Unauthorized Access
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+
+#### Server Error Message
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while creating MOTD",
+  "errors": ["error message"],
+  "code": 500,
+}
+```
+
+
+### Update MOTD
+
+**Endpoint:** `PUT /api/v1/superadmin/motds/4/update`
+
+**Description:** Update motd using the `id` (4).
+
+**Note:**
+
+=> The values for `audience` will be `select` options from `all, app_users, students, agents, guardians, app_users_students, admins`
+
+=> The values for `is_active` will be `select` option of `1` for true and `0` for false
+
+=> The format for dates (`starts_at, ends_at`) is dd-mm-yyyy and that's applicable to all the dates for any endpoint on fastlearnersapp
+
+
+#### Headers
+
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+
+#### Request Body
+
+
+```json
+{
+  "title": "New Features App Update",
+  "message": "Another fantastic update now on the app!",
+  "audience": "app_users",
+  "is_active": 1,
+  "starts_at": "15-06-2026",
+  "ends_at": "15-06-2026"
+}
+```
+
+
+#### Redirection
+
+
+| Response | Redirect To |
+| --- | --- |
+| success | none |
+
+
+#### Success Response (200)
+
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTD updated successfully!",
+  "content": {
+    "id": 4,
+    "title": "New Features App Update",
+    "message": "Another fantastic update now on the app!",
+    "is_active": true,
+    "starts_at": "11-06-2026",
+    "ends_at": "17-06-2026",
+    "created_at": "11-06-2026",
+    "updated_at": "11-06-2026",
+    "created_by": "Super Admin"
+  },
+  "code": 200
+}
+```
+
+
+#### Validation Error
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Validation Error",
+  "errors": ["validation errors"],
+  "code": 400
+}
+```
+
+
+#### Unauthorized Access
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+
+#### Server Error Message
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while updating MOTD",
+  "errors": ["error message"],
+  "code": 500,
+}
+```
+
+
+### Delete MOTD
+
+**Endpoint:** `DELETE /api/v1/superadmin/motds/3/delete`
+
+**Description:** Delete motd with this endpoint using the package id (3).
+
+
+#### Headers
+
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+
+#### Redirection
+
+
+| Response | Redirect To |
+| --- | --- |
+| success | none |
+
+
+#### Success Response (200)
+
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTD deleted successfully!",
+  "content": null,
+  "code": 200
+}
+}
+```
+
+
+#### MOTD Not Found Error
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "MOTD not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+
+#### Unauthorized Access
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+
+#### Server Error Message
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while deleting package",
+  "errors": ["error message"],
+  "code": 500,
+}
+```
+
+
+### Update MOTD Status
+
+**Endpoint:** `POST /api/v1/superadmin/motds/2/update-status`
+
+**Description:** Update motd `is_active` status between true and false (1 & 2).
+
+
+#### Headers
+
+
+| Key | Value |
+| --- | --- |
+| Authorization | Bearer {access_token} |
+| Accept | application/json |
+
+
+#### Redirection
+
+
+| Response | Redirect To |
+| --- | --- |
+| success | none |
+
+
+#### Success Response (200)
+
+
+```json
+{
+  "type": "success",
+  "success": true,
+  "message": "MOTD status updated successfully!",
+  "content": {
+    "id": 2,
+    "title": "Our Latest App Update",
+    "message": "Another new app update update now!",
+    "is_active": true,
+    "starts_at": "11-06-2026",
+    "ends_at": "17-06-2026",
+    "created_at": "10-06-2026",
+    "updated_at": "11-06-2026",
+    "created_by": "Super Admin"
+  },
+  "code": 200
+}
+}
+```
+
+
+#### MOTD Not Found Error
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "MOTD not found!",
+  "errors": null,
+  "code": 404
+}
+```
+
+
+#### Unauthorized Access
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "Unauthorized",
+  "errors": null,
+  "code": 401,
+}
+```
+
+
+#### Server Error Message
+
+
+```json
+{
+  "type": "error",
+  "success": false,
+  "message": "An error occurred while updating MOTD active status!",
+  "errors": ["error message"],
+  "code": 500,
 }
 ```
 
@@ -10449,9 +11659,9 @@ Delete Lesson
 }
 ```
 
-### View Ticket
+### View Ticket Details
 
-**Endpoint:** `GET /api/v1/superadmin/tickets/2/view`
+**Endpoint:** `GET /api/v1/superadmin/tickets/5/view`
 
 **Description:** This endpoint retrieves a specific ticket.
 
@@ -10478,45 +11688,111 @@ Delete Lesson
   "message": "Ticket retrieved successfully!",
   "content": {
     "ticket": {
-      "id": 2,
+      "id": 5,
       "category": "Billing",
       "priority": "High",
       "status": "Open",
       "assigned_to": null,
       "subject": "Invoice",
       "description": "Will I get an invoice after payment?",
-      "replies": [],
-      "ticket_attachments": [
+      "replies": [
         {
           "id": 1,
-          "ticket_id": 2,
-          "ticket_message_id": null,
-          "path": "https://api.fastlearnerapp.com/storage/tickets/6a221a5e8f561_student.png",
-          "original_file_name": "time.png",
-          "file_type": "image/png",
-          "file_size": 7048,
-          "created_at": "05-06-2026",
-          "updated_at": "05-06-2026"
+          "sender_type": "user",
+          "reply": "I want the  invoice to show my guardian.",
+          "reply_attachments": [
+            {
+              "id": 13,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a227c00b0e25_student.png",
+              "created_at": "05-06-2026",
+              "updated_at": "05-06-2026"
+            },
+            {
+              "id": 14,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a227c00b9365_student.png",
+              "created_at": "05-06-2026",
+              "updated_at": "05-06-2026"
+            },
+            {
+              "id": 15,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a227c00bacb1_student.png",
+              "created_at": "05-06-2026",
+              "updated_at": "05-06-2026"
+            }
+          ],
+          "created_at": "05-06-2026 07:34",
+          "updated_at": "05-06-2026 07:34"
         },
         {
           "id": 2,
-          "ticket_id": 2,
-          "ticket_message_id": null,
-          "path": "https://api.fastlearnerapp.com/storage/tickets/6a221a5e9c4a3_student.png",
-          "original_file_name": "Training Exercise.png",
-          "file_type": "image/png",
-          "file_size": 72954,
+          "sender_type": "user",
+          "reply": "When should I be expecting the update?",
+          "reply_attachments": [
+            {
+              "id": 16,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a237375b9483_student.png",
+              "created_at": "06-06-2026",
+              "updated_at": "06-06-2026"
+            }
+          ],
+          "created_at": "06-06-2026 01:10",
+          "updated_at": "06-06-2026 01:10"
+        },
+        {
+          "id": 3,
+          "sender_type": "admin",
+          "reply": "This is to inform you the your ticket has been received",
+          "reply_attachments": [],
+          "created_at": "07-06-2026 08:47",
+          "updated_at": "07-06-2026 08:47"
+        },
+        {
+          "id": 11,
+          "sender_type": "user",
+          "reply": "Alright",
+          "reply_attachments": [
+            {
+              "id": 17,
+              "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a272ecef3da8_1780952782.png",
+              "created_at": "08-06-2026",
+              "updated_at": "08-06-2026"
+            }
+          ],
+          "created_at": "08-06-2026 21:06",
+          "updated_at": "08-06-2026 21:06"
+        },
+        {
+          "id": 15,
+          "sender_type": "user",
+          "reply": "Thank you for your response",
+          "reply_attachments": [
+            {
+              "id": 21,
+              "path": "https://api.fastlearnersapp.com/storage/tickets/6a28273c73b07_1781016380.png",
+              "created_at": "09-06-2026",
+              "updated_at": "09-06-2026"
+            }
+          ],
+          "created_at": "09-06-2026 14:46",
+          "updated_at": "09-06-2026 14:46"
+        }
+      ],
+      "ticket_attachments": [
+        {
+          "id": 10,
+          "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a22228eee662_student.png",
           "created_at": "05-06-2026",
           "updated_at": "05-06-2026"
         },
         {
-          "id": 3,
-          "ticket_id": 2,
-          "ticket_message_id": null,
-          "path": "https://api.fastlearnerapp.com/storage/tickets/6a221a5e9dc1c_student.png",
-          "original_file_name": "logo-n-01.png",
-          "file_type": "image/png",
-          "file_size": 37529,
+          "id": 11,
+          "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a22228ef3e3b_student.png",
+          "created_at": "05-06-2026",
+          "updated_at": "05-06-2026"
+        },
+        {
+          "id": 12,
+          "path": "https://api.fastlearnersapp.com/storage/uploads/tickets/6a22228f0141b_student.png",
           "created_at": "05-06-2026",
           "updated_at": "05-06-2026"
         }
@@ -11930,6 +13206,5 @@ Delete Lesson
   "code": 401,
 }
 ```
-
 
 

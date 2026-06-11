@@ -4,9 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useAuthStore } from "@/store/authStore";
 import { motion } from "framer-motion";
-import { Clock, Info, Loader2, UserCheck, UserPlus, Users } from "lucide-react";
+import { Clock, Info, Loader2, Package, UserCheck, UserPlus, Users } from "lucide-react";
 
-import { getGuardianDashboard } from "@/lib/api/dashboard";
+import { getGuardianDashboard, type GuardianDashboardContent } from "@/lib/api/dashboard";
 import { getGuardianChildrenHistory } from "@/lib/api/guardian";
 import type { ChildRequestItem } from "@/lib/types/guardian";
 import { Badge } from "@/components/ui/badge";
@@ -66,10 +66,7 @@ export function GuardianDashboard() {
   const { user } = useAuthStore();
   const displayName = formatDisplayName(user as any);
 
-  const [dashboardData, setDashboardData] = useState<{
-    children: number;
-    report: null;
-  } | null>(null);
+  const [dashboardData, setDashboardData] = useState<GuardianDashboardContent | null>(null);
   const [childrenHistory, setChildrenHistory] = useState<ChildRequestItem[]>(
     [],
   );
@@ -137,7 +134,7 @@ export function GuardianDashboard() {
         />
       </motion.div>
 
-      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-3">
+      <div className="responsive-gap grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
         <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
           <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
             <CardContent className="responsive-padding">
@@ -167,6 +164,56 @@ export function GuardianDashboard() {
           <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
             <CardContent className="responsive-padding">
               <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-emerald-500/10 p-3">
+                  <UserCheck className="size-6 text-emerald-600" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Active Children
+                  </p>
+                  {isLoading ? (
+                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                  ) : (
+                    <h3 className="text-2xl font-bold">{dashboardData?.active_children ?? 0}</h3>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Currently learning
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="flex items-center gap-4">
+                <div className="rounded-xl bg-violet-500/10 p-3">
+                  <Package className="size-6 text-violet-600" />
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-medium text-muted-foreground">
+                    Subscriptions
+                  </p>
+                  {isLoading ? (
+                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
+                  ) : (
+                    <h3 className="text-2xl font-bold">{dashboardData?.active_subscriptions ?? 0}</h3>
+                  )}
+                  <p className="text-[10px] text-muted-foreground">
+                    Active plans
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
+          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
+            <CardContent className="responsive-padding">
+              <div className="flex items-center gap-4">
                 <div className="rounded-xl bg-amber-500/10 p-3">
                   <Clock className="size-6 text-amber-600" />
                 </div>
@@ -181,31 +228,6 @@ export function GuardianDashboard() {
                   )}
                   <p className="text-[10px] text-muted-foreground">
                     Waiting response
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div variants={itemVariants} whileHover={{ scale: 1.02, y: -2 }}>
-          <Card className="relative overflow-hidden border-gray-200/50 bg-gradient-to-br from-white to-gray-50/50 dark:border-gray-700/50 dark:from-gray-900 dark:to-gray-800/50">
-            <CardContent className="responsive-padding">
-              <div className="flex items-center gap-4">
-                <div className="rounded-xl bg-emerald-500/10 p-3">
-                  <UserCheck className="size-6 text-emerald-600" />
-                </div>
-                <div className="space-y-1">
-                  <p className="text-sm font-medium text-muted-foreground">
-                    Accepted
-                  </p>
-                  {isLoading ? (
-                    <Loader2 className="size-5 animate-spin text-muted-foreground" />
-                  ) : (
-                    <h3 className="text-2xl font-bold">{acceptedCount}</h3>
-                  )}
-                  <p className="text-[10px] text-muted-foreground">
-                    Linked students
                   </p>
                 </div>
               </div>
@@ -312,6 +334,8 @@ export function GuardianDashboard() {
           <OverviewGrid
             stats={[
               { label: "Total Children", value: totalChildren },
+              { label: "Active Children", value: dashboardData?.active_children ?? 0 },
+              { label: "Active Subscriptions", value: dashboardData?.active_subscriptions ?? 0 },
               { label: "Pending Requests", value: pendingCount },
               { label: "Accepted", value: acceptedCount },
               {

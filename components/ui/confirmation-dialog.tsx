@@ -9,11 +9,13 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 interface ConfirmationDialogProps {
-  open: boolean;
-  onOpenChange: (open: boolean) => void;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  trigger?: React.ReactNode;
   title: string;
   description: string;
   confirmLabel?: string;
@@ -33,9 +35,15 @@ export function ConfirmationDialog({
   onConfirm,
   variant = "default",
   loading = false,
+  trigger,
 }: ConfirmationDialogProps) {
+  const [uncontrolledOpen, setUncontrolledOpen] = require("react").useState(false);
+  const isOpen = open !== undefined ? open : uncontrolledOpen;
+  const handleOpenChange = onOpenChange || setUncontrolledOpen;
+
   return (
-    <AlertDialog open={open} onOpenChange={onOpenChange}>
+    <AlertDialog open={isOpen} onOpenChange={handleOpenChange}>
+      {trigger && <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>}
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>{title}</AlertDialogTitle>

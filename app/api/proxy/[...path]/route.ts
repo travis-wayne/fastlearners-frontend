@@ -18,6 +18,19 @@ async function forward(req: NextRequest, path: string[]) {
       req.method === "PUT" ||
       req.method === "PATCH"
     ) {
+      const contentType = req.headers.get("content-type") || "";
+      if (contentType.includes("multipart/form-data")) {
+        const formData = await req.formData().catch(() => undefined);
+        const resp = await fetch(url, {
+          method: req.method,
+          headers: { ...headers },
+          body: formData,
+          cache: "no-store",
+        });
+        const data = await resp.json().catch(() => ({}));
+        return NextResponse.json(data, { status: resp.status });
+      }
+
       const body = await req.json().catch(() => undefined);
       const resp = await fetch(url, {
         method: req.method,
