@@ -8,7 +8,6 @@ import { useAuthStore } from "@/store/authStore";
 import { sidebarLinks } from "@/config/dashboard";
 import { Z_INDEX } from "@/config/z-index";
 import { useAuthInit } from "@/hooks/useAuthInit";
-import { Breadcrumb } from "@/components/dashboard/breadcrumb";
 import { SearchCommand } from "@/components/dashboard/search-command";
 import {
   DashboardSidebar,
@@ -88,10 +87,7 @@ export default function Dashboard({ children }: ProtectedLayoutProps) {
             >
               <div className="responsive-gap flex w-full min-w-0 items-center">
                 <MobileSheetSidebar links={filteredLinks} />
-
-                <div className="min-w-0 flex-1">
-                  <Breadcrumb />
-                </div>
+                <div className="min-w-0 flex-1" />
 
                 <SearchCommand links={filteredLinks} className="mr-2" />
                 <NetworkStatus className="mr-2" />
