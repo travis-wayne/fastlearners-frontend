@@ -91,7 +91,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      "max-w-[18rem] break-words p-component-sm align-middle sm:max-w-none sm:p-component-md [&:has([role=checkbox])]:pr-0",
+      "max-w-72 break-words p-component-sm align-middle sm:max-w-none sm:p-component-md [&:has([role=checkbox])]:pr-0",
       className,
     )}
     {...props}
