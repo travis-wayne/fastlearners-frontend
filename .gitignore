@@ -47,3 +47,8 @@ nul
 
 
 /.claude
+# generated/local project artifacts
+debug-error.log
+fastlearners_*_documentation.md
+fastlearners_change_report.md
+docs/project_changelog.csv
