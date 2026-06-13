@@ -83,6 +83,11 @@ const createOnboardingSchema = (
       school: z.string().optional(),
       class: z.string().optional(),
       discipline: z.string().optional(),
+      parent_email: z
+        .string()
+        .email("Please enter a valid parent email address")
+        .optional()
+        .or(z.literal("")),
       child_email: z.string().email().optional().or(z.literal("")),
       child_phone: z.string().optional().or(z.literal("")),
     })
@@ -142,6 +147,14 @@ const createOnboardingSchema = (
 
       // Student-specific requirements
       if (effectiveRole === "student") {
+        if (!data.parent_email || data.parent_email.trim() === "") {
+          ctx.addIssue({
+            code: z.ZodIssueCode.custom,
+            message: "Parent email is required",
+            path: ["parent_email"],
+          });
+        }
+
         // Require school for students
         if (!data.school || data.school.trim() === "") {
           ctx.addIssue({
@@ -375,6 +388,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         setValue("school", profileData.school || "");
         setValue("class", profileData.class || "");
         setValue("discipline", profileData.discipline || "");
+        setValue("parent_email", profileData.parent_email || "");
         setValue("date_of_birth", parseProfileDate(profileData.date_of_birth));
         setValue("gender", genderValue);
         setValue("country", profileData.country || "");
@@ -511,6 +525,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
     } else if (currentStep === 4) {
       if (effectiveRole === "student") {
         isValid = await trigger([
+          "parent_email",
           "school",
           "class",
         ] as (keyof OnboardingFormData)[]);
@@ -558,6 +573,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         school: data.school,
         class: data.class,
         discipline: data.discipline,
+        parent_email: data.parent_email,
         date_of_birth: data.date_of_birth
           ? format(data.date_of_birth, "yyyy-MM-dd")
           : undefined,
@@ -590,6 +606,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
         school: updatedProfile.school,
         class: updatedProfile.class,
         discipline: updatedProfile.discipline,
+        parent_email: updatedProfile.parent_email,
         date_of_birth: updatedProfile.date_of_birth,
         country: updatedProfile.country,
         state: updatedProfile.state,
@@ -962,6 +979,21 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <>
                     <div className="grid gap-4 md:grid-cols-2">
                       <div className="space-y-2">
+                        <Label htmlFor="parent_email">Parent Email *</Label>
+                        <Input
+                          id="parent_email"
+                          type="email"
+                          {...register("parent_email")}
+                          placeholder="parent@example.com"
+                        />
+                        {errors.parent_email && (
+                          <p className="text-sm text-destructive">
+                            {errors.parent_email.message}
+                          </p>
+                        )}
+                      </div>
+
+                      <div className="space-y-2">
                         <Label htmlFor="school">School</Label>
                         <Input
                           id="school"
@@ -1163,6 +1195,8 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                   <div className="space-y-2">
                     <h4 className="font-medium">Student Information</h4>
                     <p className="text-sm text-muted-foreground">
+                      Parent Email: {watch("parent_email")}
+                      <br />
                       School: {watch("school")}
                       <br />
                       Class: {watch("class")}
