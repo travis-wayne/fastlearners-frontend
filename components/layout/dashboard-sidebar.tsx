@@ -120,7 +120,7 @@ export function DashboardSidebar({ links }: DashboardSidebarProps) {
         </div>
 
         <ScrollArea className="min-h-0 flex-1">
-          <nav className="flex flex-col gap-component-lg px-component-md py-component-md">
+          <nav className="flex flex-col gap-component-lg p-component-md">
                 {links.map((section) => {
                   if (section.items.length === 0) return null;
                   return (
